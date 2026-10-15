@@ -1,4 +1,5 @@
 import { Footnote } from './Footnote'
+import { FullscreenButton } from './FullscreenButton'
 import { SANDBOX_ENABLED } from './features'
 import styles from './MainMenu.module.css'
 
@@ -21,6 +22,7 @@ export function MainMenu({ onPlay, onSandbox, onSettings }: Props) {
         {SANDBOX_ENABLED && <button className={`ghost-button ${styles.big}`} onClick={onSandbox}>Sandbox</button>}
         <button className={`ghost-button ${styles.big}`} onClick={onSettings}>Settings</button>
       </div>
+      <FullscreenButton className={`ghost-button ${styles.fsButton}`} />
       <Footnote className={styles.footnote} />
     </div>
   )

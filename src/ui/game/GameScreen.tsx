@@ -10,6 +10,7 @@ import { InstrumentStrip } from './InstrumentStrip'
 import { LogDrawer } from './LogDrawer'
 import type { Delta } from './FloatingDelta'
 import { Footnote } from '../Footnote'
+import { FullscreenButton } from '../FullscreenButton'
 import styles from './GameScreen.module.css'
 
 interface Props {
@@ -66,6 +67,7 @@ export function GameScreen({ initial, sandbox, onExit, onEnd }: Props) {
         <h1 className={styles.title}>Surgical Preparation</h1>
         {sandbox && <span className={styles.badge}>Sandbox</span>}
         <button className={`ghost-button ${styles.logButton}`} onClick={() => setLogOpen(o => !o)}>Log</button>
+        <FullscreenButton className={`ghost-button ${styles.fsButton}`} />
       </header>
 
       <TankRow

@@ -1,6 +1,7 @@
 .viewport {
   position: fixed;
   inset: 0;
+  height: 100dvh;
   background: #050203;
   overflow: hidden;
 }
@@ -34,5 +35,12 @@
   position: absolute;
   inset: 0;
   background: radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.75) 100%);
+  pointer-events: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
   pointer-events: none;
 }

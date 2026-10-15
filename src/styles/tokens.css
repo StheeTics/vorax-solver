@@ -43,6 +43,8 @@ body,
 }
 
 body {
+  touch-action: manipulation;
+  overscroll-behavior: none;
   background: var(--bg-0);
   color: var(--text);
   font-family: var(--font-body);
@@ -70,17 +72,19 @@ button {
   color: #ff8a8a;
 }
 
+/* Lives in the stage overlay, so it scales/rotates with the game; sized to stay readable on small screens. */
 .kw-tooltip {
-  position: fixed;
+  /* ≈12px on screen at any stage scale, never smaller than the desktop size */
+  --tip-scale: max(1, calc(0.92 / var(--stage-scale, 1)));
+  position: absolute;
   z-index: 1000;
-  transform: translateX(-50%);
-  width: 280px;
-  padding: 10px 12px;
+  width: calc(280px * var(--tip-scale));
+  padding: calc(10px * var(--tip-scale)) calc(12px * var(--tip-scale));
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: calc(4px * var(--tip-scale));
   font-family: var(--font-body);
-  font-size: 13px;
+  font-size: calc(13px * var(--tip-scale));
   line-height: 1.4;
   text-align: left;
   color: var(--text);
@@ -92,7 +96,7 @@ button {
 }
 .kw-tooltip strong {
   color: var(--keyword);
-  font-size: 14px;
+  font-size: 1.08em;
 }
 
 .gold-button {
