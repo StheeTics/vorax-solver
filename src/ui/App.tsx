@@ -3,14 +3,13 @@ import type { GameState, SandboxSetup, Settings } from '@/engine/types'
 import { createGame } from '@/engine/game'
 import { Stage } from './Stage'
 import { MainMenu } from './MainMenu'
-import { SettingsScreen } from './Settings'
 import { GameScreen } from './game/GameScreen'
 import { EndScreen } from './EndScreen'
 import { loadSettings } from './settingsStore'
 import { SandboxSetupScreen } from './SandboxSetup'
 import { SANDBOX_ENABLED } from './features'
 
-type Screen = 'menu' | 'settings' | 'sandbox' | 'game'
+type Screen = 'menu' | 'sandbox' | 'game'
 
 interface Run {
   /** Changes on every new run so GameScreen remounts with fresh state. */
@@ -45,10 +44,8 @@ export function App() {
         <MainMenu
           onPlay={() => start(loadSettings(), null)}
           onSandbox={() => setScreen('sandbox')}
-          onSettings={() => setScreen('settings')}
         />
       )}
-      {screen === 'settings' && <SettingsScreen onBack={() => setScreen('menu')} />}
       {SANDBOX_ENABLED && screen === 'sandbox' && <SandboxSetupScreen onStart={(setup, settings) => start(settings, setup)} onBack={() => setScreen('menu')} />}
       {screen === 'game' && run && (
         <GameScreen key={run.key} initial={run.initial} sandbox={!!run.setup} onExit={toMenu} onEnd={onEnd} />

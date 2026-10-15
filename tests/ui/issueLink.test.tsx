@@ -16,7 +16,7 @@ function expectIssueLink() {
 }
 
 it('main menu has a Report an issue link', () => {
-  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} onSettings={() => {}} />)
+  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} />)
   expectIssueLink()
 })
 
@@ -36,7 +36,7 @@ it('the fan-made footnote with the issue link shows during gameplay', () => {
 })
 
 it('sandbox mode is disabled: no Sandbox button on the main menu', () => {
-  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} onSettings={() => {}} />)
+  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} />)
   expect(screen.queryByRole('button', { name: 'Sandbox' })).toBeNull()
   expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
 })

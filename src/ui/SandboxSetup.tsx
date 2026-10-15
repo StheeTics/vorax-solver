@@ -4,8 +4,9 @@ import { INSTRUMENTS } from '@/data/instruments'
 import { POTIONS } from '@/data/potions'
 import { MAX_INSTRUMENTS } from '@/engine/game'
 import type { Archetype, Rarity, SandboxSetup, Settings } from '@/engine/types'
-import { RefreshFields } from './Settings'
-import { loadSettings } from './settingsStore'
+import { ShelleyPicker } from './ShelleyPicker'
+import { loadShelleyLevel } from './settingsStore'
+import { settingsForShelley } from '@/data/shelley'
 import { defaultRawSetup, validateSetup, type RawSetup, type RawTank } from './sandboxValidate'
 import styles from './SandboxSetup.module.css'
 
@@ -16,7 +17,8 @@ interface Props {
 
 export function SandboxSetupScreen({ onStart, onBack }: Props) {
   const [raw, setRaw] = useState<RawSetup>(defaultRawSetup)
-  const [settings, setSettings] = useState<Settings>(loadSettings)
+  const [shelley, setShelley] = useState(loadShelleyLevel)
+  const settings: Settings = settingsForShelley(shelley)
   const [error, setError] = useState<string | null>(null)
 
   const patch = (p: Partial<RawSetup>) => setRaw(r => ({ ...r, ...p }))
@@ -149,11 +151,11 @@ export function SandboxSetupScreen({ onStart, onBack }: Props) {
           Seed
           <input aria-label="Seed" placeholder="random" value={raw.seed} onChange={e => patch({ seed: e.target.value })} />
         </label>
-        <RefreshFields value={settings} onChange={setSettings} />
+        <ShelleyPicker level={shelley} onChange={setShelley} />
         {error && <div className={styles.error} role="alert">{error}</div>}
         <div className={styles.buttons}>
           <button className="gold-button" onClick={start}>Start</button>
-          <button className="ghost-button" onClick={() => { setRaw(defaultRawSetup()); setSettings(loadSettings()); setError(null) }}>Reset to defaults</button>
+          <button className="ghost-button" onClick={() => { setRaw(defaultRawSetup()); setShelley(loadShelleyLevel()); setError(null) }}>Reset to defaults</button>
         </div>
       </section>
     </div>

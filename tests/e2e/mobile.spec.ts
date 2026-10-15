@@ -41,10 +41,13 @@ test('the game fills the screen (rotated when the phone is upright)', async ({ p
 
 test('a round can be played by tapping', async ({ page }) => {
   await startGame(page)
-  await page.getByTestId('card-0').click()
-  const target = page.locator('[data-highlight=selectable]').first()
-  if (await target.count()) await target.click()
-  await page.getByRole('button', { name: 'Confirm' }).click()
+  // Hands are random: a Potion Box opens into more cards instead of ending the round, so pick again.
+  for (let pick = 0; pick < 3 && (await page.getByTestId('round').textContent()) === '1/13'; pick++) {
+    await page.getByTestId('card-0').click()
+    const target = page.locator('[data-highlight=selectable]').first()
+    if (await target.count()) await target.click()
+    await page.getByRole('button', { name: 'Confirm' }).click()
+  }
   await expect(page.getByTestId('round')).toHaveText('2/13')
 })
 
