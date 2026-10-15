@@ -70,9 +70,15 @@ it('rounds 11–13 show an End Round button that steps through to the end', () =
   expect(screen.getByTestId('round').textContent).toBe('12/13')
 })
 
-it('tank labels keep the rarity color (no archetype word coloring); card names color the archetype', () => {
+it('tank labels color the rarity word by rarity and the archetype word by archetype', () => {
   start()
-  expect(screen.getByTestId('tank-0').querySelector('[data-archetype-word]')).toBeNull()
+  const label = screen.getByTestId('tank-0')
+  const rarity = label.querySelector('[data-rarity-word="normal"]')
+  const arch = label.querySelector('[data-archetype-word="pest"]') as HTMLElement | null
+  expect(rarity?.textContent).toBe('Normal')
+  expect(arch?.textContent).toBe('Pest')
+  expect(arch?.style.color).toBe('rgb(176, 124, 255)') // Pest purple
+  expect(screen.getByTestId('tank-1').querySelector('[data-archetype-word="agito"]')?.textContent).toBe('Agito')
   expect(screen.getByTestId('card-2').querySelector('[data-archetype-word="pest"]')?.textContent).toBe('Pest')
 })
 
