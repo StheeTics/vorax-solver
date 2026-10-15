@@ -4,5 +4,5 @@ import type { PotionDef } from '../defs'
 export const BOXES: PotionDef[] = [
   { id: 33, name: 'Potion Box (Large)', rarity: 'rare', targeting: { box: 5 }, item: 'box', text: 'Choose 1 of 5 random potions' },
   { id: 34, name: 'Rare Potion Box', rarity: 'rare', targeting: { box: 3 }, item: 'box', text: 'Choose 1 of 3 random potions' },
-  { id: 40, name: 'Potion Box (Small)', rarity: 'rare', targeting: { box: 3 }, item: 'box', text: 'Choose 1 of 3 random potions' },
+  { id: 40, name: 'Rare Potion Kit (Small)', rarity: 'rare', targeting: { box: 3 }, item: 'box', text: 'Choose 1 of 3 random potions' },
 ]

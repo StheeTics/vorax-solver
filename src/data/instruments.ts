@@ -12,7 +12,7 @@ const all = (c: EffectContext, act: number, qty: number) => {
 export const INSTRUMENTS: InstrumentDef[] = [
   {
     id: 1, name: 'Chrysalis Specimen', pool: 'basic', timing: { kind: 'end' },
-    text: 'At the end of the round, for each group of {Pest}s you have (X), +8 {qty}Quantity to X random group(s) of monsters. Repeats X times',
+    text: 'At the end of the round, +8 {qty}Quantity to X group(s) of random monsters, where X is equal to the number of {Pest} groups you have. Repeats X times',
     endOfRound(c) {
       const x = c.byArchetype('pest').length
       if (x === 0) return
@@ -22,7 +22,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
   },
   {
     id: 2, name: 'Incubation Sac', pool: 'basic', timing: { kind: 'reactive', on: ['add'] },
-    text: 'When you have at least 2 group(s) of {Pest}s, each time a monster is {add}ed, +45 {qty}Quantity to all monsters',
+    text: 'When you have at least 2 group(s) of {Pest}s, +45 {qty}Quantity to all monsters each time you add a monster',
     onEvent(c) {
       if (c.byArchetype('pest').length < 2) return
       all(c, 0, 45)
@@ -74,8 +74,8 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 7, name: 'Wicked Granulation', pool: 'basic', timing: { kind: 'reactive', on: ['mutate'] },
-    text: 'When a monster {mutate}s into an {Aemberon}, +35 {act}Activity to all monsters',
+    id: 7, name: 'Aberrant Sprout', pool: 'basic', timing: { kind: 'reactive', on: ['mutate'] },
+    text: '+35 {act}Activity to all monsters when a monster {mutate}s into {Aemberon}',
     onEvent(c, e) {
       if (e.type !== 'mutate' || e.to.archetype !== 'aemberon') return
       all(c, 35, 0)
@@ -101,8 +101,8 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 10, name: 'Molted Cortex', pool: 'advanced', timing: { kind: 'end' },
-    text: 'At the end of the round, {fuse} 2 random group(s) of Magic monsters into 1 group of Rare {Agito}s',
+    id: 10, name: 'Sloughed Cortex', pool: 'advanced', timing: { kind: 'end' },
+    text: 'At the end of the round, {fuse} 2 random group(s) of Magic monsters into Rare {Agito}s',
     endOfRound(c) {
       const magic = c.byRarity('magic')
       if (magic.length < 2) return
@@ -137,7 +137,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
   },
   {
     id: 13, name: 'Rawhide Restraint', pool: 'advanced', timing: { kind: 'end' },
-    text: 'At the end of the round, if you have at least 3 group(s) of Magic monsters, +100 {qty}Quantity to the group with the highest Total Activity',
+    text: 'When you have 3 group(s) of Magic monsters, +100 {qty}Quantity to 1 group(s) of monsters with the highest Total Activity each round',
     endOfRound(c) {
       if (c.byRarity('magic').length < 3) return
       const t = c.highest()
@@ -162,8 +162,8 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 15, name: 'Pig-Iron Bone Saw', pool: 'advanced', timing: { kind: 'end' },
-    text: 'At the end of the round, +15 {act}Activity and +15 {qty}Quantity to monsters with both {act}Activity and {qty}Quantity higher than 150',
+    id: 15, name: 'Pig Iron Bone Saw', pool: 'advanced', timing: { kind: 'end' },
+    text: 'At the end of the round, +15 {act}Activity and +15 {qty}Quantity to monsters with both {qty}Quantity and {act}Activity higher than 150',
     endOfRound(c) {
       for (const i of c.nonEmpty()) {
         const mon = c.tanks[i]!
@@ -182,8 +182,8 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 17, name: 'Foul Scraper', pool: 'advanced', timing: { kind: 'end' },
-    text: 'At the end of the round, +20 {act}Activity to monsters with {qty}Quantity higher than 275',
+    id: 17, name: 'Fouled Scraper', pool: 'advanced', timing: { kind: 'end' },
+    text: 'At the end of the round, +20 {act}Activity to all monsters with {qty}Quantity higher than 275',
     endOfRound(c) {
       for (const i of c.nonEmpty()) if (c.tanks[i]!.quantity > 275) c.boost(i, 20, 0)
     },
@@ -254,8 +254,8 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 24, name: 'Nettle Knot', pool: 'advanced', timing: { kind: 'end' },
-    text: 'At the end of the round, if you have at least 3 group(s) of Normal monsters, +30 {qty}Quantity to all monsters',
+    id: 24, name: 'Nettle Toggle', pool: 'advanced', timing: { kind: 'end' },
+    text: 'When you have 3 group(s) of Normal monsters, +30 {qty}Quantity to all monsters each round',
     endOfRound(c) {
       if (c.byRarity('normal').length < 3) return
       all(c, 0, 30)

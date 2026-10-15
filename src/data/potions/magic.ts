@@ -3,8 +3,8 @@ import type { PotionDef } from '../defs'
 
 export const MAGIC_POTIONS: PotionDef[] = [
   {
-    id: 7, name: 'Active Ovulation Hormone', rarity: 'magic', targeting: 'auto', item: 'pill',
-    text: '{add} 1 group(s) of {Pest}s. 50% chance to {add} 2 more group(s)',
+    id: 7, name: 'Viviparous Hormone', rarity: 'magic', targeting: 'auto', item: 'pill',
+    text: '{add} 1 group(s) of {Pest}s. 50% chance to {add} 2 additional group(s)',
     effect(c) {
       c.add('pest', rollRarity(c.rng))
       if (c.rng.chance(0.5)) {
@@ -72,7 +72,7 @@ export const MAGIC_POTIONS: PotionDef[] = [
   },
   {
     id: 13, name: 'Green Bile Solution', rarity: 'magic', targeting: 'select1to2', item: 'solution',
-    text: 'Select 1–2 group(s) of monsters and {mutate} them into random Magic monsters with +31 {act}Activity',
+    text: 'Select 1-2 groups of monsters, {mutate} them into random Magic monsters, and +31 to their {act}Activity',
     effect(c, targets) {
       for (const t of targets) {
         if (!c.tanks[t]) continue
@@ -101,7 +101,7 @@ export const MAGIC_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 16, name: 'Vital Breeding Powder', rarity: 'magic', targeting: 'auto', item: 'powder',
+    id: 16, name: 'Vivegenic Powder', rarity: 'magic', targeting: 'auto', item: 'powder',
     text: '+32 {qty}Quantity to up to 4 random group(s) of monsters, each of a different rarity',
     effect(c) {
       for (const r of RARITIES) {
@@ -111,8 +111,8 @@ export const MAGIC_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 17, name: 'Potent Purging Powder', rarity: 'magic', targeting: 'select1', item: 'powder',
-    text: 'Select 1 group(s) of monsters and +154 to their {qty}Quantity. {remove} 2 group(s) of monsters of a different Archetype',
+    id: 17, name: 'Potent Xenopurge Powder', rarity: 'magic', targeting: 'select1', item: 'powder',
+    text: 'Select 1 group(s) of monsters and +154 to their {qty}Quantity, then {remove} 2 group(s) of monsters of different Archetypes',
     effect(c, [t]) {
       const mon = c.tanks[t]
       if (!mon) return
@@ -122,8 +122,8 @@ export const MAGIC_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 18, name: 'Purging Powder', rarity: 'magic', targeting: 'select1', item: 'powder',
-    text: 'Select 1 group(s) of monsters and +127 to their {qty}Quantity. {remove} 1 group(s) of monsters of a different Archetype',
+    id: 18, name: 'Xenopurge Powder', rarity: 'magic', targeting: 'select1', item: 'powder',
+    text: 'Select 1 group(s) of monsters and +127 to their {qty}Quantity, then {remove} 1 group(s) of monsters of different Archetypes',
     effect(c, [t]) {
       const mon = c.tanks[t]
       if (!mon) return
@@ -143,7 +143,7 @@ export const MAGIC_POTIONS: PotionDef[] = [
   },
   {
     id: 20, name: 'Bewitching Tincture', rarity: 'magic', targeting: 'select1', item: 'tincture',
-    text: 'Select 1 group(s) of monsters and {awaken} them into monsters 1 rarity higher',
+    text: 'Select 1 group(s) of monsters to {awaken} into monsters that are 1 tier(s) higher in rarity',
     effect(c, [t]) {
       c.awaken(t)
     },

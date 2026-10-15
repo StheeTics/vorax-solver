@@ -3,10 +3,10 @@ import { potion } from '@/data/potions'
 import { instrument } from '@/data/instruments'
 import { CardText } from '../CardText'
 import { ArchetypeWords } from '../ArchetypeWords'
-import { ItemArt } from '../svg/ItemArt'
+import { CardArt } from '../svg/CardArt'
 import styles from './Card.module.css'
 
-const POTION_FOOTER = { normal: 'Normal Potion', magic: 'Magic Potion', rare: 'Rare Potion', supreme: 'Supreme Potion' } as const
+const POTION_FOOTER = { normal: 'Normal Potion', magic: 'Magic Potion', rare: 'Rare Potion', supreme: 'ULT Potion' } as const
 
 export function cardInfo(card: CardRef) {
   if (card.kind === 'potion') {
@@ -45,7 +45,9 @@ export function Card({ card, selected, onClick, testId, compact }: Props) {
         }
       }}
     >
-      <div className={styles.art}><ItemArt item={info.item} size={compact ? 56 : 72} /></div>
+      <div className={styles.art}>
+        <CardArt card={card} size={compact ? 60 : 78} />
+      </div>
       <div className={styles.name}><ArchetypeWords text={info.name} /></div>
       <CardText className={styles.text} text={info.text} />
       <div className={styles.footer}>{info.footer}</div>

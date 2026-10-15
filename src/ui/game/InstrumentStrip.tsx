@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { EquippedInstrument } from '@/engine/types'
 import { instrument } from '@/data/instruments'
-import { ItemArt } from '../svg/ItemArt'
+import { CardArt } from '../svg/CardArt'
 import { Card } from './Card'
 import styles from './InstrumentStrip.module.css'
 
@@ -23,7 +23,7 @@ export function InstrumentStrip({ equipped }: { equipped: EquippedInstrument[] }
           >
             {def ? (
               <>
-                <ItemArt item="instrument" size={34} />
+                <CardArt card={{ kind: 'instrument', id: def.id }} size={34} />
                 <span className={styles.name}>{def.name}</span>
               </>
             ) : (

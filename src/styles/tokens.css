@@ -21,11 +21,12 @@
   --rarity-boss: #ff4a3d;
   --rarity-supreme: #ff3b6b;
 
-  --card-normal: linear-gradient(180deg, #3a3a3e 0%, #232327 60%, #1a1a1d 100%);
-  --card-magic: linear-gradient(180deg, #24486f 0%, #162c48 60%, #0f1d31 100%);
-  --card-rare: linear-gradient(180deg, #6d5320 0%, #46340f 60%, #2b1f08 100%);
-  --card-supreme: linear-gradient(180deg, #6e1324 0%, #470b17 60%, #2b060d 100%);
-  --card-instrument: linear-gradient(180deg, #5a3f17 0%, #3a280c 60%, #241806 100%);
+  /* in-game card faces: bright at the top, darkening downwards */
+  --card-normal: linear-gradient(180deg, #4b4b51 0%, #303035 38%, #1d1d21 100%);
+  --card-magic: linear-gradient(180deg, #3f7cb8 0%, #24538a 38%, #132c4c 100%);
+  --card-rare: linear-gradient(180deg, #cf8f3e 0%, #8c5a1d 38%, #3f260a 100%);
+  --card-supreme: linear-gradient(180deg, #c0394f 0%, #7c1527 38%, #3a0811 100%);
+  --card-instrument: linear-gradient(180deg, #a87a33 0%, #6b4815 38%, #2e1e07 100%);
 
   --font-display: 'Cinzel', 'Times New Roman', serif;
   --font-body: 'Inter', system-ui, sans-serif;

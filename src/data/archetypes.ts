@@ -15,7 +15,7 @@ export const ARCHETYPE_PLURALS: Record<Archetype, string> = {
   pest: 'Pests',
   aemberon: 'Aemberons',
   boneSentry: 'Bone Sentries',
-  agito: 'Agitos',
+  agito: 'Agitoes',
 }
 
 export const RARITY_NAMES: Record<Rarity, string> = {

@@ -197,3 +197,9 @@ describe('pools and timing', () => {
     expect(t[2]!.quantity).toBe(81)
   })
 })
+
+import { instrument } from '@/data/instruments'
+
+it('uses instrument names confirmed from the English client', () => {
+  expect([7, 10, 15, 17, 24].map(id => instrument(id)!.name)).toEqual(['Aberrant Sprout', 'Sloughed Cortex', 'Pig Iron Bone Saw', 'Fouled Scraper', 'Nettle Toggle'])
+})

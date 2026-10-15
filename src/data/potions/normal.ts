@@ -3,8 +3,8 @@ import type { PotionDef } from '../defs'
 
 export const NORMAL_POTIONS: PotionDef[] = [
   {
-    id: 23, name: 'Slender Limb Powder - Pest', rarity: 'normal', targeting: 'auto', item: 'powder',
-    text: '{add} 1 group(s) of {Pest}s with +73 {qty}Quantity',
+    id: 23, name: 'Slender-Limb Powder - Pest', rarity: 'normal', targeting: 'auto', item: 'powder',
+    text: '{add} 1 group(s) of {Pest}s and +73 to their {qty}Quantity',
     effect(c) {
       c.add('pest', rollRarity(c.rng), 0, 73)
     },
@@ -21,14 +21,14 @@ export const NORMAL_POTIONS: PotionDef[] = [
   },
   {
     id: 25, name: 'Spinal Solution - Agito', rarity: 'normal', targeting: 'auto', item: 'solution',
-    text: '{add} 1 group(s) of {Agito}s with +31 {act}Activity',
+    text: '{add} 1 group(s) of {Agito}s and +31 to their {act}Activity',
     effect(c) {
       c.add('agito', rollRarity(c.rng), 31)
     },
   },
   {
     id: 26, name: 'Anesthetic Tincture - Agito', rarity: 'normal', targeting: 'select1', item: 'tincture',
-    text: 'Select 1 group(s) of monsters, {mutate} them into {Agito}s, and {awaken} them into Magic monsters',
+    text: 'Select 1 group(s) of monsters to {mutate} into {Agito}s and {awaken} them into Magic monsters',
     effect(c, [t]) {
       if (!c.tanks[t]) return
       c.mutate(t, 'agito', 'random')
@@ -36,8 +36,8 @@ export const NORMAL_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 27, name: 'Slender Limb Powder - Bone Sentry', rarity: 'normal', targeting: 'auto', item: 'powder',
-    text: '{add} 1 group(s) of {BoneSentry}s with +73 {qty}Quantity',
+    id: 27, name: 'Slender-Limb Powder - Bone Sentry', rarity: 'normal', targeting: 'auto', item: 'powder',
+    text: '{add} 1 group(s) of {BoneSentry}s and +73 to their {qty}Quantity',
     effect(c) {
       c.add('boneSentry', rollRarity(c.rng), 0, 73)
     },
@@ -64,7 +64,7 @@ export const NORMAL_POTIONS: PotionDef[] = [
   },
   {
     id: 30, name: 'Spinal Solution - Aemberon', rarity: 'normal', targeting: 'auto', item: 'solution',
-    text: '{add} 1 group(s) of {Aemberon}s with +31 {act}Activity',
+    text: '{add} 1 group(s) of {Aemberon}s and +31 to their {act}Activity',
     effect(c) {
       c.add('aemberon', rollRarity(c.rng), 31)
     },

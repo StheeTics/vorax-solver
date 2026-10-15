@@ -247,3 +247,33 @@ describe('review fixes', () => {
     expect(t[0]).toMatchObject({ rarity: 'boss', activity: 461 })
   })
 })
+
+describe('names and wording confirmed from the English client', () => {
+  it('uses the official names', () => {
+    expect(potion(3).name).toBe('Osteolytic Ointment')
+    expect(potion(13).name).toBe('Green Bile Solution')
+    expect(potion(17).name).toBe('Potent Xenopurge Powder')
+    expect(potion(18).name).toBe('Xenopurge Powder')
+  })
+  it('uses the in-game wording', () => {
+    expect(potion(3).text).toMatch(/^When you have at least 1 group\(s\) of \{BoneSentry\}s, \{remove\} up to 3 group\(s\) of monsters that are not \{BoneSentry\}s/)
+    expect(potion(13).text).toBe('Select 1-2 groups of monsters, {mutate} them into random Magic monsters, and +31 to their {act}Activity')
+    expect(potion(17).text).toMatch(/^Select 1 group\(s\) of monsters and \+154 to their \{qty\}Quantity, then \{remove\} 2 group\(s\) of monsters of different/)
+  })
+})
+
+describe('more names confirmed from the English client', () => {
+  it('potions', () => {
+    expect(potion(7).name).toBe('Viviparous Hormone')
+    expect(potion(23).name).toBe('Slender-Limb Powder - Pest')
+    expect(potion(27).name).toBe('Slender-Limb Powder - Bone Sentry')
+    expect(potion(38).name).toBe('Insect Attractant')
+    expect(potion(40).name).toBe('Rare Potion Kit (Small)')
+    expect(potion(7).text).toBe('{add} 1 group(s) of {Pest}s. 50% chance to {add} 2 additional group(s)')
+    expect(potion(25).text).toBe('{add} 1 group(s) of {Agito}s and +31 to their {act}Activity')
+  })
+})
+
+it('Vivegenic Powder is the official name for 活殖药粉', () => {
+  expect(potion(16).name).toBe('Vivegenic Powder')
+})

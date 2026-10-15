@@ -29,8 +29,8 @@ export const RARE_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 3, name: 'Bone-Melting Ointment', rarity: 'rare', targeting: 'auto', item: 'ointment',
-    text: 'If you have at least 1 group of {BoneSentry}s, {remove} up to 3 random group(s) of non-{BoneSentry} monsters. For each group removed, +28 {act}Activity and +28 {qty}Quantity to all monsters',
+    id: 3, name: 'Osteolytic Ointment', rarity: 'rare', targeting: 'auto', item: 'ointment',
+    text: 'When you have at least 1 group(s) of {BoneSentry}s, {remove} up to 3 group(s) of monsters that are not {BoneSentry}s. For each group removed, +28 {act}Activity and +28 {qty}Quantity to all monsters',
     effect(c) {
       if (c.byArchetype('boneSentry').length === 0) return
       const victims = c.rng.sample(c.nonEmpty().filter(i => c.tanks[i]!.archetype !== 'boneSentry'), 3)
@@ -55,7 +55,7 @@ export const RARE_POTIONS: PotionDef[] = [
   },
   {
     id: 5, name: 'Fresh Spinal Powder', rarity: 'rare', targeting: 'auto', item: 'powder',
-    text: '{mutate} up to 3 random group(s) of non-{Aemberon} monsters into {Aemberon}s. For each group mutated, +42 {qty}Quantity to 3 random group(s) of {Aemberon}s',
+    text: 'Randomly {mutate} up to 3 group(s) of monsters that are not {Aemberon}s into {Aemberon}s, +42 {qty}Quantity to 3 random group(s) of {Aemberon}s for each group mutated',
     effect(c) {
       const picks = c.rng.sample(c.nonEmpty().filter(i => c.tanks[i]!.archetype !== 'aemberon'), 3)
       for (const p of picks) {

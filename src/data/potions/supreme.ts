@@ -36,8 +36,8 @@ export const SUPREME_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 38, name: 'Insect Lure', rarity: 'supreme', targeting: 'auto', item: 'pill',
-    text: '{add} 4 group(s) of {Pest}s. For each group that exceeds the Max Incubation Tank Quantity, +10 {act}Activity and +15 {qty}Quantity to existing {Pest}s',
+    id: 38, name: 'Insect Attractant', rarity: 'supreme', targeting: 'auto', item: 'pill',
+    text: '{add} 4 group(s) of {Pest}s. +10 {act}Activity and +15 {qty}Quantity to existing {Pest}s for every 1 group(s) over the Max Incubation Tank Quantity',
     effect(c) {
       let overflow = 0
       for (let i = 0; i < 4; i++) if (c.add('pest', rollRarity(c.rng)) < 0) overflow++

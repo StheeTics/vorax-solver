@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import type { Archetype } from '@/engine/types'
 import { ARCHETYPE_COLORS } from './svg/icons'
 
-const WORD = /\b(Pests?|Aemberons?|Bone Sentr(?:y|ies)|Agitos?)\b/g
+const WORD = /\b(Pests?|Aemberons?|Bone Sentr(?:y|ies)|Agito(?:e?s)?)\b/g
 
 function archetypeOf(word: string): Archetype {
   if (word.startsWith('Pest')) return 'pest'
