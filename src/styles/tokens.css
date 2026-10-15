@@ -150,3 +150,15 @@ button:focus-visible {
 .archetype-ref svg {
   margin-right: 3px;
 }
+
+/* Boss monsters pulse so they stand out on the red tank glass */
+.boss-glow {
+  animation: boss-pulse 1.8s ease-in-out infinite;
+}
+@keyframes boss-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(1.04); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .boss-glow { animation: none; }
+}

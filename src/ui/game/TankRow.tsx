@@ -32,7 +32,7 @@ export function TankRow({ tanks, selectable, targets, deltas, onTankClick, onHov
           >
             <div className={styles.tankScale}>
               <Tank empty={!mon} glow={mon?.rarity} highlighted={highlighted}>
-                {mon && <Silhouette archetype={mon.archetype} rarity={mon.rarity} size={125} />}
+                {mon && <Silhouette archetype={mon.archetype} rarity={mon.rarity} size={84} />}
               </Tank>
             </div>
             <div className={styles.label} data-part="label">

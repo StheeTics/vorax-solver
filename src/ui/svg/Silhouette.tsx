@@ -1,7 +1,12 @@
 import type { Archetype, Rarity } from '@/engine/types'
 
-const SCALE: Record<Rarity, number> = { normal: 0.8, magic: 0.9, rare: 1, boss: 1.15 }
+const SCALE: Record<Rarity, number> = { normal: 0.8, magic: 1, rare: 1.18, boss: 1.38 }
 const INK = '#1d1410'
+
+/** Rarity glow in currentColor; Boss red would vanish on the red glass, so it gets a white rim and a strong red halo. */
+const GLOW = 'drop-shadow(0 0 2.5px currentColor) drop-shadow(0 0 6px currentColor) drop-shadow(0 0 14px currentColor)'
+// no white: a tight dark outline + dark crimson aura (contrasts with the bright red glass), then an orange-red bloom; pulses via .boss-glow
+const BOSS_GLOW = 'drop-shadow(0 0 1.5px #1a0003) drop-shadow(0 0 2px #1a0003) drop-shadow(0 0 9px #2a0004) drop-shadow(0 0 14px #2a0004) drop-shadow(0 0 24px #ff5a1f)'
 
 /**
  * Flat monster drawing per Archetype (same style as the card art), loosely based on the in-game models.
@@ -12,11 +17,12 @@ export function Silhouette({ archetype, rarity, size = 120 }: { archetype: Arche
   return (
     <svg
       data-silhouette={archetype}
+      className={rarity === 'boss' ? 'boss-glow' : undefined}
       width={s}
       height={s * 1.25}
       viewBox="0 0 100 125"
       aria-hidden="true"
-      style={{ filter: 'drop-shadow(0 0 2px currentColor) drop-shadow(0 0 9px currentColor)', overflow: 'visible' }}
+      style={{ filter: rarity === 'boss' ? BOSS_GLOW : GLOW, overflow: 'visible' }}
     >
       <g stroke={INK} strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round">
         {MONSTERS[archetype]}

@@ -26,3 +26,14 @@ it('keeps the rarity glow and size', () => {
   expect(Number(big.getAttribute('width'))).toBeGreaterThan(Number(small.getAttribute('width')))
   expect(small.getAttribute('style')).toContain('currentColor')
 })
+
+it('Boss monsters get a dark outline, a dark aura, a bloom and a pulse (no white rim)', () => {
+  const svg = render(<Silhouette archetype="pest" rarity="boss" />).container.querySelector('svg')!
+  const boss = svg.getAttribute('style')!
+  expect(boss).not.toContain('#fff')
+  expect(boss).toContain('#2a0004')
+  expect(boss).toContain('#ff5a1f')
+  expect(svg.getAttribute('class')).toBe('boss-glow')
+  const rare = render(<Silhouette archetype="pest" rarity="rare" />).container.querySelector('svg')!.getAttribute('style')!
+  expect(rare).toContain('currentColor')
+})
