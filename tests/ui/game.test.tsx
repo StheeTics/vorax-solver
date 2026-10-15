@@ -100,3 +100,16 @@ it('Next Rewards shows the next vial breakpoint and its color', () => {
   expect(screen.getByTestId('next-reward').textContent).toContain('38,000')
   expect(screen.getByTestId('next-reward').querySelector('[data-tier]')?.getAttribute('data-tier')).toBe('purple')
 })
+
+it('tank label: archetype icon above the name, and a heart before Activity × Quantity', () => {
+  start()
+  const label = screen.getByTestId('tank-0').querySelector('[data-part="label"]')!
+  const children = [...label.children]
+  const iconRow = children.findIndex(el => el.querySelector('[data-icon="archetype"]'))
+  const nameRow = children.findIndex(el => el.querySelector('[data-archetype-word]'))
+  expect(iconRow).toBeGreaterThanOrEqual(0)
+  expect(iconRow).toBeLessThan(nameRow)
+  const formula = label.querySelector('[data-part="formula"]')!
+  expect(formula.querySelector('[data-icon="heart"]')).not.toBeNull()
+  expect(formula.textContent).toContain('1 × 36')
+})

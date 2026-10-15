@@ -23,13 +23,26 @@
   transform-origin: top left;
 }
 
+/* pulled up so the archetype icon and name sit on the tank's base plate, as in-game */
 .label {
   position: relative;
-  margin-top: 4px;
-  min-height: 62px;
+  z-index: 1;
+  margin-top: -42px;
+  min-height: 80px;
   text-align: center;
   line-height: 1.25;
   text-shadow: 0 1px 2px #000;
+}
+
+/* fixed-height row so a bigger icon grows upward (and is lifted 6px) without moving the name */
+.archetype {
+  position: relative;
+  top: -6px;
+  height: 18px;
+  margin-bottom: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
 }
 
 .name {
@@ -46,7 +59,7 @@
   justify-content: center;
   align-items: center;
   gap: 8px;
-  margin-top: 3px;
+  margin-top: 9px;
   font-size: 15px;
 }
 

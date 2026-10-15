@@ -32,12 +32,13 @@ export function TankRow({ tanks, selectable, targets, deltas, onTankClick, onHov
           >
             <div className={styles.tankScale}>
               <Tank empty={!mon} glow={mon?.rarity} highlighted={highlighted}>
-                {mon && <Silhouette archetype={mon.archetype} rarity={mon.rarity} size={96} />}
+                {mon && <Silhouette archetype={mon.archetype} rarity={mon.rarity} size={125} />}
               </Tank>
             </div>
-            <div className={styles.label}>
+            <div className={styles.label} data-part="label">
               {mon ? (
                 <>
+                  <div className={styles.archetype}><ArchetypeIcon archetype={mon.archetype} size={24} /></div>
                   <div className={styles.name} data-rarity={mon.rarity}>
                     <span data-rarity-word={mon.rarity}>{RARITY_NAMES[mon.rarity]}</span>{' '}
                     <span data-archetype-word={mon.archetype} style={{ color: ARCHETYPE_COLORS[mon.archetype] }}>
@@ -45,10 +46,11 @@ export function TankRow({ tanks, selectable, targets, deltas, onTankClick, onHov
                     </span>
                   </div>
                   <div className={styles.stats}>
-                    <ArchetypeIcon archetype={mon.archetype} size={15} />
                     <span className={styles.total}><HeartIcon size={13} /> {formatNumber(total(mon))}</span>
                   </div>
-                  <div className={styles.formula}>{formatNumber(mon.activity)} × {formatNumber(mon.quantity)}</div>
+                  <div className={styles.formula} data-part="formula">
+                    <HeartIcon size={11} /> {formatNumber(mon.activity)} × {formatNumber(mon.quantity)}
+                  </div>
                 </>
               ) : (
                 <div className={styles.emptyLabel}>Empty</div>

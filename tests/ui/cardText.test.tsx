@@ -64,3 +64,10 @@ it('clicking a keyword shows a tooltip explaining the mechanic; Escape closes it
   fireEvent.keyDown(document, { key: 'Escape' })
   expect(screen.queryByRole('tooltip')).toBeNull()
 })
+
+it('the Quantity icon is a swarm of curled grubs, as in-game', () => {
+  const { container } = render(<CardText text="+25 {qty}Quantity" />)
+  const icon = container.querySelector('[data-icon="quantity"]')!
+  expect(icon.getAttribute('data-shape')).toBe('swarm')
+  expect(icon.querySelectorAll('[data-part="grub"]').length).toBe(4)
+})

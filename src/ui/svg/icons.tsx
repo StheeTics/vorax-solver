@@ -21,13 +21,16 @@ export function HeartIcon({ size = 14, className }: IconProps) {
   )
 }
 
+/** Quantity: a small swarm of curled grubs piled diagonally (as in-game), light grey on dark gaps. */
 export function QuantityIcon({ size = 14, className }: IconProps) {
+  // one curled grub: fat head end, tapering curled tail
+  const grub = 'M0 0c3.6-2.2 7.4-.6 7.2 2.6-.2 2.6-3.4 3.4-5.4 2.2.6 1.6 2.8 2 3.6 1.2-1.2 2.2-5 2-6.4-.4C-1.8 3.8-1.4 1.2 0 0Z'
   return (
-    <svg data-icon="quantity" className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ verticalAlign: '-0.15em' }}>
-      <g fill="#cfd6e4" stroke="#20242c" strokeWidth="0.8">
-        <path d="M8 3c2 2 2.6 4.5 1.8 7.2C8.4 12 5.5 12 4.5 10 3.6 8 5.2 5 8 3Z" />
-        <path d="M17.5 5c1.8 1.6 2.5 4 1.6 6.2-1 1.8-3.6 1.8-4.5.1C13.8 9.6 15 6.8 17.5 5Z" />
-        <path d="M11.5 11.5c2.5 2.2 3.4 5.5 2.2 8.5-1.4 2.3-5 2.3-6.2 0-1.1-2.5.6-6 4-8.5Z" />
+    <svg data-icon="quantity" data-shape="swarm" className={className} width={size * 1.1} height={size} viewBox="0 0 22 20" aria-hidden="true" style={{ verticalAlign: '-0.15em' }}>
+      <g fill="#e2e4ea" stroke="#14161c" strokeWidth="0.9" strokeLinejoin="round">
+        {[[3, 3, -20], [11, 2, 10], [4, 10, 15], [12, 10, -10]].map(([x, y, r], i) => (
+          <path key={i} data-part="grub" d={grub} transform={`translate(${x} ${y}) rotate(${r} 3.5 3) scale(1.05)`} fill={i === 1 ? '#ffffff' : '#e2e4ea'} />
+        ))}
       </g>
     </svg>
   )
