@@ -99,8 +99,8 @@ function potionArt(spec: PotionArt, uid: string): ReactNode {
       {art}
       {MARKS[mark](color, vessel)}
       {emblem && (
-        <g transform="translate(51 55)">
-          <ArchetypeIcon archetype={emblem} size={20} />
+        <g transform="translate(48 52)">
+          <ArchetypeIcon archetype={emblem} size={26} />
         </g>
       )}
     </>

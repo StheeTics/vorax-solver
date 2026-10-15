@@ -75,3 +75,16 @@ test('the fullscreen button is offered where the browser supports it', async ({ 
   await expect(button).toBeVisible()
   await inViewport(page, 'button[aria-label=Fullscreen]')
 })
+
+test('the equipped-instrument popup card grows to fit long text', async ({ page }) => {
+  await page.getByRole('button', { name: 'Play' }).click()
+  // equip the offered instrument with the longest description
+  const lengths = await page.$$eval('[data-testid^=card-] > span', els => els.map(e => (e.textContent ?? '').length))
+  await page.getByTestId(`card-${lengths.indexOf(Math.max(...lengths))}`).click()
+  await page.getByRole('button', { name: 'Confirm' }).click()
+  await page.locator('[data-filled=true]').first().hover()
+  const popupText = page.locator('[class*=popover] [data-testid], [class*=popover] [role=button]').first().locator('> span')
+  await expect(popupText).toBeVisible()
+  const clipped = await popupText.evaluate(el => el.scrollHeight > el.clientHeight + 1)
+  expect(clipped).toBe(false)
+})

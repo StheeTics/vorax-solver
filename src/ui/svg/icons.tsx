@@ -44,38 +44,72 @@ export const ARCHETYPE_COLORS: Record<Archetype, string> = {
   agito: '#ff4d4d',
 }
 
-const ARCHETYPE_GLYPHS: Record<Archetype, JSX.Element> = {
-  // moth wings
-  pest: (
-    <path d="M12 7v10M12 9c-2-4-7-4-7 0 0 3 4 4 7 3m0-3c2-4 7-4 7 0 0 3-4 4-7 3m0 0c-2 1-5 2-4 5m4-5c2 1 5 2 4 5" fill="none" strokeWidth="1.6" strokeLinecap="round" />
-  ),
-  // horns
-  aemberon: (
-    <path d="M7 6c-1 3 0 6 2 7m8-7c1 3 0 6-2 7M9 13a3 3 0 0 0 6 0M8.5 17h7" fill="none" strokeWidth="1.8" strokeLinecap="round" />
-  ),
-  // skull
-  boneSentry: (
-    <g fill="none" strokeWidth="1.6" strokeLinecap="round">
-      <path d="M7 12a5 5 0 1 1 10 0v2.5l-1.5 1v2h-7v-2L7 14.5Z" />
-      <circle cx="10" cy="12" r="1.2" />
-      <circle cx="14" cy="12" r="1.2" />
-    </g>
-  ),
-  // eye
-  agito: (
-    <g fill="none" strokeWidth="1.6">
-      <path d="M4.5 12c4-5.5 11-5.5 15 0-4 5.5-11 5.5-15 0Z" />
-      <circle cx="12" cy="12" r="2.3" />
-    </g>
-  ),
+const INK = '#14090b'
+
+/** Frameless glyphs based on the in-game archetype icons. */
+const ARCHETYPE_GLYPHS: Record<Archetype, { shape: string; art: JSX.Element }> = {
+  // purple bug eyeball: a curled shell around a glossy eye
+  pest: {
+    shape: 'bug-eye',
+    art: (
+      <g stroke={INK} strokeWidth="1.2" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10.4" fill="#b07cff" fillOpacity="0.25" stroke="none" />
+        <circle cx="12" cy="12" r="9.4" fill="#9466d8" />
+        <circle cx="12.6" cy="12.6" r="4.4" fill="#1e1030" />
+        <path d="M4.6 10.4a7.6 7.6 0 0 1 6-6.2" fill="none" stroke="#efe2ff" strokeWidth="2.6" strokeLinecap="round" />
+        <path d="M8.2 12.6a4.4 4.4 0 0 1 2-3.8" fill="none" stroke="#c8a6ff" strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M7.2 14.8c-1.4.4-2.6 0-3.2-.8" fill="none" stroke="#5b3a9a" strokeWidth="1.2" strokeLinecap="round" />
+      </g>
+    ),
+  },
+  // blue swirling vortex with a dark core
+  aemberon: {
+    shape: 'vortex',
+    art: (
+      <g strokeLinecap="round">
+        <circle cx="12" cy="12" r="9.6" fill="#4f9dff" stroke={INK} strokeWidth="1.2" />
+        <path d="M12 3.4c5 0 8.2 4 7.4 8M20.6 12c0 5-4 8.2-8 7.4M12 20.6c-5 0-8.2-4-7.4-8M3.4 12c0-5 4-8.2 8-7.4" fill="none" stroke="#bfe0ff" strokeWidth="1.5" />
+        <path d="M12 7.2c3 0 4.8 2.2 4.4 4.6M16.8 12c0 3-2.2 4.8-4.6 4.4M12 16.8c-3 0-4.8-2.2-4.4-4.6M7.2 12c0-3 2.2-4.8 4.6-4.4" fill="none" stroke="#1d3f8a" strokeWidth="1.6" />
+        <circle cx="12" cy="12" r="2.6" fill="#0a1430" />
+      </g>
+    ),
+  },
+  // red eye (as in-game): almond eye with short lash rays above and below, on a round red glow
+  agito: {
+    shape: 'red-eye',
+    art: (
+      <g strokeLinejoin="round" strokeLinecap="round">
+        <circle cx="12" cy="12" r="10.4" fill="#ff4d4d" fillOpacity="0.3" />
+        <g stroke="#ff4d4d" strokeWidth="1.5">
+          <path d="M12 2.6v3.4M7.4 3.8l1.4 3.2M16.6 3.8l-1.4 3.2M3.8 7l2.4 2M20.2 7l-2.4 2" />
+          <path d="M12 21.4V18M7.4 20.2l1.4-3.2M16.6 20.2l-1.4-3.2M3.8 17l2.4-2M20.2 17l-2.4-2" />
+        </g>
+        <path d="M2 12c4.6-6 15.4-6 20 0-4.6 6-15.4 6-20 0Z" fill="#ffd9d2" stroke={INK} strokeWidth="1.1" />
+        <circle cx="12" cy="12" r="4" fill="#e8283a" stroke="#7a0a14" strokeWidth="0.9" />
+        <path d="M9.6 12h4.8" stroke="#3a0408" strokeWidth="1.6" />
+        <circle cx="10.6" cy="10.6" r="0.9" fill="#ffffff" />
+      </g>
+    ),
+  },
+  // yellow knight helmet with a crowned crest and a visor slit
+  boneSentry: {
+    shape: 'helmet',
+    art: (
+      <g stroke={INK} strokeWidth="1.2" strokeLinejoin="round">
+        <path d="M4.4 8.6 6.2 3l3 3.4L12 2.4l2.8 4 3-3.4 1.8 5.6Z" fill="#f2c94c" />
+        <path d="M4.4 8.6h15.2v7.6c0 2.6-3.4 5.4-7.6 5.4s-7.6-2.8-7.6-5.4Z" fill="#f2c94c" />
+        <path d="M7.4 12.2h9.2v2.4H7.4Z" fill="#3a2a08" />
+        <path d="M12 14.6v5.4" stroke="#a07a1c" />
+      </g>
+    ),
+  },
 }
 
 export function ArchetypeIcon({ archetype, size = 14, className }: IconProps & { archetype: Archetype }) {
-  const color = ARCHETYPE_COLORS[archetype]
+  const glyph = ARCHETYPE_GLYPHS[archetype]
   return (
-    <svg data-icon="archetype" data-archetype={archetype} className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ verticalAlign: '-0.18em' }}>
-      <circle cx="12" cy="12" r="11" fill="#14090b" stroke={color} strokeWidth="1.4" />
-      <g stroke={color}>{ARCHETYPE_GLYPHS[archetype]}</g>
+    <svg data-icon="archetype" data-archetype={archetype} data-shape={glyph.shape} className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ verticalAlign: '-0.18em', overflow: 'visible' }}>
+      {glyph.art}
     </svg>
   )
 }

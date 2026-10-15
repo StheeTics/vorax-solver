@@ -36,7 +36,7 @@ export function CardText({ text, className }: { text: string; className?: string
       const a = ARCHETYPE_TOKENS[token]
       parts.push(
         <span key={key} className="archetype-ref" style={{ whiteSpace: 'nowrap' }}>
-          <ArchetypeIcon archetype={a} />
+          <ArchetypeIcon archetype={a} size={18} />
           <span data-archetype-word={a} style={{ color: ARCHETYPE_COLORS[a], fontWeight: 600 }}>
             {s.startsWith('s') ? ARCHETYPE_PLURALS[a] : ARCHETYPE_NAMES[a]}
           </span>

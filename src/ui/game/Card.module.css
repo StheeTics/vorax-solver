@@ -88,10 +88,16 @@
 .card[data-tone='supreme'] .footer { color: #ff97ab; }
 .card[data-tone='instrument'] .footer { color: var(--gold-hi); }
 
+/* hover popups (equipped instruments) grow to show their full text instead of clipping it */
 .compact {
   width: 200px;
-  height: 270px;
+  height: auto;
+  min-height: 270px;
   cursor: default;
+}
+.compact .text {
+  flex: none;
+  overflow: visible;
 }
 .compact:hover {
   transform: none;

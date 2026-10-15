@@ -16,7 +16,7 @@ export function MonsterDetail({ monster }: { monster: Monster | null }) {
       </div>
       <div className={styles.name}>{monsterName(monster)}</div>
       <div className={styles.archetype}>
-        <ArchetypeIcon archetype={monster.archetype} size={15} /> {ARCHETYPE_NAMES[monster.archetype]}
+        <ArchetypeIcon archetype={monster.archetype} size={20} /> {ARCHETYPE_NAMES[monster.archetype]}
       </div>
       <div className={styles.caption}><HeartIcon size={15} /> Total Activity</div>
       <div className={styles.total}>{formatNumber(total(monster))}</div>

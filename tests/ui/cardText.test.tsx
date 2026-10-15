@@ -46,7 +46,7 @@ import { ArchetypeIcon, ARCHETYPE_COLORS } from '@/ui/svg/icons'
 it('archetype colors: Pest purple, Bone Sentry yellow, Aemberon blue, Agito red', () => {
   expect(ARCHETYPE_COLORS).toEqual({ pest: '#b07cff', boneSentry: '#f2c94c', aemberon: '#4f9dff', agito: '#ff4d4d' })
   const { container } = render(<ArchetypeIcon archetype="aemberon" />)
-  expect(container.querySelector('circle')?.getAttribute('stroke')).toBe('#4f9dff')
+  expect(container.querySelector('circle')?.getAttribute('fill')).toBe('#4f9dff')
 })
 
 import { fireEvent, screen } from '@testing-library/react'
@@ -70,4 +70,10 @@ it('the Quantity icon is a swarm of curled grubs, as in-game', () => {
   const icon = container.querySelector('[data-icon="quantity"]')!
   expect(icon.getAttribute('data-shape')).toBe('swarm')
   expect(icon.querySelectorAll('[data-part="grub"]').length).toBe(4)
+})
+
+it('archetype icons match the in-game glyphs', () => {
+  const shape = (a: 'pest' | 'aemberon' | 'agito' | 'boneSentry') =>
+    render(<ArchetypeIcon archetype={a} />).container.querySelector('[data-icon="archetype"]')!.getAttribute('data-shape')
+  expect([shape('pest'), shape('aemberon'), shape('agito'), shape('boneSentry')]).toEqual(['bug-eye', 'vortex', 'red-eye', 'helmet'])
 })

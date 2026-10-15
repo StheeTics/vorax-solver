@@ -70,15 +70,12 @@ it('rounds 11–13 show an End Round button that steps through to the end', () =
   expect(screen.getByTestId('round').textContent).toBe('12/13')
 })
 
-it('tank labels color the rarity word by rarity and the archetype word by archetype', () => {
+it('tank labels show the whole name in the rarity colour (no separate archetype colour)', () => {
   start()
-  const label = screen.getByTestId('tank-0')
-  const rarity = label.querySelector('[data-rarity-word="normal"]')
-  const arch = label.querySelector('[data-archetype-word="pest"]') as HTMLElement | null
-  expect(rarity?.textContent).toBe('Normal')
-  expect(arch?.textContent).toBe('Pest')
-  expect(arch?.style.color).toBe('rgb(176, 124, 255)') // Pest purple
-  expect(screen.getByTestId('tank-1').querySelector('[data-archetype-word="agito"]')?.textContent).toBe('Agito')
+  const name = screen.getByTestId('tank-0').querySelector('[data-rarity="normal"]') as HTMLElement
+  expect(name.textContent).toBe('Normal Pest')
+  for (const span of name.querySelectorAll('span')) expect((span as HTMLElement).style.color).toBe('')
+  // card names still colour the archetype word
   expect(screen.getByTestId('card-2').querySelector('[data-archetype-word="pest"]')?.textContent).toBe('Pest')
 })
 
@@ -106,7 +103,7 @@ it('tank label: archetype icon above the name, and a heart before Activity × Qu
   const label = screen.getByTestId('tank-0').querySelector('[data-part="label"]')!
   const children = [...label.children]
   const iconRow = children.findIndex(el => el.querySelector('[data-icon="archetype"]'))
-  const nameRow = children.findIndex(el => el.querySelector('[data-archetype-word]'))
+  const nameRow = children.findIndex(el => el.hasAttribute('data-rarity'))
   expect(iconRow).toBeGreaterThanOrEqual(0)
   expect(iconRow).toBeLessThan(nameRow)
   const formula = label.querySelector('[data-part="formula"]')!

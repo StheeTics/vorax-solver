@@ -1,8 +1,8 @@
-import { ARCHETYPE_NAMES, RARITY_NAMES, total } from '@/data/archetypes'
+import { monsterName, total } from '@/data/archetypes'
 import type { Tanks } from '@/engine/types'
 import { Tank } from '../svg/Tank'
 import { Silhouette } from '../svg/Silhouette'
-import { ARCHETYPE_COLORS, ArchetypeIcon, HeartIcon } from '../svg/icons'
+import { ArchetypeIcon, HeartIcon } from '../svg/icons'
 import { formatNumber } from '../format'
 import { FloatingDelta, type Delta } from './FloatingDelta'
 import styles from './TankRow.module.css'
@@ -38,13 +38,8 @@ export function TankRow({ tanks, selectable, targets, deltas, onTankClick, onHov
             <div className={styles.label} data-part="label">
               {mon ? (
                 <>
-                  <div className={styles.archetype}><ArchetypeIcon archetype={mon.archetype} size={24} /></div>
-                  <div className={styles.name} data-rarity={mon.rarity}>
-                    <span data-rarity-word={mon.rarity}>{RARITY_NAMES[mon.rarity]}</span>{' '}
-                    <span data-archetype-word={mon.archetype} style={{ color: ARCHETYPE_COLORS[mon.archetype] }}>
-                      {ARCHETYPE_NAMES[mon.archetype]}
-                    </span>
-                  </div>
+                  <div className={styles.archetype}><ArchetypeIcon archetype={mon.archetype} size={31} /></div>
+                  <div className={styles.name} data-rarity={mon.rarity}>{monsterName(mon)}</div>
                   <div className={styles.stats}>
                     <span className={styles.total}><HeartIcon size={13} /> {formatNumber(total(mon))}</span>
                   </div>
