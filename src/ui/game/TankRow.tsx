@@ -47,9 +47,7 @@ export function TankRow({ tanks, selectable, targets, deltas, onTankClick, onHov
                     <HeartIcon size={11} /> {formatNumber(mon.activity)} × {formatNumber(mon.quantity)}
                   </div>
                 </>
-              ) : (
-                <div className={styles.emptyLabel}>Empty</div>
-              )}
+              ) : null}
               {deltas.filter(d => d.tank === i).map(d => <FloatingDelta key={d.id} delta={d} />)}
             </div>
           </div>

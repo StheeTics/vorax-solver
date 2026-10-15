@@ -110,3 +110,8 @@ it('tank label: archetype icon above the name, and a heart before Activity × Qu
   expect(formula.querySelector('[data-icon="heart"]')).not.toBeNull()
   expect(formula.textContent).toContain('1 × 36')
 })
+
+it('empty tanks show no label', () => {
+  start()
+  expect(screen.getByTestId('tank-5').textContent).toBe('')
+})

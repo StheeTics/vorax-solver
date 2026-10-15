@@ -74,8 +74,3 @@
   font-variant-numeric: tabular-nums;
 }
 
-.emptyLabel {
-  color: var(--text-faint);
-  font-size: 14px;
-  padding-top: 10px;
-}
