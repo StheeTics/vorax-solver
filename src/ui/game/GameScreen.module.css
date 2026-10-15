@@ -70,3 +70,8 @@
   text-shadow: 0 0 20px rgb(255 190 90 / 0.5);
   z-index: 2;
 }
+
+.footnote {
+  bottom: 6px;
+  font-size: 12px;
+}

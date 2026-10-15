@@ -1,4 +1,5 @@
-import { IssueLink } from './IssueLink'
+import { Footnote } from './Footnote'
+import { SANDBOX_ENABLED } from './features'
 import styles from './MainMenu.module.css'
 
 interface Props {
@@ -17,12 +18,10 @@ export function MainMenu({ onPlay, onSandbox, onSettings }: Props) {
       </div>
       <div className={styles.buttons}>
         <button className={`gold-button ${styles.big}`} onClick={onPlay}>Play</button>
-        <button className={`ghost-button ${styles.big}`} onClick={onSandbox}>Sandbox</button>
+        {SANDBOX_ENABLED && <button className={`ghost-button ${styles.big}`} onClick={onSandbox}>Sandbox</button>}
         <button className={`ghost-button ${styles.big}`} onClick={onSettings}>Settings</button>
       </div>
-      <p className={styles.footnote}>
-        Fan-made practice tool. Some card names are literal translations. · <IssueLink className={styles.link} />
-      </p>
+      <Footnote className={styles.footnote} />
     </div>
   )
 }

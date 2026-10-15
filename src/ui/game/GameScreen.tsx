@@ -9,6 +9,7 @@ import { CardHand } from './CardHand'
 import { InstrumentStrip } from './InstrumentStrip'
 import { LogDrawer } from './LogDrawer'
 import type { Delta } from './FloatingDelta'
+import { Footnote } from '../Footnote'
 import styles from './GameScreen.module.css'
 
 interface Props {
@@ -87,6 +88,7 @@ export function GameScreen({ initial, sandbox, onExit, onEnd }: Props) {
       )}
       {state.phase === 'gameOver' && <div className={styles.over}>Surgery complete</div>}
       <InstrumentStrip equipped={state.instruments} />
+      <Footnote className={styles.footnote} />
       <LogDrawer log={state.log} open={logOpen} onClose={() => setLogOpen(false)} />
     </div>
   )

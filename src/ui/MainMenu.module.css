@@ -48,15 +48,5 @@
 }
 
 .footnote {
-  position: absolute;
   bottom: 24px;
-  color: var(--text-faint);
-  font-size: 14px;
-}
-
-.link {
-  color: var(--gold);
-}
-.link:hover {
-  color: var(--gold-hi);
 }

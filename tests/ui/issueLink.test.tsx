@@ -25,3 +25,18 @@ it('end screen has a Report an issue link', () => {
   render(<EndScreen final={s} sandbox={false} onRestart={() => {}} onReplaySetup={() => {}} onMenu={() => {}} />)
   expectIssueLink()
 })
+
+import { GameScreen } from '@/ui/game/GameScreen'
+
+it('the fan-made footnote with the issue link shows during gameplay', () => {
+  const s = createGame(DEFAULT_SETTINGS, undefined, 1)
+  render(<GameScreen initial={s} sandbox={false} onExit={() => {}} onEnd={() => {}} />)
+  expect(screen.getByText(/Fan-made practice tool/)).toBeTruthy()
+  expectIssueLink()
+})
+
+it('sandbox mode is disabled: no Sandbox button on the main menu', () => {
+  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} onSettings={() => {}} />)
+  expect(screen.queryByRole('button', { name: 'Sandbox' })).toBeNull()
+  expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
+})
