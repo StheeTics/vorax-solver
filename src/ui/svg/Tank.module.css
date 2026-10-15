@@ -1,0 +1,124 @@
+.tank {
+  position: relative;
+  width: 200px;
+  height: 330px;
+  --glow: transparent;
+}
+.tank[data-glow='normal'] { --glow: var(--rarity-normal); }
+.tank[data-glow='magic'] { --glow: var(--rarity-magic); }
+.tank[data-glow='rare'] { --glow: var(--rarity-rare); }
+.tank[data-glow='boss'] { --glow: #ff8466; }
+
+.frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 10px rgb(0 0 0 / 0.7));
+}
+
+.glass {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  top: 64px;
+  bottom: 68px;
+  border-radius: 10px 10px 6px 6px;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 55%, rgb(255 70 70 / 0.55), transparent 70%),
+    linear-gradient(90deg, #4a0710 0%, #b3141f 22%, #e02434 50%, #b3141f 78%, #4a0710 100%);
+  box-shadow: inset 0 0 28px rgb(0 0 0 / 0.75), inset 0 0 6px rgb(0 0 0 / 0.9), 0 0 36px rgb(220 30 40 / 0.45);
+}
+
+.empty .glass {
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 55%, rgb(255 70 70 / 0.35), transparent 70%),
+    linear-gradient(90deg, #3a050c 0%, #8e101a 22%, #b81b29 50%, #8e101a 78%, #3a050c 100%);
+}
+
+.liquid {
+  position: absolute;
+  inset: -20% -40%;
+  background: repeating-linear-gradient(100deg, transparent 0 22px, rgb(255 160 160 / 0.06) 22px 30px, transparent 30px 60px);
+  animation: drift 9s linear infinite;
+}
+
+@keyframes drift {
+  from { transform: translateX(-30px); }
+  to { transform: translateX(30px); }
+}
+
+.bubbles span {
+  position: absolute;
+  bottom: -10px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgb(255 220 220 / 0.9), rgb(255 120 120 / 0.2) 60%, transparent 70%);
+  animation-name: rise;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in;
+}
+
+@keyframes rise {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  15% { opacity: 0.9; }
+  100% { transform: translateY(-210px) scale(1.1); opacity: 0; }
+}
+
+.occupant {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--glow);
+  animation: bob 4.5s ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(2px); }
+  50% { transform: translateY(-4px); }
+}
+
+.shine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 14%;
+  width: 14%;
+  background: linear-gradient(90deg, transparent, rgb(255 255 255 / 0.16), transparent);
+  pointer-events: none;
+}
+
+.selectable {
+  cursor: pointer;
+}
+.ring {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 8px;
+  bottom: 4px;
+  border-radius: 90px 90px 12px 12px;
+  pointer-events: none;
+  opacity: 0;
+}
+.selectable .ring {
+  opacity: 1;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(227 178 90 / 0.3), 0 0 12px rgb(227 178 90 / 0.2); }
+  50% { box-shadow: 0 0 0 2px rgb(227 178 90 / 0.75), 0 0 24px rgb(227 178 90 / 0.45); }
+}
+.selected .ring {
+  opacity: 1;
+  animation: none;
+  box-shadow: 0 0 0 4px var(--gold-hi), 0 0 0 7px rgb(60 30 5 / 0.9), 0 0 48px rgb(255 217 138 / 0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid, .bubbles span, .occupant, .selectable .ring { animation: none; }
+}

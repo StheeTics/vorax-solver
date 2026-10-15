@@ -1,0 +1,16 @@
+name: Bug or display problem
+description: Something is broken, crashes, or looks wrong.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and window size
+      placeholder: e.g. Chrome 130, 1920×1080

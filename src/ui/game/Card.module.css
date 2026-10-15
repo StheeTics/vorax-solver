@@ -1,0 +1,83 @@
+.card {
+  position: relative;
+  width: 216px;
+  height: 300px;
+  padding: 12px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-radius: 8px;
+  border: 1px solid #6c6a70;
+  background: var(--card-normal);
+  box-shadow: 0 0 0 2px #0b0a0c, inset 0 0 0 1px rgb(255 255 255 / 0.06), 0 10px 24px rgb(0 0 0 / 0.65);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s;
+  color: var(--text);
+}
+.card[data-tone='magic'] { background: var(--card-magic); border-color: #4f78a8; }
+.card[data-tone='rare'] { background: var(--card-rare); border-color: #b08a3a; }
+.card[data-tone='supreme'] { background: var(--card-supreme); border-color: #d0405a; }
+.card[data-tone='instrument'] {
+  background: var(--card-instrument);
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 1px #2a1806, 0 0 18px rgb(255 170 60 / 0.25), 0 10px 24px rgb(0 0 0 / 0.65);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  filter: brightness(1.08);
+  z-index: 2;
+}
+
+.card[data-selected='true'] {
+  transform: translateY(-18px) scale(1.03);
+  z-index: 3;
+  border-color: var(--gold-hi);
+  box-shadow: 0 0 0 2px var(--gold-hi), 0 0 30px rgb(255 200 100 / 0.75), 0 14px 30px rgb(0 0 0 / 0.7);
+}
+
+.art {
+  height: 78px;
+  display: grid;
+  place-items: center;
+}
+
+.name {
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  min-height: 36px;
+  display: grid;
+  place-items: center;
+  text-shadow: 0 1px 2px #000;
+}
+
+.text {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #e4ddd6;
+  overflow: hidden;
+}
+
+.footer {
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+.card[data-tone='magic'] .footer { color: #9fc3ef; }
+.card[data-tone='rare'] .footer { color: #f4d58a; }
+.card[data-tone='supreme'] .footer { color: #ff97ab; }
+.card[data-tone='instrument'] .footer { color: var(--gold-hi); }
+
+.compact {
+  width: 200px;
+  height: 270px;
+  cursor: default;
+}
+.compact:hover {
+  transform: none;
+}

@@ -1,0 +1,26 @@
+name: Card or rule doesn't match the game
+description: A potion, instrument or rule behaves differently from Torchlight Infinite.
+labels: [mismatch]
+body:
+  - type: input
+    id: card
+    attributes:
+      label: Card or instrument
+      description: The name as shown in the simulator (and in-game, if it's different).
+      placeholder: e.g. Viscous Bile Solution
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What happens in the game
+      description: Screenshots of the in-game card or result help a lot.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What the simulator did
+      description: Include the tank contents before and after if you can (the Log button shows each step).
+    validations:
+      required: true

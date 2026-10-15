@@ -1,0 +1,72 @@
+.screen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.top {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  right: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 5;
+  pointer-events: none;
+}
+.top > * {
+  pointer-events: auto;
+}
+
+.back {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid #d9d4cc;
+  background: rgb(0 0 0 / 0.5);
+  color: #fff;
+  font-size: 30px;
+  line-height: 1;
+  padding-bottom: 4px;
+  cursor: pointer;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  text-shadow: 0 2px 4px #000;
+}
+
+.badge {
+  padding: 3px 10px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1a0a02;
+  background: var(--gold);
+}
+
+.logButton {
+  margin-left: auto;
+  height: 34px;
+  padding: 0 16px;
+  font-size: 15px;
+}
+
+.over {
+  position: absolute;
+  left: 290px;
+  right: 230px;
+  top: 600px;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 40px;
+  color: var(--gold-hi);
+  text-shadow: 0 0 20px rgb(255 190 90 / 0.5);
+  z-index: 2;
+}

@@ -1,0 +1,96 @@
+.card {
+  position: absolute;
+  left: 28px;
+  top: 470px;
+  width: 236px;
+  height: 340px;
+  z-index: 3;
+  padding: 14px 14px 10px;
+  text-align: center;
+  border-radius: 8px;
+  color: var(--text);
+  --accent: var(--gold);
+  background:
+    radial-gradient(ellipse at 50% 18%, rgb(255 210 120 / 0.18), transparent 60%),
+    linear-gradient(180deg, #5b4019 0%, #36250c 55%, #22170a 100%);
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 0 1px #2a1806, 0 0 24px rgb(255 190 90 / 0.45), inset 0 0 18px rgb(0 0 0 / 0.55);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.idle {
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 15px;
+  border-color: #6d4a2a;
+  box-shadow: inset 0 0 18px rgb(0 0 0 / 0.55);
+  background: linear-gradient(180deg, rgb(48 22 24 / 0.85), rgb(20 9 10 / 0.9));
+}
+
+.card[data-rarity='normal'] .portrait { color: var(--rarity-normal); }
+.card[data-rarity='magic'] .portrait { color: var(--rarity-magic); }
+.card[data-rarity='rare'] .portrait { color: var(--rarity-rare); }
+.card[data-rarity='boss'] .portrait { color: #ff8466; }
+
+.portrait {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(circle, #8a1420 0%, #3a060c 70%);
+  border: 3px solid var(--gold);
+  box-shadow: 0 0 0 2px #2a1806, 0 0 14px rgb(255 190 90 / 0.5);
+}
+
+.name {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--gold-hi);
+}
+
+.archetype {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+
+.caption {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.total {
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.split {
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.value {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+}
+
+.times {
+  font-size: 18px;
+  color: var(--text-dim);
+  padding-bottom: 2px;
+}
+
+.footer {
+  margin-top: auto;
+  font-size: 13px;
+  color: var(--text-dim);
+}

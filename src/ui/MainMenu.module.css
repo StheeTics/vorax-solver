@@ -1,0 +1,62 @@
+.menu {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+}
+
+.titleBlock {
+  text-align: center;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 16px;
+}
+
+.title {
+  margin: 12px 0 8px;
+  font-family: var(--font-display);
+  font-size: 76px;
+  font-weight: 700;
+  color: var(--text);
+  text-shadow: 0 0 24px rgb(220 30 40 / 0.6), 0 3px 0 #000;
+}
+
+.sub {
+  color: var(--text-dim);
+  font-size: 20px;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 320px;
+}
+
+.big {
+  height: 58px;
+  font-size: 22px;
+}
+
+.footnote {
+  position: absolute;
+  bottom: 24px;
+  color: var(--text-faint);
+  font-size: 14px;
+}
+
+.link {
+  color: var(--gold);
+}
+.link:hover {
+  color: var(--gold-hi);
+}

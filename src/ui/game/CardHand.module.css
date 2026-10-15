@@ -1,0 +1,82 @@
+.area {
+  position: absolute;
+  left: 290px;
+  right: 230px;
+  top: 452px;
+  bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 3px 60px;
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  background: linear-gradient(90deg, transparent, rgb(150 70 20 / 0.55), transparent);
+  text-shadow: 0 1px 3px #000;
+}
+
+.box {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gold-hi);
+}
+
+.cards {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+.cards > * + * {
+  margin-left: -10px;
+}
+
+.actions {
+  margin-top: auto;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.confirm {
+  width: 220px;
+  height: 42px;
+  font-size: 18px;
+}
+
+.refresh {
+  height: 42px;
+  min-width: 84px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold-hi);
+  background: linear-gradient(180deg, #4a3112, #2a1a08);
+  border: 1px solid var(--gold);
+  border-radius: 4px;
+  cursor: pointer;
+}
+.refresh:disabled {
+  filter: grayscale(0.9) brightness(0.6);
+  cursor: default;
+}
+
+.roundNote {
+  margin: 120px 0 0;
+  font-size: 18px;
+  color: var(--text-dim);
+}

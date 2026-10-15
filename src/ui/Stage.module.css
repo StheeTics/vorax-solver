@@ -1,0 +1,38 @@
+.viewport {
+  position: fixed;
+  inset: 0;
+  background: #050203;
+  overflow: hidden;
+}
+
+/* Anchored at the viewport centre, then scaled about its own centre: never offset or clipped. */
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform-origin: center center;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 22%, rgb(150 18 30 / 0.45), transparent 70%),
+    radial-gradient(ellipse 90% 60% at 50% 110%, rgb(70 10 16 / 0.7), transparent 70%),
+    linear-gradient(180deg, #1c0709 0%, #120507 45%, #0d0405 100%);
+}
+
+/* floor reflection band + vignette */
+.stage::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 380px;
+  height: 220px;
+  background: linear-gradient(180deg, transparent, rgb(255 60 60 / 0.05) 25%, transparent);
+  pointer-events: none;
+}
+.stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 55%, rgb(0 0 0 / 0.75) 100%);
+  pointer-events: none;
+}

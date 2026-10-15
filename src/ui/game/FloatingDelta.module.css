@@ -1,0 +1,21 @@
+.delta {
+  position: absolute;
+  left: 50%;
+  top: -40px;
+  transform: translateX(-50%);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 22px;
+  white-space: nowrap;
+  pointer-events: none;
+  text-shadow: 0 2px 4px #000, 0 0 10px currentColor;
+  animation: floatUp 1.4s ease-out forwards;
+}
+.delta[data-up='true'] { color: #8dff9e; }
+.delta[data-up='false'] { color: #ff7a7a; }
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translate(-50%, 10px); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -36px); }
+}

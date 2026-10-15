@@ -1,0 +1,78 @@
+.screen {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: rgb(0 0 0 / 0.55);
+}
+
+.panel {
+  background: linear-gradient(180deg, #2c1416, #140809);
+  width: 620px;
+  padding: 40px 44px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.caption {
+  margin-top: 12px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.score {
+  font-family: var(--font-body);
+  font-size: 68px;
+  font-weight: 700;
+  color: var(--gold-hi);
+  text-shadow: 0 0 24px rgb(255 190 90 / 0.5);
+  font-variant-numeric: tabular-nums;
+}
+
+.instruments {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 16px;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+.instruments em {
+  color: var(--text-faint);
+  font-style: normal;
+}
+
+.buttons {
+  margin-top: 22px;
+  display: flex;
+  gap: 12px;
+}
+.buttons button {
+  height: 46px;
+  padding: 0 22px;
+  font-size: 17px;
+}
+
+.report {
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.link {
+  color: var(--gold);
+}
+.link:hover {
+  color: var(--gold-hi);
+}
