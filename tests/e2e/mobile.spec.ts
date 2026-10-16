@@ -88,3 +88,14 @@ test('the equipped-instrument popup card grows to fit long text', async ({ page 
   const clipped = await popupText.evaluate(el => el.scrollHeight > el.clientHeight + 1)
   expect(clipped).toBe(false)
 })
+
+test('the Optimal Play guide page loads, fits the screen, and its contents links work', async ({ page }) => {
+  await page.goto('optimal-play.html')
+  await expect(page.getByRole('heading', { level: 1, name: 'Optimal Play' })).toBeVisible()
+  expect(await page.locator('table').count()).toBeGreaterThan(0)
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+  expect(overflow).toBeLessThanOrEqual(1)
+  await page.locator('#guide a[href="#pest-best-archetype"]').first().click()
+  await expect(page.locator('#pest-best-archetype')).toBeInViewport()
+  await expect(page.getByRole('link', { name: /back to the simulator/i })).toBeVisible()
+})

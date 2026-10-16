@@ -40,3 +40,16 @@ it('sandbox mode is disabled: no Sandbox button on the main menu', () => {
   expect(screen.queryByRole('button', { name: 'Sandbox' })).toBeNull()
   expect(screen.getByRole('button', { name: 'Play' })).toBeTruthy()
 })
+
+it('main menu and game top bar link to the Optimal Play guide in a new tab', () => {
+  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} />)
+  const menuLink = screen.getByRole('link', { name: /optimal play/i })
+  expect(menuLink.getAttribute('href')).toMatch(/optimal-play\.html$/)
+  expect(menuLink.getAttribute('target')).toBe('_blank')
+})
+
+it('game top bar has the Optimal Play link', () => {
+  const s = createGame(DEFAULT_SETTINGS, undefined, 1)
+  render(<GameScreen initial={s} sandbox={false} onExit={() => {}} onEnd={() => {}} />)
+  expect(screen.getByRole('link', { name: /optimal play/i }).getAttribute('href')).toMatch(/optimal-play\.html$/)
+})

@@ -1,0 +1,115 @@
+/* Optimal Play page: a normal scrolling document in the game's palette. */
+body {
+  overflow: auto;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgb(150 18 30 / 0.35), transparent 70%),
+    linear-gradient(180deg, #1c0709 0%, #120507 40%, #0d0405 100%) fixed;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: rgb(18 6 8 / 0.92);
+  border-bottom: 1px solid #4b2a1c;
+  backdrop-filter: blur(6px);
+}
+.top a {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 600;
+}
+.top a:hover {
+  color: var(--gold-hi);
+}
+.top .title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text);
+}
+
+#guide {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+  line-height: 1.6;
+  font-size: 16px;
+  color: var(--text);
+}
+
+#guide h1,
+#guide h2,
+#guide h3 {
+  font-family: var(--font-display);
+  color: var(--gold-hi);
+  line-height: 1.25;
+  scroll-margin-top: 64px;
+}
+#guide h1 {
+  font-size: 40px;
+  margin: 8px 0 12px;
+  text-shadow: 0 0 18px rgb(220 30 40 / 0.5);
+}
+#guide h2 {
+  font-size: 28px;
+  margin: 36px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #5a3a22;
+}
+
+#guide a {
+  color: var(--gold);
+}
+#guide strong {
+  color: #fff;
+}
+#guide ul {
+  padding-left: 22px;
+}
+#guide li {
+  margin: 4px 0;
+}
+#guide li > p {
+  margin: 0;
+}
+#guide hr {
+  border: 0;
+  height: 1px;
+  margin: 36px 0;
+  background: linear-gradient(90deg, transparent, #7b5631, transparent);
+}
+
+#guide table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 12px 0;
+  font-size: 15px;
+}
+#guide th,
+#guide td {
+  padding: 8px 10px;
+  border: 1px solid #4b2a1c;
+  text-align: left;
+  vertical-align: top;
+}
+#guide th {
+  background: rgb(120 70 20 / 0.35);
+  color: var(--gold-hi);
+  white-space: nowrap;
+}
+#guide tr:nth-child(even) td {
+  background: rgb(255 255 255 / 0.03);
+}
+
+#guide code {
+  font-size: 0.92em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 0.4);
+}

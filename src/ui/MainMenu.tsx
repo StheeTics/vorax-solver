@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Footnote } from './Footnote'
 import { FullscreenButton } from './FullscreenButton'
 import { ShelleyPicker } from './ShelleyPicker'
+import { GuideLink } from './GuideLink'
 import { SANDBOX_ENABLED } from './features'
 import { loadShelleyLevel, saveShelleyLevel } from './settingsStore'
 import styles from './MainMenu.module.css'
@@ -27,6 +28,7 @@ export function MainMenu({ onPlay, onSandbox }: Props) {
       <div className={styles.buttons}>
         <button className={`gold-button ${styles.big}`} onClick={onPlay}>Play</button>
         {SANDBOX_ENABLED && <button className={`ghost-button ${styles.big}`} onClick={onSandbox}>Sandbox</button>}
+        <GuideLink className={`ghost-button ${styles.big} ${styles.guide}`} />
       </div>
       <ShelleyPicker level={level} onChange={change} />
       <FullscreenButton className={`ghost-button ${styles.fsButton}`} />

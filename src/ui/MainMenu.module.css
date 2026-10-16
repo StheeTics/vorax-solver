@@ -60,3 +60,10 @@
   font-size: 20px;
   line-height: 1;
 }
+
+.guide {
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  text-decoration: none;
+}

@@ -4,6 +4,8 @@ A fan-made practice simulator for the Surgical Preparation minigame in Torchligh
 
 **Play it:** https://tidewarden.github.io/tli-vorax-simulator/
 
+**Strategy:** see [Optimal Play](OPTIMAL_PLAY.md) for which instruments and potions to take, based on simulated games played by bots that never see the dice.
+
 Based on [Moebing/Torchlight-Infinite-SS11-Vorax-simulator](https://github.com/Moebing/Torchlight-Infinite-SS11-Vorax-simulator) (MIT).
 
 ## Requirements
