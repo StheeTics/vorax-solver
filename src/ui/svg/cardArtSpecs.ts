@@ -84,16 +84,16 @@ export const POTION_ART: Record<number, PotionArt> = {
 export const INSTRUMENT_ART: Record<number, string> = {
   1: 'cocoon', // Chrysalis Specimen
   2: 'eggSac', // Incubation Sac
-  3: 'brain', // Hyperplastic Prefrontal Lobe
-  4: 'gland', // Swollen Pituitary
-  5: 'bones', // Fused Metatarsals
+  3: 'brain', // Hyperplastic Frontal Lobe
+  4: 'gland', // Hypertrophic Pituitary
+  5: 'bones', // Adherent Metatarsals
   6: 'claw', // Contracted Claws
   7: 'sprout', // Aberrant Sprout
   8: 'liver', // Mottled Liver
   9: 'eggCluster', // Clustered Eggs
   10: 'cortex', // Sloughed Cortex
   11: 'garrote', // Sinew Garrote
-  12: 'spine', // Writhing Spine
+  12: 'spine', // Vermicular Spinal Cord
   13: 'strap', // Rawhide Restraint
   14: 'needle', // Black Goat Gut Suture
   15: 'saw', // Pig Iron Bone Saw
@@ -101,9 +101,9 @@ export const INSTRUMENT_ART: Record<number, string> = {
   17: 'scraper', // Fouled Scraper
   18: 'file', // Canine Teeth File
   19: 'madonna', // Plague Madonna
-  20: 'stinger', // Alien Stinger
+  20: 'stinger', // Aberrant Stinger
   21: 'buckle', // Tanned Leather Restraint
-  22: 'retractor', // Eyelid Retractor
+  22: 'retractor', // Eyelid Speculum
   23: 'beak', // Beak of the Twice-Born
   24: 'toggle', // Nettle Toggle
 }

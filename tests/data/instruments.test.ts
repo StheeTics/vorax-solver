@@ -30,12 +30,12 @@ describe('basic instruments', () => {
     setup(u, [2]).c.add('boneSentry', 'normal')
     expect(u[0]!.quantity).toBe(36)
   })
-  it('3 Hyperplastic Prefrontal Lobe', () => {
+  it('3 Hyperplastic Frontal Lobe', () => {
     const t = board(m('agito', 'normal'), m('agito', 'rare'))
     endRound(t, [3])
     expect(t[1]!.activity).toBe(95)
   })
-  it('4 Swollen Pituitary', () => {
+  it('4 Hypertrophic Pituitary', () => {
     const t = board(m('agito', 'rare'), m('pest', 'normal'))
     endRound(t, [4])
     expect(t[0]!.activity).toBe(95)
@@ -44,7 +44,7 @@ describe('basic instruments', () => {
     expect(u[0]!.activity).toBe(5)
     expect(u[1]!.activity).toBe(1)
   })
-  it('5 Fused Metatarsals', () => {
+  it('5 Adherent Metatarsals', () => {
     const t = board(m('boneSentry', 'normal'), m('boneSentry', 'normal'), m('pest', 'normal'))
     setup(t, [5]).c.remove(2)
     expect(t[0]!.quantity).toBe(216)
@@ -87,7 +87,7 @@ describe('advanced instruments', () => {
     expect(t[2]).toBeNull()
     expect(t[0]).toMatchObject({ activity: 2, quantity: 72 })
   })
-  it('12 Writhing Spine', () => {
+  it('12 Vermicular Spinal Cord', () => {
     const t = board()
     setup(t, [12]).c.add('pest', 'normal')
     expect(t[0]).toMatchObject({ archetype: 'aemberon', activity: 81 })
@@ -132,7 +132,7 @@ describe('advanced instruments', () => {
     expect(t[0]).toMatchObject({ rarity: 'magic', activity: 61 })
     expect(t[1]).toMatchObject({ rarity: 'rare', activity: 125 })
   })
-  it('20 Alien Stinger fires every 3 rounds', () => {
+  it('20 Aberrant Stinger fires every 3 rounds', () => {
     const t = board(m('pest', 'normal'))
     expect(endRound(t, [20], 3).events.filter(e => e.type === 'mutate')).toHaveLength(0)
     expect(endRound(t, [20], 4).events.filter(e => e.type === 'mutate')).toHaveLength(1)
@@ -150,7 +150,7 @@ describe('advanced instruments', () => {
       expect(t[0]!.activity - before).toBe(gain)
     }
   })
-  it('22 Eyelid Retractor', () => {
+  it('22 Eyelid Speculum', () => {
     const t = board(m('aemberon', 'normal'), m('boneSentry', 'rare'))
     setup(t, [22]).c.remove(0)
     expect(t[1]).toMatchObject({ activity: 35, quantity: 32 })
@@ -191,7 +191,7 @@ describe('pools and timing', () => {
     const { c, log } = setup(t, [12, 2], 1, stubRng([0]))
     c.add('pest', 'normal')
     const sac = log.findIndex(l => l.text.includes('Incubation Sac'))
-    const spine = log.findIndex(l => l.text.includes('Writhing Spine'))
+    const spine = log.findIndex(l => l.text.includes('Vermicular Spinal Cord'))
     expect(sac).toBeGreaterThanOrEqual(0)
     expect(sac).toBeLessThan(spine)
     expect(t[2]!.quantity).toBe(81)

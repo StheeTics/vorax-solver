@@ -30,7 +30,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 3, name: 'Hyperplastic Prefrontal Lobe', pool: 'basic', timing: { kind: 'end' },
+    id: 3, name: 'Hyperplastic Frontal Lobe', pool: 'basic', timing: { kind: 'end' },
     text: 'At the end of the round, if you have at least 2 group(s) of {Agito}s, +80 {act}Activity to 1 random group of Rare or Boss monsters',
     endOfRound(c) {
       if (c.byArchetype('agito').length < 2) return
@@ -41,7 +41,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 4, name: 'Swollen Pituitary', pool: 'basic', timing: { kind: 'end' },
+    id: 4, name: 'Hypertrophic Pituitary', pool: 'basic', timing: { kind: 'end' },
     text: 'At the end of the round, if you have a Rare or Boss {Agito}, +80 {act}Activity to 1 random group(s) of monsters',
     endOfRound(c) {
       if (!c.byArchetype('agito').some(i => isRareOrBoss(c.tanks[i]!.rarity))) return
@@ -52,7 +52,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 5, name: 'Fused Metatarsals', pool: 'basic', timing: { kind: 'reactive', on: ['remove'] },
+    id: 5, name: 'Adherent Metatarsals', pool: 'basic', timing: { kind: 'reactive', on: ['remove'] },
     text: 'When you have at least 2 group(s) of {BoneSentry}s, each time a monster is {remove}d, +180 {qty}Quantity to 1 random group(s) of monsters',
     onEvent(c) {
       if (c.byArchetype('boneSentry').length < 2) return
@@ -126,7 +126,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 12, name: 'Writhing Spine', pool: 'advanced', timing: { kind: 'reactive', on: ['add'] },
+    id: 12, name: 'Vermicular Spinal Cord', pool: 'advanced', timing: { kind: 'reactive', on: ['add'] },
     text: 'Each time a monster is {add}ed, 75% chance to {mutate} it into an {Aemberon} with +80 {act}Activity',
     onEvent(c, e) {
       if (e.type !== 'add' || !c.tanks[e.tank] || !c.rng.chance(0.75)) return
@@ -209,7 +209,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 20, name: 'Alien Stinger', pool: 'advanced', timing: { kind: 'periodic', every: 3 },
+    id: 20, name: 'Aberrant Stinger', pool: 'advanced', timing: { kind: 'periodic', every: 3 },
     text: 'Every 3 rounds, {mutate} all monsters into random monsters',
     endOfRound(c) {
       say(c, this.name, 'mutates every monster')
@@ -227,7 +227,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 22, name: 'Eyelid Retractor', pool: 'advanced', timing: { kind: 'reactive', on: ['remove'] },
+    id: 22, name: 'Eyelid Speculum', pool: 'advanced', timing: { kind: 'reactive', on: ['remove'] },
     text: 'Each time a monster is {remove}d, +20 {act}Activity and +20 {qty}Quantity to the group with the highest Total Activity',
     onEvent(c) {
       const t = c.highest()
