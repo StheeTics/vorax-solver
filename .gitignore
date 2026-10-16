@@ -1,9 +1,20 @@
 node_modules/
 dist/
+dist-advisor/
 .DS_Store
 *.tsbuildinfo
 
 # Local notes
 docs/
+next-steps.md
 test-results/
 playwright-report/
+
+# Simulation output (regenerate with scripts/sim)
+scripts/sim/results/
+
+# Yarn Plug'n'Play leftovers (this project uses npm and package-lock.json)
+.pnp.cjs
+.pnp.loader.mjs
+.yarn/
+yarn.lock

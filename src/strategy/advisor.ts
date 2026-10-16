@@ -1,0 +1,108 @@
+// Live advice for the OCR helper: given what is on screen, rank the choices by expected payoff.
+// Built into one self-contained script (npm run build:advisor) that the helper runs in an embedded V8.
+import { POTIONS } from '@/data/potions'
+import { INSTRUMENTS } from '@/data/instruments'
+import { createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
+import type { Archetype, Card, GameState, Monster, Rarity } from '@/engine/types'
+import { evChooser, expected, options, rankInstruments } from './bot'
+
+export interface ScreenMonster { archetype: Archetype; rarity: Rarity; activity: number; quantity: number }
+export interface ScreenState {
+  /** 6 entries, left to right; null = empty tank */
+  tanks: (ScreenMonster | null)[]
+  /** card names as printed, left to right */
+  hand: string[]
+  /** names of equipped instruments */
+  instruments: string[]
+  /** 'potion' while choosing a potion, 'instrument' while choosing an instrument */
+  phase: 'potion' | 'instrument'
+  round?: number
+  potionRefreshes?: number
+  instrumentRefreshes?: number
+}
+export interface Ranked { index: number; targets: number[]; value: number }
+export interface Advice {
+  /** best card (hand index) and the tanks to target, or a refresh */
+  best: Ranked | 'refresh'
+  /** every option, best first (potion phase), or one entry per offered instrument */
+  ranking: Ranked[]
+  board: number
+  /** true: values are expected final scores (planning bot); false: expected score after this round */
+  plan: boolean
+  /** no better answer is coming for this screen */
+  final: boolean
+  ms: number
+  unknown: string[]
+}
+
+// A bare V8 (no browser, no Node) lacks structuredClone; game state is plain JSON data.
+globalThis.structuredClone ??= (<T>(v: T): T => JSON.parse(JSON.stringify(v))) as typeof structuredClone
+
+const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '')
+const potionIds = new Map(POTIONS.map(p => [norm(p.name), p.id]))
+const instrumentIds = new Map(INSTRUMENTS.map(i => [norm(i.name), i.id]))
+
+/** Every card and instrument name the reader should know about. */
+export function names() {
+  return { potions: POTIONS.map(p => p.name), instruments: INSTRUMENTS.map(i => i.name), basics: INSTRUMENTS.filter(i => i.pool === 'basic').map(i => i.name) }
+}
+
+function toState(x: ScreenState, unknown: string[]): GameState {
+  const lookup = (m: Map<string, number>, n: string) => { const id = m.get(norm(n)); if (id === undefined) unknown.push(n); return id }
+  const equipped = x.instruments.map(n => lookup(instrumentIds, n)).filter((id): id is number => id !== undefined)
+  const s = createGame(DEFAULT_SETTINGS, { tanks: null, instruments: [], startRound: 1, thresholdsUsed: { t8000: false, t28000: false }, forcedHand: [] }, 1)
+  const ids = x.hand.map(n => lookup(x.phase === 'potion' ? potionIds : instrumentIds, n))
+  const hand: Card[] = ids.filter((id): id is number => id !== undefined).map(id => ({ kind: x.phase, id }))
+  const round = x.round ?? 1
+  return {
+    ...s,
+    tanks: x.tanks.map(t => (t ? ({ ...t } as Monster) : null)),
+    instruments: equipped.map(id => ({ id, acquiredRound: 1 })),
+    round,
+    phase: x.phase === 'potion' ? 'potionSelect' : 'instrumentSelect',
+    hand,
+    potionRefreshes: x.potionRefreshes ?? 0,
+    instrumentRefreshes: x.instrumentRefreshes ?? 0,
+    // past thresholds only matter for whether more instruments are coming; infer from what's equipped
+    thresholds: { t8000: equipped.length >= 2, t28000: equipped.length >= 3 },
+    log: [],
+  }
+}
+
+/** The planning bot: each potion option is judged by playing the rest of the game out over fresh random futures. */
+export const PLANNING = { samples: 6, horizon: 13, rollSamples: 2 }
+
+/**
+ * Whether the planning bot gives better potion advice than the quick one for this build. On identical
+ * games it only helped Chrysalis Specimen (+16%), whose payoff builds over many rounds; with every
+ * other basic it scored 10-15% lower (its look-ahead is noisy), so for those the quick answer is final.
+ */
+export const planningHelps = (instrumentNames: string[]) => instrumentNames.some(n => norm(n) === norm('Chrysalis Specimen'))
+
+/**
+ * Rank the current choices. `samples`: fresh outcomes per potion option; `playouts`: games per instrument option.
+ * `plan`: judge potions by the final score (planning bot, ~0.2-1 s) instead of this round's score (~10 ms);
+ * ignored (quick answer) when planningHelps() says the build doesn't benefit.
+ */
+export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false): Advice {
+  const t0 = Date.now(); const unknown: string[] = []
+  const s = toState(x, unknown)
+  const seed = 0x5eed
+  let ranking: Ranked[]
+  let best: Advice['best']
+  if (s.phase === 'potionSelect') {
+    plan = plan && planningHelps(x.instruments)
+    const p = plan ? PLANNING : { samples, horizon: 0 }
+    ranking = options(s).map(o => {
+      const index = (o[0] as { index: number }).index
+      const targets = o.flatMap(a => (a.type === 'toggleTarget' ? [a.tank] : []))
+      return { index, targets, value: Math.round(expected(s, o, p, seed)) }
+    }).sort((a, b) => b.value - a.value)
+    best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
+  } else {
+    const { offers, refresh } = rankInstruments(s, seed, playouts, evChooser({ samples: 4, horizon: 0 }))
+    ranking = offers.map((v, index) => ({ index, targets: [], value: Math.round(v) })).sort((a, b) => b.value - a.value)
+    best = refresh !== null && refresh > ranking[0].value ? 'refresh' : ranking[0]
+  }
+  return { best, ranking, board: ultimateActivity(s), plan, final: plan || !planningHelps(x.instruments) || s.phase !== 'potionSelect', ms: Date.now() - t0, unknown }
+}

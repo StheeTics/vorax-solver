@@ -9,9 +9,11 @@
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint src tests",
-    "test:mobile": "playwright test"
+    "test:mobile": "playwright test",
+    "build:advisor": "vite build -c vite.advisor.config.ts"
   },
   "dependencies": {
+    "marked": "12.0.2",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
