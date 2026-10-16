@@ -113,3 +113,23 @@ body {
   border-radius: 3px;
   background: rgb(0 0 0 / 0.4);
 }
+
+/* card names: hover, focus or tap to see the card as it looks in the game */
+#guide .card-ref {
+  cursor: help;
+  text-decoration: underline dotted rgb(227 178 90 / 0.7);
+  text-underline-offset: 3px;
+  border-radius: 2px;
+}
+#guide .card-ref:hover,
+#guide .card-ref:focus-visible {
+  color: var(--gold-hi);
+  outline: none;
+  background: rgb(227 178 90 / 0.12);
+}
+.card-preview {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  line-height: normal;
+}
