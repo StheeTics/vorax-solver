@@ -1963,5 +1963,199 @@
    "Egg-Burdened Butterfly",
    "Fouled Scraper"
   ]
+ },
+ "g6-020-board.png": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Hypertrophic Pituitary",
+   "Prismatic Liver"
+  ],
+  "instruments": []
+ },
+ "g6-024-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Mutagenic Powder",
+   "Viviparous Hormone"
+  ],
+  "instruments": [
+   "Incubation Sac"
+  ]
+ },
+ "g6-029-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Osteogenic Powder",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "instruments": [
+   "Incubation Sac"
+  ]
+ },
+ "g6-034-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Xeno-Hormone",
+   "Spinal Solution - Agito"
+  ],
+  "instruments": [
+   "Incubation Sac"
+  ]
+ },
+ "g6-044-board.png": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Vermicular Spinal Cord",
+   "Rawhide Restraint"
+  ],
+  "instruments": [
+   "Incubation Sac"
+  ]
+ },
+ "g6-049-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint"
+  ]
+ },
+ "g6-056-board.png": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Vermicular Spinal Cord",
+   "Black Goat Gut Suture"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint"
+  ]
+ },
+ "g6-061-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Fresh Spinal Powder",
+   "Twin Hormone - Pest"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-068-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Anesthetic Tincture - Aemberon",
+   "Osteogenic Powder"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-073-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Compound Revitalizing Pill",
+   "Anesthetic Tincture - Agito",
+   "Pure Leech Solution"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-084-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Hollow Spinal Solution",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-091-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Probiotic Enzyme Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-096-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Pure Leech Solution",
+   "Green Bile Solution"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-101-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Vivigenic Powder",
+   "Xeno-Hormone"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-109-board.png": {
+  "phase": "protocol",
+  "hand": [
+   "Laparolithotomy",
+   "Trepanation",
+   "Immunosuppressive Experiment"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
+ },
+ "g6-116-board.png": {
+  "phase": "protocol",
+  "hand": [
+   "Cyst Rupture Therapy",
+   "Laser Amputation",
+   "Frontal Lobe Repair"
+  ],
+  "instruments": [
+   "Incubation Sac",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ]
  }
 }

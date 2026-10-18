@@ -70,7 +70,7 @@ export const POTION_ART: Record<number, PotionArt> = {
   4: { vessel: 'jar', color: '#6f9a7c', mark: 'cross' }, // Cleansing Ointment
   37: { vessel: 'jar', color: '#6b4a2e', mark: 'spores' }, // Plague Quarter Peat Poultice
   // ULT potions
-  35: { vessel: 'pillBottle', color: '#8a1726', mark: 'capsule' }, // Compound Rebirth Pill
+  35: { vessel: 'pillBottle', color: '#8a1726', mark: 'capsule' }, // Compound Revitalizing Pill
   36: { vessel: 'heartFlask', color: '#e0303f', mark: 'glow' }, // Fast-Acting Heart Tonic
   38: { vessel: 'holedPot', color: '#6f7a3e', mark: 'fly' }, // Insect Attractant
   39: { vessel: 'teardrop', color: '#f6e7a8', mark: 'glow' }, // Purest Holy Water

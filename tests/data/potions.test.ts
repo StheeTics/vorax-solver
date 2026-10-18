@@ -186,7 +186,7 @@ describe('normal potions', () => {
 })
 
 describe('supreme potions', () => {
-  it('35 Compound Rebirth Pill', () => {
+  it('35 Compound Revitalizing Pill', () => {
     const t = board(m('pest', 'magic'), m('boneSentry', 'rare')); run(35, t, [], stubRng([0.5]))
     expect(t[0]).toEqual({ archetype: 'aemberon', rarity: 'magic', activity: 27, quantity: 24 })
     expect(t[1]).toEqual({ archetype: 'aemberon', rarity: 'magic', activity: 37, quantity: 12 })
@@ -314,4 +314,8 @@ it('uses the in-game name Potion Kit (Small) for the plain 3-potion kit', () => 
 
 it('uses the in-game name Probiotic Enzyme Solution for the Pest-counting rare potion', () => {
   expect(POTIONS.find(p => p.id === 0)?.name).toBe('Probiotic Enzyme Solution')
+})
+
+it('uses the in-game name Compound Revitalizing Pill (seen on a live Supreme offer)', () => {
+  expect(POTIONS.find(p => p.id === 35)?.name).toBe('Compound Revitalizing Pill')
 })

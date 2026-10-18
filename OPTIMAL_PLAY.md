@@ -97,7 +97,7 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
 **Potions**
 - **Always take:**
   - **Fresh Spinal Powder:** up to 3 mutations into Aemberon, so up to 3 Sprout triggers.
-  - **Compound Rebirth Pill:** mutates everything into Aemberons.
+  - **Compound Revitalizing Pill:** mutates everything into Aemberons.
   - **Potent Xenopurge Powder, Xenopurge Powder, Mutagenic Powder:** Quantity.
   - **Potion Boxes**
 - **Good:** Slough Solution, Rare Potion Kits, Bewitching Tincture, Anesthetic Tincture - Aemberon.

@@ -3,7 +3,7 @@ import type { PotionDef } from '../defs'
 
 export const SUPREME_POTIONS: PotionDef[] = [
   {
-    id: 35, name: 'Compound Rebirth Pill', rarity: 'supreme', targeting: 'auto', item: 'pill',
+    id: 35, name: 'Compound Revitalizing Pill', rarity: 'supreme', targeting: 'auto', item: 'pill',
     text: '{mutate} all monsters into random {Aemberon}s with +11 {act}Activity. Magic {Aemberon}s get an additional +11 {act}Activity; Rare and Boss {Aemberon}s get +11 {qty}Quantity',
     effect(c) {
       for (const t of c.nonEmpty()) {
