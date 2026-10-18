@@ -5,4 +5,5 @@ From data/live/rates.json, within the guards in scripts/live/propose.ts. Not app
 - potion Petrified Spinal Solution 0.878 → 1.756 (live 4.4% of 180)
 - potion Osteogenic Powder 1 → 2 (live 5.0% of 180)
 - potion Xeno-Hormone 1.538 → 2.7126 (live 6.7% of 180)
-- spawn normal 30 → 50 (live 50.0% of 48)
+- spawn normal 30 → 53.7037 (live 53.7% of 54)
+- spawn boss 10 → 5 (live 1.9% of 54)
