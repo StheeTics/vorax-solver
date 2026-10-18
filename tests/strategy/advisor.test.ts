@@ -66,3 +66,13 @@ it('between equal scores, it keeps the board the build needs (live game: Adheren
   })
   expect(a.best).toMatchObject({ index: 0, targets: [1] })
 })
+
+it('with look-ahead, each potion option predicts the end of the run', () => {
+  const a = advise(board, 16, 16, true)
+  expect(a.plan).toBe(true)
+  for (const r of a.ranking) {
+    expect(r.end!.activity).toBeGreaterThan(0)
+    expect(r.end!.rainbow).toBeGreaterThanOrEqual(0)
+    expect(r.end!.rainbow).toBeLessThanOrEqual(1)
+  }
+})

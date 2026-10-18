@@ -193,6 +193,45 @@ export const boardPicker = (playouts: number, rollout: Chooser, goal: Goal = 'ra
   return refresh !== null && refresh > offers[best] ? 'refresh' : best
 }
 
+export interface LookAhead {
+  /** options (best by this round's score) played to the end of the run */
+  top: number
+  /** futures played per option */
+  playouts: number
+}
+
+/** One option played to the end: this round's expected score, and over its futures the mean goal score,
+ *  the mean final Ultimate Activity and the share that reached rainbow. */
+export interface Ahead { o: Action[]; now: number; goal: number; activity: number; rainbow: number }
+
+/**
+ * Potions judged by how the whole run ends: the `top` options by this round's score are each played to the
+ * end `playouts` times, with the instruments owned, future instruments picked by strength, and cards dealt
+ * by the live odds. Best goal score (rainbow, else vial tier) first.
+ */
+export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
+  const slim = { ...s, log: [] }
+  const quick = { samples: 8, horizon: 0 }
+  const now = options(slim).map(o => ({ o, v: expected(slim, o, quick, seed) })).sort((a, b) => b.v - a.v)
+  const inner = evChooser({ samples: 2, horizon: 0 })
+  return now.slice(0, la.top).map(c => {
+    let goal = 0, activity = 0, rainbows = 0
+    for (let k = 0; k < la.playouts; k++) {
+      const sk = mix(seed, 9000 + k)
+      const ua = ultimateActivity(finish(play(reseed(slim, sk), ...c.o), sk, inner, priorPicker))
+      goal += rainbowScore(ua); activity += ua
+      if (ua >= RAINBOW) rainbows++
+    }
+    return { o: c.o, now: c.v, goal: goal / la.playouts, activity: activity / la.playouts, rainbow: rainbows / la.playouts }
+  }).sort((a, b) => b.goal - a.goal)
+}
+
+/** lookAhead's best option; `value` stays this round's expected score, which finish() compares with the board to decide on a refresh. */
+export const planChooser = (la: LookAhead): Chooser => (s, seed) => {
+  const best = lookAhead(s, seed, la)[0]
+  return { best: best?.o ?? [], value: best?.now ?? -1 }
+}
+
 /** Play a game on from state `s` to the end. */
 export function finish(s: GameState, seed: number, chooser: Chooser, picker: InstrumentPicker, onPick?: (s: GameState, pick: number | 'refresh') => void): GameState {
   for (let g = 0; g < 300 && s.phase !== 'gameOver'; g++) {

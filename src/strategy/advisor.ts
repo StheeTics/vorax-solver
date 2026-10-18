@@ -3,9 +3,9 @@ import { XENOPANACEA, isXenopanacea } from '@/data/xenopanacea'
 import { POTIONS } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
 import { createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
-import type { Archetype, Card, GameState, Monster, Rarity } from '@/engine/types'
+import type { Action, Archetype, Card, GameState, Monster, Rarity } from '@/engine/types'
 import { settingsForShelley } from '@/data/shelley'
-import { evChooser, expected, options, rankInstruments } from './bot'
+import { evChooser, expected, lookAhead, options, rankInstruments } from './bot'
 
 export interface ScreenMonster { archetype: Archetype; rarity: Rarity; activity: number; quantity: number }
 export interface ScreenState {
@@ -23,14 +23,15 @@ export interface ScreenState {
   /** Intern Shelley level; DEFAULT_SETTINGS when absent */
   shelley?: number
 }
-export interface Ranked { index: number; targets: number[]; value: number }
+/** end: with look-ahead, the predicted end of the run (mean final Ultimate Activity, share reaching rainbow) */
+export interface Ranked { index: number; targets: number[]; value: number; end?: { activity: number; rainbow: number } }
 export interface Advice {
   /** best card (hand index) and the tanks to target, a refresh, or null when the choice doesn't change the score */
   best: Ranked | 'refresh' | null
   /** every option, best first (potion phase), or one entry per offered instrument */
   ranking: Ranked[]
   board: number
-  /** true: values are expected final scores (planning bot); false: expected score after this round */
+  /** true: potions judged by look-ahead to the end of the run (values: predicted final score); false: expected score after this round */
   plan: boolean
   /** no better answer is coming for this screen */
   final: boolean
@@ -72,15 +73,9 @@ export function toState(x: ScreenState, unknown: string[]): GameState {
   }
 }
 
-/** The planning bot: each potion option is judged by playing the rest of the game out over fresh random futures. */
-export const PLANNING = { samples: 6, horizon: 13, rollSamples: 2 }
-
-/**
- * Whether the planning bot gives better potion advice than the quick one for this build. On identical
- * games it only helped Chrysalis Specimen (+16%), whose payoff builds over many rounds; with every
- * other basic it scored 10-15% lower (its look-ahead is noisy), so for those the quick answer is final.
- */
-export const planningHelps = (instrumentNames: string[]) => instrumentNames.some(n => norm(n) === norm('Chrysalis Specimen'))
+/** Potion look-ahead: the best 4 options this round, each played to the end of the run 32 times. In 240
+ *  simulated games it reached rainbow in 22.9% against 13.8% for judging by this round's score alone. */
+export const LOOK_AHEAD = { top: 4, playouts: 32 }
 
 /** A few rounds of look-ahead, only to order options that score the same this round. */
 const TIE_BREAK = { samples: 32, horizon: 4 }
@@ -100,8 +95,7 @@ function breakTies(s: GameState, ranking: Ranked[], seed: number): Ranked[] {
 
 /**
  * Rank the current choices. `samples`: fresh outcomes per potion option; `playouts`: games per instrument option.
- * `plan`: judge potions by the final score (planning bot, ~0.2-1 s) instead of this round's score (~10 ms);
- * ignored (quick answer) when planningHelps() says the build doesn't benefit.
+ * `plan`: judge potions by how the run ends (lookAhead, ~0.3-1 s) instead of this round's score (~10 ms).
  */
 export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false): Advice {
   const t0 = Date.now(); const unknown: string[] = []
@@ -118,20 +112,25 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
   let ranking: Ranked[]
   let best: Advice['best']
   if (s.phase === 'potionSelect') {
-    plan = plan && planningHelps(x.instruments)
-    const p = plan ? PLANNING : { samples, horizon: 0 }
-    ranking = options(s).map(o => {
-      const index = (o[0] as { index: number }).index
-      const targets = o.flatMap(a => (a.type === 'toggleTarget' ? [a.tank] : []))
-      return { index, targets, value: Math.round(expected(s, o, p, seed)) }
-    }).sort((a, b) => b.value - a.value)
-    ranking = breakTies(s, ranking, seed)
-    best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
+    const toRanked = (o: Action[], value: number): Ranked => ({
+      index: (o[0] as { index: number }).index,
+      targets: o.flatMap(a => (a.type === 'toggleTarget' ? [a.tank] : [])),
+      value,
+    })
+    if (plan) {
+      const ahead = lookAhead(s, seed, LOOK_AHEAD)
+      ranking = ahead.map(a => ({ ...toRanked(a.o, Math.round(a.activity)), end: { activity: a.activity, rainbow: a.rainbow } }))
+      best = ahead[0] && !(ahead[0].now <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
+    } else {
+      ranking = breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, seed)))).sort((a, b) => b.value - a.value), seed)
+      best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
+    }
   } else {
     // judged by the average final score: the rainbow goal ('rainbow') made no measurable difference in 240 games yet
     const { offers, refresh } = rankInstruments(s, seed, playouts, evChooser({ samples: 4, horizon: 0 }), 'mean')
     ranking = offers.map((v, index) => ({ index, targets: [], value: Math.round(v) })).sort((a, b) => b.value - a.value)
     best = refresh !== null && refresh > ranking[0].value ? 'refresh' : ranking[0]
   }
-  return { best, ranking, board: ultimateActivity(s), plan, final: plan || !planningHelps(x.instruments) || s.phase !== 'potionSelect', ms: Date.now() - t0, unknown }
+  plan = plan && s.phase === 'potionSelect'
+  return { best, ranking, board: ultimateActivity(s), plan, final: plan || s.phase !== 'potionSelect', ms: Date.now() - t0, unknown }
 }

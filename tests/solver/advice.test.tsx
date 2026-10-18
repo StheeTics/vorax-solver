@@ -8,20 +8,26 @@ const hand = ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture']
 const state: ScreenState = { ...emptyState(), hand }
 const advice = (best: Advice['best']): Advice => ({ best, ranking: best === 'refresh' || best === null ? [] : [best], board: 0, plan: false, final: true, ms: 1, unknown: [] })
 
-it('runAdvice emits once without Chrysalis', () => {
+it('runAdvice emits once for an instrument offer', () => {
+  const fake = vi.fn<typeof advise>(() => advice('refresh'))
+  const emit = vi.fn()
+  runAdvice({ ...state, phase: 'instrument', hand: ['Contracted Claws'] }, emit, fake)
+  expect(emit).toHaveBeenCalledTimes(1)
+})
+
+it('runAdvice emits the quick answer, then the look-ahead to the end of the run, for any build', () => {
   const fake = vi.fn<typeof advise>(() => advice('refresh'))
   const emit = vi.fn()
   runAdvice(state, emit, fake)
-  expect(emit).toHaveBeenCalledTimes(1)
-  expect(fake).toHaveBeenCalledTimes(1)
-})
-
-it('runAdvice emits quick then planning with Chrysalis Specimen', () => {
-  const fake = vi.fn<typeof advise>(() => advice('refresh'))
-  const emit = vi.fn()
-  runAdvice({ ...state, instruments: ['Chrysalis Specimen'] }, emit, fake)
   expect(emit).toHaveBeenCalledTimes(2)
   expect(fake.mock.calls[1][3]).toBe(true)
+})
+
+it('look-ahead choices show the predicted end of the run and the chance of rainbow', () => {
+  const ahead: Advice = { ...advice({ index: 0, targets: [], value: 950_000, end: { activity: 950_000, rainbow: 0.4 } }), plan: true }
+  render(<AdvicePanel advice={ahead} refining={false} state={state} />)
+  expect(screen.getByRole('list', { name: 'Choices' }).textContent).toMatch(/950,000.*40% rainbow/)
+  expect(screen.getByText(/end of the run/)).toBeTruthy()
 })
 
 it('panel headline names the card and tanks', () => {

@@ -42,12 +42,12 @@ export function AdvicePanel({ advice, refining, state, iconsKnown }: Props) {
                 {describe(r, state)}
                 {unseen(r) && <span className={styles.teach}>Unknown icon: picking it teaches the Solver</span>}
               </span>
-              <span className={styles.value}>{r.value.toLocaleString()}</span>
+              <span className={styles.value}>{r.end ? `${Math.round(r.end.activity).toLocaleString()} · ${Math.round(100 * r.end.rainbow)}% rainbow` : r.value.toLocaleString()}</span>
             </li>
           ))}
         </ol>
       )}
-      {!advice.note && <p className={styles.legend}>{advice.plan ? 'Values are the expected final Ultimate Activity.' : 'Values are the expected Ultimate Activity after this round.'}</p>}
+      {!advice.note && <p className={styles.legend}>{advice.plan ? 'Each choice was played to the end of the run 32 times: the average final Ultimate Activity, and how often it reached rainbow. Ranked by the chance of rainbow, then the vial tier.' : 'Values are the expected Ultimate Activity after this round.'}</p>}
     </section>
   )
 }
