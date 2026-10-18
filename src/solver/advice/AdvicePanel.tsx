@@ -46,12 +46,12 @@ export function AdvicePanel({ advice, updating, state, iconsKnown }: Props) {
                 {describe(r, state)}
                 {unseen(r) && <span className={styles.teach}>Unknown icon: picking it teaches the Solver</span>}
               </span>
-              <span className={styles.value}>{r.end ? `${Math.round(r.end.activity).toLocaleString()} · ${Math.round(100 * r.end.rainbow)}% rainbow` : r.value.toLocaleString()}</span>
+              <span className={styles.value}>{r.end ? `${Math.round(r.end.activity).toLocaleString()} · ${Math.round(100 * r.end.reached)}% rainbow` : r.value.toLocaleString()}</span>
             </li>
           ))}
         </ol>
       )}
-      {!advice.note && <p className={styles.legend}>{advice.plan ? 'Each choice was played to the end of the run 32 times: the average final Ultimate Activity, and how often it reached rainbow. Ranked by the chance of rainbow, then the vial tier.' : 'Values are the expected Ultimate Activity after this round.'}</p>}
+      {!advice.note && <p className={styles.legend}>{advice.plan ? 'Each choice was played to the end of the run 32 times: the average final Ultimate Activity, counted up to 950,000, and how often it reached 950,000 (rainbow with the endgame battle bonus).' : 'Values are the expected Ultimate Activity after this round.'}</p>}
     </section>
   )
 }

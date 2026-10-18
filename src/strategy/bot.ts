@@ -3,7 +3,6 @@
 // and the outcomes are averaged.
 import { createGame, dispatch, ultimateActivity, needsTargets, canRefresh, DEFAULT_SETTINGS } from '@/engine/game'
 import type { GameState, Action, SandboxSetup } from '@/engine/types'
-import { VIAL_LEVELS } from '@/engine/rewards'
 import { BASIC_POOL, INSTRUMENTS } from '@/data/instruments'
 import STRENGTH from '@/data/instrumentStrength.json'
 
@@ -133,13 +132,13 @@ export const refreshingPriorPicker: InstrumentPicker = s => {
   return (PRIOR[s.hand[i].id] ?? 0) < MEDIAN_PRIOR[pool] && canRefresh(s) ? 'refresh' : i
 }
 
-export const RAINBOW = VIAL_LEVELS[VIAL_LEVELS.length - 1]
 /**
- * A final score as the goal sees it: rainbow is worth far more than anything short of it (and more
- * than rainbow is worth nothing), else the number of vial steps reached. Averaged over playouts this
- * is the chance of rainbow first, then the vial tier reached.
+ * The score the advice aims for: 950,000 on the board, which the endgame battle bonus takes to rainbow, so
+ * it counts as rainbow here. Playouts are scored by their final Ultimate Activity counted up to it: every
+ * point below counts, nothing above does, so the advice pushes runs as high as it can without gambling past it.
  */
-export const rainbowScore = (ua: number) => (ua >= RAINBOW ? 100 : VIAL_LEVELS.filter(v => ua >= v).length)
+export const TARGET = 950_000
+export const goalScore = (ua: number) => Math.min(ua, TARGET)
 
 /** How an instrument offer is answered: return a hand index, or 'refresh'. */
 export type InstrumentPicker = (s: GameState, seed: number) => number | 'refresh'
@@ -161,34 +160,35 @@ export const priorPicker: InstrumentPicker = s => priorPick(s)
  * Playouts use common seeds across options so the comparison is fair.
  */
 /**
- * What an instrument choice is judged by. 'rainbow' (the advice): the goal score, with weak offers
- * refreshed inside playouts so a refresh kept has a value. 'mean': the old way, average final score,
- * and playouts never refresh (which made spending a refresh look free).
+ * What an instrument choice is judged by. 'target': the score counted up to TARGET, with weak offers
+ * refreshed inside playouts so a refresh kept has a value. 'mean': average final score, and playouts
+ * never refresh (which made spending a refresh look free).
  */
-export type Goal = 'rainbow' | 'mean'
+export type Goal = 'target' | 'mean'
 
-/** offers/refresh: mean goal value per option; rainbow/refreshRainbow: the share of its playouts that reached rainbow */
-export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser, goal: Goal = 'rainbow'): { offers: number[]; refresh: number | null; rainbow: number[]; refreshRainbow: number | null } {
+/** offers/refresh: mean goal value per option; reached/refreshReached: the share of its playouts that reached TARGET */
+export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts): { offers: number[]; refresh: number | null; reached: number[]; refreshReached: number | null } {
   const slim = { ...s, log: [] }
-  const picker = goal === 'rainbow' ? refreshingPriorPicker : priorPicker
-  const value = goal === 'rainbow' ? (x: GameState) => rainbowScore(ultimateActivity(x)) : ultimateActivity
-  const score = (first: (x: GameState) => GameState) => {
-    let sum = 0, rainbows = 0
-    for (let k = 0; k < playouts; k++) {
+  const picker = goal === 'target' ? refreshingPriorPicker : priorPicker
+  const value = goal === 'target' ? (x: GameState) => goalScore(ultimateActivity(x)) : ultimateActivity
+  const score = (first: (x: GameState) => GameState, n = playouts) => {
+    let sum = 0, reached = 0
+    for (let k = 0; k < n; k++) {
       const sk = mix(seed, 7000 + k)
       const end = finish(first(reseed(slim, sk)), sk, rollout, picker)
       sum += value(end)
-      if (ultimateActivity(end) >= RAINBOW) rainbows++
+      if (ultimateActivity(end) >= TARGET) reached++
     }
-    return { mean: sum / playouts, rainbow: rainbows / playouts }
+    return { mean: sum / n, reached: reached / n }
   }
   const each = slim.hand.map((_, i) => score(x => play(x, { type: 'selectCard', index: i }, { type: 'confirm' })))
-  const r = canRefresh(slim) ? score(x => play(x, { type: 'refresh' })) : null
-  return { offers: each.map(e => e.mean), refresh: r && r.mean, rainbow: each.map(e => e.rainbow), refreshRainbow: r && r.rainbow }
+  // a refresh's value rests on which offers come next, so it may be given more futures than an offered instrument
+  const r = canRefresh(slim) ? score(x => play(x, { type: 'refresh' }), refreshPlayouts) : null
+  return { offers: each.map(e => e.mean), refresh: r && r.mean, reached: each.map(e => e.reached), refreshReached: r && r.reached }
 }
 
-export const boardPicker = (playouts: number, rollout: Chooser, goal: Goal = 'rainbow'): InstrumentPicker => (s, seed) => {
-  const { offers, refresh } = rankInstruments(s, seed, playouts, rollout, goal)
+export const boardPicker = (playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts): InstrumentPicker => (s, seed) => {
+  const { offers, refresh } = rankInstruments(s, seed, playouts, rollout, goal, refreshPlayouts)
   const best = offers.indexOf(Math.max(...offers))
   return refresh !== null && refresh > offers[best] ? 'refresh' : best
 }
@@ -200,14 +200,14 @@ export interface LookAhead {
   playouts: number
 }
 
-/** One option played to the end: this round's expected score, and over its futures the mean goal score,
- *  the mean final Ultimate Activity and the share that reached rainbow. */
-export interface Ahead { o: Action[]; now: number; goal: number; activity: number; rainbow: number }
+/** One option played to the end: this round's expected score, and over its futures the mean score counted
+ *  up to TARGET and the share that reached it. */
+export interface Ahead { o: Action[]; now: number; goal: number; reached: number }
 
 /**
  * Potions judged by how the whole run ends: the `top` options by this round's score are each played to the
  * end `playouts` times, with the instruments owned, future instruments picked by strength, and cards dealt
- * by the live odds. Best goal score (rainbow, else vial tier) first.
+ * by the live odds. Best average score counted up to TARGET first.
  */
 export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
   const slim = { ...s, log: [] }
@@ -215,14 +215,14 @@ export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
   const now = options(slim).map(o => ({ o, v: expected(slim, o, quick, seed) })).sort((a, b) => b.v - a.v)
   const inner = evChooser({ samples: 2, horizon: 0 })
   return now.slice(0, la.top).map(c => {
-    let goal = 0, activity = 0, rainbows = 0
+    let goal = 0, reached = 0
     for (let k = 0; k < la.playouts; k++) {
       const sk = mix(seed, 9000 + k)
       const ua = ultimateActivity(finish(play(reseed(slim, sk), ...c.o), sk, inner, priorPicker))
-      goal += rainbowScore(ua); activity += ua
-      if (ua >= RAINBOW) rainbows++
+      goal += goalScore(ua)
+      if (ua >= TARGET) reached++
     }
-    return { o: c.o, now: c.v, goal: goal / la.playouts, activity: activity / la.playouts, rainbow: rainbows / la.playouts }
+    return { o: c.o, now: c.v, goal: goal / la.playouts, reached: reached / la.playouts }
   }).sort((a, b) => b.goal - a.goal)
 }
 

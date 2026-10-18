@@ -23,10 +23,10 @@ it('runAdvice gives potions only the look-ahead answer, no quick answer first', 
   expect(fake.mock.calls[0][3]).toBe(true)
 })
 
-it('look-ahead choices show the predicted end of the run and the chance of rainbow', () => {
-  const ahead: Advice = { ...advice({ index: 0, targets: [], value: 950_000, end: { activity: 950_000, rainbow: 0.4 } }), plan: true }
+it('look-ahead choices show the predicted end of the run and how often it reached 950,000', () => {
+  const ahead: Advice = { ...advice({ index: 0, targets: [], value: 950_000, end: { activity: 900_000, reached: 0.4 } }), plan: true }
   render(<AdvicePanel advice={ahead} updating={false} state={state} />)
-  expect(screen.getByRole('list', { name: 'Choices' }).textContent).toMatch(/950,000.*40% rainbow/)
+  expect(screen.getByRole('list', { name: 'Choices' }).textContent).toMatch(/900,000.*40% rainbow/)
   expect(screen.getByText(/end of the run/)).toBeTruthy()
 })
 

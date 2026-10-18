@@ -23,8 +23,8 @@ export interface ScreenState {
   /** Intern Shelley level; DEFAULT_SETTINGS when absent */
   shelley?: number
 }
-/** end: with look-ahead, the predicted end of the run (mean final Ultimate Activity, share reaching rainbow) */
-export interface Ranked { index: number; targets: number[]; value: number; end?: { activity: number; rainbow: number } }
+/** end: with look-ahead, the predicted end of the run (average final Ultimate Activity counted up to 950,000; share reaching 950,000, which counts as rainbow) */
+export interface Ranked { index: number; targets: number[]; value: number; end?: { activity: number; reached: number } }
 export interface Advice {
   /** best card (hand index) and the tanks to target, a refresh, or null when the choice doesn't change the score */
   best: Ranked | 'refresh' | null
@@ -73,8 +73,8 @@ export function toState(x: ScreenState, unknown: string[]): GameState {
   }
 }
 
-/** Potion look-ahead: the best 4 options this round, each played to the end of the run 32 times. In 240
- *  simulated games it reached rainbow in 22.9% against 13.8% for judging by this round's score alone. */
+/** Potion look-ahead: the best 4 options this round, each played to the end of the run 32 times. (Judged by
+ *  rainbow points, it reached 1,120,000 in 22.9% of 240 simulated games against 13.8% for this round's score alone.) */
 export const LOOK_AHEAD = { top: 4, playouts: 32 }
 
 /** A few rounds of look-ahead, only to order options that score the same this round. */
@@ -119,14 +119,14 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
     })
     if (plan) {
       const ahead = lookAhead(s, seed, LOOK_AHEAD)
-      ranking = ahead.map(a => ({ ...toRanked(a.o, Math.round(a.activity)), end: { activity: a.activity, rainbow: a.rainbow } }))
+      ranking = ahead.map(a => ({ ...toRanked(a.o, Math.round(a.goal)), end: { activity: a.goal, reached: a.reached } }))
       best = ahead[0] && !(ahead[0].now <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
     } else {
       ranking = breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, seed)))).sort((a, b) => b.value - a.value), seed)
       best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
     }
   } else {
-    // judged by the average final score: the rainbow goal ('rainbow') made no measurable difference in 240 games yet
+    // judged by the average final score: the goal rule ('target') isn't proven better for instruments yet
     const { offers, refresh } = rankInstruments(s, seed, playouts, evChooser({ samples: 4, horizon: 0 }), 'mean')
     ranking = offers.map((v, index) => ({ index, targets: [], value: Math.round(v) })).sort((a, b) => b.value - a.value)
     best = refresh !== null && refresh > ranking[0].value ? 'refresh' : ranking[0]

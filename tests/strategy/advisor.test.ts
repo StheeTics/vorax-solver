@@ -72,7 +72,8 @@ it('with look-ahead, each potion option predicts the end of the run', () => {
   expect(a.plan).toBe(true)
   for (const r of a.ranking) {
     expect(r.end!.activity).toBeGreaterThan(0)
-    expect(r.end!.rainbow).toBeGreaterThanOrEqual(0)
-    expect(r.end!.rainbow).toBeLessThanOrEqual(1)
+    expect(r.end!.activity).toBeLessThanOrEqual(950_000)
+    expect(r.end!.reached).toBeGreaterThanOrEqual(0)
+    expect(r.end!.reached).toBeLessThanOrEqual(1)
   }
 })
