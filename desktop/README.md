@@ -44,6 +44,7 @@ npm run local      # against the dev server (npm run dev in the repo root)
 ## Release
 
 1. Bump `version` in `package.json` (and `npm install` to update the lock file), commit, push.
-2. `git tag -a desktop-vX.Y.Z -m "Vorax Overlay X.Y.Z" && git push origin desktop-vX.Y.Z`.
+2. `git tag -a vX.Y.Z -m "Vorax Overlay X.Y.Z" && git push origin vX.Y.Z` (plain `v` tags: electron-builder and
+   electron-updater expect them).
 3. `.github/workflows/desktop.yml` builds `Vorax-Overlay-Setup-X.Y.Z.exe` on Windows and publishes it, with
-   `latest.yml` (what installed copies read), as release `desktop-vX.Y.Z`.
+   `latest.yml` (what installed copies read), as release `vX.Y.Z`.
