@@ -1,6 +1,7 @@
 import type { Advice, Ranked, ScreenState } from '@/strategy/advisor'
 import styles from './AdvicePanel.module.css'
 import { PickHand } from './PickHand'
+import { describe, predicted } from './describe'
 
 interface Props {
   advice: Advice | null
@@ -10,13 +11,6 @@ interface Props {
   state: ScreenState
   /** instruments whose panel icon the reader knows (built in or learned in this browser) */
   iconsKnown?: string[]
-}
-
-/** place: add the card's place in the hand ("(card 2)"), for the headline */
-function describe(r: Ranked, state: ScreenState, place = false): string {
-  const name = `${state.hand[r.index] ?? `Card ${r.index + 1}`}${place ? ` (card ${r.index + 1})` : ''}`
-  if (state.phase === 'instrument') return `Take ${name}`
-  return r.targets.length ? `Play ${name} → tank ${r.targets.map(t => t + 1).join(', ')}` : `Play ${name}`
 }
 
 /** Choices listed under the headline: the best three. */
@@ -46,7 +40,7 @@ export function AdvicePanel({ advice, updating, state, iconsKnown }: Props) {
                 {describe(r, state)}
                 {unseen(r) && <span className={styles.teach}>Unknown icon: picking it teaches the Solver</span>}
               </span>
-              <span className={styles.value}>{r.end ? `${Math.round(r.end.activity).toLocaleString()} · ${Math.round(100 * r.end.reached)}% rainbow` : r.value.toLocaleString()}</span>
+              <span className={styles.value}>{r.end ? predicted(r.end) : r.value.toLocaleString()}</span>
             </li>
           ))}
         </ol>

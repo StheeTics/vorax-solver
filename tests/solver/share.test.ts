@@ -1,6 +1,6 @@
 import { shareable, startsRun, toSnapshot, type Snapshot } from '@/solver/share/snapshot'
 import { createQueue } from '@/solver/share/queue'
-import { sendingAllowed } from '@/solver/share/endpoint'
+import { appTag, sendingAllowed } from '@/solver/share/endpoint'
 import { loadShare, saveShare } from '@/solver/share/shareStore'
 import { emptyState, type Reading } from '@/solver/types'
 
@@ -107,6 +107,17 @@ it('nothing is sent from this PC, a dev build or before the collector exists', (
   expect(sendingAllowed({ hostname: 'tidewarden.github.io' }, '', false)).toBe(false)
   expect(sendingAllowed({ hostname: 'tidewarden.github.io' }, 'https://x.workers.dev', true)).toBe(false)
   expect(sendingAllowed({ hostname: 'tidewarden.github.io' }, 'https://x.workers.dev', false)).toBe(true)
+})
+
+it('inside Vorax Overlay, games are shared even from a local or dev copy of the site: they are real games', () => {
+  expect(sendingAllowed({ hostname: 'localhost' }, 'https://x.workers.dev', true, true)).toBe(true)
+  expect(sendingAllowed({ hostname: 'localhost' }, '', true, true)).toBe(false)
+})
+
+it('boards shared from Vorax Overlay say so in their version', () => {
+  expect(appTag('359bd6c', true)).toBe('359bd6c-overlay')
+  expect(appTag('359bd6c', false)).toBe('359bd6c')
+  expect(appTag('359bd6c', true)).toMatch(/^[\w.-]{1,24}$/)
 })
 
 it('sharing is on by default and the choice is remembered', () => {

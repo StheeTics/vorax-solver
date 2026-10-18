@@ -24,6 +24,7 @@ export function useAdvice(state: ScreenState): { shown: Shown | null; updating: 
     w.onmessage = (e: MessageEvent<{ id: number; advice: Advice }>) => {
       const board = asked.current.get(e.data.id)
       if (board && e.data.id === latest.current) setShown({ board, advice: e.data.advice })
+      if (board) console.info(`[timing] advice in ${e.data.advice.ms} ms`)
     }
     worker.current = w
     return () => w.terminate()

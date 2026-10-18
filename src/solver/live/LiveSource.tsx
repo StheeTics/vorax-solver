@@ -5,6 +5,7 @@ import { changeGate, isCaptureMode, nextIndex, saveFrame, saveReading, TICK_MS }
 import { waitStable } from './stable'
 import { DEFAULT_RULES, type TriggerRules } from './triggers'
 import { NotAWindowError, shareWindow, toPng, type WindowShare } from './windowCapture'
+import { bridgeLog, desktopBridge, type DesktopBridge } from '../desktop/bridge'
 import styles from './LiveSource.module.css'
 
 export interface Following { stop(): void; snapNow(): void; cancel(): void }
@@ -15,9 +16,14 @@ export interface LiveDeps {
   pickLog(): Promise<FileLike>
 }
 
-/** Follows the log in a Worker, so a background tab keeps up; on the page where Workers aren't available. */
+/**
+ * Follows the log in a Worker, so a background tab keeps up; on the page where Workers aren't available, or
+ * when the log comes through Vorax Overlay (it can't be handed to a Worker; the app's pages aren't slowed in
+ * the background anyway).
+ */
 function follow(handle: FileLike, on: (e: LiveEvent) => void, rules: TriggerRules): Following {
-  if (typeof Worker !== 'undefined') {
+  const transferable = 'kind' in handle
+  if (typeof Worker !== 'undefined' && transferable) {
     const w = new Worker(new URL('./liveWorker.ts', import.meta.url), { type: 'module' })
     w.onmessage = (e: MessageEvent<LiveEvent>) => on(e.data)
     w.postMessage({ type: 'start', handle, rules })
@@ -68,9 +74,11 @@ interface Props {
   /** keep: in capture mode, saves what was read from this frame (or advised for it) beside it */
   onFrame(img: ImageData, trigger: string, keep?: (value: unknown, what?: 'reading' | 'advice' | 'pick') => void): void
   deps?: LiveDeps
+  /** inside Vorax Overlay: the log comes from the app, and the game window is shared while the game runs */
+  desktop?: DesktopBridge | null
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge() }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -102,6 +110,8 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS }: Props) {
     const take = e.kind === 'manual' ? s.grab() : waitStable(() => s.grab())
     void take.then(async img => {
       const snappedAt = Date.now()
+      // for Vorax Overlay's debug log: how long the log took to go quiet, and the screen to settle
+      console.info(`[timing] ${e.kind}: picture ${askedAt - e.triggerAt} ms after the log line, ${snappedAt - askedAt} ms for the screen to settle`)
       setFrames(n => n + 1)
       const d = dirRef.current
       const n = d ? ++savedRef.current : 0
@@ -179,9 +189,29 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS }: Props) {
   }
   const stopShare = () => {
     following.current?.cancel()
-    share?.stop()
+    shareRef.current?.stop()
     setShare(null)
   }
+
+  // Inside Vorax Overlay: the log from the app at once; the window shared while the game runs.
+  const [gameRunning, setGameRunning] = useState(false)
+  const desktopActions = useRef({ startShare, stopShare })
+  // the app may say "running" again while the share is still starting
+  const starting = useRef(false)
+  desktopActions.current = { startShare, stopShare }
+  useEffect(() => {
+    if (!desktop) return
+    setLog(bridgeLog(desktop))
+    desktop.onGame(({ running }) => {
+      setGameRunning(running)
+      if (running && !shareRef.current && !starting.current) {
+        starting.current = true
+        void desktopActions.current.startShare().finally(() => (starting.current = false))
+      }
+      if (!running && shareRef.current) desktopActions.current.stopShare()
+    })
+    desktop.onSnap(() => following.current?.snapNow())
+  }, [desktop])
   const pickFolder = async () => {
     try {
       const picker = (window as unknown as { showDirectoryPicker(o: object): Promise<FileSystemDirectoryHandle> }).showDirectoryPicker
@@ -202,6 +232,29 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS }: Props) {
   }
 
   const step = !log ? 1 : !share ? 2 : 3
+
+  if (desktop)
+    return (
+      <section className={`panel-frame ${styles.live}`} aria-label="Live">
+        <div className={styles.body}>
+          <p>
+            <strong>Vorax Overlay</strong>{' '}
+            {!gameRunning ? 'is waiting for Torchlight: Infinite to start.' : share ? 'is following the game.' : 'is connecting to the game window…'}
+          </p>
+          {share && (
+            <div className={styles.row}>
+              <button type="button" className="gold-button" onClick={() => following.current?.snapNow()}>Snap now</button>
+              <span className={styles.small}>
+                {frames} picture{frames === 1 ? '' : 's'} · {status?.lines ?? 0} log lines read
+                {status?.over ? ' · Game over. Waiting for the next one.' : ''}
+              </span>
+            </div>
+          )}
+          {noLog && <p className={styles.warn}>Enable Log looks off: no game lines have arrived. Press Esc, Account Related, Enable Log, then log out and back in.</p>}
+          {error && <p className={styles.warn}>{error}</p>}
+        </div>
+      </section>
+    )
 
   return (
     <section className={`panel-frame ${styles.live}`} aria-label="Live">

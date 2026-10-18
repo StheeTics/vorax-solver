@@ -6,6 +6,7 @@ import { HOME_URL } from '@/ui/links'
 import { loadShelleyLevel, saveShelleyLevel } from '@/ui/settingsStore'
 import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
+import { useOverlay } from './desktop/bridge'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -62,6 +63,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const canLive = liveSupported()
   const board = useMemo(() => ({ ...state, shelley }), [state, shelley])
   const { shown, updating } = useAdvice(board)
+  // inside Vorax Overlay, the card over the game shows the same advice
+  useOverlay(shown, updating)
   // the advice for the board on screen now (capture mode saves it beside the frame)
   const advice = shown && shown.board === board ? shown.advice : null
   // capture mode: the final advice for a saved frame is saved beside it
@@ -80,7 +83,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const onFrame = async (img: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep) => {
     setReadingBusy(true)
     try {
+      const readFrom = Date.now()
       const raw = await read(img, trigger, refs ?? local)
+      console.info(`[timing] read the screen in ${Date.now() - readFrom} ms`)
       // a card flying off as it's played or picked: the last board and its advice still stand
       if (raw.problems.some(p => p.kind === 'animating')) {
         keep?.(raw, 'reading')

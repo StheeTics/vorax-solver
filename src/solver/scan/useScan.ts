@@ -66,7 +66,12 @@ export function useScan(textReader: () => Promise<ReadText | null> = browserText
     async (img, trigger, local = {}) => {
       const readText = await textReader()
       if (!readText) return pixels(img, trigger, local, true)
-      return readTitles(img, await pixels(img, trigger, local, false), readText, slots(img, local))
+      const t0 = Date.now()
+      const board = await pixels(img, trigger, local, false)
+      const t1 = Date.now()
+      const reading = await readTitles(img, board, readText, slots(img, local))
+      console.info(`[timing] board pixels ${t1 - t0} ms, card names ${Date.now() - t1} ms (${img.width}x${img.height})`)
+      return reading
     },
     [pixels, slots, textReader],
   )

@@ -27,12 +27,17 @@ interface D1Like {
 }
 
 const ORIGIN = 'https://tidewarden.github.io'
+/** also the local test server: Vorax Overlay pointed at it plays real games (any other origin gets the site's) */
+const ORIGINS = [ORIGIN, 'http://localhost:5173']
 const DAILY = 1500
 const MAX_BATCH = 10
 const MAX_BYTES = 64_000
 const EXPORT_MAX = 5000
 
-const cors = { 'access-control-allow-origin': ORIGIN, 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-allow-headers': 'content-type', vary: 'origin' }
+const corsFor = (req: Request) => {
+  const origin = req.headers.get('origin') ?? ''
+  return { 'access-control-allow-origin': ORIGINS.includes(origin) ? origin : ORIGIN, 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-allow-headers': 'content-type', vary: 'origin' }
+}
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
   new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', ...extra } })
 
@@ -43,6 +48,7 @@ async function sha256(text: string): Promise<string> {
 
 export async function handle(req: Request, env: Env, store: Store): Promise<Response> {
   const url = new URL(req.url)
+  const cors = corsFor(req)
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors })
 
   if (url.pathname === '/v1/snapshots' && req.method === 'POST') {

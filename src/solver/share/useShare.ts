@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import type { FieldKey, Reading, Source } from '../types'
-import { ENDPOINT, sendingAllowed } from './endpoint'
+import { appTag, ENDPOINT, sendingAllowed } from './endpoint'
 import { createQueue } from './queue'
 import { loadShare } from './shareStore'
 import { shareable, startsRun, toSnapshot, type Snapshot } from './snapshot'
@@ -33,7 +33,7 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
     if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source, h.corrected) || h.source === 'manual') return
     const trigger = h.reading.frame?.trigger ?? 'screenshot'
     if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
-    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: BUILD, source: h.source, trigger, shelley, corrected: h.corrected }))
+    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: h.source, trigger, shelley, corrected: h.corrected }))
   }
 
   useEffect(() => {

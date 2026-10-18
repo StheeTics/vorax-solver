@@ -90,6 +90,11 @@ it('export needs the token', async () => {
   expect(body.last).toBe(2)
 })
 
+it('CORS also allows the local test server, for games played through a test copy of Vorax Overlay', async () => {
+  const res = await handle(new Request('https://w.dev/v1/snapshots', { method: 'OPTIONS', headers: { origin: 'http://localhost:5173' } }), env, memory())
+  expect(res.headers.get('access-control-allow-origin')).toBe('http://localhost:5173')
+})
+
 it('CORS allows only the published site', async () => {
   const res = await handle(new Request('https://w.dev/v1/snapshots', { method: 'OPTIONS', headers: { origin: 'https://tidewarden.github.io' } }), env, memory())
   expect(res.headers.get('access-control-allow-origin')).toBe('https://tidewarden.github.io')

@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com">
+<title>Vorax Overlay</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600;700&display=swap">
+<style>
+  /* The site's colours (src/styles/tokens.css), for a card over the game. */
+  :root {
+    --bg-0: #0b0506;
+    --bg-1: #1d0a0c;
+    --bg-2: #2a1014;
+    --iron: #2b2a2e;
+    --iron-hi: #55535a;
+    --gold: #e3b25a;
+    --gold-hi: #ffd98a;
+    --gold-lo: #8a5e22;
+    --text: #f1e9e2;
+    --text-dim: #b8aba3;
+    --text-faint: #7d716b;
+    --keyword: #ff5b5b;
+    --font-display: 'Cinzel', 'Times New Roman', serif;
+    --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    --radius: 8px;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    background: transparent;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  body {
+    color: var(--text);
+    font: 14px/1.35 var(--font-body);
+  }
+
+  .card {
+    border: 1px solid color-mix(in srgb, var(--gold) 45%, var(--iron));
+    border-radius: var(--radius);
+    background: color-mix(in srgb, var(--bg-0) 92%, transparent);
+    overflow: hidden;
+  }
+
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 3px 2px 8px;
+    border-bottom: 1px solid var(--iron);
+    background: color-mix(in srgb, var(--bg-2) 90%, transparent);
+    cursor: move;
+  }
+
+  .brand {
+    color: var(--gold);
+    font: 700 12px/1 var(--font-display);
+    letter-spacing: 0.06em;
+  }
+
+  .sep {
+    color: var(--iron-hi);
+    font-size: 12px;
+  }
+
+  .status {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text-dim);
+    font-size: 12px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .folded .status {
+    color: var(--gold-hi);
+    font-weight: 600;
+  }
+
+  .head button {
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-dim);
+    font: 600 14px/1 var(--font-body);
+    cursor: pointer;
+  }
+
+  .head button:hover,
+  .head button:focus-visible {
+    background: var(--bg-1);
+    color: var(--gold-hi);
+  }
+
+  .body { padding: 8px 10px 10px; }
+
+  .eyebrow {
+    margin: 0 0 2px;
+    color: var(--gold);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .move {
+    margin: 0 0 4px;
+    color: var(--gold-hi);
+    font: 700 19px/1.2 var(--font-body);
+    text-wrap: balance;
+  }
+
+  .detail {
+    margin: 0;
+    color: var(--text);
+    font-size: 13px;
+  }
+
+  .others {
+    margin: 6px 0 0;
+    padding: 6px 0 0;
+    border-top: 1px solid var(--iron);
+    list-style: none;
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+
+  .others li + li { margin-top: 2px; }
+
+  .updating .move,
+  .updating .detail,
+  .updating .others { opacity: 0.55; }
+
+  .update {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: var(--bg-1);
+    color: var(--text-dim);
+    font-size: 12px;
+  }
+
+  .update span { flex: 1; }
+
+  .update button {
+    padding: 3px 10px;
+    border: 1px solid var(--gold);
+    border-radius: 5px;
+    background: var(--gold-lo);
+    color: var(--gold-hi);
+    font: 600 12px var(--font-body);
+    cursor: pointer;
+  }
+
+  .update button:hover,
+  .update button:focus-visible {
+    background: var(--gold);
+    color: var(--bg-0);
+  }
+
+  .foot {
+    display: flex;
+    gap: 6px;
+    margin: 8px 0 0;
+  }
+
+  .foot button {
+    padding: 2px 9px;
+    border: 1px solid var(--iron-hi);
+    border-radius: 5px;
+    background: transparent;
+    color: var(--text-dim);
+    font: 500 11.5px var(--font-body);
+    cursor: pointer;
+  }
+
+  .foot button:hover,
+  .foot button:focus-visible {
+    border-color: var(--gold);
+    color: var(--gold-hi);
+  }
+
+  .folded .body { display: none; }
+  .folded .head { border-bottom: 0; }
+
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="head">
+      <span class="brand">Vorax</span>
+      <span class="sep" aria-hidden="true">|</span>
+      <span class="status" id="status">Waiting for the game</span>
+      <button type="button" id="fold" title="Fold it to a thin bar" aria-label="Fold" aria-pressed="false">–</button>
+    </div>
+    <div class="body">
+      <p class="eyebrow" id="eyebrow">Next move</p>
+      <p class="move" id="move">Waiting for the cards…</p>
+      <p class="detail" id="detail" hidden></p>
+      <ul class="others" id="others" hidden></ul>
+      <div class="update" id="update" hidden>
+        <span id="update-text"></span>
+        <button type="button" id="update-button"></button>
+      </div>
+      <div class="foot">
+        <button type="button" id="solver" title="Show or hide the Solver (Ctrl+Alt+S)">Solver</button>
+        <button type="button" id="snap" title="Take a picture of the game now and read it (Ctrl+Alt+X)">Picture</button>
+        <button type="button" id="hide" title="Hide the overlay (Ctrl+Alt+V brings it back)">Hide</button>
+      </div>
+    </div>
+  </div>
+  <script src="overlay.js"></script>
+</body>
+</html>
