@@ -561,7 +561,6 @@ ipcMain.on('overlay:drag-end', (e) => {
   settings.overlay = { x: b.x, y: b.y };
   saveSettings();
 });
-ipcMain.on('overlay:hide', (e) => fromOverlay(e) && setOverlayOn(false));
 ipcMain.on('overlay:reload', (e) => fromOverlay(e) && reloadSolver('the player asked'));
 ipcMain.on('overlay:restart', (e) => fromOverlay(e) && appUpdate === 'ready' && installUpdate());
 

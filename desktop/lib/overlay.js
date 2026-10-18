@@ -50,7 +50,6 @@ render();
 });
 $('solver').addEventListener('click', () => api.openSolver());
 $('snap').addEventListener('click', () => api.snap());
-$('hide').addEventListener('click', () => api.hide());
 $('update-button').addEventListener('click', () => (update.app ? api.restart() : api.reload()));
 
 // The card is dragged by its bar. Not with -webkit-app-region: on Windows that swallows the clicks of the
