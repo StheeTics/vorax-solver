@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { BoardPanel } from '@/solver/board/BoardPanel'
 import { emptyState } from '@/solver/types'
 import type { ScreenState } from '@/strategy/advisor'
@@ -49,4 +49,14 @@ it('choosing a hand card sets its name', () => {
 
 it('an empty board starts with the 3 potion refreshes a game begins with', () => {
   expect(emptyState().potionRefreshes).toBe(3)
+})
+
+it('groups the round settings with the Shelley level in one block, then each part of the board under its own heading', () => {
+  render(<BoardPanel state={emptyState()} fields={{}} onChange={() => {}} shelley={6} onShelley={() => {}} />)
+  const round = screen.getByRole('group', { name: 'This round' })
+  expect(within(round).getByLabelText(/Round/)).toBeTruthy()
+  expect(within(round).getByLabelText(/Choosing/)).toBeTruthy()
+  expect(within(round).getByLabelText(/Refreshes left/)).toBeTruthy()
+  expect(within(round).getByRole('radiogroup', { name: /Intern Shelley level/ })).toBeTruthy()
+  expect(screen.getAllByRole('heading', { level: 2 }).map(h => h.textContent)).toEqual(['Tanks', 'Potions offered', 'Your instruments'])
 })

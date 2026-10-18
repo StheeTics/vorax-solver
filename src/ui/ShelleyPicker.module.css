@@ -38,7 +38,63 @@
   background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, var(--gold-lo));
 }
 
+.noteRow,
 .note {
   font-size: 15px;
   color: var(--text-dim);
+}
+
+/* in a form: left-aligned, field-sized, with the bonus beside the label */
+.compact {
+  align-items: stretch;
+  gap: 6px;
+}
+
+.compact .label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.compact .note {
+  font-size: 12px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--gold);
+}
+
+.compact .levels {
+  gap: 0;
+}
+
+.compact .level {
+  flex: 1 1 0;
+  width: auto;
+  min-width: 36px;
+  height: 36px;
+  font-size: 16px;
+  border-radius: 0;
+  margin-left: -1px;
+}
+
+.compact .level:first-child {
+  border-radius: 6px 0 0 6px;
+  margin-left: 0;
+}
+
+.compact .level:last-child {
+  border-radius: 0 6px 6px 0;
+}
+
+.compact .level:hover,
+.compact .level[aria-checked='true'] {
+  position: relative;
+  z-index: 1;
 }

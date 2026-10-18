@@ -39,13 +39,14 @@ export function BoardPanel({ state, fields, onChange, shelley, onShelley }: Prop
 
   return (
     <section className={`panel-frame ${styles.board}`} aria-label="Board">
-      <div className={styles.row}>
+      <div className={styles.top} role="group" aria-label="This round">
+        <div className={styles.roundFields}>
         <label className={styles.field}>
-          Round <Unsure read={fields.round} />
+          <span>Round <Unsure read={fields.round} /></span>
           <input type="number" min={1} max={13} value={state.round ?? 1} onChange={e => set({ round: toCount(e.target.value, 13) }, 'round')} />
         </label>
         <label className={styles.field}>
-          Choosing <Unsure read={fields.phase} />
+          <span>Choosing <Unsure read={fields.phase} /></span>
           <select value={state.phase} onChange={e => set({ phase: e.target.value as ScreenState['phase'], hand: [] }, 'phase')}>
             <option value="potion">a potion</option>
             <option value="instrument">an instrument</option>
@@ -53,11 +54,12 @@ export function BoardPanel({ state, fields, onChange, shelley, onShelley }: Prop
           </select>
         </label>
         <label className={styles.field}>
-          Refreshes left <Unsure read={fields.refreshes} />
+          <span>Refreshes left <Unsure read={fields.refreshes} /></span>
           <input type="number" min={0} max={9} value={state[refreshKey] ?? 0}
             onChange={e => set({ [refreshKey]: Math.min(9, Math.max(0, Math.round(Number(e.target.value)) || 0)) }, 'refreshes')} />
         </label>
-        <ShelleyPicker level={shelley} onChange={onShelley} />
+        </div>
+        <ShelleyPicker level={shelley} onChange={onShelley} compact />
       </div>
 
       <h2>Tanks</h2>
@@ -102,7 +104,7 @@ export function BoardPanel({ state, fields, onChange, shelley, onShelley }: Prop
       <h2>{state.phase === 'potion' ? 'Potions offered' : state.phase === 'instrument' ? 'Instruments offered' : 'Protocols offered'}</h2>
       {state.phase === 'protocol' ? (
         <p className={styles.field}>{state.hand.join(' · ') || 'None read'}</p>
-      ) : <div className={styles.row}>
+      ) : <div className={styles.three}>
         {HAND_SLOTS.map(i => (
           <label key={i} className={styles.field}>
             <span>Card {i + 1} <Unsure read={fields[`hand${i}`]} /></span>
@@ -115,7 +117,7 @@ export function BoardPanel({ state, fields, onChange, shelley, onShelley }: Prop
       </div>}
 
       <h2>Your instruments</h2>
-      <div className={styles.row}>
+      <div className={styles.three}>
         {HAND_SLOTS.map(i => (
           <label key={i} className={styles.field}>
             <span>Instrument {i + 1} <Unsure read={fields[`instrument${i}`]} /></span>
