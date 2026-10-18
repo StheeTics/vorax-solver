@@ -54,3 +54,31 @@ it.each([
 it('only red is the Agito sun', () => {
   expect(archetypeOf(icon([200, 40, 40], 0), box)).toEqual({ archetype: 'agito', sure: true })
 })
+
+import { reconcile } from '@/solver/scan/tanks'
+
+// each glyph's best few characters, best first
+const alts = (s: string[][]) => s
+
+describe('digits that don’t fit the total are corrected from it', () => {
+  it('finds the Activity x Quantity whose product is the total, trying each glyph’s next-best characters', () => {
+    // "463 x 167" read as "863x167": the 4 touches the heart and looked like an 8
+    const total = alts([['7'], ['7'], ['3'], ['2'], ['1']])
+    const aq = alts([['8', '4', '6'], ['6', '3'], ['3', '8'], ['x'], ['1'], ['6'], ['7']])
+    expect(reconcile(total, aq)).toEqual({ total: '77321', aq: '463x167' })
+  })
+  it('works the other way: when the total is the one misread', () => {
+    // "77321" read as "71321"
+    const total = alts([['7'], ['1', '7'], ['3'], ['2'], ['1']])
+    const aq = alts([['4'], ['6'], ['3'], ['x'], ['1'], ['6'], ['7']])
+    expect(reconcile(total, aq)).toEqual({ total: '77321', aq: '463x167' })
+  })
+  it('keeps what was read when it already fits', () => {
+    expect(reconcile(alts([['3'], ['6']]), alts([['1'], ['x'], ['3', '8'], ['6']]))).toEqual({ total: '36', aq: '1x36' })
+  })
+  it('gives up when nothing fits, or when two readings fit equally well', () => {
+    expect(reconcile(alts([['9'], ['9']]), alts([['2'], ['x'], ['3']]))).toBeNull()
+    // 3x4 and 2x6 both make 12, each using one second choice
+    expect(reconcile(alts([['1'], ['2']]), alts([['3', '2'], ['x'], ['6', '4']]))).toBeNull()
+  })
+})

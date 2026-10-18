@@ -16,10 +16,8 @@ describe.skipIf(!local)('reading the labelled live frames (training/)', () => {
     it(`reads ${file}`, () => {
       const r = scan(decodePng(readFileSync(`training/${file}`)), data)
       expect(r.problems).toEqual([])
-      // a panel showing something that isn't a known instrument can't be read back: left out of the check
-      const panel = label.panelUnknown ? { instruments: r.state.instruments } : {}
-      expect(r.state).toEqual({ ...label.state, ...panel })
-      expect(Object.entries(r.fields).filter(([k, f]) => !f.sure && !(label.panelUnknown && k.startsWith('instrument'))).map(([k]) => k)).toEqual([])
+      expect(r.state).toEqual(label.state)
+      expect(Object.entries(r.fields).filter(([, f]) => !f.sure).map(([k]) => k)).toEqual([])
     })
   }
 })
@@ -147,5 +145,33 @@ describe.skipIf(!existsSync('training/g5-011-board.png'))('a panel icon named in
     const without = { ...data, instrumentIcons: icons }
     expect(readInstruments(later, layout(later), without).names).not.toContain('Egg-Burdened Butterfly')
     expect(readInstruments(later, layout(later), without, learned).names).toEqual(['Contracted Claws', 'Egg-Burdened Butterfly'])
+  })
+})
+
+describe.skipIf(!existsSync('training/h2-066-board.png'))('the equipped-instrument panel at 1920x1080', () => {
+  const panel = async (f: string) => {
+    const { layout } = await import('@/solver/scan/layout')
+    const { readInstruments } = await import('@/solver/scan/instruments')
+    const img = decodePng(readFileSync(`training/${f}`))
+    return readInstruments(img, layout(img), data)
+  }
+  it('counts only the slots that hold an icon: dark slots are empty', async () => {
+    expect((await panel('h2-025-board.png')).names).toEqual(['Aberrant Sprout'])
+    expect((await panel('h2-066-board.png')).names).toHaveLength(3)
+  })
+  it('reads the three picks of a real game in order once their icons are known', async () => {
+    expect((await panel('h2-066-board.png')).names).toEqual(['Aberrant Sprout', 'Pig Iron Bone Saw', 'Tanned Leather Restraint'])
+  })
+})
+
+
+describe.skipIf(!existsSync('training/h2-066-board.png'))('the permanent item at the start of the panel (a teal ewer, seen on 16:9)', () => {
+  it('is skipped, so only the picks count', async () => {
+    const { layout } = await import('@/solver/scan/layout')
+    const { readInstruments } = await import('@/solver/scan/instruments')
+    for (const [f, picks] of [['h2-019-screen.png', 0], ['h2-025-board.png', 1], ['h2-038-board.png', 2], ['h2-066-board.png', 3]] as const) {
+      const img = decodePng(readFileSync(`training/${f}`))
+      expect(readInstruments(img, layout(img), data).names, f).toHaveLength(picks)
+    }
   })
 })

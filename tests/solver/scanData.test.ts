@@ -20,7 +20,8 @@ it('every potion and instrument card it knows is one the advisor knows', () => {
     if (phase === 'potion') expect(n.potions).toContain(name)
     if (phase === 'instrument') expect(n.instruments).toContain(name)
   }
-  for (const name of Object.keys(d.instrumentIcons)) if (name !== 'none') expect(n.instruments).toContain(name)
+  // 'none' (an empty slot) and '(…)' entries (a permanent item in the panel) aren't instruments
+  for (const name of Object.keys(d.instrumentIcons)) if (name !== 'none' && !name.startsWith('(')) expect(n.instruments).toContain(name)
 })
 
 it('knows the three header shapes', () => {

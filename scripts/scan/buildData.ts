@@ -2,7 +2,7 @@
 import { glyphVector, gray, signature, type ArtFeature, type Img } from '../../src/solver/scan/pixels'
 import { layout } from '../../src/solver/scan/layout'
 import { cardArt, cardText, handAt } from '../../src/solver/scan/cards'
-import { iconPattern } from '../../src/solver/scan/instruments'
+import { iconPattern, STARTING_ITEM } from '../../src/solver/scan/instruments'
 import { brightest, glyphs, type TextKind } from '../../src/solver/scan/text'
 import type { HandPhase, ScanData } from '../../src/solver/scan/data'
 import type { ScreenState } from '../../src/strategy/advisor'
@@ -10,8 +10,8 @@ import type { Rarity } from '../../src/engine/types'
 
 export interface Label {
   kind: 'board' | 'instrumentOffer' | 'other' | 'cards'
-  /** the equipped-instrument panel shows something that isn't a known instrument: don't learn icons from it */
-  panelUnknown?: true
+  /** the panel holds a permanent item (not an instrument) just past the picks: learned as '(starting item)' */
+  startingItem?: true
   state?: ScreenState & { phase: HandPhase }
   /** a tick frame labelled for its hand only (scripts/scan/cards.json); hover marks a raised card, blurred
    *  a frame caught in a flash of light: neither teaches the cards' pictures */
@@ -69,7 +69,7 @@ function extract(img: Img, label: Label): Extracted {
     const refreshes = s.phase === 'potion' ? s.potionRefreshes : s.phase === 'instrument' ? s.instrumentRefreshes : undefined
     if (refreshes !== undefined) learn('refresh', l.refresh, String(refreshes))
     out.ops.push({ to: 'header', key: s.phase, v: signature(img, l.header).map(round3) })
-    if (!label.panelUnknown) l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: s.instruments[s.instruments.length - 1 - j] ?? 'none', v: iconPattern(img, r).map(round3) }))
+    l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: s.instruments[s.instruments.length - 1 - j] ?? (label.startingItem && j === s.instruments.length ? STARTING_ITEM : 'none'), v: iconPattern(img, r).map(round3) }))
   }
   extracted.set(img, out)
   return out

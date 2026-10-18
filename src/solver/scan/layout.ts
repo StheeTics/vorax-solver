@@ -53,7 +53,8 @@ const REFRESH = { x: 300, y: 1342, w: 160, h: 40 }
 /** From the left edge. */
 const ROUND = { x: 105, y: 500, w: 100, h: 70 }
 
-/** From the right edge: icon centres, the newest first. */
+/** From the right edge: icon centres, the newest first. Three picks fit, and a fourth slot holds the permanent
+ *  item some players have (an ewer) at the oldest end. */
 const INSTRUMENT = { right: 162, pitch: 135, y: 66, size: 74 }
 
 export interface CardPos { cx: number; cy: number; angle: number }
@@ -92,7 +93,7 @@ export function layout(frame: { width: number; height: number }): Layout {
   const scene = tankScene(width / height)
   const tankCx = scene.x.map(x => cx + x * k)
   const cardCx = [0, 1, 2].map(j => cx + (CARD_X0 + CARD_PITCH * j) * k)
-  const instrumentCx = [0, 1, 2].map(j => width - (INSTRUMENT.right + INSTRUMENT.pitch * j) * k)
+  const instrumentCx = [0, 1, 2, 3].map(j => width - (INSTRUMENT.right + INSTRUMENT.pitch * j) * k)
   return {
     width,
     height,

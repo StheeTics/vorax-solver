@@ -31,7 +31,10 @@ export function trackInstruments(
   const nextOffer = s.phase === 'instrument' && s.hand.length ? [...s.hand] : null
   if (!offer && start) offer = nextOffer
 
-  const count = s.instruments.length
+  // Before the first pick nothing is owned, but on 16:9 the panel shows a flask: while the first offer is up
+  // (round 1, nothing owned) the panel is taken as empty. Later offers can show a new pick beside them.
+  const beforeFirstPick = s.phase === 'instrument' && s.round === 1 && owned.length === 0
+  const count = beforeFirstPick ? 0 : s.instruments.length
   const ranks = r.instrumentRanks ?? []
   const fields: Record<string, FieldRead> = {}
   let ask: PickQuestion | undefined

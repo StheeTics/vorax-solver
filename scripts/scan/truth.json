@@ -2564,8 +2564,494 @@
  },
  "h1-013-screen.png": {
   "kind": "instrumentOffer",
-  "panelUnknown": true,
-  "note": "first real 1920x1080 capture; the top-right panel shows a flask icon that is not one of the known instruments",
+  "note": "first real 1920x1080 capture; the panel's permanent teal ewer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 15,
+     "quantity": 12
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Contracted Claws",
+    "Aberrant Sprout",
+    "Prismatic Liver"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  },
+  "startingItem": true
+ },
+ "w1-009-screen.png": {
+  "kind": "instrumentOffer",
+  "note": "the same opening board at 2560x1440 (16:9); the panel's permanent teal ewer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 15,
+     "quantity": 12
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Contracted Claws",
+    "Aberrant Sprout",
+    "Prismatic Liver"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  },
+  "startingItem": true
+ },
+ "h2-066-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 71,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 75,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "rare",
+     "activity": 85,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 102,
+     "quantity": 128
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 102,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 71,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Xeno-Hormone",
+    "Petrified Spinal Solution",
+    "Anesthetic Tincture - Aemberon"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 4,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-087-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 126,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 130,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 180,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 157,
+     "quantity": 128
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 157,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 126,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Gray Matter Spinal Solution",
+    "Brain Fog Tincture",
+    "Viscous Bile Solution"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 5,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-094-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 181,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 185,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 235,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 243,
+     "quantity": 128
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 243,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 181,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Vivigenic Powder",
+    "Brain Fog Tincture",
+    "Slough Solution"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 6,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-100-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 201,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 463,
+     "quantity": 167
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 255,
+     "quantity": 64
+    },
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 263,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 201,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Slender-Limb Powder - Bone Sentry",
+    "Digestive Enzyme Solution",
+    "Compound Leech Solution"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 7,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-116-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 346,
+     "quantity": 78
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 669,
+     "quantity": 239
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 415,
+     "quantity": 205
+    },
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 408,
+     "quantity": 120
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 346,
+     "quantity": 120
+    }
+   ],
+   "hand": [
+    "Probiotic Enzyme Solution",
+    "Osteogenic Powder",
+    "Rare Potion Kit (Small)"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 9,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-120-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 346,
+     "quantity": 78
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 669,
+     "quantity": 239
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 415,
+     "quantity": 205
+    },
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 408,
+     "quantity": 120
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 346,
+     "quantity": 120
+    }
+   ],
+   "hand": [
+    "Green Bile Solution",
+    "Compound Leech Solution",
+    "Anesthetic Tincture - Aemberon"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 9,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-127-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 366,
+     "quantity": 78
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 735,
+     "quantity": 254
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 481,
+     "quantity": 220
+    },
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 428,
+     "quantity": 120
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 366,
+     "quantity": 120
+    }
+   ],
+   "hand": [
+    "Bewitching Tincture",
+    "Xenopurge Powder",
+    "Slender-Limb Powder - Pest"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 10,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-019-screen.png": {
+  "kind": "instrumentOffer",
+  "startingItem": true,
   "state": {
    "tanks": [
     {
@@ -2616,10 +3102,9 @@
    "instrumentRefreshes": 2
   }
  },
- "w1-009-screen.png": {
-  "kind": "instrumentOffer",
-  "panelUnknown": true,
-  "note": "the same opening board at 2560x1440 (16:9); the panel shows the same unknown flask icon",
+ "h2-025-board.png": {
+  "kind": "board",
+  "startingItem": true,
   "state": {
    "tanks": [
     {
@@ -2660,14 +3145,349 @@
     }
    ],
    "hand": [
-    "Contracted Claws",
-    "Aberrant Sprout",
-    "Prismatic Liver"
+    "Osteogenic Powder",
+    "Mutagenic Powder",
+    "Petrified Spinal Solution"
    ],
-   "instruments": [],
+   "instruments": [
+    "Aberrant Sprout"
+   ],
+   "phase": "potion",
+   "round": 1,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-032-board.png": {
+  "kind": "instrumentOffer",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 40,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "rare",
+     "activity": 50,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 36,
+     "quantity": 88
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Eyelid Speculum",
+    "Pig Iron Bone Saw",
+    "Two-Inch Skull Nail"
+   ],
+   "instruments": [
+    "Aberrant Sprout"
+   ],
    "phase": "instrument",
    "round": 1,
    "instrumentRefreshes": 2
+  }
+ },
+ "h2-038-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 40,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "rare",
+     "activity": 50,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 36,
+     "quantity": 88
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Brain Fog Tincture",
+    "Compound Leech Solution",
+    "Osteogenic Powder"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw"
+   ],
+   "phase": "potion",
+   "round": 2,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-043-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 40,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "rare",
+     "activity": 50,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 36,
+     "quantity": 128
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Slender-Limb Powder - Pest",
+    "Twin Hormone - Pest",
+    "Potion Kit (Large)"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw"
+   ],
+   "phase": "potion",
+   "round": 3,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-047-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 40,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "rare",
+     "activity": 50,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 36,
+     "quantity": 128
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 36,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Slender-Limb Powder - Bone Sentry",
+    "Vivigenic Powder",
+    "Viscous Bile Solution",
+    "Spinal Solution - Aemberon",
+    "Mutagenic Powder"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw"
+   ],
+   "phase": "potion",
+   "round": 3,
+   "potionRefreshes": 3
+  }
+ },
+ "h2-056-board.png": {
+  "kind": "instrumentOffer",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 71,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 75,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "rare",
+     "activity": 85,
+     "quantity": 64
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 102,
+     "quantity": 128
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 102,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 71,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Tanned Leather Restraint",
+    "Canine Teeth File",
+    "Fouled Scraper"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw"
+   ],
+   "phase": "instrument",
+   "round": 3,
+   "instrumentRefreshes": 2
+  }
+ },
+ "h2-107-board.png": {
+  "kind": "board",
+  "startingItem": true,
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 221,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 529,
+     "quantity": 182
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 275,
+     "quantity": 64
+    },
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 283,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 221,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Twin Hormone - Bone Sentry",
+    "Fresh Spinal Powder",
+    "Twin Hormone - Pest"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Pig Iron Bone Saw",
+    "Tanned Leather Restraint"
+   ],
+   "phase": "potion",
+   "round": 8,
+   "potionRefreshes": 3
   }
  }
 }

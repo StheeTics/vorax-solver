@@ -81,3 +81,23 @@ it('doesn’t ask when the new icon clearly is one of the offer', () => {
   expect(r.instruments).toEqual(['Rawhide Restraint'])
   expect(r.ask).toBeUndefined()
 })
+
+describe('a screen that shows something in the panel before any instrument is picked (seen on 16:9)', () => {
+  const offer1 = ['Contracted Claws', 'Aberrant Sprout', 'Prismatic Liver']
+  it('isn’t taken as a pick', () => {
+    const t = trackInstruments(newTracker(), reading({ phase: 'instrument', round: 1, hand: offer1, panel: [[['Incubation Sac', 0.46], ['Contracted Claws', 0.4]]] }), 'screen')
+    expect(t.instruments).toEqual([])
+    expect(t.ask).toBeUndefined()
+  })
+  it('and the real pick is then taken from that offer', () => {
+    const first = trackInstruments(newTracker(), reading({ phase: 'instrument', round: 1, hand: offer1, panel: [[['Incubation Sac', 0.46]]] }), 'screen')
+    const after = trackInstruments(first.tracker, reading({ panel: [[['Aberrant Sprout', 0.96], ['Hyperplastic Frontal Lobe', 0.83]]] }), 'board')
+    expect(after.instruments).toEqual(['Aberrant Sprout'])
+    expect(after.fields.instrument0.sure).toBe(true)
+  })
+  it('a later offer can still show a new pick in the panel beside it', () => {
+    const t = { ...newTracker(), owned: ['Aberrant Sprout'], offer: ['Eyelid Speculum', 'Pig Iron Bone Saw', 'Two-Inch Skull Nail'] }
+    const r = trackInstruments(t, reading({ phase: 'instrument', round: 3, hand: ['Tanned Leather Restraint', 'Canine Teeth File', 'Fouled Scraper'], panel: [[['Aberrant Sprout', 0.96]], [['Pig Iron Bone Saw', 0.97]]] }), 'board')
+    expect(r.instruments).toEqual(['Aberrant Sprout', 'Pig Iron Bone Saw'])
+  })
+})

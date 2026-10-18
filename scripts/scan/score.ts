@@ -81,7 +81,7 @@ for (const f of frames) {
       const key = want.phase === 'potion' ? 'potionRefreshes' : 'instrumentRefreshes'
       count('refreshes', got[key] === want[key], `${got[key]} not ${want[key]}`)
     }
-    if (!f.label.panelUnknown) count('instruments', JSON.stringify(got.instruments) === JSON.stringify(want.instruments), `${got.instruments.join(',')}`)
+    count('instruments', JSON.stringify(got.instruments) === JSON.stringify(want.instruments), `${got.instruments.join(',')}`)
   }
 }
 

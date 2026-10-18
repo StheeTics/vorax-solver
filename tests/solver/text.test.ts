@@ -51,3 +51,23 @@ it('two touching wide digits (like 44) split into two, with no sliver left over'
   fill(img, 15, 4, 9, 12, [200, 200, 200])
   expect(glyphs(img, { x: 0, y: 0, w: 60, h: 20 }, 'label')).toHaveLength(2)
 })
+
+it('ignores a small bright sliver of the heart’s rim beside the digits', () => {
+  const img = canvas(80, 20, [30, 25, 25])
+  fill(img, 10, 8, 3, 5, [170, 150, 125]) // a rim fragment: short and narrow
+  fill(img, 20, 4, 6, 10, [170, 150, 125]) // digit
+  fill(img, 30, 4, 6, 10, [170, 150, 125]) // digit
+  fill(img, 40, 6, 6, 7, [170, 150, 125]) // x: shorter but as wide as a digit
+  const g = glyphs(img, { x: 0, y: 0, w: 80, h: 20 }, 'label')
+  expect(g.map(b => b.x)).toEqual([20, 30, 40])
+})
+
+it('clips a digit to the line’s text rows when a bright bit of the heart’s tail hangs below it', () => {
+  const img = canvas(80, 24, [30, 25, 25])
+  fill(img, 10, 4, 6, 10, [170, 150, 125]) // digit, rows 4..13
+  fill(img, 11, 14, 2, 3, [170, 150, 125]) // a tail fragment touching it, rows 14..16
+  fill(img, 20, 4, 6, 10, [170, 150, 125]) // digit
+  fill(img, 30, 4, 6, 10, [170, 150, 125]) // digit
+  const g = glyphs(img, { x: 0, y: 0, w: 80, h: 24 }, 'label')
+  expect(g.map(b => [b.x, b.y, b.h])).toEqual([[10, 4, 10], [20, 4, 10], [30, 4, 10]])
+})

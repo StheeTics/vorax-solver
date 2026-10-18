@@ -49,6 +49,45 @@ export function archetypeOf(img: Img, r: Rect): { archetype: Archetype; sure: bo
   return { archetype: 'agito', sure: true }
 }
 
+/** Candidate characters for each glyph of a line, best first: from the digit matcher. */
+type Alts = string[][]
+
+/** Most readings tried when working out which of a line's candidate characters make the numbers fit. */
+const MAX_COMBOS = 200_000
+
+/** All readings of a line from its candidates, with how far down each glyph's list it went. */
+function readings(alts: Alts): { text: string; rank: number }[] {
+  if (alts.reduce((n, a) => n * a.length, 1) > MAX_COMBOS) return []
+  let out: { text: string; rank: number }[] = [{ text: '', rank: 0 }]
+  for (const choices of alts) out = out.flatMap(o => choices.map((c, i) => ({ text: o.text + c, rank: o.rank + i })))
+  return out
+}
+
+/**
+ * When Activity x Quantity doesn't make the total, one line has a misread digit (a digit touching the heart
+ * icon can look like another). Tries each glyph's next-best characters, on the Activity x Quantity line first
+ * (the total's digits are sharper), and returns the lines that fit, or null when nothing fits or two readings
+ * fit equally well.
+ */
+export function reconcile(total: Alts, aq: Alts): { total: string; aq: string } | null {
+  const first = (a: Alts) => a.map(c => c[0]).join('')
+  const best = (cands: { text: string; rank: number }[]) => {
+    const lowest = Math.min(...cands.map(c => c.rank))
+    const top = cands.filter(c => c.rank === lowest)
+    return top.length === 1 ? top[0].text : null
+  }
+  const totalText = first(total)
+  const aqFits = readings(aq).filter(r => stats(totalText, r.text).fits)
+  if (aqFits.length) {
+    const text = best(aqFits)
+    return text === null ? null : { total: totalText, aq: text }
+  }
+  const aqText = first(aq)
+  const totalFits = readings(total).filter(r => stats(r.text, aqText).fits)
+  const text = totalFits.length ? best(totalFits) : null
+  return text === null ? null : { total: text, aq: aqText }
+}
+
 export interface TankRead { monster: ScreenMonster | null; fields: Record<string, FieldRead> }
 
 /**
@@ -80,8 +119,12 @@ export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: 
 
   const total = readText(img, g, l.totalBand[i], 'label', data.digits.label)
   const aq = readText(img, g, l.aqBand[i], 'label', data.digits.label)
-  const st = stats(total?.text, aq?.text)
-  const fits = st.fits && !!total && !!aq && total.score >= DIGIT_MIN && aq.score >= DIGIT_MIN
+  let st = stats(total?.text, aq?.text)
+  // a digit beside the heart icon can be misread: the total decides which next-best digits are right
+  const fix = !st.fits && total && aq ? reconcile(total.alts, aq.alts) : null
+  if (fix) st = stats(fix.total, fix.aq)
+  // numbers that multiply to the total are right whatever the glyph scores: the check is too strict to pass by chance
+  const fits = st.fits && !!total && !!aq && (!!fix || (total.score >= DIGIT_MIN && aq.score >= DIGIT_MIN))
   fields[`tank${i}.activity`] = { sure: fits, guess: String(st.activity), score: aq?.score, second: aq?.second }
   fields[`tank${i}.quantity`] = { sure: fits, guess: String(st.quantity), score: aq?.score, second: aq?.second }
   return { monster: { archetype, rarity, activity: st.activity, quantity: st.quantity }, fields }

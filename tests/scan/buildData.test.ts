@@ -20,17 +20,16 @@ describe.skipIf(!local)('hand-only labels with the equipped instruments', () => 
   it('also teach the panel icons', () => {
     const img = decodePng(readFileSync('training/g3-ticks/085-tick.png'))
     const data = buildData([{ img, label: { kind: 'cards', cards: { phase: 'potion', hand: ['Rousing Salts', 'Anesthetic Tincture - Agito', 'Twin Hormone - Bone Sentry'], instruments: ['Contracted Claws', 'Rawhide Restraint', 'Canine Teeth File'] } } }])
-    expect(Object.keys(data.instrumentIcons).sort()).toEqual(['Canine Teeth File', 'Contracted Claws', 'Rawhide Restraint'])
+    expect(Object.keys(data.instrumentIcons).sort()).toEqual(['Canine Teeth File', 'Contracted Claws', 'Rawhide Restraint', 'none'])
   })
 })
 
-describe.skipIf(!existsSync('training/h1-013-screen.png'))('a frame whose instrument panel shows something unknown', () => {
-  it('teaches the board but no panel icons', () => {
+describe.skipIf(!existsSync('training/h1-013-screen.png'))('a frame whose panel holds a permanent item', () => {
+  it('learns that item under its own name, apart from the instruments and the empty slots', () => {
     const truth = JSON.parse(readFileSync('scripts/scan/truth.json', 'utf8'))
     const img = decodePng(readFileSync('training/h1-013-screen.png'))
     const data = buildData([{ img, label: truth['h1-013-screen.png'] }])
-    expect(Object.keys(data.digits.label).length).toBeGreaterThan(5)
-    expect(data.instrumentIcons).toEqual({})
+    expect(Object.keys(data.instrumentIcons).sort()).toEqual(['(starting item)', 'none'])
   })
 })
 

@@ -10,7 +10,8 @@ it('places the six tanks across a 3440x1440 frame as measured', () => {
 it('places the three hand cards and the instruments from the right edge', () => {
   const l = at(3440, 1440)
   expect(l.cardArt.map(r => Math.round(r.x + r.w / 2))).toEqual([1630, 1857, 2083])
-  expect(l.instrumentIcon.map(r => Math.round(r.x + r.w / 2))).toEqual([3278, 3143, 3008])
+  // a fourth slot: the panel can hold a permanent item beside three picks
+  expect(l.instrumentIcon.map(r => Math.round(r.x + r.w / 2))).toEqual([3278, 3143, 3008, 2873])
 })
 
 it('scales with the frame height (same aspect, 0.75x)', () => {

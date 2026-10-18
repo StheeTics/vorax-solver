@@ -6,6 +6,24 @@ import type { ScanData } from './data'
 import type { Layout } from './layout'
 import { signature, type Img } from './pixels'
 
+// An empty slot is dark glass: under 0.2% of its pixels are bright, against at least 2% for any icon, at
+// every screen size measured. Matching empty slots against pictures of empty slots didn't carry over to
+// 16:9, whose background differs.
+const BRIGHT = 60
+const FILLED_MIN = 0.008
+
+function holdsAnIcon(img: Img, r: Rect): boolean {
+  const x0 = Math.floor(r.x)
+  const y0 = Math.floor(r.y)
+  let n = 0
+  for (let y = y0; y < Math.min(img.height, y0 + r.h); y++)
+    for (let x = x0; x < Math.min(img.width, x0 + r.w); x++) {
+      const i = (y * img.width + x) * 4
+      if (Math.max(img.data[i], img.data[i + 1], img.data[i + 2]) >= BRIGHT) n++
+    }
+  return n / (r.w * r.h) >= FILLED_MIN
+}
+
 const ICON_MIN = 0.85
 const ICON_GAP = 0.03
 
@@ -13,6 +31,9 @@ const ICON_GAP = 0.03
 export const iconPattern = (img: Img, r: Rect) => signature(img, r, 24, 24)
 
 const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0)
+
+/** The permanent item at the oldest end of some players' panels (a teal ewer): not an instrument, skipped. */
+export const STARTING_ITEM = '(starting item)'
 
 /** Panel icons a player named in this browser (WhichPick), kept under `icon:${name}` beside the named cards. */
 export const ICON_PREFIX = 'icon:'
@@ -25,15 +46,16 @@ export function readInstruments(img: Img, l: Layout, data: ScanData, local: Reco
   const reads: FieldRead[] = []
   const ranksFromRight: [string, number][][] = []
   for (const r of l.instrumentIcon) {
+    if (!holdsAnIcon(img, r)) break
     const p = iconPattern(img, r)
-    const ranked = Object.entries(icons).map(([n, vs]) => [n, Math.max(...vs.map(v => dot(v, p)))] as [string, number]).sort((a, b) => b[1] - a[1])
-    if (ranked[0][0] === 'none') break
+    const ranked = Object.entries(icons).filter(([n]) => n !== 'none').map(([n, vs]) => [n, Math.max(...vs.map(v => dot(v, p)))] as [string, number]).sort((a, b) => b[1] - a[1])
+    if (ranked[0][0] === STARTING_ITEM) continue
     fromRight.push(ranked[0][0])
-    ranksFromRight.push(ranked.filter(([n]) => n !== 'none'))
+    ranksFromRight.push(ranked.filter(([n]) => n !== STARTING_ITEM))
     reads.push({ sure: ranked[0][1] >= ICON_MIN && ranked[0][1] - (ranked[1]?.[1] ?? 0) >= ICON_GAP, guess: ranked[0][0], score: ranked[0][1], second: ranked[1]?.[1] })
   }
   const names = fromRight.reverse()
   const fields: Record<string, FieldRead> = {}
   reads.reverse().forEach((f, i) => (fields[`instrument${i}`] = f))
-  return { names, fields, ranks: ranksFromRight.reverse(), known: Object.keys(icons).filter(n => n !== 'none') }
+  return { names, fields, ranks: ranksFromRight.reverse(), known: Object.keys(icons).filter(n => n !== 'none' && n !== STARTING_ITEM) }
 }

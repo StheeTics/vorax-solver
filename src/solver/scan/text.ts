@@ -103,7 +103,24 @@ export function glyphs(img: Img, r: Rect, kind: TextKind): Rect[] {
     const last = out.filter(g => g.h >= 0.25 * h && g.h <= 0.5 * h).pop()
     return last ? [last] : []
   }
-  return splitWide(out, x => {
+  // a bright sliver of a heart's rim next to the digits is short and narrow; an x is short but digit-wide
+  const tall = Math.max(0, ...out.map(g => g.h))
+  const widths = out.map(g => g.w).sort((a, b) => a - b)
+  const typicalW = widths[Math.floor(widths.length / 2)] ?? 0
+  const kept = out.filter(g => !(g.h < 0.6 * tall && g.w < 0.55 * typicalW))
+  // digits share their top and bottom: a bright bit of the heart's tail touching one stretches its box
+  const mid = (v: number[]) => [...v].sort((a, b) => a - b)[Math.floor(v.length / 2)]
+  const typicalH = mid(kept.map(g => g.h))
+  const clean = kept.filter(g => g.h >= 0.8 * typicalH && g.h <= 1.15 * typicalH)
+  const rowTop = clean.length >= 2 ? mid(clean.map(g => g.y)) : -1
+  const rowBottom = clean.length >= 2 ? mid(clean.map(g => g.y + g.h - 1)) : -1
+  const clipped = kept.map(g => {
+    if (rowTop < 0 || g.h <= 1.15 * typicalH) return g
+    const y0 = Math.max(g.y, rowTop)
+    const y1 = Math.min(g.y + g.h - 1, rowBottom)
+    return y1 > y0 ? { ...g, y: y0, h: y1 - y0 + 1 } : g
+  })
+  return splitWide(clipped, x => {
     let n = 0
     for (let y = top; y <= bottom; y++) n += on[y * w + x - x0]
     return n
