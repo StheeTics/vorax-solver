@@ -7,6 +7,7 @@ import { crop } from '../scan/pixels'
 import { iconPattern } from '../scan/instruments'
 import { shareIcon } from '../share/icon'
 import styles from './WhatIsThis.module.css'
+import own from './WhichPick.module.css'
 
 interface Props {
   question: PickQuestion
@@ -43,10 +44,11 @@ export function WhichPick({ question, count, frame, onPicked, onSkip }: Props) {
   }
 
   return (
-    <div className={styles.what}>
+    <div className={`${styles.what} ${own.ask}`} role="group" aria-label="Which instrument did you pick?">
       <canvas ref={canvas} className={styles.card} aria-label="The new instrument icon" />
       <div className={styles.pick}>
-        <span>Which instrument did you pick?</span>
+        <span className={own.question}>Which instrument did you pick?</span>
+        <span className={own.why}>The Solver hasn't seen this icon yet. Your answer teaches it.</span>
         {question.offer.map(n => (
           <button key={n} type="button" onClick={() => void choose(n)}>{n}</button>
         ))}

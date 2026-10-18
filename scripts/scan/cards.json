@@ -2157,5 +2157,199 @@
    "Rawhide Restraint",
    "Vermicular Spinal Cord"
   ]
+ },
+ "g7-015-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Brain Fog Tincture",
+   "Gray Matter Spinal Solution",
+   "Viscous Bile Solution"
+  ],
+  "instruments": [
+   "Prismatic Liver"
+  ]
+ },
+ "g7-024-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Petrified Spinal Solution",
+   "Eggshell Powder"
+  ],
+  "instruments": [
+   "Prismatic Liver"
+  ]
+ },
+ "g7-030-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Rare Potion Kit (Small)",
+   "Xeno-Hormone",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "instruments": [
+   "Prismatic Liver"
+  ]
+ },
+ "g7-034-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Slender-Limb Powder - Pest",
+   "Leptomeningeal Solution"
+  ],
+  "instruments": [
+   "Prismatic Liver"
+  ]
+ },
+ "g7-041-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Slender-Limb Powder - Bone Sentry",
+   "Viviparous Hormone"
+  ],
+  "instruments": [
+   "Prismatic Liver"
+  ]
+ },
+ "g7-045-board.png": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Eyelid Speculum",
+   "Black Goat Gut Suture"
+  ],
+  "instruments": [
+   "Prismatic Liver"
+  ]
+ },
+ "g7-050-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Eggshell Powder",
+   "Bewitching Tincture"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum"
+  ]
+ },
+ "g7-057-board.png": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Fouled Scraper",
+   "Black Goat Gut Suture"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum"
+  ]
+ },
+ "g7-061-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Pure Leech Solution",
+   "Brain Fog Tincture"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
+ },
+ "g7-067-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Eggshell Powder"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
+ },
+ "g7-075-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Xeno-Hormone",
+   "Rare Potion Kit (Small)"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
+ },
+ "g7-079-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Digestive Enzyme Solution",
+   "Anesthetic Tincture - Agito"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
+ },
+ "g7-084-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Slender-Limb Powder - Bone Sentry",
+   "Xeno-Hormone"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
+ },
+ "g7-093-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Mutagenic Powder",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
+ },
+ "g7-100-board.png": {
+  "phase": "protocol",
+  "hand": [
+   "Cyst Rupture Therapy",
+   "Laser Amputation",
+   "Trepanation"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
+ },
+ "g7-105-board.png": {
+  "phase": "protocol",
+  "hand": [
+   "Yellow Bile Therapy",
+   "Holistic Acupuncture Therapy",
+   "Laser Amputation"
+  ],
+  "instruments": [
+   "Prismatic Liver",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ]
  }
 }

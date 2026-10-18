@@ -71,8 +71,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const keepAdvice = useRef<Keep | null>(null)
   // instruments are remembered through a game rather than re-read from their small icons each time
   const tracker = useRef(newTracker())
-  // a pick the tracker can't place waits here for the player's answer
-  const [pickAsk, setPickAsk] = useState<{ question: PickQuestion; count: number; frame: ImageData; keep?: Keep } | null>(null)
+  // picks the tracker can't place wait here for the player's answers, oldest first; a new one never replaces one
+  const [pickAsks, setPickAsks] = useState<{ id: number; question: PickQuestion; count: number; frame: ImageData; keep?: Keep }[]>([])
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -94,7 +94,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       if (!raw.problems.some(p => p.kind === 'notFound')) {
         const t = trackInstruments(tracker.current, raw, trigger)
         tracker.current = t.tracker
-        if (t.ask) setPickAsk({ question: t.ask, count: t.instruments.length, frame: img, keep })
+        const ask = t.ask
+        if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++unknownId, question: ask, count: t.instruments.length, frame: img, keep }])
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
         r = { ...raw, state: { ...raw.state, instruments: t.instruments }, fields: { ...fields, ...t.fields } }
       }
@@ -125,10 +126,11 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     if (frame) await onFrame(frame, reading?.frame?.trigger, refs)
   }
 
-  const answerPick = async (name: string) => {
-    if (!pickAsk) return
-    const { question, keep } = pickAsk
-    setPickAsk(null)
+  const answerPick = async (id: number, name: string) => {
+    const asked = pickAsks.find(a => a.id === id)
+    if (!asked) return
+    const { question, keep } = asked
+    setPickAsks(list => list.filter(a => a.id !== id))
     const owned = [...tracker.current.owned]
     owned[question.slot] = name
     tracker.current = { ...tracker.current, owned }
@@ -206,7 +208,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </div>
       )}
 
-      {pickAsk && <WhichPick question={pickAsk.question} count={pickAsk.count} frame={pickAsk.frame} onPicked={name => void answerPick(name)} onSkip={() => setPickAsk(null)} />}
       {unknowns.map(u => (
         <WhatIsThis key={u.id} problem={u.problem} phase={u.phase} frame={u.frame} onNamed={() => void named(u.id)} onSkip={() => setUnknowns(list => list.filter(x => x.id !== u.id))} />
       ))}
@@ -218,6 +219,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </button>
       )}
       <AdvicePanel advice={advice} refining={refining} state={state} iconsKnown={reading?.iconsKnown} />
+      {pickAsks.map(a => (
+        <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} />
+      ))}
       <ShareSwitch />
 
       <Footnote className={styles.footnote} />

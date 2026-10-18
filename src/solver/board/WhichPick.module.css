@@ -1,0 +1,17 @@
+.ask {
+  padding: 12px 14px;
+  border: 1px solid var(--keyword);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--keyword) 10%, transparent);
+}
+
+.question {
+  color: var(--keyword);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.why {
+  color: var(--text);
+}

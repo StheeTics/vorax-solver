@@ -157,3 +157,25 @@ it('asks which instrument was picked, and the answer sets it', async () => {
   await waitFor(() => expect(screen.queryByText('Which instrument did you pick?')).toBeNull())
   expect((screen.getByLabelText('Instrument 1') as HTMLSelectElement).value).toBe('Egg-Burdened Butterfly')
 })
+
+it('a second pick question doesn’t replace one still unanswered', async () => {
+  localStorage.setItem('vorax.solverSource', 'screenshot')
+  const offer = (hand: string[], instruments: string[]): Reading => ({ state: { ...emptyState(), phase: 'instrument', round: 2, hand, instruments }, fields: {}, problems: [], instrumentRanks: instruments.map(() => [['Hypertrophic Pituitary', 0.99]]) })
+  const board = (instruments: string[], ranks: [string, number][][]): Reading => ({ state: { ...emptyState(), round: 3, hand: ['Xeno-Hormone'], instruments }, fields: {}, problems: [], instrumentRanks: ranks })
+  const unpictured: [string, number][] = [['Hypertrophic Pituitary', 0.5]]
+  const readings = [
+    offer(['Prismatic Liver', 'Hypertrophic Pituitary', 'Contracted Claws'], []),
+    board(['Hypertrophic Pituitary'], [unpictured]),
+    offer(['Eyelid Speculum', 'Sloughed Cortex', 'Black Goat Gut Suture'], ['x']),
+    board(['Hypertrophic Pituitary', 'Hypertrophic Pituitary'], [[['Hypertrophic Pituitary', 0.99]], unpictured]),
+  ]
+  render(<SolverApp scanner={async () => readings.shift()!} />)
+  const pick = () => fireEvent.change(screen.getByLabelText('Choose a screenshot'), { target: { files: [new File(['x'], 's.png', { type: 'image/png' })] } })
+  for (let left = 3; left >= 0; left--) {
+    pick()
+    await waitFor(() => expect(readings).toHaveLength(left))
+  }
+  await waitFor(() => expect(screen.getAllByText('Which instrument did you pick?')).toHaveLength(2))
+  expect(screen.getByRole('button', { name: 'Prismatic Liver' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Eyelid Speculum' })).toBeTruthy()
+})
