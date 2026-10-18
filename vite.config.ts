@@ -14,9 +14,12 @@ const build = (() => {
   }
 })()
 
+/** version.json beside the pages: open pages compare it with their own build to offer a refresh (src/ui/updateToast.ts). */
+const versionFile = { name: 'version-file', generateBundle(this: { emitFile: (f: { type: 'asset'; fileName: string; source: string }) => void }) { this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ build }) }) } }
+
 export default defineConfig({
   base: '/tli-vorax-simulator/',
-  plugins: [react()],
+  plugins: [react(), versionFile],
   define: { __BUILD__: JSON.stringify(build) },
   build: {
     rollupOptions: {

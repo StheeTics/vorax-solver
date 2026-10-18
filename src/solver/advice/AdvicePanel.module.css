@@ -15,7 +15,6 @@
 }
 
 .wait,
-.refining,
 .legend {
   margin: 0;
   color: var(--text-faint);
@@ -62,4 +61,16 @@
   color: var(--keyword);
   font-size: 16px;
   font-weight: 600;
+}
+
+/* the last board's advice, kept up while the new board is worked out */
+.stale > :not(.updating) {
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+
+.updating {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: 0.9em;
 }

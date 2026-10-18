@@ -61,7 +61,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const read = scanner ?? workerScan
   const canLive = liveSupported()
   const board = useMemo(() => ({ ...state, shelley }), [state, shelley])
-  const { advice, refining } = useAdvice(board)
+  const { shown, updating } = useAdvice(board)
+  // the advice for the board on screen now (capture mode saves it beside the frame)
+  const advice = shown && shown.board === board ? shown.advice : null
   // capture mode: the final advice for a saved frame is saved beside it
   const keepAdvice = useRef<Keep | null>(null)
   // instruments are remembered through a game rather than re-read from their small icons each time
@@ -192,7 +194,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </div>
       )}
 
-      <AdvicePanel advice={advice} refining={refining} state={state} iconsKnown={reading?.iconsKnown} />
+      <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} />
       {pickAsks.map(a => (
         <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} />
       ))}
