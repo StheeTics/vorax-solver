@@ -3,7 +3,7 @@ import type { PotionDef } from '../defs'
 
 export const RARE_POTIONS: PotionDef[] = [
   {
-    id: 0, name: 'Probiotic Mold Solution', rarity: 'rare', targeting: 'auto', item: 'solution',
+    id: 0, name: 'Probiotic Enzyme Solution', rarity: 'rare', targeting: 'auto', item: 'solution',
     text: 'For each group of {Pest}s you have, +11 {act}Activity to all {Pest}s',
     effect(c) {
       const pests = c.byArchetype('pest')
@@ -11,14 +11,14 @@ export const RARE_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 1, name: 'Molted Skin Solution', rarity: 'rare', targeting: 'select1to2', item: 'solution',
+    id: 1, name: 'Slough Solution', rarity: 'rare', targeting: 'select1to2', item: 'solution',
     text: 'Select 1–2 group(s) of monsters and {fuse} them into 1 group of {Pest}s',
     effect(c, targets) {
       if (targets.length) c.fuse(targets, 'pest', rollRarity(c.rng))
     },
   },
   {
-    id: 2, name: 'Pia Mater Solution', rarity: 'rare', targeting: 'select1', item: 'solution',
+    id: 2, name: 'Leptomeningeal Solution', rarity: 'rare', targeting: 'select1', item: 'solution',
     text: 'Select 1 group(s) of monsters and +30 to their {act}Activity. Triggers 2 times on Magic {Agito}s and 3 times on Rare and Boss {Agito}s',
     effect(c, [t]) {
       const mon = c.tanks[t]
@@ -41,7 +41,7 @@ export const RARE_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 4, name: 'Abscess-Clearing Ointment', rarity: 'rare', targeting: 'select1', item: 'ointment',
+    id: 4, name: 'Cleansing Ointment', rarity: 'rare', targeting: 'select1', item: 'ointment',
     text: 'Select 1 group(s) of monsters and +20 to their {act}Activity. If they are {BoneSentry}s, an additional +41 {qty}Quantity and {remove} the monsters to their right',
     effect(c, [t]) {
       const mon = c.tanks[t]

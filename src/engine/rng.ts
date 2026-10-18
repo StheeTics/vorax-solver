@@ -7,6 +7,8 @@ export interface Rng {
   /** Unbiased Fisher–Yates; returns a copy. */
   shuffle<T>(arr: readonly T[]): T[]
   sample<T>(arr: readonly T[], n: number): T[]
+  /** one item, each with chance weight / total weight */
+  weighted<T>(arr: readonly T[], weight: (t: T) => number): T
   /** Serializable state; createRng(state()) resumes the sequence. */
   state(): number
 }
@@ -30,6 +32,15 @@ function withHelpers(next: () => number, state: () => number): Rng {
     pick: arr => (arr.length === 0 ? undefined : arr[int(arr.length)]),
     shuffle,
     sample: (arr, n) => shuffle(arr).slice(0, Math.min(n, arr.length)),
+    weighted: (arr, weight) => {
+      const total = arr.reduce((s, x) => s + Math.max(0, weight(x)), 0)
+      let r = next() * total
+      for (const x of arr) {
+        r -= Math.max(0, weight(x))
+        if (r < 0) return x
+      }
+      return arr[arr.length - 1]
+    },
     state,
   }
 }

@@ -49,16 +49,16 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
 **Potions**
 - **Always take:**
   - **Insect Attractant:** adds 4 Pest groups.
-  - **Molted Skin Solution:** fuses 1–2 groups into a Pest, which counts as an add.
+  - **Slough Solution:** fuses 1–2 groups into a Pest, which counts as an add.
   - **Xeno-Hormone:** removes 1–2 groups and adds 4. With Incubation Sac that's 4 triggers.
   - **Potion Boxes and Rare Potion Kits**
 - **Good:** Bewitching Tincture, Mutagenic Powder, and cards that add Pests (Targeted Xeno-Hormone, Slender-Limb Powder - Pest, Twin Hormone - Pest).
-- **Skip:** Anesthetic Tincture - Aemberon, Probiotic Mold Solution, Brain Fog Tincture.
+- **Skip:** Anesthetic Tincture - Aemberon, Probiotic Enzyme Solution, Brain Fog Tincture.
 
 **How to play the rounds**
 - **Get to 2 Pest groups as early as possible** with Incubation Sac, and to as many as you can with Chrysalis.
 - **Keep an empty tank or two with Incubation Sac.** An add with all 6 tanks full fails, and a failed add doesn't trigger the Sac.
-- **Use Xeno-Hormone and Molted Skin to clear tanks,** then refill them with adds.
+- **Use Xeno-Hormone and Slough Solution to clear tanks,** then refill them with adds.
 
 ---
 
@@ -72,12 +72,12 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
 
 **Potions**
 - **Always take:**
-  - **Molted Skin Solution:** fusing removes the source groups.
+  - **Slough Solution:** fusing removes the source groups.
   - **Xeno-Hormone:** removes 1–2, then adds 4 more to remove later.
   - **Potent Xenopurge Powder, Xenopurge Powder:** big Quantity plus removals.
   - **Potion Boxes and Rare Potion Kits**
 - **Good:** Bewitching Tincture, Digestive Enzyme Solution, Targeted Xeno-Hormone.
-- **Skip:** Probiotic Mold Solution, Anesthetic Tincture - Aemberon, Eggshell Powder.
+- **Skip:** Probiotic Enzyme Solution, Anesthetic Tincture - Aemberon, Eggshell Powder.
 
 **How to play the rounds**
 - **Think "feed and remove":** add cheap monsters, then remove them. Every non-Bone Sentry removed is +150 Quantity.
@@ -91,7 +91,7 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
 **Engine:** Aberrant Sprout gives **+35 Activity to every monster each time a monster mutates into an Aemberon.**
 
 **Instruments**
-- **Basic:** **Aberrant Sprout.** It beats Mottled Liver.
+- **Basic:** **Aberrant Sprout.** It beats Prismatic Liver.
 - **Advanced, in order:** Plague Madonna and Beak of the Twice-Born (close), then Rawhide Restraint, Vermicular Spinal Cord, Canine Teeth File.
 
 **Potions**
@@ -100,8 +100,8 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
   - **Compound Rebirth Pill:** mutates everything into Aemberons.
   - **Potent Xenopurge Powder, Xenopurge Powder, Mutagenic Powder:** Quantity.
   - **Potion Boxes**
-- **Good:** Molted Skin Solution, Rare Potion Kits, Bewitching Tincture, Anesthetic Tincture - Aemberon.
-- **Skip:** cards that add random monsters (Spinal Solutions, Viviparous Hormone, Xeno-Hormones), Twin Hormone - Pest, Probiotic Mold Solution.
+- **Good:** Slough Solution, Rare Potion Kits, Bewitching Tincture, Anesthetic Tincture - Aemberon.
+- **Skip:** cards that add random monsters (Spinal Solutions, Viviparous Hormone, Xeno-Hormones), Twin Hormone - Pest, Probiotic Enzyme Solution.
 
 **How to play the rounds**
 - **Early on, play mutation cards** to trigger Sprout. Its +35 Activity hits every monster.
@@ -122,8 +122,8 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
   - **Bewitching Tincture:** awakens one tier, the fastest way to a Rare Agito.
   - **Potent Xenopurge Powder, Xenopurge Powder, Mutagenic Powder:** Quantity.
   - **Potion Boxes**
-- **Good:** Anesthetic Tincture - Agito (makes a Magic Agito), Molted Skin Solution, Rare Potion Kits, Fresh Spinal Powder.
-- **Skip:** Targeted Xeno-Hormone, Twin Hormone - Pest, Anesthetic Tincture - Aemberon, Probiotic Mold Solution, Viviparous Hormone, Spinal Solutions.
+- **Good:** Anesthetic Tincture - Agito (makes a Magic Agito), Slough Solution, Rare Potion Kits, Fresh Spinal Powder.
+- **Skip:** Targeted Xeno-Hormone, Twin Hormone - Pest, Anesthetic Tincture - Aemberon, Probiotic Enzyme Solution, Viviparous Hormone, Spinal Solutions.
 
 **How to play the rounds**
 - **Your first goal is a Rare or Boss Agito.** Until you have one, Hypertrophic Pituitary does nothing.

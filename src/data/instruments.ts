@@ -83,7 +83,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 8, name: 'Mottled Liver', pool: 'basic', timing: { kind: 'reactive', on: ['mutate'] },
+    id: 8, name: 'Prismatic Liver', pool: 'basic', timing: { kind: 'reactive', on: ['mutate'] },
     text: 'When you have at least 2 group(s) of {Aemberon}s, each time a monster {mutate}s, +20 {act}Activity to all monsters',
     onEvent(c) {
       if (c.byArchetype('aemberon').length < 2) return
@@ -260,6 +260,20 @@ export const INSTRUMENTS: InstrumentDef[] = [
       if (c.byRarity('normal').length < 3) return
       all(c, 0, 30)
       say(c, this.name, '+30 Quantity to all monsters')
+    },
+  },
+  {
+    // Seen on a live round-2 offer (2026-10-18); not in the Chinese sim. Assumed advanced pool, and to need 2
+    // Pest groups to fire. The new group's rarity is rolled, as Slough Solution's fuse into Pests is.
+    id: 25, name: 'Egg-Burdened Butterfly', pool: 'advanced', timing: { kind: 'periodic', every: 3 },
+    text: 'Every 3 round(s), 2 random group(s) of {Pest}s {fuse} into 1 group(s) of random {Pest}s',
+    endOfRound(c) {
+      const pests = c.byArchetype('pest')
+      if (pests.length < 2) return
+      const first = c.rng.pick(pests)!
+      const second = c.rng.pick(pests.filter(t => t !== first))!
+      say(c, this.name, `fuses the Pests in tanks ${first + 1} and ${second + 1}`)
+      c.fuse([first, second], 'pest', rollRarity(c.rng))
     },
   },
 ]

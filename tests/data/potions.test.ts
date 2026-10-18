@@ -12,18 +12,18 @@ const act = (t: Tanks, i: number) => t[i]!.activity
 const qty = (t: Tanks, i: number) => t[i]!.quantity
 
 describe('rare potions', () => {
-  it('0 Probiotic Mold Solution', () => {
+  it('0 Probiotic Enzyme Solution', () => {
     const t = board(m('pest', 'normal'), m('pest', 'normal'), m('boneSentry', 'normal'))
     run(0, t)
     expect([act(t, 0), act(t, 1), act(t, 2)]).toEqual([23, 23, 1])
   })
-  it('1 Molted Skin Solution', () => {
+  it('1 Slough Solution', () => {
     const t = board(m('aemberon', 'magic'), m('boneSentry', 'rare'))
     run(1, t, [0, 1])
     expect(t[0]).toMatchObject({ archetype: 'pest', activity: 20, quantity: 36 })
     expect(t[1]).toBeNull()
   })
-  it('2 Pia Mater Solution', () => {
+  it('2 Leptomeningeal Solution', () => {
     for (const [mon, expected] of [[m('agito', 'magic'), 65], [m('agito', 'rare'), 105], [m('aemberon', 'magic'), 35]] as const) {
       const t = board(mon)
       run(2, t, [0])
@@ -39,7 +39,7 @@ describe('rare potions', () => {
     run(3, u)
     expect(u[0]).toEqual(m('aemberon', 'normal'))
   })
-  it('4 Abscess-Clearing Ointment', () => {
+  it('4 Cleansing Ointment', () => {
     const t = board(m('boneSentry', 'normal'), null, m('aemberon', 'normal'))
     run(4, t, [0])
     expect(t[0]).toMatchObject({ activity: 21, quantity: 77 })
@@ -105,7 +105,7 @@ describe('magic potions', () => {
     const t = board(m('pest', 'normal')); run(13, t, [0])
     expect(t[0]).toMatchObject({ rarity: 'magic', activity: 32 })
   })
-  it('14 Mixed Leech Solution', () => {
+  it('14 Compound Leech Solution', () => {
     const t = board(m('aemberon', 'magic'), m('pest', 'magic'), m('boneSentry', 'normal')); run(14, t, [0])
     expect([act(t, 0), act(t, 1), act(t, 2)]).toEqual([36, 36, 1])
   })
@@ -198,7 +198,7 @@ describe('supreme potions', () => {
     const t = board(m('pest', 'normal'), m('boneSentry', 'rare')); run(36, t)
     expect(t[0]).toMatchObject({ activity: 43, quantity: 78 })
   })
-  it('37 Plague Peat Dressing', () => {
+  it('37 Plague Quarter Peat Poultice', () => {
     const t = board(m('boneSentry', 'normal'), m('pest', 'normal'), m('aemberon', 'normal')); run(37, t)
     expect(t[1]).toBeNull(); expect(t[2]).toBeNull()
     expect(t[0]).toMatchObject({ activity: 41, quantity: 114 })
@@ -209,6 +209,13 @@ describe('supreme potions', () => {
     for (let i = 0; i < 6; i++) expect(t[i]).toEqual({ archetype: 'pest', rarity: 'normal', activity: 21, quantity: 66 })
     expect(events.filter(e => e.type === 'addOverflow')).toHaveLength(2)
   })
+  it('41 Rousing Salts: +111 Activity and +111 Quantity to one random group', () => {
+    const t = board(m('pest', 'normal'), m('boneSentry', 'rare'), m('agito', 'magic'))
+    run(41, t, [], stubRng([0.5]))
+    expect(t[1]).toMatchObject({ activity: 126, quantity: 123 })
+    expect(t[0]).toMatchObject({ activity: 1, quantity: 36 })
+    expect(t[2]).toMatchObject({ activity: 5, quantity: 24 })
+  })
   it('39 Purest Holy Water', () => {
     const t = board(m('agito', 'normal'), m('agito', 'boss'), m('agito', 'magic')); run(39, t)
     expect(t[0]).toMatchObject({ rarity: 'rare', activity: 121 })
@@ -218,16 +225,16 @@ describe('supreme potions', () => {
 })
 
 describe('pools', () => {
-  it('has 41 potions (ids 0–40); boxes have no effect, others do', () => {
-    expect(POTIONS).toHaveLength(41)
+  it('has 42 potions (ids 0–41); boxes have no effect, others do', () => {
+    expect(POTIONS).toHaveLength(42)
     for (const p of POTIONS) {
       const isBox = typeof p.targeting === 'object'
       expect(!!p.effect).toBe(!isBox)
     }
   })
-  it('BOX_POOL excludes boxes and supremes; SUPREME_POOL is 35–39; NORMAL_POOL has boxes, no supremes', () => {
+  it('BOX_POOL excludes boxes and supremes; SUPREME_POOL is 35–39 and 41; NORMAL_POOL has boxes, no supremes', () => {
     expect(BOX_POOL.some(p => typeof p.targeting === 'object' || p.rarity === 'supreme')).toBe(false)
-    expect(SUPREME_POOL.map(p => p.id)).toEqual([35, 36, 37, 38, 39])
+    expect(SUPREME_POOL.map(p => p.id)).toEqual([35, 36, 37, 38, 39, 41])
     expect(NORMAL_POOL.some(p => p.rarity === 'supreme')).toBe(false)
     expect(NORMAL_POOL.filter(p => typeof p.targeting === 'object').map(p => p.id).sort()).toEqual([33, 34, 40])
   })
@@ -274,6 +281,37 @@ describe('more names confirmed from the English client', () => {
   })
 })
 
-it('Vivegenic Powder is the official name for 活殖药粉', () => {
-  expect(potion(16).name).toBe('Vivegenic Powder')
+it('Vivigenic Powder is the official name for 活殖药粉', () => {
+  expect(potion(16).name).toBe('Vivigenic Powder')
+})
+
+it('uses the in-game name Slough Solution for the Pest-fusing rare potion', () => {
+  expect(POTIONS.find(p => p.id === 1)?.name).toBe('Slough Solution')
+})
+
+it('uses the in-game name Compound Leech Solution for the same-rarity leech potion', () => {
+  expect(POTIONS.find(p => p.id === 14)?.name).toBe('Compound Leech Solution')
+})
+
+it('uses the in-game names seen on live screenshots (2026-10-18)', () => {
+  const name = (id: number) => POTIONS.find(p => p.id === id)?.name
+  expect(name(2)).toBe('Leptomeningeal Solution')
+  expect(name(4)).toBe('Cleansing Ointment')
+  expect(name(33)).toBe('Potion Kit (Large)')
+})
+
+it('uses the in-game name Plague Quarter Peat Poultice for the Bone Sentry ULT potion', () => {
+  expect(POTIONS.find(p => p.id === 37)?.name).toBe('Plague Quarter Peat Poultice')
+})
+
+it('spells Vivigenic Powder as the game does', () => {
+  expect(POTIONS.some(p => p.name === 'Vivigenic Powder')).toBe(true)
+})
+
+it('uses the in-game name Potion Kit (Small) for the plain 3-potion kit', () => {
+  expect(POTIONS.find(p => p.id === 34)?.name).toBe('Potion Kit (Small)')
+})
+
+it('uses the in-game name Probiotic Enzyme Solution for the Pest-counting rare potion', () => {
+  expect(POTIONS.find(p => p.id === 0)?.name).toBe('Probiotic Enzyme Solution')
 })

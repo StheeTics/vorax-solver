@@ -25,7 +25,7 @@ export const SUPREME_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 37, name: 'Plague Peat Dressing', rarity: 'supreme', targeting: 'auto', item: 'ointment',
+    id: 37, name: 'Plague Quarter Peat Poultice', rarity: 'supreme', targeting: 'auto', item: 'ointment',
     text: 'If you have at least 1 group of {BoneSentry}s, {remove} all non-{BoneSentry} monsters. For each group removed, +20 {act}Activity and +39 {qty}Quantity to all {BoneSentry}s',
     effect(c) {
       if (c.byArchetype('boneSentry').length === 0) return
@@ -54,6 +54,14 @@ export const SUPREME_POTIONS: PotionDef[] = [
         if (r === 'boss') c.boost(t, 120, 0)
         else c.awaken(t, RARITIES[Math.min(RARITIES.indexOf(r) + 2, RARITIES.length - 1)], 120)
       }
+    },
+  },
+  {
+    id: 41, name: 'Rousing Salts', rarity: 'supreme', targeting: 'auto', item: 'pill',
+    text: 'Select 1 random group(s) of monsters, +111 {act}Activity and +111 to their {qty}Quantity',
+    effect(c) {
+      const t = c.rng.pick(c.nonEmpty())
+      if (t !== undefined) c.boost(t, 111, 111)
     },
   },
 ]

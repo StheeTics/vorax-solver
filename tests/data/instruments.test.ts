@@ -62,7 +62,7 @@ describe('basic instruments', () => {
     setup(t, [7]).c.mutate(0, 'aemberon', 'normal')
     expect([t[0]!.activity, t[1]!.activity]).toEqual([36, 36])
   })
-  it('8 Mottled Liver', () => {
+  it('8 Prismatic Liver', () => {
     const t = board(m('aemberon', 'normal'), m('aemberon', 'normal'), m('pest', 'normal'))
     setup(t, [8]).c.mutate(2, 'pest', 'normal')
     expect(t.slice(0, 3).map(x => x!.activity)).toEqual([21, 21, 21])
@@ -168,6 +168,19 @@ describe('advanced instruments', () => {
     endRound(one, [23])
     expect(one.filter(Boolean)).toHaveLength(1)
   })
+  it('25 Egg-Burdened Butterfly: every 3 rounds, 2 random Pest groups fuse into 1 group of Pests', () => {
+    const t = board(m('pest', 'normal', 5, 10), m('pest', 'magic', 7, 20), m('pest', 'normal', 1, 30), m('aemberon', 'normal'))
+    endRound(t, [25], 3)
+    expect(t.filter(x => x?.archetype === 'pest')).toHaveLength(3)
+    endRound(t, [25], 4)
+    const pests = t.filter(x => x?.archetype === 'pest')
+    expect(pests).toHaveLength(2)
+    expect(pests.reduce((s, x) => s + x!.activity, 0)).toBe(13)
+    expect(pests.reduce((s, x) => s + x!.quantity, 0)).toBe(60)
+    const lone = board(m('pest', 'normal'), m('aemberon', 'normal'))
+    endRound(lone, [25], 4)
+    expect(lone.filter(Boolean)).toHaveLength(2)
+  })
   it('24 Nettle Knot', () => {
     const t = board(...n(3, () => m('pest', 'normal')))
     endRound(t, [24])
@@ -179,12 +192,12 @@ describe('advanced instruments', () => {
 })
 
 describe('pools and timing', () => {
-  it('has 24 instruments with the spec timings', () => {
-    expect(INSTRUMENTS).toHaveLength(24)
+  it('has 25 instruments with the spec timings', () => {
+    expect(INSTRUMENTS).toHaveLength(25)
     expect(INSTRUMENTS.filter(i => i.timing.kind === 'reactive').map(i => i.id)).toEqual([2, 5, 6, 7, 8, 12, 16, 22])
-    expect(INSTRUMENTS.filter(i => i.timing.kind === 'periodic').map(i => i.id)).toEqual([19, 20])
+    expect(INSTRUMENTS.filter(i => i.timing.kind === 'periodic').map(i => i.id)).toEqual([19, 20, 25])
     expect(BASIC_POOL.map(i => i.id)).toEqual([1, 2, 3, 4, 5, 6, 7, 8])
-    expect(ADVANCED_POOL).toHaveLength(16)
+    expect(ADVANCED_POOL).toHaveLength(17)
   })
   it('reactive instruments fire immediately in id order (Sac before Spine)', () => {
     const t = board(m('pest', 'normal'), m('pest', 'normal'))
@@ -202,4 +215,8 @@ import { instrument } from '@/data/instruments'
 
 it('uses instrument names confirmed from the English client', () => {
   expect([7, 10, 15, 17, 24].map(id => instrument(id)!.name)).toEqual(['Aberrant Sprout', 'Sloughed Cortex', 'Pig Iron Bone Saw', 'Fouled Scraper', 'Nettle Toggle'])
+})
+
+it('uses the in-game name Prismatic Liver (seen on a live instrument offer)', () => {
+  expect(INSTRUMENTS.find(i => i.id === 8)?.name).toBe('Prismatic Liver')
 })

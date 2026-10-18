@@ -31,14 +31,14 @@ export interface PotionArt {
 /** One distinct drawing per potion, loosely based on the in-game icons. */
 export const POTION_ART: Record<number, PotionArt> = {
   // Solutions — corked bottles
-  0: { vessel: 'bottle', color: '#b9c76a', mark: 'spores' }, // Probiotic Mold Solution
-  1: { vessel: 'bottle', color: '#c9a27a', mark: 'flake' }, // Molted Skin Solution
-  2: { vessel: 'bottle', color: '#dba3b5', mark: 'swirl' }, // Pia Mater Solution
+  0: { vessel: 'bottle', color: '#b9c76a', mark: 'spores' }, // Probiotic Enzyme Solution
+  1: { vessel: 'bottle', color: '#c9a27a', mark: 'flake' }, // Slough Solution
+  2: { vessel: 'bottle', color: '#dba3b5', mark: 'swirl' }, // Leptomeningeal Solution
   6: { vessel: 'bottle', color: '#b8c6cf', mark: 'crystal' }, // Petrified Spinal Solution
   11: { vessel: 'bottle', color: '#9ba4ac', mark: 'swirl' }, // Gray Matter Spinal Solution
   12: { vessel: 'bottle', color: '#efe7d6', mark: 'none' }, // Hollow Spinal Solution
   13: { vessel: 'bottle', color: '#3fbf4a', mark: 'bubbles' }, // Green Bile Solution
-  14: { vessel: 'bottle', color: '#8a2433', mark: 'leech' }, // Mixed Leech Solution
+  14: { vessel: 'bottle', color: '#8a2433', mark: 'leech' }, // Compound Leech Solution
   15: { vessel: 'bottle', color: '#d8c13f', mark: 'bubbles' }, // Digestive Enzyme Solution
   19: { vessel: 'bottle', color: '#cc3444', mark: 'leech' }, // Pure Leech Solution
   22: { vessel: 'bottle', color: '#e0902a', mark: 'drip' }, // Viscous Bile Solution
@@ -59,7 +59,7 @@ export const POTION_ART: Record<number, PotionArt> = {
   5: { vessel: 'sack', color: '#e48d8d', mark: 'none' }, // Fresh Spinal Powder
   8: { vessel: 'sack', color: '#f2eee6', mark: 'shells' }, // Eggshell Powder
   10: { vessel: 'sack', color: '#efe7d6', mark: 'bone' }, // Osteogenic Powder
-  16: { vessel: 'sack', color: '#d8443c', mark: 'none' }, // Vivegenic Powder
+  16: { vessel: 'sack', color: '#d8443c', mark: 'none' }, // Vivigenic Powder
   17: { vessel: 'sack', color: '#9a4fd0', mark: 'rope' }, // Potent Xenopurge Powder
   18: { vessel: 'sack', color: '#c99cf0', mark: 'none' }, // Xenopurge Powder
   21: { vessel: 'sack', color: '#4fd0c2', mark: 'helix' }, // Mutagenic Powder
@@ -67,16 +67,17 @@ export const POTION_ART: Record<number, PotionArt> = {
   27: { vessel: 'sack', color: '#a9a49c', mark: 'smoke', emblem: 'boneSentry' }, // Slender-Limb Powder - Bone Sentry
   // Ointments
   3: { vessel: 'cauldron', color: '#5b5f63', mark: 'bubbles' }, // Osteolytic Ointment
-  4: { vessel: 'jar', color: '#6f9a7c', mark: 'cross' }, // Abscess-Clearing Ointment
-  37: { vessel: 'jar', color: '#6b4a2e', mark: 'spores' }, // Plague Peat Dressing
+  4: { vessel: 'jar', color: '#6f9a7c', mark: 'cross' }, // Cleansing Ointment
+  37: { vessel: 'jar', color: '#6b4a2e', mark: 'spores' }, // Plague Quarter Peat Poultice
   // ULT potions
   35: { vessel: 'pillBottle', color: '#8a1726', mark: 'capsule' }, // Compound Rebirth Pill
   36: { vessel: 'heartFlask', color: '#e0303f', mark: 'glow' }, // Fast-Acting Heart Tonic
   38: { vessel: 'holedPot', color: '#6f7a3e', mark: 'fly' }, // Insect Attractant
   39: { vessel: 'teardrop', color: '#f6e7a8', mark: 'glow' }, // Purest Holy Water
+  41: { vessel: 'pillBottle', color: '#eceae4', mark: 'glow' }, // Rousing Salts
   // Boxes / kits
-  33: { vessel: 'chest', color: '#9a6a3a', mark: 'none' }, // Potion Box (Large)
-  34: { vessel: 'case', color: '#7a1f24', mark: 'none' }, // Rare Potion Box
+  33: { vessel: 'chest', color: '#9a6a3a', mark: 'none' }, // Potion Kit (Large)
+  34: { vessel: 'case', color: '#7a1f24', mark: 'none' }, // Potion Kit (Small)
   40: { vessel: 'case', color: '#6b4a32', mark: 'cross' }, // Rare Potion Kit (Small)
 }
 
@@ -89,7 +90,7 @@ export const INSTRUMENT_ART: Record<number, string> = {
   5: 'bones', // Adherent Metatarsals
   6: 'claw', // Contracted Claws
   7: 'sprout', // Aberrant Sprout
-  8: 'liver', // Mottled Liver
+  8: 'liver', // Prismatic Liver
   9: 'eggCluster', // Clustered Eggs
   10: 'cortex', // Sloughed Cortex
   11: 'garrote', // Sinew Garrote
@@ -106,4 +107,5 @@ export const INSTRUMENT_ART: Record<number, string> = {
   22: 'retractor', // Eyelid Speculum
   23: 'beak', // Beak of the Twice-Born
   24: 'toggle', // Nettle Toggle
+  25: 'butterfly', // Egg-Burdened Butterfly
 }

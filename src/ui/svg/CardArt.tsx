@@ -452,4 +452,14 @@ const TOOLS: Record<string, ReactNode> = {
       <rect x="52" y="18" width="20" height="7" rx="3.5" fill="#8a6b3e" transform="rotate(35 62 21)" />
     </g>
   ),
+  butterfly: (
+    <g stroke={INK} strokeWidth="1.3">
+      <path d="M38 34C26 14 10 14 8 24c-2 10 12 16 28 14Z" fill="#6b5640" />
+      <path d="M42 34c12-20 28-20 30-10 2 10-12 16-28 14Z" fill="#6b5640" />
+      <path d="M38 40c-12 4-20 14-14 20 6 4 12-6 14-14ZM42 40c12 4 20 14 14 20-6 4-12-6-14-14Z" fill="#54432f" />
+      <path d="M40 22v26" stroke="#2a2118" strokeWidth="3" />
+      <circle cx="40" cy="56" r="11" fill="#8a4fc4" />
+      <circle cx="36" cy="52" r="3" fill="#c9a3e8" stroke="none" />
+    </g>
+  ),
 }

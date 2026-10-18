@@ -1,5 +1,6 @@
 import type { Archetype, Monster, Rarity } from '@/engine/types'
 import type { Rng } from '@/engine/rng'
+import { LIVE_WEIGHTS } from './liveWeights'
 
 export const ARCHETYPES: Archetype[] = ['pest', 'aemberon', 'boneSentry', 'agito']
 export const RARITIES: Rarity[] = ['normal', 'magic', 'rare', 'boss']
@@ -32,7 +33,8 @@ export const BASE_STATS: Record<Rarity, { activity: number; quantity: number }> 
   boss: { activity: 300, quantity: 1 },
 }
 
-export const SPAWN_WEIGHTS: Record<Rarity, number> = { normal: 30, magic: 40, rare: 20, boss: 10 }
+/** Measured from live games (src/data/liveWeights.ts). */
+export const SPAWN_WEIGHTS: Record<Rarity, number> = LIVE_WEIGHTS.spawnRarity
 
 /** Activity gained when awakening *into* a rarity. */
 export const AWAKEN_BONUS: Record<Rarity, number> = { normal: 0, magic: 60, rare: 120, boss: 120 }
@@ -42,7 +44,7 @@ export function nextRarity(r: Rarity): Rarity {
 }
 
 export function rollRarity(rng: Rng): Rarity {
-  const roll = rng.next() * 100
+  const roll = rng.next() * RARITIES.reduce((s, r) => s + SPAWN_WEIGHTS[r], 0)
   let acc = 0
   for (const r of RARITIES) {
     acc += SPAWN_WEIGHTS[r]

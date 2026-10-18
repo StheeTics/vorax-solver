@@ -37,7 +37,7 @@ it('Supreme potions say ULT Potion; Agito plural is Agitoes, as in-game', () => 
   expect(ARCHETYPE_PLURALS.agito).toBe('Agitoes')
 })
 
-it('powders: Vivegenic red, Slender-Limb (normal) grey, Xenopurge purple', () => {
+it('powders: Vivigenic red, Slender-Limb (normal) grey, Xenopurge purple', () => {
   expect(POTION_ART[16].color).toBe('#d8443c')
   expect(POTION_ART[23].color).toBe(POTION_ART[27].color)
   expect(POTION_ART[23].color).toBe('#a9a49c')

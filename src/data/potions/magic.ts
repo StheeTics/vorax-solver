@@ -82,7 +82,7 @@ export const MAGIC_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 14, name: 'Mixed Leech Solution', rarity: 'magic', targeting: 'select1', item: 'solution',
+    id: 14, name: 'Compound Leech Solution', rarity: 'magic', targeting: 'select1', item: 'solution',
     text: 'Select 1 group(s) of monsters. +31 {act}Activity to 2 random group(s) of monsters of the same rarity',
     effect(c, [t]) {
       const mon = c.tanks[t]
@@ -101,7 +101,7 @@ export const MAGIC_POTIONS: PotionDef[] = [
     },
   },
   {
-    id: 16, name: 'Vivegenic Powder', rarity: 'magic', targeting: 'auto', item: 'powder',
+    id: 16, name: 'Vivigenic Powder', rarity: 'magic', targeting: 'auto', item: 'powder',
     text: '+32 {qty}Quantity to up to 4 random group(s) of monsters, each of a different rarity',
     effect(c) {
       for (const r of RARITIES) {
