@@ -17,3 +17,13 @@ CREATE TABLE IF NOT EXISTS quota (
   day TEXT NOT NULL,
   n INTEGER NOT NULL
 );
+
+-- One row per instrument panel icon a player named in the Solver ("Which instrument did you pick?"):
+-- `body` is {uid, name, pattern}, the pattern 576 grey levels of the icon, never a screenshot.
+CREATE TABLE IF NOT EXISTS icons (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT NOT NULL UNIQUE,
+  received TEXT NOT NULL,
+  client TEXT NOT NULL,
+  body TEXT NOT NULL
+);

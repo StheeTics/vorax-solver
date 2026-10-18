@@ -2,7 +2,7 @@
 // the repo's scheduled workflow pulls them with the export token. No addresses are stored: the daily
 // quota is counted against a salted hash that changes every day.
 import names from './names.json'
-import { validate } from './validate'
+import { validate, validateIcon } from './validate'
 
 export interface Store {
   /** stores rows with new uids; returns how many were new */
@@ -10,6 +10,9 @@ export interface Store {
   used(key: string, day: string): Promise<number>
   addUsed(key: string, day: string, n: number): Promise<void>
   export(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
+  /** stores an icon with a new uid; returns 1 if it was new */
+  insertIcon(row: { uid: string; client: string; body: string }): Promise<number>
+  exportIcons(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
 }
 
 export interface Env {
@@ -64,6 +67,35 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     return json({ stored, dropped: body.length - stored }, 200, cors)
   }
 
+  if (url.pathname === '/v1/icons' && req.method === 'POST') {
+    const ip = req.headers.get('cf-connecting-ip') ?? 'unknown'
+    const day = new Date().toISOString().slice(0, 10)
+    const client = (await sha256(`${env.IP_SALT}|${day}|${ip}`)).slice(0, 24)
+    if (!(await env.LIMIT.limit({ key: client })).success) return json({ error: 'slow down' }, 429, cors)
+    const text = await req.text()
+    if (text.length > MAX_BYTES) return json({ error: 'too large' }, 413, cors)
+    let raw: unknown
+    try {
+      raw = JSON.parse(text)
+    } catch {
+      return json({ error: 'not JSON' }, 400, cors)
+    }
+    const icon = validateIcon(raw, names)
+    if (!icon) return json({ error: 'not an icon' }, 400, cors)
+    // an icon counts as one board towards the daily limit
+    if ((await store.used(client, day)) + 1 > DAILY) return json({ error: 'daily limit' }, 429, cors)
+    const stored = await store.insertIcon({ uid: icon.uid as string, client, body: JSON.stringify(icon) })
+    await store.addUsed(client, day, stored)
+    return json({ stored }, 200, cors)
+  }
+
+  if (url.pathname === '/v1/icons/export' && req.method === 'GET') {
+    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    const after = Math.max(0, Number(url.searchParams.get('after')) || 0)
+    const rows = await store.exportIcons(after, EXPORT_MAX)
+    return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
+  }
+
   if (url.pathname === '/v1/export' && req.method === 'GET') {
     if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const after = Math.max(0, Number(url.searchParams.get('after')) || 0)
@@ -95,6 +127,14 @@ export function d1Store(db: D1Like): Store {
     },
     async export(after, limit) {
       const { results } = await db.prepare('SELECT id, uid, received, body FROM snapshots WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
+      return results
+    },
+    async insertIcon(r) {
+      const res = await db.prepare('INSERT OR IGNORE INTO icons (uid, received, client, body) VALUES (?, ?, ?, ?)').bind(r.uid, new Date().toISOString(), r.client, r.body).run()
+      return res.meta.changes
+    },
+    async exportIcons(after, limit) {
+      const { results } = await db.prepare('SELECT id, uid, received, body FROM icons WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
       return results
     },
   }

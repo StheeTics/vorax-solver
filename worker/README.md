@@ -4,6 +4,8 @@ The Solver shares the boards it reads (see the main README). This Worker stores 
 odds can be measured against the live game. It's a Cloudflare Worker with a D1 database, on Cloudflare's
 free plan: nothing is billed, and if a daily limit is hit, uploads simply fail until midnight UTC.
 
+- `POST /v1/icons`: one instrument icon a player named: the name and its 576-value grey pattern, nothing else.
+- `GET /v1/icons/export?after=ID`: the same as the boards export, for icons.
 - `POST /v1/snapshots`: 1 to 10 boards. Each is rebuilt from the fields the collector knows (card,
   instrument and protocol names from `src/names.json`, numbers within the engine's bounds); anything
   else is dropped. Retries can't make duplicates.

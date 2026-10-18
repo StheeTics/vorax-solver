@@ -62,3 +62,29 @@ it('pull pages through the export until it runs dry', async () => {
     process.chdir(cwd)
   }
 })
+
+it('pullIcons saves shared icons beside the boards, keeping the boards’ place in the export', async () => {
+  const { pull, pullIcons } = await import('../../scripts/live/collect')
+  const fs = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const dir = fs.mkdtempSync(`${tmpdir()}/icons-`)
+  const cwd = process.cwd()
+  process.chdir(dir)
+  try {
+    const answers: Record<string, unknown[]> = {
+      '/v1/export?after=0': [{ rows: [{ id: 5, uid: 'a', received: '2026-10-18T01:00:00Z', body: '{"x":1}' }], last: 5 }],
+      '/v1/export?after=5': [{ rows: [], last: 5 }, { rows: [], last: 5 }],
+      '/v1/icons/export?after=0': [{ rows: [{ id: 3, uid: 'i', received: '2026-10-18T02:00:00Z', body: '{"name":"Egg-Burdened Butterfly"}' }], last: 3 }],
+      '/v1/icons/export?after=3': [{ rows: [], last: 3 }],
+    }
+    const fetchFn = vi.fn(async (u: string) => new Response(JSON.stringify(answers[u.replace('https://w.dev', '')].shift())))
+    await pull('https://w.dev', 't', fetchFn as unknown as typeof fetch)
+    expect(await pullIcons('https://w.dev', 't', fetchFn as unknown as typeof fetch)).toBe(1)
+    expect(fs.readFileSync('data/live/icons.jsonl', 'utf8')).toBe('{"name":"Egg-Burdened Butterfly"}\n')
+    expect(JSON.parse(fs.readFileSync('data/live/state.json', 'utf8'))).toEqual({ last: 5, icons: 3 })
+    await pull('https://w.dev', 't', fetchFn as unknown as typeof fetch)
+    expect(JSON.parse(fs.readFileSync('data/live/state.json', 'utf8'))).toEqual({ last: 5, icons: 3 })
+  } finally {
+    process.chdir(cwd)
+  }
+})

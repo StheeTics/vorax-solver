@@ -5,6 +5,7 @@ import { layout } from '../scan/layout'
 import { addLocalRef } from '../scan/localRefs'
 import { crop } from '../scan/pixels'
 import { iconPattern } from '../scan/instruments'
+import { shareIcon } from '../share/icon'
 import styles from './WhatIsThis.module.css'
 
 interface Props {
@@ -17,7 +18,7 @@ interface Props {
 }
 
 /** A pick the Solver can't place (an offer with an instrument whose icon it hasn't seen): the player says
- *  which it was, and this browser remembers that icon. */
+ *  which it was, this browser remembers that icon, and (with sharing on) it's shared for the built-in data. */
 export function WhichPick({ question, count, frame, onPicked, onSkip }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null)
   // the panel fills from the right, newest on the right
@@ -33,7 +34,11 @@ export function WhichPick({ question, count, frame, onPicked, onSkip }: Props) {
   }, [frame, rect])
 
   const choose = async (name: string) => {
-    if (rect) await addLocalRef(`icon:${name}`, iconPattern(frame, rect) as unknown as ArtFeature)
+    if (rect) {
+      const pattern = iconPattern(frame, rect)
+      await addLocalRef(`icon:${name}`, pattern as unknown as ArtFeature)
+      void shareIcon(name, pattern)
+    }
     onPicked(name)
   }
 

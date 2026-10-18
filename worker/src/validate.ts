@@ -9,7 +9,7 @@ const SOURCES = ['live', 'screenshot']
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 /** The engine's cap on Activity and Quantity (src/ui/sandboxValidate.ts) */
 const MAX_STAT = 1_000_000
-const FIELD = /^(round|phase|refreshes|tank[0-5]\.(empty|archetype|rarity|activity|quantity)|hand[0-2]|instrument[0-2])$/
+const FIELD = /^(round|phase|refreshes|tank[0-5]\.(empty|archetype|rarity|activity|quantity)|hand[0-4]|instrument[0-2])$/
 
 const int = (v: unknown, lo: number, hi: number): v is number => Number.isInteger(v) && (v as number) >= lo && (v as number) <= hi
 const str = (v: unknown, re: RegExp): v is string => typeof v === 'string' && re.test(v)
@@ -32,7 +32,8 @@ export function validate(raw: unknown, names: Names) {
     tanks.push({ archetype: m.archetype as string, rarity: m.rarity as string, activity: m.activity, quantity: m.quantity })
   }
   const pool = s.phase === 'potion' ? names.potions : s.phase === 'instrument' ? names.instruments : names.protocols
-  if (!Array.isArray(s.hand) || s.hand.length > 3 || !s.hand.every(n => pool.includes(n as string))) return null
+  // a Potion Kit opens to five cards
+  if (!Array.isArray(s.hand) || s.hand.length > (s.phase === 'potion' ? 5 : 3) || !s.hand.every(n => pool.includes(n as string))) return null
   if (!Array.isArray(s.instruments) || s.instruments.length > 3 || !s.instruments.every(n => names.instruments.includes(n as string))) return null
   if (!Array.isArray(s.corrected) || s.corrected.length > 40 || !s.corrected.every(k => str(k, FIELD))) return null
   return {
@@ -40,4 +41,20 @@ export function validate(raw: unknown, names: Names) {
     round: s.round, phase: s.phase as string, refreshes: s.refreshes, shelley: s.shelley, corrected: s.corrected as string[],
     tanks, hand: s.hand as string[], instruments: s.instruments as string[],
   }
+}
+
+/** Values in an instrument icon's pattern: 24x24 grey levels, centred and scaled to length 1. */
+const ICON_SIZE = 576
+
+/** A panel icon a player named ("Which instrument did you pick?"): the name and the icon's grey pattern,
+ *  nothing else. */
+export function validateIcon(raw: unknown, names: Names) {
+  if (!raw || typeof raw !== 'object') return null
+  const s = raw as Record<string, unknown>
+  if (!str(s.uid, UUID) || typeof s.name !== 'string' || !names.instruments.includes(s.name)) return null
+  const p = s.pattern
+  if (!Array.isArray(p) || p.length !== ICON_SIZE || !p.every(v => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= 1)) return null
+  const length = Math.hypot(...(p as number[]))
+  if (length < 0.95 || length > 1.05) return null
+  return { uid: s.uid, name: s.name, pattern: (p as number[]).map(v => Math.round(v * 1000) / 1000) }
 }

@@ -24,7 +24,7 @@ The Solver has three ways to get your board:
 
 Every field it reads can be corrected. Anything it's unsure of is marked ⚠. A card it doesn't know asks "What is this?", and your answer is remembered in your browser. If it misreads your screen, its **Report this** box gives you text to paste into a GitHub issue, with a link that opens the issue form.
 
-**What it can see.** Only the log file you give it, from the moment you connect it, and only the one window you share, when the log shows a move. Pictures stay in your browser and are gone when you close the tab; they are never uploaded. The boards it reads are shared without pictures unless you switch sharing off (see [Live data](#live-data-measuring-the-real-odds)). The text reader it uses for card names (Tesseract) is downloaded from a CDN the first time.
+**What it can see.** Only the log file you give it, from the moment you connect it, and only the one window you share, when the log shows a move. Pictures stay in your browser and are gone when you close the tab; they are never uploaded. The boards it reads are shared without pictures unless you switch sharing off (see [Live data](#live-data-measuring-the-real-odds)), and so is an instrument icon you name with "Which instrument did you pick?": the name and the icon's 24x24 grey pattern, never a screenshot. The text reader it uses for card names (Tesseract) is downloaded from a CDN the first time.
 
 The Solver's approach (following the game log and reading the shared game window in the browser) comes from CoffeeBns's [Tartarus Simulator](https://github.com/blahdot3h/tartarus-simulator) ([twitch.tv/coffeebns](https://twitch.tv/coffeebns)), used with permission. The code here is our own.
 
@@ -71,8 +71,8 @@ Cards in the 500 ms frames: 100% of 400 at rest and 100% of 233 with a card rais
 The simulator's offer odds started as guesses: every potion equally likely, a flat 1% Supreme chance, instrument offers uniform, starting tanks 30/40/20/10 by rarity. The Solver shares the boards it reads so these can be measured. Only boards read with certainty (or corrected by the player) from a real screen are shared, with no picture, no time and nothing about the player, and sharing has an on/off switch under the advice.
 
 - `worker/`: the collector, a Cloudflare Worker with a D1 database (see `worker/README.md` for setup).
-- `.github/workflows/live-data.yml`: every 15 minutes (GitHub may run it late), pulls new boards into `data/live/raw/`, writes `data/live/rates.json` (live odds with 95% ranges next to the engine's), moves `src/data/liveWeights.ts` towards them, runs the tests and commits, and redeploys the site when a weight changed. A weight changes only with 30+ observations, when the 95% range excludes the current value, and by at most 2x per update.
-- By hand: `npx vite-node scripts/live/pull.ts` (with `LIVE_DATA_URL` and `LIVE_DATA_TOKEN`), then `npx vite-node scripts/live/weights.ts`.
+- `.github/workflows/live-data.yml`: every 15 minutes (GitHub may run it late), pulls new boards into `data/live/raw/` and named instrument icons into `data/live/icons.jsonl`, writes `data/live/rates.json` (live odds with 95% ranges next to the engine's) and the weight changes they suggest to `data/live/proposal.md`, runs the tests and commits. It changes no weights and deploys nothing: while the odds model is still being checked against the live game, the data is reviewed first. A proposed change needs 30+ observations, a 95% range that excludes the current value, and is at most 2x per update.
+- By hand: `npx vite-node scripts/live/pull.ts` (with `LIVE_DATA_URL` and `LIVE_DATA_TOKEN`), then `npx vite-node scripts/live/weights.ts` to apply the proposed weights.
 
 ## Requirements
 

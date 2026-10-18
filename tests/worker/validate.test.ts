@@ -21,7 +21,8 @@ it.each([
   ['an unknown card', { hand: ['Not A Card'] }],
   ['an unknown instrument', { instruments: ['Nope'] }],
   ['more than 6 tanks', { tanks: [null, null, null, null, null, null, null] }],
-  ['more than 3 cards', { hand: ['Xeno-Hormone', 'Xeno-Hormone', 'Xeno-Hormone', 'Xeno-Hormone'] }],
+  ['more than 5 cards', { hand: Array(6).fill('Xeno-Hormone') }],
+  ['more than 3 instruments on offer', { phase: 'instrument', hand: Array(4).fill('Sinew Garrote') }],
   ['a round outside 1-13', { round: 14 }],
   ['a huge Activity', { tanks: [{ archetype: 'pest', rarity: 'magic', activity: 2_000_000, quantity: 1 }] }],
   ['a bad archetype', { tanks: [{ archetype: 'dragon', rarity: 'magic', activity: 5, quantity: 24 }] }],
@@ -34,4 +35,9 @@ it.each([
 it('protocol picks are checked against protocol names', () => {
   expect(validate({ ...good, phase: 'protocol', hand: ['Trepanation'] }, names)).not.toBeNull()
   expect(validate({ ...good, phase: 'protocol', hand: ['Xeno-Hormone'] }, names)).toBeNull()
+})
+
+it('a Potion Kit’s five-card hand is kept, with its cards corrected by place', () => {
+  const five = ['Xeno-Hormone', 'Mutagenic Powder', 'Xeno-Hormone', 'Mutagenic Powder', 'Xeno-Hormone']
+  expect(validate({ ...good, hand: five, corrected: ['hand4'] }, names)).toMatchObject({ hand: five, corrected: ['hand4'] })
 })

@@ -1,12 +1,22 @@
 // @vitest-environment node
 import { handle, type Store } from '../../worker/src/index'
 
-function memory(): Store & { rows: { id: number; uid: string; client: string; body: string }[]; quota: Map<string, number> } {
+function memory(): Store & { rows: { id: number; uid: string; client: string; body: string }[]; icons: { id: number; uid: string; client: string; body: string }[]; quota: Map<string, number> } {
   const rows: { id: number; uid: string; client: string; body: string }[] = []
+  const icons: { id: number; uid: string; client: string; body: string }[] = []
   const quota = new Map<string, number>()
   return {
     rows,
+    icons,
     quota,
+    async insertIcon(r) {
+      if (icons.some(x => x.uid === r.uid)) return 0
+      icons.push({ id: icons.length + 1, ...r })
+      return 1
+    },
+    async exportIcons(after, limit) {
+      return icons.filter(r => r.id > after).slice(0, limit)
+    },
     async insert(list) {
       let n = 0
       for (const r of list) {
@@ -94,4 +104,40 @@ it('anything else is 404', async () => {
 it('refuses an oversized body without reading it as JSON', async () => {
   const big = new Request('https://w.dev/v1/snapshots', { method: 'POST', body: JSON.stringify([{ pad: 'x'.repeat(70_000) }]), headers: { 'cf-connecting-ip': '9.9.9.9' } })
   expect((await handle(big, env, memory())).status).toBe(413)
+})
+
+const pattern = () => {
+  const v = Array.from({ length: 576 }, (_, i) => Math.sin(i))
+  const n = Math.hypot(...v)
+  return v.map(x => Math.round((x / n) * 1000) / 1000 || 0)
+}
+const icon = (body: unknown) => new Request('https://w.dev/v1/icons', { method: 'POST', body: JSON.stringify(body), headers: { 'cf-connecting-ip': '9.9.9.9' } })
+
+it('stores a named instrument icon once', async () => {
+  const store = memory()
+  const body = { uid: uid(7), name: 'Egg-Burdened Butterfly', pattern: pattern() }
+  expect((await handle(icon(body), env, store)).status).toBe(200)
+  await handle(icon(body), env, store)
+  expect(store.icons).toHaveLength(1)
+  expect(JSON.parse(store.icons[0].body)).toEqual(body)
+})
+
+it.each([
+  ['an unknown instrument', { name: 'Not An Instrument' }],
+  ['a short pattern', { pattern: [0.1, 0.2] }],
+  ['a pattern that is not a unit vector', { pattern: Array(576).fill(0.5) }],
+  ['a bad uid', { uid: 'x' }],
+])('refuses an icon with %s', async (_, patch) => {
+  const store = memory()
+  const res = await handle(icon({ uid: uid(8), name: 'Egg-Burdened Butterfly', pattern: pattern(), ...patch }), env, store)
+  expect(res.status).toBe(400)
+  expect(store.icons).toHaveLength(0)
+})
+
+it('icons export only with the token', async () => {
+  const store = memory()
+  await handle(icon({ uid: uid(9), name: 'Egg-Burdened Butterfly', pattern: pattern() }), env, store)
+  expect((await handle(new Request('https://w.dev/v1/icons/export?after=0'), env, store)).status).toBe(401)
+  const res = await handle(new Request('https://w.dev/v1/icons/export?after=0', { headers: { authorization: 'Bearer secret' } }), env, store)
+  expect((await res.json()).rows).toHaveLength(1)
 })
