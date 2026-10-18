@@ -75,9 +75,10 @@ export function toState(x: ScreenState, unknown: string[]): GameState {
   }
 }
 
-/** Potion look-ahead: each card on offer, the next best options up to 4, and a reroll, each played to the end of the run 32 times. (Judged by
+/** Potion look-ahead: each card on offer, the next best options up to 4, and a reroll, each played to the end of the run 32 times;
+ *  the rounds inside steer toward what the instruments need (steer 0.3: 50% reached 950k in 240 games against 47% without, within luck). (Judged by
  *  rainbow points, it reached 1,120,000 in 22.9% of 240 simulated games against 13.8% for this round's score alone.) */
-export const LOOK_AHEAD = { top: 4, playouts: 32 }
+export const LOOK_AHEAD = { top: 4, playouts: 32, steer: 0.3 }
 
 /** A few rounds of look-ahead, only to order options that score the same this round. */
 const TIE_BREAK = { samples: 32, horizon: 4 }

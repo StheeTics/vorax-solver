@@ -4,6 +4,7 @@
 import { createGame, dispatch, ultimateActivity, needsTargets, canRefresh, DEFAULT_SETTINGS } from '@/engine/game'
 import type { GameState, Action, SandboxSetup } from '@/engine/types'
 import { BASIC_POOL, INSTRUMENTS } from '@/data/instruments'
+import { buildProgress } from './steer'
 import STRENGTH from '@/data/instrumentStrength.json'
 
 export const play = (s: GameState, ...a: Action[]) => a.reduce((x, y) => dispatch(x, y).state, s)
@@ -36,7 +37,14 @@ export interface Policy {
   horizon: number
   /** fresh outcomes averaged per option inside the rollout (1 = judge on a single outcome) */
   rollSamples?: number
+  /**
+   * Steer toward what the instruments need: a board is worth its score times (1 + steer x buildProgress).
+   * Used for the rounds inside the advice's futures, so they build toward the instruments' conditions.
+   */
+  steer?: number
 }
+
+const worth = (s: GameState, steer = 0) => ultimateActivity(s) * (steer ? 1 + steer * buildProgress(s) : 1)
 
 /** Score of a state after resolving any open box the best way (by expectation, recursively). */
 function settle(s: GameState, p: Policy, seed: number, depth: number): number {
@@ -45,7 +53,7 @@ function settle(s: GameState, p: Policy, seed: number, depth: number): number {
     for (const o of options(s)) best = Math.max(best, expected(s, o, p, seed, depth + 1))
     return best
   }
-  return rollout(s, p.horizon, seed, p.rollSamples ?? 1)
+  return rollout(s, p.horizon, seed, p.rollSamples ?? 1, p.steer)
 }
 
 /** Open a box (if any) and take its first card; only used inside rollouts. */
@@ -55,19 +63,19 @@ const resolveBox = (n: GameState) => (n.phase === 'potionSelect' && n.openBox !=
  * Lookahead: play `rounds` more rounds. Each round's card is the one with the best mean over
  * `samples` fresh outcomes (common seeds across options); the round then plays out on one more fresh outcome.
  */
-function rollout(s: GameState, rounds: number, seed: number, samples: number): number {
+function rollout(s: GameState, rounds: number, seed: number, samples: number, steer = 0): number {
   for (let r = 0; r < rounds && s.phase !== 'gameOver'; r++) {
     if (s.phase === 'roundEnd') { s = play(s, { type: 'confirm' }); continue }
     if (s.phase === 'instrumentSelect') { s = play(s, { type: 'selectCard', index: priorPick(s) }, { type: 'confirm' }); continue }
     let best = options(s)[0], bv = -1
     for (const o of options(s)) {
       let v = 0
-      for (let k = 0; k < samples; k++) v += ultimateActivity(resolveBox(play(reseed(s, mix(seed, r * 977 + k)), ...o)))
+      for (let k = 0; k < samples; k++) v += worth(resolveBox(play(reseed(s, mix(seed, r * 977 + k)), ...o)), steer)
       if (v > bv) { bv = v; best = o }
     }
     s = resolveBox(play(reseed(s, mix(seed, r * 977 + 500)), ...best))
   }
-  return ultimateActivity(s)
+  return worth(s, steer)
 }
 
 /** Mean payoff of playing option `o`, over p.samples fresh outcomes (common seeds across options). */
@@ -82,7 +90,10 @@ export function expected(s: GameState, o: Action[], p: Policy, seed: number, dep
   return sum / n
 }
 
-/** Best option by expected payoff; also returns its value and the value of the current board. */
+/**
+ * Best option by expected payoff, and its value. Steered, the value is given as a score (the gain over the
+ * board's worth added to its score), so callers comparing it with the board's score still can.
+ */
 export function choose(s: GameState, p: Policy, seed: number) {
   const slim = { ...s, log: [] }
   let best: Action[] = [], bv = -Infinity
@@ -90,7 +101,7 @@ export function choose(s: GameState, p: Policy, seed: number) {
     const v = expected(slim, o, p, seed)
     if (v > bv) { bv = v; best = o }
   }
-  return { best, value: bv }
+  return { best, value: p.steer ? bv - worth(slim, p.steer) + ultimateActivity(slim) : bv }
 }
 
 /** Old bot: judged each move on the game's own next random outcome (it could see the dice). */
@@ -198,6 +209,8 @@ export interface LookAhead {
   top: number
   /** futures played per option */
   playouts: number
+  /** how hard the rounds inside the futures steer toward what the instruments need (Policy.steer) */
+  steer?: number
 }
 
 /** One option played to the end: this round's expected score, and over its futures the mean score counted
@@ -218,7 +231,7 @@ export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
   const shortlist = now.filter((c, i) => now.findIndex(d => cardOf(d.o) === cardOf(c.o)) === i)
   for (const c of now) if (shortlist.length < la.top && !shortlist.includes(c)) shortlist.push(c)
   if (slim.openBox === null && canRefresh(slim)) shortlist.push({ o: [{ type: 'refresh' }], v: ultimateActivity(slim) })
-  const inner = evChooser({ samples: 2, horizon: 0 })
+  const inner = evChooser({ samples: 2, horizon: 0, steer: la.steer })
   return shortlist.map(c => {
     let goal = 0, reached = 0
     for (let k = 0; k < la.playouts; k++) {
