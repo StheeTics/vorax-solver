@@ -1,6 +1,7 @@
 // Pulls new shared boards from the collector into data/live/raw/<date>.jsonl and rewrites
 // data/live/rates.json. Usage (the scheduled workflow sets these):
 //   LIVE_DATA_URL=https://… LIVE_DATA_TOKEN=… npx vite-node scripts/live/pull.ts
+import { existsSync } from 'node:fs'
 import { allRows, pull } from './collect'
 import { writeRates } from './rates'
 
@@ -11,5 +12,9 @@ if (!url || !token) {
   process.exit(0)
 }
 const added = await pull(url, token)
-const r = writeRates(allRows())
-console.log(`${added} new boards; ${r.boards} boards in ${r.runs} games so far`)
+// rates.json carries the time it was made: rewritten only when there's something new, or the
+// 15-minute job would commit every run
+if (added > 0 || !existsSync('data/live/rates.json')) {
+  const r = writeRates(allRows())
+  console.log(`${added} new boards; ${r.boards} boards in ${r.runs} games so far`)
+} else console.log('0 new boards')
