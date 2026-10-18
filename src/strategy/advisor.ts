@@ -31,6 +31,8 @@ export interface Advice {
   /** every option, best first (potion phase), or one entry per offered instrument */
   ranking: Ranked[]
   board: number
+  /** with look-ahead and rerolls left: the predicted end of the run after a reroll, like a card's `end` */
+  refreshEnd?: Ranked['end']
   /** true: potions judged by look-ahead to the end of the run (values: predicted final score); false: expected score after this round */
   plan: boolean
   /** no better answer is coming for this screen */
@@ -73,7 +75,7 @@ export function toState(x: ScreenState, unknown: string[]): GameState {
   }
 }
 
-/** Potion look-ahead: the best 4 options this round, each played to the end of the run 32 times. (Judged by
+/** Potion look-ahead: each card on offer, the next best options up to 4, and a reroll, each played to the end of the run 32 times. (Judged by
  *  rainbow points, it reached 1,120,000 in 22.9% of 240 simulated games against 13.8% for this round's score alone.) */
 export const LOOK_AHEAD = { top: 4, playouts: 32 }
 
@@ -111,6 +113,7 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
   const seed = 0x5eed
   let ranking: Ranked[]
   let best: Advice['best']
+  let refreshEnd: Advice['refreshEnd']
   if (s.phase === 'potionSelect') {
     const toRanked = (o: Action[], value: number): Ranked => ({
       index: (o[0] as { index: number }).index,
@@ -119,8 +122,10 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
     })
     if (plan) {
       const ahead = lookAhead(s, seed, LOOK_AHEAD)
-      ranking = ahead.map(a => ({ ...toRanked(a.o, Math.round(a.goal)), end: { activity: a.goal, reached: a.reached } }))
-      best = ahead[0] && !(ahead[0].now <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
+      const reroll = ahead.find(a => a.o[0].type === 'refresh')
+      if (reroll) refreshEnd = { activity: reroll.goal, reached: reroll.reached }
+      ranking = ahead.filter(a => a !== reroll).map(a => ({ ...toRanked(a.o, Math.round(a.goal)), end: { activity: a.goal, reached: a.reached } }))
+      best = ahead[0] === reroll ? 'refresh' : ranking[0]
     } else {
       ranking = breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, seed)))).sort((a, b) => b.value - a.value), seed)
       best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
@@ -132,5 +137,5 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
     best = refresh !== null && refresh > ranking[0].value ? 'refresh' : ranking[0]
   }
   plan = plan && s.phase === 'potionSelect'
-  return { best, ranking, board: ultimateActivity(s), plan, final: plan || s.phase !== 'potionSelect', ms: Date.now() - t0, unknown }
+  return { best, ranking, board: ultimateActivity(s), plan, final: plan || s.phase !== 'potionSelect', ms: Date.now() - t0, unknown, refreshEnd }
 }

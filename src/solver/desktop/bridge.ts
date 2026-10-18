@@ -49,7 +49,7 @@ export function overlayCard(shown: Shown | null, updating: boolean): OverlayCard
   if (!shown) return { ...card, move: updating ? 'Working out the best move…' : 'Waiting for the cards…' }
   const { advice, board } = shown
   if (board.phase === 'protocol') return { ...card, move: 'Surgical Protocol', detail: 'Protocols don’t change Ultimate Activity: pick the one that suits your endgame battle.' }
-  if (advice.best === 'refresh') return { ...card, move: 'Refresh', detail: 'Nothing on offer is expected to beat the board as it is.' }
+  if (advice.best === 'refresh') return { ...card, move: 'Refresh', detail: advice.refreshEnd ? `Ends around ${predicted(advice.refreshEnd)}` : 'Nothing on offer is expected to beat the board as it is.' }
   if (!advice.best) return { ...card, move: 'Waiting for the cards…' }
   if (advice.note) return { ...card, move: describe(advice.best, board, true), detail: advice.note }
   const best = advice.best

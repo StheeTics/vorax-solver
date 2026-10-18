@@ -205,16 +205,21 @@ export interface LookAhead {
 export interface Ahead { o: Action[]; now: number; goal: number; reached: number }
 
 /**
- * Potions judged by how the whole run ends: the `top` options by this round's score are each played to the
- * end `playouts` times, with the instruments owned, future instruments picked by strength, and cards dealt
- * by the live odds. Best average score counted up to TARGET first.
+ * Potions judged by how the whole run ends. Played to the end `playouts` times each, with the instruments
+ * owned, future instruments picked by strength, and cards dealt by the live odds: each card on offer (on its
+ * best target this round, so a card that only pays off later still gets looked at), then the next best
+ * options up to `top`, and a reroll while rerolls are left. Best average score counted up to TARGET first.
  */
 export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
   const slim = { ...s, log: [] }
   const quick = { samples: 8, horizon: 0 }
   const now = options(slim).map(o => ({ o, v: expected(slim, o, quick, seed) })).sort((a, b) => b.v - a.v)
+  const cardOf = (o: Action[]) => (o[0] as { index: number }).index
+  const shortlist = now.filter((c, i) => now.findIndex(d => cardOf(d.o) === cardOf(c.o)) === i)
+  for (const c of now) if (shortlist.length < la.top && !shortlist.includes(c)) shortlist.push(c)
+  if (slim.openBox === null && canRefresh(slim)) shortlist.push({ o: [{ type: 'refresh' }], v: ultimateActivity(slim) })
   const inner = evChooser({ samples: 2, horizon: 0 })
-  return now.slice(0, la.top).map(c => {
+  return shortlist.map(c => {
     let goal = 0, reached = 0
     for (let k = 0; k < la.playouts; k++) {
       const sk = mix(seed, 9000 + k)

@@ -30,3 +30,34 @@ describe('potions judged by how the whole run ends', () => {
     expect(mutatesAway).toBe(false)
   })
 })
+
+// live game (Vorax Overlay, 2026-10-18), round 3: Incubation Sac wants 2 Pests; the hand has one mutation
+// card that scores best this round and two cards that add a monster
+const incubation = toState({
+  tanks: [
+    { archetype: 'boneSentry', rarity: 'normal', activity: 1, quantity: 36 },
+    { archetype: 'boneSentry', rarity: 'normal', activity: 32, quantity: 36 },
+    { archetype: 'boneSentry', rarity: 'normal', activity: 32, quantity: 36 },
+    { archetype: 'pest', rarity: 'magic', activity: 5, quantity: 97 },
+    null, null,
+  ],
+  hand: ['Petrified Spinal Solution', 'Spinal Solution - Aemberon', 'Spinal Solution - Agito'],
+  instruments: ['Incubation Sac'],
+  phase: 'potion',
+  round: 3,
+  potionRefreshes: 3,
+}, [])
+
+describe('what the look-ahead plays to the end of the run', () => {
+  const isRefresh = (a: { o: { type: string }[] }) => a.o[0].type === 'refresh'
+  it('every card on offer, not only the one that scores best this round', async () => {
+    const { lookAhead } = await import('@/strategy/bot')
+    const cards = new Set(lookAhead(incubation, 1, { top: 4, playouts: 2 }).filter(a => !isRefresh(a)).map(a => (a.o[0] as { index: number }).index))
+    expect([...cards].sort()).toEqual([0, 1, 2])
+  })
+  it('a reroll, while rerolls are left', async () => {
+    const { lookAhead } = await import('@/strategy/bot')
+    expect(lookAhead(incubation, 1, { top: 4, playouts: 2 }).some(isRefresh)).toBe(true)
+    expect(lookAhead({ ...incubation, potionRefreshes: 0 }, 1, { top: 4, playouts: 2 }).some(isRefresh)).toBe(false)
+  })
+})

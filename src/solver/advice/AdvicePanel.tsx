@@ -29,6 +29,7 @@ export function AdvicePanel({ advice, updating, state, iconsKnown }: Props) {
     <section className={`panel-frame ${styles.panel} ${updating ? styles.stale : ''}`} aria-label="Advice" aria-busy={updating}>
       {updating && <p className={styles.updating} role="status">Working out the new board…</p>}
       {advice.best && <h2 className={styles.best}>{advice.best === 'refresh' ? 'Refresh' : describe(advice.best, state, true)}</h2>}
+      {advice.best === 'refresh' && advice.refreshEnd && <p className={styles.refreshEnd}>Ends around {predicted(advice.refreshEnd)}</p>}
       <PickHand pick={advice.best && advice.best !== 'refresh' ? advice.best : null} state={state} />
       {advice.unknown.length > 0 && <p className={styles.unknown}>Not recognised: {advice.unknown.join(', ')}</p>}
       {advice.note && <p className={styles.note}>{advice.note}</p>}

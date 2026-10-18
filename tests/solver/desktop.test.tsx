@@ -82,8 +82,14 @@ describe('the overlay card', () => {
     expect(overlayCard(null, true).move).toBe('Working out the best move…')
   })
 
+  it('a reroll shows its own prediction', () => {
+    const card = overlayCard({ board, advice: advice({ best: 'refresh', refreshEnd: { activity: 640_000, reached: 0.12 } }) }, false)
+    expect(card.move).toBe('Refresh')
+    expect(card.detail).toBe('Ends around 640,000 · 12% rainbow')
+  })
+
   it('says refresh, and passes notes through', () => {
-    expect(overlayCard({ board, advice: advice({ best: 'refresh' }) }, false).move).toBe('Refresh')
+    expect(overlayCard({ board: { ...board, phase: 'instrument' }, advice: advice({ best: 'refresh' }) }, false).move).toBe('Refresh')
     expect(overlayCard({ board, advice: advice({ note: 'A Xenopanacea: always take it when it’s offered.', best: { index: 0, targets: [], value: 0 } }) }, false).detail).toMatch(/Xenopanacea/)
   })
 

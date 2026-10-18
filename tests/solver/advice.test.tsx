@@ -58,6 +58,12 @@ it('while a new board is worked out, the last advice stays up, marked as updatin
   expect(screen.getByText(/Not recognised: Foo/)).toBeTruthy()
 })
 
+it('a reroll is advised with its prediction', () => {
+  render(<AdvicePanel advice={{ ...advice('refresh'), plan: true, refreshEnd: { activity: 640_000, reached: 0.12 } }} updating={false} state={state} />)
+  expect(screen.getByRole('heading', { name: 'Refresh' })).toBeTruthy()
+  expect(screen.getByText('Ends around 640,000 · 12% rainbow')).toBeTruthy()
+})
+
 it('before the first answer, it says it is working rather than asking for cards', () => {
   render(<AdvicePanel advice={null} updating={true} state={state} />)
   expect(screen.getByText('Working out the best move…')).toBeTruthy()

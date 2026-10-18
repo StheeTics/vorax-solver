@@ -77,3 +77,9 @@ it('with look-ahead, each potion option predicts the end of the run', () => {
     expect(r.end!.reached).toBeLessThanOrEqual(1)
   }
 })
+
+it('with look-ahead, a reroll is weighed like the cards and its prediction is given', () => {
+  const a = advise({ ...board, potionRefreshes: 2 }, 16, 16, true)
+  expect(a.refreshEnd!.activity).toBeGreaterThan(0)
+  expect(a.ranking.every(r => r.end)).toBe(true)
+})

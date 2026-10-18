@@ -74,3 +74,9 @@
   color: var(--text-dim);
   font-size: 0.9em;
 }
+
+/* a reroll's predicted end of the run, under the headline */
+.refreshEnd {
+  margin: 0;
+  color: var(--text-dim);
+}
