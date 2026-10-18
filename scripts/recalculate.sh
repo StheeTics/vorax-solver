@@ -27,7 +27,7 @@ bash scripts/sim/strength.sh 1000 8
 
 echo "4/4 Simulating 240 games with the advice"
 previous=$(ls -d "$runs"/run-* 2>/dev/null | tail -1 || true)
-KEEP="$runs/run-$stamp" bash scripts/sim/shard.sh 8 30 plan:4:32 board 16 > /dev/null
+KEEP="$runs/run-$stamp" GOAL=mean bash scripts/sim/shard.sh 8 30 plan:4:32:0.3 board 16 > /dev/null
 
 {
   echo "# Recalculation, $stamp"
