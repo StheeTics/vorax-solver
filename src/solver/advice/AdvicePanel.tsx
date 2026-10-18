@@ -1,5 +1,6 @@
 import type { Advice, Ranked, ScreenState } from '@/strategy/advisor'
 import styles from './AdvicePanel.module.css'
+import { PickHand } from './PickHand'
 
 interface Props {
   advice: Advice | null
@@ -9,8 +10,9 @@ interface Props {
   iconsKnown?: string[]
 }
 
-function describe(r: Ranked, state: ScreenState): string {
-  const name = state.hand[r.index] ?? `Card ${r.index + 1}`
+/** place: add the card's place in the hand ("(card 2)"), for the headline */
+function describe(r: Ranked, state: ScreenState, place = false): string {
+  const name = `${state.hand[r.index] ?? `Card ${r.index + 1}`}${place ? ` (card ${r.index + 1})` : ''}`
   if (state.phase === 'instrument') return `Take ${name}`
   return r.targets.length ? `Play ${name} → tank ${r.targets.map(t => t + 1).join(', ')}` : `Play ${name}`
 }
@@ -27,11 +29,12 @@ export function AdvicePanel({ advice, refining, state, iconsKnown }: Props) {
     return <section className={`panel-frame ${styles.panel}`} aria-label="Advice"><p className={styles.wait}>Set the cards on offer to get advice.</p></section>
   return (
     <section className={`panel-frame ${styles.panel}`} aria-label="Advice">
-      {advice.best && <h2 className={styles.best}>{advice.best === 'refresh' ? 'Refresh' : describe(advice.best, state)}</h2>}
+      {advice.best && <h2 className={styles.best}>{advice.best === 'refresh' ? 'Refresh' : describe(advice.best, state, true)}</h2>}
+      {advice.best && advice.best !== 'refresh' && <PickHand pick={advice.best} state={state} />}
       {refining && <p className={styles.refining}>Quick answer, refining…</p>}
       {advice.unknown.length > 0 && <p className={styles.unknown}>Not recognised: {advice.unknown.join(', ')}</p>}
       {advice.ranking.length > 0 && (
-        <ol className={styles.ranking}>
+        <ol className={styles.ranking} aria-label="Choices">
           {advice.ranking.slice(0, SHOWN).map((r, i) => (
             <li key={i}>
               <span>

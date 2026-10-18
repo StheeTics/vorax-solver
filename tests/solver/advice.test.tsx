@@ -26,12 +26,12 @@ it('runAdvice emits quick then planning with Chrysalis Specimen', () => {
 
 it('panel headline names the card and tanks', () => {
   render(<AdvicePanel advice={advice({ index: 1, targets: [4], value: 5 })} refining={false} state={state} />)
-  expect(screen.getByRole('heading', { name: 'Play Green Bile Solution → tank 5' })).toBeTruthy()
+  expect(screen.getByRole('heading', { name: 'Play Green Bile Solution (card 2) → tank 5' })).toBeTruthy()
 })
 
 it('panel headline without targets names only the card', () => {
   render(<AdvicePanel advice={advice({ index: 0, targets: [], value: 5 })} refining={false} state={state} />)
-  expect(screen.getByRole('heading', { name: 'Play Mutagenic Powder' })).toBeTruthy()
+  expect(screen.getByRole('heading', { name: 'Play Mutagenic Powder (card 1)' })).toBeTruthy()
 })
 
 it('panel shows Refresh', () => {
@@ -42,7 +42,7 @@ it('panel shows Refresh', () => {
 it('instrument picks say Take', () => {
   const s: ScreenState = { ...state, phase: 'instrument', hand: ['Chrysalis Specimen', 'Bone Saw'] }
   render(<AdvicePanel advice={advice({ index: 0, targets: [], value: 5 })} refining={false} state={s} />)
-  expect(screen.getByRole('heading', { name: 'Take Chrysalis Specimen' })).toBeTruthy()
+  expect(screen.getByRole('heading', { name: /^Take Chrysalis Specimen \(card \d\)$/ })).toBeTruthy()
 })
 
 it('shows refining and unrecognised names', () => {
@@ -84,7 +84,7 @@ describe('an instrument whose panel icon hasn’t been seen yet', () => {
   const ranked: Advice = { best: { index: 1, targets: [], value: 30 }, ranking: [1, 0, 2].map((index, i) => ({ index, targets: [], value: 30 - i })), board: 0, plan: false, final: true, ms: 1, unknown: [] }
   it('is marked in the list of choices, saying that picking it teaches the Solver', () => {
     render(<AdvicePanel advice={ranked} refining={false} state={offer} iconsKnown={['Rawhide Restraint']} />)
-    const items = screen.getAllByRole('listitem').map(li => li.textContent)
+    const items = [...screen.getByRole('list', { name: 'Choices' }).querySelectorAll(':scope > li')].map(li => li.textContent)
     expect(items[0]).toMatch(/^Take Rawhide Restraint/)
     expect(items[0]).not.toMatch(/teaches/)
     expect(items[1]).toMatch(/Take Nettle Toggle.*Unknown icon: picking it teaches the Solver/)
@@ -103,5 +103,31 @@ it('shows only the top 3 choices', () => {
   const hand = ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture', 'Xeno-Hormone', 'Eggshell Powder']
   const many: Advice = { best: { index: 0, targets: [], value: 9 }, ranking: hand.map((_, i) => ({ index: i, targets: [], value: 9 - i })), board: 0, plan: false, final: true, ms: 1, unknown: [] }
   render(<AdvicePanel advice={many} refining={false} state={{ ...emptyState(), hand }} />)
-  expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Play Mutagenic Powder9', 'Play Green Bile Solution8', 'Play Bewitching Tincture7'])
+  expect([...screen.getByRole('list', { name: 'Choices' }).querySelectorAll(':scope > li')].map(li => li.textContent)).toEqual(['Play Mutagenic Powder9', 'Play Green Bile Solution8', 'Play Bewitching Tincture7'])
+})
+
+describe('the pick, shown as the hand', () => {
+  const hand = ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture']
+  const best: Advice = { best: { index: 1, targets: [1, 3], value: 50 }, ranking: [{ index: 1, targets: [1, 3], value: 50 }], board: 0, plan: false, final: true, ms: 1, unknown: [] }
+  const board: ScreenState = { ...emptyState(), hand, tanks: [null, { archetype: 'pest', rarity: 'normal', activity: 1, quantity: 36 }, null, { archetype: 'agito', rarity: 'magic', activity: 5, quantity: 24 }, null, null] }
+
+  it('names the card’s place in the headline', () => {
+    render(<AdvicePanel advice={best} refining={false} state={board} />)
+    expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Play Green Bile Solution (card 2) → tank 2, 4')
+  })
+  it('draws the cards in game order with the one to pick marked', () => {
+    render(<AdvicePanel advice={best} refining={false} state={board} />)
+    const cards = screen.getByRole('list', { name: 'Cards on offer' }).querySelectorAll('li')
+    expect([...cards].map(c => c.getAttribute('aria-label'))).toEqual(['Card 1: Mutagenic Powder', 'Card 2: Green Bile Solution, pick this', 'Card 3: Bewitching Tincture'])
+    expect(cards[1].getAttribute('aria-current')).toBe('true')
+  })
+  it('draws the six tanks with the targets marked', () => {
+    render(<AdvicePanel advice={best} refining={false} state={board} />)
+    const tanks = screen.getByRole('list', { name: 'Tanks' }).querySelectorAll('li')
+    expect([...tanks].map(t => t.getAttribute('aria-current'))).toEqual([null, 'true', null, 'true', null, null])
+  })
+  it('shows no hand for a refresh', () => {
+    render(<AdvicePanel advice={advice('refresh')} refining={false} state={board} />)
+    expect(screen.queryByRole('list', { name: 'Cards on offer' })).toBeNull()
+  })
 })
