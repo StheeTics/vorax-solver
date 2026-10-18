@@ -126,8 +126,20 @@ describe('the pick, shown as the hand', () => {
     const tanks = screen.getByRole('list', { name: 'Tanks' }).querySelectorAll('li')
     expect([...tanks].map(t => t.getAttribute('aria-current'))).toEqual([null, 'true', null, 'true', null, null])
   })
-  it('shows no hand for a refresh', () => {
+  it('shows the hand for a refresh too, with no card marked', () => {
     render(<AdvicePanel advice={advice('refresh')} refining={false} state={board} />)
-    expect(screen.queryByRole('list', { name: 'Cards on offer' })).toBeNull()
+    const cards = screen.getByRole('list', { name: 'Cards on offer' }).querySelectorAll('li')
+    expect(cards).toHaveLength(3)
+    expect([...cards].some(c => c.getAttribute('aria-current'))).toBe(false)
+  })
+  it('describes each tank by what is in it, so the board can be matched to the game', () => {
+    render(<AdvicePanel advice={best} refining={false} state={board} />)
+    const tanks = [...screen.getByRole('list', { name: 'Tanks' }).querySelectorAll('li')].map(t => t.getAttribute('aria-label'))
+    expect(tanks).toEqual(['Tank 1: empty', 'Tank 2: Pest, normal, 1 × 36, target', 'Tank 3: empty', 'Tank 4: Agito, magic, 5 × 24, target', 'Tank 5: empty', 'Tank 6: empty'])
+  })
+  it('draws the tanks only for a potion pick: an instrument or protocol pick has no tank to choose', () => {
+    render(<AdvicePanel advice={best} refining={false} state={{ ...board, phase: 'instrument', hand: ['Sinew Garrote', 'Fouled Scraper', 'Nettle Toggle'] }} />)
+    expect(screen.queryByRole('list', { name: 'Tanks' })).toBeNull()
+    expect(screen.getByRole('list', { name: 'Cards on offer' })).toBeTruthy()
   })
 })

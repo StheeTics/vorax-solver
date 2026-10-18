@@ -30,7 +30,7 @@ export function AdvicePanel({ advice, refining, state, iconsKnown }: Props) {
   return (
     <section className={`panel-frame ${styles.panel}`} aria-label="Advice">
       {advice.best && <h2 className={styles.best}>{advice.best === 'refresh' ? 'Refresh' : describe(advice.best, state, true)}</h2>}
-      {advice.best && advice.best !== 'refresh' && <PickHand pick={advice.best} state={state} />}
+      <PickHand pick={advice.best && advice.best !== 'refresh' ? advice.best : null} state={state} />
       {refining && <p className={styles.refining}>Quick answer, refining…</p>}
       {advice.unknown.length > 0 && <p className={styles.unknown}>Not recognised: {advice.unknown.join(', ')}</p>}
       {advice.ranking.length > 0 && (

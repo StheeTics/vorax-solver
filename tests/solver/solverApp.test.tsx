@@ -30,3 +30,12 @@ it('says plainly that it is a work in progress that playing helps improve', () =
   expect(note.textContent).toMatch(/instruments/i)
   expect(note.textContent).toMatch(/improve/i)
 })
+
+
+it('puts the advice first and the board to correct below it', () => {
+  render(<SolverApp />)
+  const advice = screen.getByRole('region', { name: 'Advice' })
+  const board = screen.getByLabelText('Round')
+  expect(advice.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(screen.getByRole('heading', { name: /What it read/ })).toBeTruthy()
+})

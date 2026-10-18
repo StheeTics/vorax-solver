@@ -1,17 +1,95 @@
-.pick {
+.stage {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: 12px 24px;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  padding: 8px 0 4px;
 }
 
-.hand,
-.tanks {
+.tanks,
+.hand {
   display: flex;
-  gap: 8px;
+  justify-content: center;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* the six tanks, spread across the panel and large, like the game's row of glass tubes */
+.tanks {
+  width: 100%;
+  max-width: 900px;
+  gap: clamp(4px, 1.4vw, 14px);
+}
+
+.tank {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.glass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: clamp(110px, 19vw, 210px);
+  padding: 8px 2px;
+  border: 2px solid var(--frame, var(--text-faint));
+  border-radius: 40% 40% 14px 14px / 22% 22% 14px 14px;
+  background: linear-gradient(180deg, rgb(120 30 40 / 0.35), rgb(40 8 14 / 0.65));
+}
+
+.aq {
+  color: var(--text);
+  font-size: clamp(11px, 1.9vw, 20px);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.num {
+  color: var(--text-dim);
+  font-size: clamp(12px, 1.6vw, 16px);
+}
+
+.empty .glass {
+  border-style: dashed;
+  opacity: 0.35;
+}
+
+.target .glass {
+  border-color: var(--keyword);
+  box-shadow: 0 0 0 2px var(--keyword), 0 0 26px var(--keyword);
+}
+
+.target .num {
+  color: var(--keyword);
+  font-weight: 700;
+}
+
+.here {
+  position: absolute;
+  top: -12px;
+  z-index: 2;
+  padding: 1px 10px;
+  border-radius: 4px;
+  background: var(--keyword);
+  color: #140c0a;
+  font-size: clamp(11px, 1.5vw, 14px);
+  font-weight: 700;
+}
+
+/* the hand, fanned and overlapping, centred beneath the tanks */
+.hand {
+  align-items: flex-end;
+  padding-top: 16px;
 }
 
 .card {
@@ -19,23 +97,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  width: 92px;
-  padding: 8px 6px 6px;
+  gap: 6px;
+  width: clamp(92px, 17vw, 156px);
+  margin: 0 -8px;
+  padding: 12px 8px 10px;
   border: 2px solid var(--frame);
-  border-radius: 8px;
-  background: rgb(0 0 0 / 0.35);
-  opacity: 0.55;
+  border-radius: 10px;
+  background: rgb(14 8 8 / 0.88);
+  transform: rotate(var(--tilt, 0deg));
+  transform-origin: 50% 100%;
+}
+
+.dim {
+  opacity: 0.6;
 }
 
 .chosen {
-  opacity: 1;
-  box-shadow: 0 0 0 2px var(--frame), 0 0 18px var(--frame);
-  transform: translateY(-6px);
+  z-index: 3;
+  transform: rotate(var(--tilt, 0deg)) translateY(-18px) scale(1.08);
+  box-shadow: 0 0 0 2px var(--frame), 0 0 26px var(--frame);
 }
 
 .name {
-  font-size: 12px;
+  font-size: clamp(12px, 1.7vw, 15px);
   line-height: 1.2;
   text-align: center;
   color: var(--text);
@@ -43,38 +127,17 @@
 
 .badge {
   position: absolute;
-  top: -11px;
-  padding: 0 8px;
+  top: -13px;
+  padding: 1px 10px;
   border-radius: 4px;
   background: var(--frame);
   color: #140c0a;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .normal { --frame: #9a9a9a; }
 .magic { --frame: #5aa6e6; }
 .rare { --frame: #e0b04a; }
+.boss { --frame: #e04848; }
 .supreme { --frame: #e04848; }
-
-.tank {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 38px;
-  border: 1px solid var(--text-faint);
-  border-radius: 6px;
-  color: var(--text-dim);
-  font-size: 13px;
-}
-
-.empty {
-  opacity: 0.35;
-}
-
-.target {
-  border: 2px solid var(--keyword);
-  color: var(--keyword);
-  font-weight: 700;
-  box-shadow: 0 0 12px var(--keyword);
-}

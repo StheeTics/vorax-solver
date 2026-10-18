@@ -208,9 +208,17 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </div>
       )}
 
+      <AdvicePanel advice={advice} refining={refining} state={state} iconsKnown={reading?.iconsKnown} />
+      {pickAsks.map(a => (
+        <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} />
+      ))}
       {unknowns.map(u => (
         <WhatIsThis key={u.id} problem={u.problem} phase={u.phase} frame={u.frame} onNamed={() => void named(u.id)} onSkip={() => setUnknowns(list => list.filter(x => x.id !== u.id))} />
       ))}
+      <ShareSwitch />
+
+      <h2 className={styles.checkTitle}>What it read</h2>
+      <p className={styles.note}>If something here doesn’t match the game, correct it and the advice above follows.</p>
       <BoardPanel state={state} fields={fields} onChange={edit} shelley={shelley} onShelley={changeShelley} />
       <ReportBox reading={reading} corrections={corrections} source={source} frame={frame} />
       {named$ > 0 && (
@@ -218,11 +226,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
           Forget the {named$} card{named$ === 1 ? '' : 's'} I named
         </button>
       )}
-      <AdvicePanel advice={advice} refining={refining} state={state} iconsKnown={reading?.iconsKnown} />
-      {pickAsks.map(a => (
-        <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} />
-      ))}
-      <ShareSwitch />
 
       <Footnote className={styles.footnote} />
     </main>
