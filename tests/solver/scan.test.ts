@@ -16,8 +16,10 @@ describe.skipIf(!local)('reading the labelled live frames (training/)', () => {
     it(`reads ${file}`, () => {
       const r = scan(decodePng(readFileSync(`training/${file}`)), data)
       expect(r.problems).toEqual([])
-      expect(r.state).toEqual(label.state)
-      expect(Object.entries(r.fields).filter(([, f]) => !f.sure).map(([k]) => k)).toEqual([])
+      // a panel showing something that isn't a known instrument can't be read back: left out of the check
+      const panel = label.panelUnknown ? { instruments: r.state.instruments } : {}
+      expect(r.state).toEqual({ ...label.state, ...panel })
+      expect(Object.entries(r.fields).filter(([k, f]) => !f.sure && !(label.panelUnknown && k.startsWith('instrument'))).map(([k]) => k)).toEqual([])
     })
   }
 })
@@ -42,6 +44,15 @@ describe('committed fixtures (masked live frames)', () => {
     expect(r.state.phase).toBe('protocol')
     expect(r.state.hand).toEqual(truth['018-board.png'].state!.hand)
     expect(r.state.round).toBe(11)
+  })
+
+  it('reads a real 1920x1080 (16:9) screen: tanks, cards, round and refreshes', () => {
+    const r = read('board-1080p.png')
+    expect(r.problems).toEqual([])
+    const want = truth['h1-013-screen.png'].state!
+    expect(r.state.tanks).toEqual(want.tanks)
+    expect(r.state.hand).toEqual(want.hand)
+    expect([r.state.round, r.state.instrumentRefreshes, r.state.phase]).toEqual([1, 2, 'instrument'])
   })
 
   it('flags a card it cannot recognise', () => {

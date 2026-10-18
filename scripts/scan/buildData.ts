@@ -10,6 +10,8 @@ import type { Rarity } from '../../src/engine/types'
 
 export interface Label {
   kind: 'board' | 'instrumentOffer' | 'other' | 'cards'
+  /** the equipped-instrument panel shows something that isn't a known instrument: don't learn icons from it */
+  panelUnknown?: true
   state?: ScreenState & { phase: HandPhase }
   /** a tick frame labelled for its hand only (scripts/scan/cards.json); hover marks a raised card, blurred
    *  a frame caught in a flash of light: neither teaches the cards' pictures */
@@ -27,7 +29,7 @@ function push<T>(map: Record<string, T[]>, key: string, v: T) {
   if (list.length < KEEP) list.push(v)
 }
 
-type Op = { to: 'digit'; kind: TextKind; key: string; v: number[] } | { to: 'rarity'; key: Rarity; v: [number, number, number] } | { to: 'header'; key: HandPhase; v: number[] } | { to: 'icon'; key: string; v: number[] }
+type Op = { to: 'digit'; kind: TextKind; key: string; v: number[]; size: number } | { to: 'rarity'; key: Rarity; v: [number, number, number] } | { to: 'header'; key: HandPhase; v: number[] } | { to: 'icon'; key: string; v: number[] }
 interface Extracted { board: boolean; ops: Op[]; cards: { key: string; art: ArtFeature; text: number[] }[] }
 
 // What one labelled frame contributes, worked out once per picture: scoring rebuilds the data for every
@@ -55,7 +57,7 @@ function extract(img: Img, label: Label): Extracted {
       const gs = glyphs(img, r, kind)
       if (gs.length !== text.length) return
       const lineH = Math.max(...gs.map(b => b.h))
-      gs.forEach((b, i) => out.ops.push({ to: 'digit', kind, key: text[i], v: Array.from(glyphVector(g, img.width, img.height, b, lineH), round3) }))
+      gs.forEach((b, i) => out.ops.push({ to: 'digit', kind, key: text[i], v: Array.from(glyphVector(g, img.width, img.height, b, lineH), round3), size: img.height }))
     }
     s.tanks.forEach((t, i) => {
       if (!t) return
@@ -67,7 +69,7 @@ function extract(img: Img, label: Label): Extracted {
     const refreshes = s.phase === 'potion' ? s.potionRefreshes : s.phase === 'instrument' ? s.instrumentRefreshes : undefined
     if (refreshes !== undefined) learn('refresh', l.refresh, String(refreshes))
     out.ops.push({ to: 'header', key: s.phase, v: signature(img, l.header).map(round3) })
-    l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: s.instruments[s.instruments.length - 1 - j] ?? 'none', v: iconPattern(img, r).map(round3) }))
+    if (!label.panelUnknown) l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: s.instruments[s.instruments.length - 1 - j] ?? 'none', v: iconPattern(img, r).map(round3) }))
   }
   extracted.set(img, out)
   return out
@@ -81,9 +83,16 @@ export function buildData(frames: { img: Img; label: Label }[]): ScanData {
   const headers = {} as Record<HandPhase, number[][]>
   const instrumentIcons: Record<string, number[][]> = {}
   const all = frames.filter(f => f.label.state || f.label.cards).map(f => extract(f.img, f.label))
+  // digits look different at each screen height, so each height keeps its own examples
+  const digitCount = new Map<string, number>()
   for (const e of all)
     for (const op of e.ops) {
-      if (op.to === 'digit') push(digits[op.kind], op.key, op.v)
+      if (op.to === 'digit') {
+        const key = `${op.kind}|${op.key}|${op.size}`
+        const n = digitCount.get(key) ?? 0
+        if (n < KEEP) (digits[op.kind][op.key] ??= []).push(op.v)
+        digitCount.set(key, n + 1)
+      }
       else if (op.to === 'rarity') push(rarityRgb, op.key, op.v)
       else if (op.to === 'header') push(headers, op.key, op.v)
       else push(instrumentIcons, op.key, op.v)

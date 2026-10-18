@@ -28,3 +28,24 @@ it("places a Potion Kit's five cards, fanned wider and tilted more at the ends",
   expect(l.hand5[2].angle).toBe(0)
   expect(l.hand5[4].angle).toBeGreaterThan(l.hand5[3].angle)
 })
+
+describe('16:9 screens (measured on a real 1920x1080 frame)', () => {
+  it('place the six tank labels closer together and higher than the ultrawide does', () => {
+    const l = at(1920, 1080)
+    expect(l.tankCx.map(Math.round)).toEqual([393, 660, 924, 1188, 1460, 1738])
+    expect(l.nameBand[1].y).toBeCloseTo(511 * 0.75, 0)
+    expect(l.aqBand[1].y).toBeCloseTo(554 * 0.75, 0)
+  })
+  it('scales the same at 2560x1440 (also 16:9)', () => {
+    const small = at(1920, 1080)
+    const big = at(2560, 1440)
+    big.tankCx.forEach((x, i) => expect(x).toBeCloseTo(small.tankCx[i] * (4 / 3), 0))
+  })
+  it('blends between the two profiles for shapes in between, and clamps outside them', () => {
+    const wide = at(1920, 1080).tankCx[5] / 1080
+    const ultra = at(3440, 1440).tankCx[5] / 1440
+    const mid = at(2160, 1080).tankCx[5] / 1080 // 2:1
+    expect(mid).toBeGreaterThan(Math.min(wide, ultra) - 5)
+    expect(at(1280, 1024).tankCx.map(Math.round)).toEqual(at(1920, 1080).tankCx.map(x => Math.round((x - 960) * (1024 / 1080) + 640)))
+  })
+})

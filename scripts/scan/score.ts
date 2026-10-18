@@ -33,7 +33,7 @@ const handOnly = Object.entries(JSON.parse(readFileSync('scripts/scan/cards.json
   .map(([file, cards]) => ({ file, label: { kind: 'cards', cards } as Label, img: decodePng(readFileSync(`training/${file}`)) }))
 const teaching = handOnly.filter(t => t.label.cards!.hover === undefined && !t.label.cards!.blurred)
 // the same hand in the same game is the same moment: held out together, so no frame helps read its twin
-const game = (file: string) => /^(g\d+)-/.exec(file)?.[1] ?? 'g1'
+const game = (file: string) => /^([a-z]\d+)-/.exec(file)?.[1] ?? 'g1'
 const moment = (file: string, hand: string[]) => `${game(file)}|${[...hand].sort().join('|')}`
 const others = (file: string, hand: string[]) => {
   const m = moment(file, hand)
@@ -81,7 +81,7 @@ for (const f of frames) {
       const key = want.phase === 'potion' ? 'potionRefreshes' : 'instrumentRefreshes'
       count('refreshes', got[key] === want[key], `${got[key]} not ${want[key]}`)
     }
-    count('instruments', JSON.stringify(got.instruments) === JSON.stringify(want.instruments), `${got.instruments.join(',')}`)
+    if (!f.label.panelUnknown) count('instruments', JSON.stringify(got.instruments) === JSON.stringify(want.instruments), `${got.instruments.join(',')}`)
   }
 }
 

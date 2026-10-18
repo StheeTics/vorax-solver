@@ -2561,5 +2561,113 @@
  "g4-112-board.png": {
   "kind": "other",
   "note": "protocol pick animation or end of game"
+ },
+ "h1-013-screen.png": {
+  "kind": "instrumentOffer",
+  "panelUnknown": true,
+  "note": "first real 1920x1080 capture; the top-right panel shows a flask icon that is not one of the known instruments",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 15,
+     "quantity": 12
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Contracted Claws",
+    "Aberrant Sprout",
+    "Prismatic Liver"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  }
+ },
+ "w1-009-screen.png": {
+  "kind": "instrumentOffer",
+  "panelUnknown": true,
+  "note": "the same opening board at 2560x1440 (16:9); the panel shows the same unknown flask icon",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 15,
+     "quantity": 12
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    }
+   ],
+   "hand": [
+    "Contracted Claws",
+    "Aberrant Sprout",
+    "Prismatic Liver"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  }
  }
 }

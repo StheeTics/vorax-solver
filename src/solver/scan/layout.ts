@@ -1,19 +1,38 @@
 // Where each part of the Surgical Preparation screen sits. Measured on 3440x1440 frames (21:9) from a live
 // game, in pixels of that frame, and placed on other frames by scaling with the height from the anchor the
-// game's UI uses: the left or right edge, or the centre. The tanks are part of the 3D scene, which for now
-// is placed the same way; other aspect ratios need frames of their own to check it.
+// game's UI uses: the left or right edge, or the centre. The tanks are part of the 3D scene, which is
+// framed differently on each screen shape: on 16:9 they sit closer together and higher (measured on a live
+// 1920x1080 frame). Between those two shapes the tank positions are blended; outside them they stay at
+// the nearest measured one, so 16:10, 4:3 and 32:9 screens still need frames of their own.
 import type { Rect } from '../types'
 
 const REF_H = 1440
 
 /** Reference rects, x relative to the frame centre unless noted. */
-/** Label centres under the six tanks; perspective pushes the right-hand ones further out. */
-const TANK_X = [-858, -421, 16, 454, 913, 1386]
+/** The tanks' labels, by screen shape: centres under the six tanks (perspective pushes the right-hand ones
+ *  further out), and the rows of the name, the total and Activity x Quantity. */
+interface TankScene { x: number[]; name: [number, number]; total: [number, number]; aq: [number, number]; icon: number; iconSize: number }
+const ULTRAWIDE: TankScene = { x: [-858, -421, 16, 454, 913, 1386], name: [556, 577], total: [578, 600], aq: [599, 619], icon: 533, iconSize: 26 }
+const WIDE_16_9: TankScene = { x: [-756, -400, -48, 304, 667, 1037], name: [511, 531], total: [532, 552], aq: [554, 574], icon: 496, iconSize: 22 }
+const ASPECT_16_9 = 16 / 9
+const ASPECT_ULTRAWIDE = 3440 / 1440
 const LABEL_HALF_W = 200
-const NAME_Y = [556, 577]
-const TOTAL_Y = [578, 600]
-const AQ_Y = [599, 619]
-const ICON = { y: 533, size: 26 }
+
+const mix = (a: number, b: number, t: number) => a + (b - a) * t
+const mixPair = (a: [number, number], b: [number, number], t: number): [number, number] => [mix(a[0], b[0], t), mix(a[1], b[1], t)]
+
+/** The tanks' labels for a screen of this shape. */
+export function tankScene(aspect: number): TankScene {
+  const t = Math.min(1, Math.max(0, (aspect - ASPECT_16_9) / (ASPECT_ULTRAWIDE - ASPECT_16_9)))
+  return {
+    x: ULTRAWIDE.x.map((x, i) => mix(WIDE_16_9.x[i], x, t)),
+    name: mixPair(WIDE_16_9.name, ULTRAWIDE.name, t),
+    total: mixPair(WIDE_16_9.total, ULTRAWIDE.total, t),
+    aq: mixPair(WIDE_16_9.aq, ULTRAWIDE.aq, t),
+    icon: mix(WIDE_16_9.icon, ULTRAWIDE.icon, t),
+    iconSize: mix(WIDE_16_9.iconSize, ULTRAWIDE.iconSize, t),
+  }
+}
 
 const CARD_X0 = -90
 const CARD_PITCH = 226.5
@@ -70,7 +89,8 @@ export function layout(frame: { width: number; height: number }): Layout {
   const k = height / REF_H
   const cx = width / 2
   const band = (x: number, y: [number, number] | number[]) => ({ x: x - LABEL_HALF_W * k, y: y[0] * k, w: 2 * LABEL_HALF_W * k, h: (y[1] - y[0]) * k })
-  const tankCx = TANK_X.map(x => cx + x * k)
+  const scene = tankScene(width / height)
+  const tankCx = scene.x.map(x => cx + x * k)
   const cardCx = [0, 1, 2].map(j => cx + (CARD_X0 + CARD_PITCH * j) * k)
   const instrumentCx = [0, 1, 2].map(j => width - (INSTRUMENT.right + INSTRUMENT.pitch * j) * k)
   return {
@@ -78,10 +98,10 @@ export function layout(frame: { width: number; height: number }): Layout {
     height,
     k,
     tankCx,
-    icon: tankCx.map(x => ({ x: x - (ICON.size / 2) * k, y: (ICON.y - ICON.size / 2) * k, w: ICON.size * k, h: ICON.size * k })),
-    nameBand: tankCx.map(x => band(x, NAME_Y)),
-    totalBand: tankCx.map(x => band(x, TOTAL_Y)),
-    aqBand: tankCx.map(x => band(x, AQ_Y)),
+    icon: tankCx.map(x => ({ x: x - (scene.iconSize / 2) * k, y: (scene.icon - scene.iconSize / 2) * k, w: scene.iconSize * k, h: scene.iconSize * k })),
+    nameBand: tankCx.map(x => band(x, scene.name)),
+    totalBand: tankCx.map(x => band(x, scene.total)),
+    aqBand: tankCx.map(x => band(x, scene.aq)),
     cardArt: cardCx.map(x => ({ x: x - (CARD_ART.w / 2) * k, y: CARD_ART.y * k, w: CARD_ART.w * k, h: CARD_ART.h * k })),
     cardFace: cardCx.map(x => ({ x: x - (CARD_FACE.w / 2) * k, y: CARD_FACE.y * k, w: CARD_FACE.w * k, h: CARD_FACE.h * k })),
     cards: cardCx.map((x, j) => ({ cx: x + CARD_SHIFT[j].x * k, cy: (CARD_CY + CARD_SHIFT[j].y) * k, angle: CARD_TILT[j] })),
