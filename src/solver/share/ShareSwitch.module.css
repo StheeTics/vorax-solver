@@ -1,0 +1,13 @@
+.share {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.note {
+  color: var(--text-faint);
+  font-size: 12px;
+}

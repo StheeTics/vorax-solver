@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => {
   errors.set(page, list)
   page.on('pageerror', e => list.push(String(e)))
   page.on('console', m => m.type() === 'error' && list.push(m.text()))
-  await page.goto('')
+  await page.goto('simulator.html')
 })
 test.afterEach(async ({ page }) => expect(errors.get(page)).toEqual([]))
 

@@ -1,0 +1,125 @@
+.live {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 600;
+}
+
+.steps li[data-state='done'] {
+  color: var(--text-faint);
+}
+
+.steps li[data-state='now'] {
+  color: var(--gold-hi);
+}
+
+.steps li[data-state='later'] {
+  color: var(--text-dim);
+}
+
+.body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.drop {
+  flex: 1 1 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 150px;
+  padding: 16px;
+  border: 2px dashed var(--gold-lo);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--text-dim);
+}
+
+.drop strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.drop button,
+.row button,
+.paths button,
+.live > .body > button {
+  height: 36px;
+  padding: 0 14px;
+}
+
+.help {
+  flex: 2 1 360px;
+  min-width: 0;
+  color: var(--text-dim);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.help p {
+  margin: 0 0 8px;
+}
+
+.paths {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.paths li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.paths code {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.paths button {
+  height: 28px;
+  padding: 0 10px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.small {
+  color: var(--text-faint);
+  font-size: 13px;
+}
+
+.small input {
+  width: 80px;
+  background: var(--iron-lo);
+  color: var(--text);
+  border: 1px solid var(--iron-hi);
+}
+
+.warn {
+  margin: 0;
+  color: var(--keyword);
+  font-size: 14px;
+}

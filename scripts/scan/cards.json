@@ -1,0 +1,1967 @@
+{
+ "g2-ticks/009-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/011-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/012-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/013-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/014-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/015-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/016-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/017-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/018-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ],
+  "hover": 2
+ },
+ "g2-ticks/020-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Bewitching Tincture",
+   "Petrified Spinal Solution"
+  ]
+ },
+ "g2-ticks/022-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Bewitching Tincture",
+   "Petrified Spinal Solution"
+  ]
+ },
+ "g2-ticks/023-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Bewitching Tincture",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/024-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Bewitching Tincture",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Aberrant Sprout"
+  ]
+ },
+ "g2-ticks/026-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Pure Leech Solution",
+   "Rare Potion Kit (Small)"
+  ]
+ },
+ "g2-ticks/027-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Pure Leech Solution",
+   "Rare Potion Kit (Small)"
+  ]
+ },
+ "g2-ticks/029-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Pure Leech Solution",
+   "Rare Potion Kit (Small)"
+  ]
+ },
+ "g2-ticks/030-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Pure Leech Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "hover": 0
+ },
+ "g2-ticks/031-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Pure Leech Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "hover": 0
+ },
+ "g2-ticks/033-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Beak of the Twice-Born",
+   "Canine Teeth File"
+  ]
+ },
+ "g2-ticks/035-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Beak of the Twice-Born",
+   "Canine Teeth File"
+  ]
+ },
+ "g2-ticks/036-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Beak of the Twice-Born",
+   "Canine Teeth File"
+  ]
+ },
+ "g2-ticks/037-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Beak of the Twice-Born",
+   "Canine Teeth File"
+  ],
+  "hover": 1
+ },
+ "g2-ticks/041-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Anesthetic Tincture - Agito",
+   "Brain Fog Tincture"
+  ]
+ },
+ "g2-ticks/044-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Anesthetic Tincture - Agito"
+  ]
+ },
+ "g2-ticks/046-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Anesthetic Tincture - Agito"
+  ],
+  "hover": 0
+ },
+ "g2-ticks/047-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Anesthetic Tincture - Agito"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born"
+  ]
+ },
+ "g2-ticks/048-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Anesthetic Tincture - Agito"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born"
+  ]
+ },
+ "g2-ticks/049-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Anesthetic Tincture - Agito"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born"
+  ]
+ },
+ "g2-ticks/050-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Anesthetic Tincture - Agito"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born"
+  ]
+ },
+ "g2-ticks/051-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Anesthetic Tincture - Agito",
+   "Xenopurge Powder"
+  ]
+ },
+ "g2-ticks/053-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Anesthetic Tincture - Agito",
+   "Xenopurge Powder"
+  ]
+ },
+ "g2-ticks/054-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Anesthetic Tincture - Agito",
+   "Xenopurge Powder"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born"
+  ]
+ },
+ "g2-ticks/056-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Anesthetic Tincture - Aemberon",
+   "Xenopurge Powder"
+  ]
+ },
+ "g2-ticks/058-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Anesthetic Tincture - Aemberon",
+   "Xenopurge Powder"
+  ]
+ },
+ "g2-ticks/059-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Anesthetic Tincture - Aemberon",
+   "Xenopurge Powder"
+  ],
+  "hover": 2
+ },
+ "g2-ticks/061-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Fouled Scraper",
+   "Black Goat Gut Suture"
+  ]
+ },
+ "g2-ticks/063-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Fouled Scraper",
+   "Black Goat Gut Suture"
+  ]
+ },
+ "g2-ticks/064-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Fouled Scraper",
+   "Black Goat Gut Suture"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born"
+  ]
+ },
+ "g2-ticks/065-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ]
+ },
+ "g2-ticks/066-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ]
+ },
+ "g2-ticks/068-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ]
+ },
+ "g2-ticks/069-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ]
+ },
+ "g2-ticks/070-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ],
+  "hover": 2
+ },
+ "g2-ticks/071-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ],
+  "hover": 2
+ },
+ "g2-ticks/072-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ],
+  "hover": 2
+ },
+ "g2-ticks/073-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ],
+  "hover": 2
+ },
+ "g2-ticks/074-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ],
+  "hover": 2
+ },
+ "g2-ticks/075-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born",
+   "Fouled Scraper"
+  ]
+ },
+ "g2-ticks/076-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Fresh Spinal Powder",
+   "Slough Solution"
+  ],
+  "hover": 1
+ },
+ "g2-ticks/081-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Compound Leech Solution",
+   "Slender-Limb Powder - Bone Sentry"
+  ]
+ },
+ "g2-ticks/083-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Compound Leech Solution",
+   "Slender-Limb Powder - Bone Sentry"
+  ]
+ },
+ "g2-ticks/084-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Compound Leech Solution",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born",
+   "Fouled Scraper"
+  ]
+ },
+ "g2-ticks/085-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Compound Leech Solution",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "hover": 0,
+  "blurred": true,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born",
+   "Fouled Scraper"
+  ]
+ },
+ "g2-ticks/087-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Brain Fog Tincture",
+   "Xeno-Hormone",
+   "Leptomeningeal Solution"
+  ]
+ },
+ "g2-ticks/090-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Viscous Bile Solution",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g2-ticks/092-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Viscous Bile Solution",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g2-ticks/093-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Viscous Bile Solution",
+   "Slender-Limb Powder - Pest"
+  ],
+  "hover": 1
+ },
+ "g2-ticks/096-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ]
+ },
+ "g2-ticks/098-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ]
+ },
+ "g2-ticks/099-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ]
+ },
+ "g2-ticks/100-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ]
+ },
+ "g2-ticks/101-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ]
+ },
+ "g2-ticks/102-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ]
+ },
+ "g2-ticks/103-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ]
+ },
+ "g2-ticks/104-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ],
+  "hover": 0
+ },
+ "g2-ticks/105-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slough Solution",
+   "Digestive Enzyme Solution"
+  ],
+  "hover": 0
+ },
+ "g2-ticks/108-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Holistic Acupuncture Therapy",
+   "Trepanation",
+   "Live Leech Therapy"
+  ]
+ },
+ "g2-ticks/109-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Holistic Acupuncture Therapy",
+   "Trepanation",
+   "Live Leech Therapy"
+  ]
+ },
+ "g2-ticks/110-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Holistic Acupuncture Therapy",
+   "Trepanation",
+   "Live Leech Therapy"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Aberrant Sprout",
+   "Beak of the Twice-Born",
+   "Fouled Scraper"
+  ]
+ },
+ "g2-ticks/113-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Trepanation",
+   "Laparolithotomy",
+   "Frontal Lobe Repair"
+  ]
+ },
+ "g2-ticks/115-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Trepanation",
+   "Laparolithotomy",
+   "Frontal Lobe Repair"
+  ],
+  "hover": 1
+ },
+ "g2-ticks/117-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Immunosuppressive Experiment",
+   "Frontal Lobe Repair",
+   "Trepanation"
+  ]
+ },
+ "g2-ticks/118-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Immunosuppressive Experiment",
+   "Frontal Lobe Repair",
+   "Trepanation"
+  ],
+  "hover": 2
+ },
+ "g3-ticks/001-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Hypertrophic Pituitary",
+   "Aberrant Sprout"
+  ]
+ },
+ "g3-ticks/003-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Hypertrophic Pituitary",
+   "Aberrant Sprout"
+  ]
+ },
+ "g3-ticks/005-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Contracted Claws",
+   "Aberrant Sprout"
+  ]
+ },
+ "g3-ticks/006-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Contracted Claws",
+   "Aberrant Sprout"
+  ]
+ },
+ "g3-ticks/008-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Contracted Claws",
+   "Aberrant Sprout"
+  ]
+ },
+ "g3-ticks/009-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Contracted Claws",
+   "Aberrant Sprout"
+  ],
+  "hover": 1
+ },
+ "g3-ticks/012-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Twin Hormone - Bone Sentry",
+   "Rare Potion Kit (Small)"
+  ]
+ },
+ "g3-ticks/013-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Twin Hormone - Bone Sentry",
+   "Rare Potion Kit (Small)"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/014-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Twin Hormone - Bone Sentry",
+   "Rare Potion Kit (Small)"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Contracted Claws"
+  ]
+ },
+ "g3-ticks/017-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Twin Hormone - Bone Sentry",
+   "Potion Kit (Large)"
+  ]
+ },
+ "g3-ticks/019-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Twin Hormone - Bone Sentry",
+   "Potion Kit (Large)"
+  ]
+ },
+ "g3-ticks/020-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Twin Hormone - Bone Sentry",
+   "Potion Kit (Large)"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Contracted Claws"
+  ]
+ },
+ "g3-ticks/024-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ]
+ },
+ "g3-ticks/025-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ]
+ },
+ "g3-ticks/027-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ]
+ },
+ "g3-ticks/028-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ]
+ },
+ "g3-ticks/029-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ]
+ },
+ "g3-ticks/030-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "hover": 1
+ },
+ "g3-ticks/032-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Contracted Claws"
+  ]
+ },
+ "g3-ticks/033-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/034-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/035-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Targeted Xeno-Hormone",
+   "Slough Solution"
+  ]
+ },
+ "g3-ticks/036-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Targeted Xeno-Hormone",
+   "Slough Solution"
+  ]
+ },
+ "g3-ticks/038-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Targeted Xeno-Hormone",
+   "Slough Solution"
+  ]
+ },
+ "g3-ticks/039-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Targeted Xeno-Hormone",
+   "Slough Solution"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/041-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Xenopurge Powder",
+   "Eggshell Powder"
+  ]
+ },
+ "g3-ticks/043-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Xenopurge Powder",
+   "Eggshell Powder"
+  ],
+  "hover": 1
+ },
+ "g3-ticks/044-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Xenopurge Powder",
+   "Eggshell Powder"
+  ],
+  "hover": 1
+ },
+ "g3-ticks/047-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Sloughed Cortex",
+   "Sinew Garrote"
+  ]
+ },
+ "g3-ticks/049-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Sloughed Cortex",
+   "Sinew Garrote"
+  ]
+ },
+ "g3-ticks/050-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Sloughed Cortex",
+   "Sinew Garrote"
+  ]
+ },
+ "g3-ticks/051-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Sloughed Cortex",
+   "Sinew Garrote"
+  ]
+ },
+ "g3-ticks/052-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Sloughed Cortex",
+   "Sinew Garrote"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/053-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Sloughed Cortex",
+   "Sinew Garrote"
+  ],
+  "hover": 2
+ },
+ "g3-ticks/054-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Sloughed Cortex",
+   "Sinew Garrote"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/055-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Clustered Eggs",
+   "Tanned Leather Restraint"
+  ]
+ },
+ "g3-ticks/056-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Clustered Eggs",
+   "Tanned Leather Restraint"
+  ]
+ },
+ "g3-ticks/058-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Clustered Eggs",
+   "Tanned Leather Restraint"
+  ]
+ },
+ "g3-ticks/059-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Clustered Eggs",
+   "Tanned Leather Restraint"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/062-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Agito"
+  ]
+ },
+ "g3-ticks/063-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Agito"
+  ]
+ },
+ "g3-ticks/064-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Agito"
+  ],
+  "hover": 2
+ },
+ "g3-ticks/066-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ]
+ },
+ "g3-ticks/067-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ]
+ },
+ "g3-ticks/069-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ]
+ },
+ "g3-ticks/070-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Contracted Claws",
+   "Rawhide Restraint"
+  ]
+ },
+ "g3-ticks/073-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Targeted Xeno-Hormone",
+   "Bewitching Tincture"
+  ]
+ },
+ "g3-ticks/075-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Targeted Xeno-Hormone",
+   "Bewitching Tincture"
+  ]
+ },
+ "g3-ticks/076-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Targeted Xeno-Hormone",
+   "Bewitching Tincture"
+  ],
+  "hover": 2
+ },
+ "g3-ticks/078-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Twin Hormone - Bone Sentry",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g3-ticks/080-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Twin Hormone - Bone Sentry",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g3-ticks/081-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Twin Hormone - Bone Sentry",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g3-ticks/082-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Twin Hormone - Bone Sentry",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g3-ticks/083-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Twin Hormone - Bone Sentry",
+   "Slender-Limb Powder - Pest"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Contracted Claws",
+   "Rawhide Restraint",
+   "Canine Teeth File"
+  ]
+ },
+ "g3-ticks/085-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Rousing Salts",
+   "Anesthetic Tincture - Agito",
+   "Twin Hormone - Bone Sentry"
+  ]
+ },
+ "g3-ticks/088-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Anesthetic Tincture - Aemberon",
+   "Twin Hormone - Bone Sentry"
+  ]
+ },
+ "g3-ticks/090-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Anesthetic Tincture - Aemberon",
+   "Twin Hormone - Bone Sentry"
+  ]
+ },
+ "g3-ticks/091-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Anesthetic Tincture - Aemberon",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Contracted Claws",
+   "Rawhide Restraint",
+   "Canine Teeth File"
+  ]
+ },
+ "g3-ticks/093-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Digestive Enzyme Solution",
+   "Viscous Bile Solution"
+  ],
+  "blurred": true,
+  "instruments": [
+   "Contracted Claws",
+   "Rawhide Restraint",
+   "Canine Teeth File"
+  ]
+ },
+ "g3-ticks/094-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Digestive Enzyme Solution",
+   "Viscous Bile Solution"
+  ]
+ },
+ "g3-ticks/096-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Digestive Enzyme Solution",
+   "Viscous Bile Solution"
+  ],
+  "hover": 0
+ },
+ "g3-ticks/097-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Digestive Enzyme Solution",
+   "Viscous Bile Solution"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Contracted Claws",
+   "Rawhide Restraint",
+   "Canine Teeth File"
+  ]
+ },
+ "g3-ticks/098-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Digestive Enzyme Solution",
+   "Viscous Bile Solution"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Contracted Claws",
+   "Rawhide Restraint",
+   "Canine Teeth File"
+  ]
+ },
+ "g3-ticks/101-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Cleansing Ointment",
+   "Vivigenic Powder"
+  ]
+ },
+ "g3-ticks/103-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Cleansing Ointment",
+   "Vivigenic Powder"
+  ]
+ },
+ "g3-ticks/104-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Cleansing Ointment",
+   "Vivigenic Powder"
+  ]
+ },
+ "g3-ticks/105-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Cleansing Ointment",
+   "Vivigenic Powder"
+  ]
+ },
+ "g3-ticks/106-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Cleansing Ointment",
+   "Vivigenic Powder"
+  ],
+  "hover": 2
+ },
+ "g3-ticks/108-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Spinal Cord Stimulation",
+   "Cyst Rupture Therapy",
+   "Aseptic Isolation Protocol"
+  ],
+  "hover": 1
+ },
+ "g3-ticks/109-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Spinal Cord Stimulation",
+   "Cyst Rupture Therapy",
+   "Aseptic Isolation Protocol"
+  ]
+ },
+ "g3-ticks/111-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Live Leech Therapy",
+   "Yellow Bile Therapy",
+   "Laparolithotomy"
+  ],
+  "hover": 2
+ },
+ "g3-ticks/114-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Trepanation",
+   "Aseptic Isolation Protocol",
+   "Laser Amputation"
+  ]
+ },
+ "g4-ticks/014-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Contracted Claws",
+   "Hyperplastic Frontal Lobe"
+  ]
+ },
+ "g4-ticks/016-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Contracted Claws",
+   "Hyperplastic Frontal Lobe"
+  ]
+ },
+ "g4-ticks/018-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Pure Leech Solution",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 2
+ },
+ "g4-ticks/020-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Pure Leech Solution",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 2
+ },
+ "g4-ticks/021-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Pure Leech Solution",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 2
+ },
+ "g4-ticks/022-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Pure Leech Solution",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 2
+ },
+ "g4-ticks/023-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Pure Leech Solution",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 2
+ },
+ "g4-ticks/025-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Osteogenic Powder",
+   "Vivigenic Powder"
+  ]
+ },
+ "g4-ticks/027-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Osteogenic Powder",
+   "Vivigenic Powder"
+  ]
+ },
+ "g4-ticks/028-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Osteogenic Powder",
+   "Vivigenic Powder"
+  ]
+ },
+ "g4-ticks/029-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Osteogenic Powder",
+   "Vivigenic Powder"
+  ],
+  "hover": 2,
+  "instruments": [
+   "Hyperplastic Frontal Lobe"
+  ]
+ },
+ "g4-ticks/030-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution"
+  ]
+ },
+ "g4-ticks/032-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution"
+  ]
+ },
+ "g4-ticks/033-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution"
+  ]
+ },
+ "g4-ticks/034-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution"
+  ]
+ },
+ "g4-ticks/035-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution"
+  ]
+ },
+ "g4-ticks/036-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution"
+  ]
+ },
+ "g4-ticks/037-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution"
+  ],
+  "hover": 0
+ },
+ "g4-ticks/039-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Sloughed Cortex",
+   "Black Goat Gut Suture"
+  ]
+ },
+ "g4-ticks/041-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Sloughed Cortex",
+   "Black Goat Gut Suture"
+  ]
+ },
+ "g4-ticks/043-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Rawhide Restraint",
+   "Fouled Scraper"
+  ]
+ },
+ "g4-ticks/045-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Rawhide Restraint",
+   "Fouled Scraper"
+  ]
+ },
+ "g4-ticks/046-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Rawhide Restraint",
+   "Fouled Scraper"
+  ]
+ },
+ "g4-ticks/048-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Vermicular Spinal Cord",
+   "Nettle Toggle"
+  ]
+ },
+ "g4-ticks/049-tick.png": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Vermicular Spinal Cord",
+   "Nettle Toggle"
+  ],
+  "hover": 0
+ },
+ "g4-ticks/052-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Green Bile Solution",
+   "Potion Kit (Small)"
+  ]
+ },
+ "g4-ticks/054-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Green Bile Solution",
+   "Potion Kit (Small)"
+  ]
+ },
+ "g4-ticks/058-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Bewitching Tincture",
+   "Vivigenic Powder"
+  ]
+ },
+ "g4-ticks/059-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Bewitching Tincture",
+   "Vivigenic Powder"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Hyperplastic Frontal Lobe",
+   "Black Goat Gut Suture",
+   "Sloughed Cortex"
+  ]
+ },
+ "g4-ticks/060-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Bewitching Tincture",
+   "Vivigenic Powder"
+  ],
+  "hover": 0
+ },
+ "g4-ticks/061-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Bewitching Tincture",
+   "Vivigenic Powder"
+  ],
+  "hover": 0
+ },
+ "g4-ticks/063-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Anesthetic Tincture - Agito",
+   "Petrified Spinal Solution"
+  ]
+ },
+ "g4-ticks/065-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Anesthetic Tincture - Agito",
+   "Petrified Spinal Solution"
+  ]
+ },
+ "g4-ticks/066-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Anesthetic Tincture - Agito",
+   "Petrified Spinal Solution"
+  ],
+  "hover": 2
+ },
+ "g4-ticks/068-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g4-ticks/070-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Pest"
+  ]
+ },
+ "g4-ticks/071-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Pest"
+  ],
+  "hover": 0
+ },
+ "g4-ticks/073-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Leptomeningeal Solution",
+   "Mutagenic Powder"
+  ]
+ },
+ "g4-ticks/075-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Leptomeningeal Solution",
+   "Mutagenic Powder"
+  ]
+ },
+ "g4-ticks/077-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Xeno-Hormone",
+   "Targeted Xeno-Hormone"
+  ]
+ },
+ "g4-ticks/078-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Xeno-Hormone",
+   "Targeted Xeno-Hormone"
+  ]
+ },
+ "g4-ticks/080-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Xeno-Hormone",
+   "Targeted Xeno-Hormone"
+  ]
+ },
+ "g4-ticks/081-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Xeno-Hormone",
+   "Targeted Xeno-Hormone"
+  ],
+  "hover": 0
+ },
+ "g4-ticks/082-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Xeno-Hormone",
+   "Targeted Xeno-Hormone"
+  ],
+  "hover": 0
+ },
+ "g4-ticks/083-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Eggshell Powder",
+   "Xenopurge Powder"
+  ]
+ },
+ "g4-ticks/084-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Eggshell Powder",
+   "Xenopurge Powder"
+  ]
+ },
+ "g4-ticks/085-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Eggshell Powder",
+   "Xenopurge Powder"
+  ]
+ },
+ "g4-ticks/086-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Eggshell Powder",
+   "Xenopurge Powder"
+  ]
+ },
+ "g4-ticks/088-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Eggshell Powder",
+   "Xenopurge Powder"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Hyperplastic Frontal Lobe",
+   "Black Goat Gut Suture",
+   "Sloughed Cortex"
+  ]
+ },
+ "g4-ticks/089-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Eggshell Powder",
+   "Xenopurge Powder"
+  ],
+  "hover": 0,
+  "instruments": [
+   "Hyperplastic Frontal Lobe",
+   "Black Goat Gut Suture",
+   "Sloughed Cortex"
+  ]
+ },
+ "g4-ticks/091-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Twin Hormone - Bone Sentry",
+   "Osteolytic Ointment"
+  ]
+ },
+ "g4-ticks/093-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Twin Hormone - Bone Sentry",
+   "Osteolytic Ointment"
+  ]
+ },
+ "g4-ticks/094-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Twin Hormone - Bone Sentry",
+   "Osteolytic Ointment"
+  ]
+ },
+ "g4-ticks/095-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Twin Hormone - Bone Sentry",
+   "Osteolytic Ointment"
+  ],
+  "hover": 1
+ },
+ "g4-ticks/096-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Twin Hormone - Bone Sentry",
+   "Osteolytic Ointment"
+  ],
+  "hover": 1,
+  "instruments": [
+   "Hyperplastic Frontal Lobe",
+   "Black Goat Gut Suture",
+   "Sloughed Cortex"
+  ]
+ },
+ "g4-ticks/097-tick.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Twin Hormone - Bone Sentry",
+   "Osteolytic Ointment"
+  ],
+  "hover": 1,
+  "blurred": true,
+  "instruments": [
+   "Hyperplastic Frontal Lobe",
+   "Black Goat Gut Suture",
+   "Sloughed Cortex"
+  ]
+ },
+ "g4-ticks/099-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Anesthesia Analgesia",
+   "Laser Amputation",
+   "Frontal Lobe Repair"
+  ]
+ },
+ "g4-ticks/100-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Anesthesia Analgesia",
+   "Laser Amputation",
+   "Frontal Lobe Repair"
+  ]
+ },
+ "g4-ticks/103-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Muscle Relaxant Injection Experiment",
+   "Trepanation",
+   "Holistic Acupuncture Therapy"
+  ]
+ },
+ "g4-ticks/105-tick.png": {
+  "phase": "protocol",
+  "hand": [
+   "Frontal Lobe Repair",
+   "Spinal Cord Stimulation",
+   "Trepanation"
+  ]
+ },
+ "g5-011-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Hollow Spinal Solution",
+   "Petrified Spinal Solution"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly"
+  ]
+ },
+ "g5-018-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Viscous Bile Solution"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly"
+  ]
+ },
+ "g5-025-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Slough Solution",
+   "Viviparous Hormone",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly"
+  ]
+ },
+ "g5-032-board.png": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Sinew Garrote",
+   "Fouled Scraper"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly"
+  ]
+ },
+ "g5-037-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Agito",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly",
+   "Fouled Scraper"
+  ]
+ },
+ "g5-042-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Brain Fog Tincture",
+   "Anesthetic Tincture - Agito"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly",
+   "Fouled Scraper"
+  ]
+ },
+ "g5-047-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Osteogenic Powder",
+   "Leptomeningeal Solution"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly",
+   "Fouled Scraper"
+  ]
+ },
+ "g5-052-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Insect Attractant",
+   "Pure Leech Solution"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly",
+   "Fouled Scraper"
+  ]
+ },
+ "g5-066-board.png": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Petrified Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "instruments": [
+   "Contracted Claws",
+   "Egg-Burdened Butterfly",
+   "Fouled Scraper"
+  ]
+ }
+}

@@ -67,3 +67,15 @@
   color: var(--gold);
   text-decoration: none;
 }
+
+.home {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  display: grid;
+  place-items: center;
+  height: 40px;
+  padding: 0 14px;
+  color: var(--gold);
+  text-decoration: none;
+}

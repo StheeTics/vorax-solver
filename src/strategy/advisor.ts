@@ -1,9 +1,9 @@
-// Live advice for the OCR helper: given what is on screen, rank the choices by expected payoff.
-// Built into one self-contained script (npm run build:advisor) that the helper runs in an embedded V8.
+// Live advice for the Solver: given what is on screen, rank the choices by expected payoff.
 import { POTIONS } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
 import { createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
 import type { Archetype, Card, GameState, Monster, Rarity } from '@/engine/types'
+import { settingsForShelley } from '@/data/shelley'
 import { evChooser, expected, options, rankInstruments } from './bot'
 
 export interface ScreenMonster { archetype: Archetype; rarity: Rarity; activity: number; quantity: number }
@@ -14,16 +14,18 @@ export interface ScreenState {
   hand: string[]
   /** names of equipped instruments */
   instruments: string[]
-  /** 'potion' while choosing a potion, 'instrument' while choosing an instrument */
-  phase: 'potion' | 'instrument'
+  /** 'potion' while choosing a potion, 'instrument' while choosing an instrument, 'protocol' in rounds 11-13 */
+  phase: 'potion' | 'instrument' | 'protocol'
   round?: number
   potionRefreshes?: number
   instrumentRefreshes?: number
+  /** Intern Shelley level; DEFAULT_SETTINGS when absent */
+  shelley?: number
 }
 export interface Ranked { index: number; targets: number[]; value: number }
 export interface Advice {
-  /** best card (hand index) and the tanks to target, or a refresh */
-  best: Ranked | 'refresh'
+  /** best card (hand index) and the tanks to target, a refresh, or null when the choice doesn't change the score */
+  best: Ranked | 'refresh' | null
   /** every option, best first (potion phase), or one entry per offered instrument */
   ranking: Ranked[]
   board: number
@@ -35,9 +37,6 @@ export interface Advice {
   unknown: string[]
 }
 
-// A bare V8 (no browser, no Node) lacks structuredClone; game state is plain JSON data.
-globalThis.structuredClone ??= (<T>(v: T): T => JSON.parse(JSON.stringify(v))) as typeof structuredClone
-
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '')
 const potionIds = new Map(POTIONS.map(p => [norm(p.name), p.id]))
 const instrumentIds = new Map(INSTRUMENTS.map(i => [norm(i.name), i.id]))
@@ -47,12 +46,13 @@ export function names() {
   return { potions: POTIONS.map(p => p.name), instruments: INSTRUMENTS.map(i => i.name), basics: INSTRUMENTS.filter(i => i.pool === 'basic').map(i => i.name) }
 }
 
-function toState(x: ScreenState, unknown: string[]): GameState {
+export function toState(x: ScreenState, unknown: string[]): GameState {
   const lookup = (m: Map<string, number>, n: string) => { const id = m.get(norm(n)); if (id === undefined) unknown.push(n); return id }
   const equipped = x.instruments.map(n => lookup(instrumentIds, n)).filter((id): id is number => id !== undefined)
-  const s = createGame(DEFAULT_SETTINGS, { tanks: null, instruments: [], startRound: 1, thresholdsUsed: { t8000: false, t28000: false }, forcedHand: [] }, 1)
+  const settings = x.shelley === undefined ? DEFAULT_SETTINGS : settingsForShelley(x.shelley)
+  const s = createGame(settings, { tanks: null, instruments: [], startRound: 1, thresholdsUsed: { t8000: false, t28000: false }, forcedHand: [] }, 1)
   const ids = x.hand.map(n => lookup(x.phase === 'potion' ? potionIds : instrumentIds, n))
-  const hand: Card[] = ids.filter((id): id is number => id !== undefined).map(id => ({ kind: x.phase, id }))
+  const hand: Card[] = ids.filter((id): id is number => id !== undefined).map(id => ({ kind: x.phase === 'potion' ? 'potion' : 'instrument', id }))
   const round = x.round ?? 1
   return {
     ...s,
@@ -86,6 +86,8 @@ export const planningHelps = (instrumentNames: string[]) => instrumentNames.some
  */
 export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false): Advice {
   const t0 = Date.now(); const unknown: string[] = []
+  // Surgical Protocols change the endgame battle, not Ultimate Activity
+  if (x.phase === 'protocol') return { best: null, ranking: [], board: 0, plan: false, final: true, ms: 0, unknown }
   const s = toState(x, unknown)
   const seed = 0x5eed
   let ranking: Ranked[]

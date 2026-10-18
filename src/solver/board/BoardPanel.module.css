@@ -1,0 +1,104 @@
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.board h2 {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.field select,
+.field input {
+  min-width: 0;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--iron-hi);
+  border-radius: 4px;
+  background: var(--iron-lo);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.row .field select {
+  width: 220px;
+}
+
+.row .field input {
+  width: 80px;
+}
+
+.tanks {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .tanks {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .tanks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tank {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px;
+  border: 1px solid var(--glass-deep);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgb(196 29 43 / 0.18), rgb(18 17 20 / 0.6));
+}
+
+.tank[data-empty='true'] {
+  opacity: 0.6;
+}
+
+.tank .field select,
+.tank .field input {
+  width: 100%;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+select[data-rarity='normal'] { color: var(--rarity-normal); }
+select[data-rarity='magic'] { color: var(--rarity-magic); }
+select[data-rarity='rare'] { color: var(--rarity-rare); }
+select[data-rarity='boss'] { color: var(--rarity-boss); }
+
+.unsure {
+  color: var(--rarity-rare);
+  cursor: help;
+}

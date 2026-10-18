@@ -3,6 +3,7 @@ import { Footnote } from './Footnote'
 import { FullscreenButton } from './FullscreenButton'
 import { ShelleyPicker } from './ShelleyPicker'
 import { GuideLink } from './GuideLink'
+import { HOME_URL } from './links'
 import { SANDBOX_ENABLED } from './features'
 import { loadShelleyLevel, saveShelleyLevel } from './settingsStore'
 import styles from './MainMenu.module.css'
@@ -20,6 +21,7 @@ export function MainMenu({ onPlay, onSandbox }: Props) {
   }
   return (
     <div className={styles.menu}>
+      <a className={`ghost-button ${styles.home}`} href={HOME_URL}>‹ Home</a>
       <div className={styles.titleBlock}>
         <div className={styles.kicker}>Torchlight Infinite · Vorax</div>
         <h1 className={styles.title}>Surgical Preparation</h1>

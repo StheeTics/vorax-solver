@@ -1,6 +1,5 @@
 node_modules/
 dist/
-dist-advisor/
 .DS_Store
 *.tsbuildinfo
 
@@ -18,3 +17,10 @@ scripts/sim/results/
 .pnp.loader.mjs
 .yarn/
 yarn.lock
+
+# Screenshot-reader frames from capture mode (solver.html?capture)
+training/
+
+# Agent working notes and scratch scripts
+.superpowers/
+eng.traineddata

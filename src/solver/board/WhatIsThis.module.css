@@ -1,0 +1,31 @@
+.what {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.card {
+  width: 115px;
+  height: auto;
+  border-radius: 6px;
+}
+
+.pick {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--gold);
+}
+
+.pick select {
+  height: 32px;
+  background: var(--iron-lo);
+  color: var(--text);
+  border: 1px solid var(--iron-hi);
+}
+
+.what > button {
+  height: 32px;
+  padding: 0 12px;
+}

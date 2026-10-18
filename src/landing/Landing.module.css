@@ -1,0 +1,114 @@
+:global(html) {
+  background: var(--bg-0);
+}
+
+:global(body) {
+  height: auto;
+  min-height: 100%;
+  overflow: auto;
+  background: radial-gradient(ellipse at 50% 0%, var(--bg-2) 0%, var(--bg-0) 900px) no-repeat var(--bg-0);
+}
+
+.page {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 48px;
+  padding: 64px 16px 32px;
+}
+
+.titleBlock {
+  text-align: center;
+}
+
+.kicker {
+  font-family: var(--font-display);
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 15px;
+}
+
+.title {
+  margin: 12px 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(40px, 9vw, 76px);
+  font-weight: 700;
+  color: var(--text);
+  text-shadow: 0 0 24px rgb(220 30 40 / 0.6), 0 3px 0 #000;
+}
+
+.choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 340px));
+  gap: 24px;
+}
+
+@media (max-width: 640px) {
+  .choices {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 170px;
+  padding: 24px;
+  border: 1px solid var(--gold-lo);
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgb(90 10 18 / 0.55), rgb(18 17 20 / 0.9));
+  color: var(--text);
+  text-decoration: none;
+  box-shadow: 0 0 0 1px #000, 0 10px 30px rgb(0 0 0 / 0.5);
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.card:hover,
+.card:focus-visible {
+  border-color: var(--gold-hi);
+  transform: translateY(-2px);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+.blurb {
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.note {
+  margin: 10px 4px 0;
+  color: var(--text-faint);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.footer {
+  margin-top: auto;
+  max-width: 640px;
+  text-align: center;
+}
+
+.credit {
+  margin: 0 0 12px;
+  color: var(--text-faint);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.credit a {
+  color: var(--gold);
+}
+
+.footer .footnote {
+  position: static;
+}

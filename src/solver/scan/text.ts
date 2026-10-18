@@ -1,0 +1,155 @@
+// Text on the screen as glyph boxes: the numbers under each tank, the round and the refreshes left.
+// Each kind of text has its own colour, which keeps hearts, dice and the "/13" out of the glyphs.
+import type { Rect } from '../types'
+import { hsv, type Img } from './pixels'
+
+export type TextKind = 'label' | 'round' | 'refresh'
+
+const lum = (r: number, g: number, b: number) => 0.299 * r + 0.587 * g + 0.114 * b
+const isRed = (r: number, g: number, b: number) => r > g + 60 && r > b + 50
+
+/** Otsu's threshold over the luminance of a rect's pixels that pass `use`. */
+function otsu(img: Img, r: Rect, use: (r: number, g: number, b: number) => boolean): number {
+  const hist = new Array(256).fill(0)
+  let n = 0
+  for (let y = Math.max(0, Math.floor(r.y)); y < Math.min(img.height, r.y + r.h); y++) {
+    for (let x = Math.max(0, Math.floor(r.x)); x < Math.min(img.width, r.x + r.w); x++) {
+      const i = (y * img.width + x) * 4
+      const [R, G, B] = [img.data[i], img.data[i + 1], img.data[i + 2]]
+      if (!use(R, G, B)) continue
+      hist[Math.round(lum(R, G, B))]++
+      n++
+    }
+  }
+  let sum = 0
+  for (let t = 0; t < 256; t++) sum += t * hist[t]
+  let sumB = 0, wB = 0, best = 0, at = 0
+  for (let t = 0; t < 256; t++) {
+    wB += hist[t]
+    if (!wB) continue
+    const wF = n - wB
+    if (!wF) break
+    sumB += t * hist[t]
+    const between = wB * wF * (sumB / wB - (sum - sumB) / wF) ** 2
+    if (between > best) {
+      best = between
+      at = t
+    }
+  }
+  return at
+}
+
+function testFor(img: Img, r: Rect, kind: TextKind): (r: number, g: number, b: number) => boolean {
+  if (kind === 'round') return (R, G, B) => { const [, s, v] = hsv(R, G, B); return s > 0.2 && v > 0.45 && R >= G && G >= B }
+  if (kind === 'refresh') return (R, G, B) => { const [, s, v] = hsv(R, G, B); return s < 0.35 && v > 0.6 }
+  const t = Math.max(60, 0.7 * otsu(img, r, (R, G, B) => !isRed(R, G, B)))
+  return (R, G, B) => !isRed(R, G, B) && lum(R, G, B) > t
+}
+
+/**
+ * Glyph boxes in a rect, left to right. Small text breaks apart under any brightness cut, so glyphs are the
+ * runs of columns holding text pixels within the text's own row, not connected blobs.
+ */
+export function glyphs(img: Img, r: Rect, kind: TextKind): Rect[] {
+  const test = testFor(img, r, kind)
+  const x0 = Math.max(0, Math.floor(r.x)), x1 = Math.min(img.width, Math.ceil(r.x + r.w))
+  const y0 = Math.max(0, Math.floor(r.y)), y1 = Math.min(img.height, Math.ceil(r.y + r.h))
+  const w = x1 - x0, h = y1 - y0
+  if (w <= 0 || h <= 0) return []
+  const on = new Uint8Array(w * h)
+  const rows = new Array(h).fill(0)
+  const red = new Array(w).fill(0)
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = ((y0 + y) * img.width + x0 + x) * 4
+    const [R, G, B] = [img.data[i], img.data[i + 1], img.data[i + 2]]
+    if (test(R, G, B)) {
+      on[y * w + x] = 1
+      rows[y]++
+    }
+    if (R > G + 40) red[x]++
+  }
+  // the text's row: the run of rows around the busiest one
+  const peak = rows.indexOf(Math.max(...rows))
+  if (rows[peak] === 0) return []
+  let top = peak, bottom = peak
+  while (top > 0 && rows[top - 1] > 0) top--
+  while (bottom < h - 1 && rows[bottom + 1] > 0) bottom++
+  const out: Rect[] = []
+  let start = -1
+  const flush = (end: number) => {
+    let n = 0, ry0 = h, ry1 = -1, reddish = 0
+    for (let x = start; x < end; x++) {
+      reddish += red[x]
+      for (let y = top; y <= bottom; y++) if (on[y * w + x]) {
+        n++
+        if (y < ry0) ry0 = y
+        if (y > ry1) ry1 = y
+      }
+    }
+    // a heart's anti-aliased rim can pass the test: its columns are mostly red
+    if (n >= 3 && reddish < (end - start) * (bottom - top + 1) * 0.3) out.push({ x: x0 + start, y: y0 + ry0, w: end - start, h: ry1 - ry0 + 1 })
+    start = -1
+  }
+  for (let x = 0; x < w; x++) {
+    let any = false
+    for (let y = top; y <= bottom && !any; y++) if (on[y * w + x]) any = true
+    if (any && start < 0) start = x
+    if (!any && start >= 0) flush(x)
+  }
+  if (start >= 0) flush(w)
+  if (kind === 'refresh') {
+    // Shelley's portrait can reach into the box from the left: the count is the right-most glyph of a
+    // digit's height (about 0.37 of the box at any size; her hair can be taller)
+    const last = out.filter(g => g.h >= 0.25 * h && g.h <= 0.5 * h).pop()
+    return last ? [last] : []
+  }
+  return splitWide(out, x => {
+    let n = 0
+    for (let y = top; y <= bottom; y++) n += on[y * w + x - x0]
+    return n
+  })
+}
+
+/** Glyphs much wider than the typical one are touching digits: split them at their thinnest columns. */
+function splitWide(gs: Rect[], density: (x: number) => number): Rect[] {
+  if (!gs.length) return gs
+  // a digit is about 0.62 of its height wide; a narrow 1 would make a width median useless
+  const heights = gs.map(g => g.h).sort((a, b) => a - b)
+  const typical = 0.62 * heights[Math.floor(heights.length / 2)]
+  return gs.flatMap(g => {
+    // sized a little wide: some digits (a 4) are broader than the typical one
+    const parts = Math.round(g.w / (typical * 1.15))
+    if (g.w < 1.6 * typical || parts < 2) return [g]
+    const cuts: number[] = []
+    for (let p = 1; p < parts; p++) {
+      const aim = g.x + (g.w * p) / parts
+      let best = Math.round(aim), low = Infinity
+      for (let x = Math.round(aim - typical / 3); x <= Math.round(aim + typical / 3); x++) {
+        const d = density(x)
+        if (d < low) {
+          low = d
+          best = x
+        }
+      }
+      cuts.push(best)
+    }
+    // the thinnest column itself belongs to neither digit
+    const starts = [g.x, ...cuts.map(c => c + 1)]
+    const ends = [...cuts, g.x + g.w]
+    return starts.map((x, i) => ({ x, y: g.y, w: ends[i] - x, h: g.h })).filter(p => p.w > 0.25 * typical)
+  })
+}
+
+/** Mean colour of the brightest 5% of a rect's pixels (by their strongest channel): the colour of its text. */
+export function brightest(img: Img, r: Rect): [number, number, number] {
+  const px: [number, number, number][] = []
+  for (let y = Math.max(0, Math.floor(r.y)); y < Math.min(img.height, r.y + r.h); y++) {
+    for (let x = Math.max(0, Math.floor(r.x)); x < Math.min(img.width, r.x + r.w); x++) {
+      const i = (y * img.width + x) * 4
+      px.push([img.data[i], img.data[i + 1], img.data[i + 2]])
+    }
+  }
+  px.sort((a, b) => Math.max(...b) - Math.max(...a))
+  const top = px.slice(0, Math.max(1, Math.floor(px.length / 20)))
+  return [0, 1, 2].map(c => Math.round(top.reduce((s, p) => s + p[c], 0) / top.length)) as [number, number, number]
+}
