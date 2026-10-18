@@ -76,6 +76,16 @@ describe('digits that don’t fit the total are corrected from it', () => {
   it('keeps what was read when it already fits', () => {
     expect(reconcile(alts([['3'], ['6']]), alts([['1'], ['x'], ['3', '8'], ['6']]))).toEqual({ total: '36', aq: '1x36' })
   })
+  it('when a digit isn’t among its candidates, divides the total by the other number, if that changes only that digit', () => {
+    // "143 x 36" read as "343x36", and 1 isn't among the first digit's candidates; 5148 / 36 = 143
+    const total = alts([['5'], ['1'], ['4'], ['8']])
+    const aq = alts([['3', '2', '0'], ['4'], ['3'], ['x'], ['3'], ['6']])
+    expect(reconcile(total, aq)).toEqual({ total: '5148', aq: '143x36' })
+  })
+  it('doesn’t divide its way to a number that differs in more than one digit', () => {
+    // 5148 / 36 = 143, but "943" read as "333" would need two digits changed
+    expect(reconcile(alts([['5'], ['1'], ['4'], ['8']]), alts([['3'], ['3'], ['3'], ['x'], ['3'], ['6']]))).toBeNull()
+  })
   it('gives up when nothing fits, or when two readings fit equally well', () => {
     expect(reconcile(alts([['9'], ['9']]), alts([['2'], ['x'], ['3']]))).toBeNull()
     // 3x4 and 2x6 both make 12, each using one second choice

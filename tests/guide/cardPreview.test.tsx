@@ -15,9 +15,9 @@ function page(html: string) {
 const refs = (root: HTMLElement) => [...root.querySelectorAll('.card-ref')].map(e => e.textContent)
 
 it('links card names, preferring the longest name and skipping generic plurals', () => {
-  const root = page('<p>Potent Xenopurge Powder, Targeted Xeno-Hormone, Xeno-Hormones and <strong>Plague Madonna</strong>.</p>')
-  expect(refs(root)).toEqual(['Potent Xenopurge Powder', 'Targeted Xeno-Hormone', 'Plague Madonna'])
-  expect(root.textContent).toBe('Potent Xenopurge Powder, Targeted Xeno-Hormone, Xeno-Hormones and Plague Madonna.')
+  const root = page('<p>Potent Xenopurge Powder, Targeted Xeno-Hormone, Xeno-Hormones and <strong>Lady of the Plague Quarter</strong>.</p>')
+  expect(refs(root)).toEqual(['Potent Xenopurge Powder', 'Targeted Xeno-Hormone', 'Lady of the Plague Quarter'])
+  expect(root.textContent).toBe('Potent Xenopurge Powder, Targeted Xeno-Hormone, Xeno-Hormones and Lady of the Plague Quarter.')
 })
 
 it('links the cards named in the guide', () => {

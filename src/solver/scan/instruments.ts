@@ -12,7 +12,7 @@ import { signature, type Img } from './pixels'
 const BRIGHT = 60
 const FILLED_MIN = 0.008
 
-function holdsAnIcon(img: Img, r: Rect): boolean {
+export function holdsAnIcon(img: Img, r: Rect): boolean {
   const x0 = Math.floor(r.x)
   const y0 = Math.floor(r.y)
   let n = 0
@@ -24,7 +24,8 @@ function holdsAnIcon(img: Img, r: Rect): boolean {
   return n / (r.w * r.h) >= FILLED_MIN
 }
 
-const ICON_MIN = 0.85
+// right icons score 0.83 or more (a slot's background shifts the pattern a little); wrong ones about 0.6 or less
+const ICON_MIN = 0.8
 const ICON_GAP = 0.03
 
 /** An icon as a zero-mean, unit-length 24x24 grey pattern. */

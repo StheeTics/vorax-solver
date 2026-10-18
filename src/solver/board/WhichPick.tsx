@@ -6,7 +6,7 @@ import { addLocalRef } from '../scan/localRefs'
 import { crop } from '../scan/pixels'
 import { iconPattern } from '../scan/instruments'
 import { shareIcon } from '../share/icon'
-import styles from './WhatIsThis.module.css'
+import styles from './Ask.module.css'
 import own from './WhichPick.module.css'
 
 interface Props {

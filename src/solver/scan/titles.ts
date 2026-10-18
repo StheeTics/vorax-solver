@@ -4,6 +4,7 @@
 import { POTIONS } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
 import { PROTOCOLS } from '@/data/protocols'
+import { XENOPANACEA } from '@/data/xenopanacea'
 import type { FieldRead, Problem, Reading } from '../types'
 import type { HandPhase } from './data'
 import { handAt } from './cards'
@@ -18,7 +19,7 @@ const MIN_Q = 6
 const GAP = 3
 
 const NAMES: Record<HandPhase, readonly string[]> = {
-  potion: POTIONS.map(p => p.name),
+  potion: [...POTIONS.map(p => p.name), ...XENOPANACEA],
   instrument: INSTRUMENTS.map(i => i.name),
   protocol: PROTOCOLS,
 }

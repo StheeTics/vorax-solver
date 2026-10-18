@@ -44,3 +44,12 @@ describe.skipIf(!existsSync('training/h1-013-screen.png'))('digit examples from 
     expect(withoutSmall.digits.label['6'].length).toBeLessThanOrEqual(8)
   })
 })
+
+describe.skipIf(!existsSync('training/h2-032-board.png'))('header examples from different screen sizes', () => {
+  it('each size keeps its own', () => {
+    const truth = JSON.parse(readFileSync('scripts/scan/truth.json', 'utf8'))
+    const big = Object.entries(truth).filter(([f, v]) => (v as { state?: { phase: string } }).state?.phase === 'instrument' && /^(00|g[2-4]-)/.test(f)).slice(0, 9)
+    const frames = [...big, ['h2-032-board.png', truth['h2-032-board.png']]].map(([f, label]) => ({ img: decodePng(readFileSync(`training/${f as string}`)), label: label as never }))
+    expect(buildData(frames).headers.instrument.length).toBeGreaterThan(8)
+  })
+})

@@ -13,9 +13,8 @@ import { ScreenshotSource } from './screenshot/ScreenshotSource'
 import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
 import { useShare } from './share/useShare'
-import { WhatIsThis } from './board/WhatIsThis'
 import { WhichPick } from './board/WhichPick'
-import { forgetLocalRefs, loadLocalRefs } from './scan/localRefs'
+import { loadLocalRefs } from './scan/localRefs'
 import { newTracker, trackInstruments, type PickQuestion } from './track'
 import type { LocalRefs } from './scan/scan'
 import { useScan, type Scanner } from './scan/useScan'
@@ -38,9 +37,7 @@ function valueOf(s: ScreenState, field: FieldKey): string {
 
 type Keep = (value: unknown, what?: 'reading' | 'advice' | 'pick') => void
 
-interface Unknown { id: number; frame: ImageData; phase: 'potion' | 'instrument'; problem: Extract<Reading['problems'][number], { kind: 'unknownArt' }> }
-const MAX_UNKNOWNS = 6
-let unknownId = 0
+let askId = 0
 
 const SOURCES: { id: Source; label: string }[] = [
   { id: 'live', label: 'Live' },
@@ -58,8 +55,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [reading$, setReadingBusy] = useState(false)
   const [corrections, setCorrections] = useState<Record<FieldKey, string>>({})
   const [local, setLocal] = useState<LocalRefs>({})
-  // unknown cards wait here until named or skipped: the next board would otherwise replace them mid-choice
-  const [unknowns, setUnknowns] = useState<Unknown[]>([])
   useEffect(() => void loadLocalRefs().then(setLocal), [])
   const workerScan = useScan()
   useShare(reading, source, shelley, corrections)
@@ -95,15 +90,13 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         const t = trackInstruments(tracker.current, raw, trigger)
         tracker.current = t.tracker
         const ask = t.ask
-        if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++unknownId, question: ask, count: t.instruments.length, frame: img, keep }])
+        if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++askId, question: ask, count: t.instruments.length, frame: img, keep }])
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
         r = { ...raw, state: { ...raw.state, instruments: t.instruments }, fields: { ...fields, ...t.fields } }
       }
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null
       setReading(r)
-      const fresh = r.problems.flatMap(p => (p.kind === 'unknownArt' && r.state.phase !== 'protocol' ? [{ id: ++unknownId, frame: img, phase: r.state.phase, problem: p }] : []))
-      if (fresh.length) setUnknowns(u => [...u, ...fresh].slice(-MAX_UNKNOWNS))
       setCorrections({})
       if (!r.problems.some(p => p.kind === 'notFound')) {
         setState(r.state)
@@ -114,17 +107,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     }
   }
   const recheck = () => frame && void onFrame(frame, reading?.frame?.trigger)
-  const named$ = Object.keys(local).length
-  const forget = async () => {
-    await forgetLocalRefs()
-    setLocal({})
-  }
-  const named = async (id: number) => {
-    setUnknowns(u => u.filter(x => x.id !== id))
-    const refs = await loadLocalRefs()
-    setLocal(refs)
-    if (frame) await onFrame(frame, reading?.frame?.trigger, refs)
-  }
+  // cards the reader couldn't name on this board: they're reported, so they can be added for everyone
+  const unknownCards = reading?.state.phase === 'protocol' ? [] : (reading?.problems ?? []).flatMap(p => (p.kind === 'unknownArt' ? [Number(/\d+/.exec(p.field)?.[0] ?? 0) + 1] : []))
 
   const answerPick = async (id: number, name: string) => {
     const asked = pickAsks.find(a => a.id === id)
@@ -212,20 +196,20 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       {pickAsks.map(a => (
         <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} />
       ))}
-      {unknowns.map(u => (
-        <WhatIsThis key={u.id} problem={u.problem} phase={u.phase} frame={u.frame} onNamed={() => void named(u.id)} onSkip={() => setUnknowns(list => list.filter(x => x.id !== u.id))} />
-      ))}
+      {unknownCards.length > 0 && (
+        <p className={styles.unknownCard} role="status">
+          {unknownCards.map(n => `Card ${n}`).join(' and ')} {unknownCards.length > 1 ? 'aren’t ones' : 'isn’t one'} the Solver knows yet.{' '}
+          <a href="#report">Report it</a> so {unknownCards.length > 1 ? 'they' : 'it'} can be added.
+        </p>
+      )}
       <ShareSwitch />
 
       <h2 className={styles.checkTitle}>What it read</h2>
       <p className={styles.note}>If something here doesn’t match the game, correct it and the advice above follows.</p>
       <BoardPanel state={state} fields={fields} onChange={edit} shelley={shelley} onShelley={changeShelley} />
-      <ReportBox reading={reading} corrections={corrections} source={source} frame={frame} />
-      {named$ > 0 && (
-        <button type="button" className={styles.quiet} onClick={() => void forget()}>
-          Forget the {named$} card{named$ === 1 ? '' : 's'} I named
-        </button>
-      )}
+      <div id="report">
+        <ReportBox reading={reading} corrections={corrections} source={source} frame={frame} />
+      </div>
 
       <Footnote className={styles.footnote} />
     </main>

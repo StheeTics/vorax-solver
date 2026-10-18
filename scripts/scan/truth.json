@@ -3489,5 +3489,2121 @@
    "round": 8,
    "potionRefreshes": 3
   }
+ },
+ "h3-008-screen.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Prismatic Liver",
+    "Contracted Claws",
+    "Hypertrophic Pituitary"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  }
+ },
+ "h3-014-screen.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Prismatic Liver",
+    "Contracted Claws",
+    "Hypertrophic Pituitary"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  }
+ },
+ "h3-022-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Probiotic Enzyme Solution",
+    "Compound Leech Solution",
+    "Potion Kit (Small)"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 1,
+   "potionRefreshes": 3
+  }
+ },
+ "h3-032-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Fresh Spinal Powder",
+    "Gray Matter Spinal Solution",
+    "Anesthetic Tincture - Aemberon"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 1,
+   "potionRefreshes": 3
+  }
+ },
+ "h3-037-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 72,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Viscous Bile Solution",
+    "Hollow Spinal Solution",
+    "Slender-Limb Powder - Pest"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 2,
+   "potionRefreshes": 3
+  }
+ },
+ "h3-047-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 42,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 72,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Compound Leech Solution",
+    "Petrified Spinal Solution",
+    "Anesthetic Tincture - Agito"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 3,
+   "potionRefreshes": 3
+  }
+ },
+ "h3-053-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 102,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 72,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Spinal Solution - Aemberon",
+    "Hollow Spinal Solution",
+    "Twin Hormone - Pest"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 4,
+   "potionRefreshes": 3
+  }
+ },
+ "h3-060-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 143,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 72,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Green Bile Solution",
+    "Anesthetic Tincture - Agito",
+    "Brain Fog Tincture"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 5,
+   "potionRefreshes": 3
+  }
+ },
+ "h3-063-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 46,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 143,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 72,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Vermicular Spinal Cord",
+    "Tanned Leather Restraint",
+    "Sloughed Cortex"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "instrument",
+   "round": 5,
+   "instrumentRefreshes": 1
+  }
+ },
+ "h3-066-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 46,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 143,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 72,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Sinew Garrote",
+    "Nettle Toggle",
+    "Lady of the Plague Quarter"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "instrument",
+   "round": 5,
+   "instrumentRefreshes": 0
+  }
+ },
+ "h3-098-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 46,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 263,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 798,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Xenopanacea: Osteotrophy",
+    "Xenopanacea: Brood",
+    "Petrified Spinal Solution"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Sinew Garrote",
+    "Canine Teeth File"
+   ],
+   "phase": "potion",
+   "round": 8,
+   "potionRefreshes": 3
+  }
+ },
+ "h3-112-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 46,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 263,
+     "quantity": 459
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 918,
+     "quantity": 792
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Trepanation",
+    "Laser Amputation",
+    "Spinal Cord Stimulation"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Sinew Garrote",
+    "Canine Teeth File"
+   ],
+   "phase": "protocol",
+   "round": 11
+  }
+ },
+ "g8-003-screen.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Contracted Claws",
+    "Aberrant Sprout",
+    "Adherent Metatarsals"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  }
+ },
+ "g8-008-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Green Bile Solution",
+    "Hollow Spinal Solution",
+    "Viscous Bile Solution"
+   ],
+   "instruments": [
+    "Adherent Metatarsals"
+   ],
+   "phase": "potion",
+   "round": 1,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-014-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 32,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 32,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Anesthetic Tincture - Agito",
+    "Anesthetic Tincture - Aemberon",
+    "Twin Hormone - Pest"
+   ],
+   "instruments": [
+    "Adherent Metatarsals"
+   ],
+   "phase": "potion",
+   "round": 2,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-021-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 92,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 32,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Spinal Solution - Aemberon",
+    "Viscous Bile Solution",
+    "Vivigenic Powder"
+   ],
+   "instruments": [
+    "Adherent Metatarsals"
+   ],
+   "phase": "potion",
+   "round": 3,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-027-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 123,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 63,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Anesthetic Tincture - Aemberon",
+    "Eggshell Powder",
+    "Slender-Limb Powder - Bone Sentry"
+   ],
+   "instruments": [
+    "Adherent Metatarsals"
+   ],
+   "phase": "potion",
+   "round": 4,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-033-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 123,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 63,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 109
+    },
+    null,
+    null
+   ],
+   "hand": [
+    "Green Bile Solution",
+    "Bewitching Tincture",
+    "Anesthetic Tincture - Aemberon"
+   ],
+   "instruments": [
+    "Adherent Metatarsals"
+   ],
+   "phase": "potion",
+   "round": 5,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-048-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 123,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 63,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 61,
+     "quantity": 109
+    },
+    null,
+    null
+   ],
+   "hand": [
+    "Leptomeningeal Solution",
+    "Xenopurge Powder",
+    "Probiotic Enzyme Solution"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex"
+   ],
+   "phase": "potion",
+   "round": 6,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-061-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 123,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 66,
+     "quantity": 440
+    },
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Compound Leech Solution",
+    "Spinal Solution - Aemberon",
+    "Rare Potion Kit (Small)"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex",
+    "Sinew Garrote"
+   ],
+   "phase": "potion",
+   "round": 7,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-066-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 123,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 66,
+     "quantity": 440
+    },
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Xeno-Hormone",
+    "Osteolytic Ointment",
+    "Bewitching Tincture"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex",
+    "Sinew Garrote"
+   ],
+   "phase": "potion",
+   "round": 7,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-072-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 123,
+     "quantity": 36
+    },
+    {
+     "archetype": "agito",
+     "rarity": "boss",
+     "activity": 186,
+     "quantity": 440
+    },
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Probiotic Enzyme Solution",
+    "Twin Hormone - Pest",
+    "Slough Solution"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex",
+    "Sinew Garrote"
+   ],
+   "phase": "potion",
+   "round": 8,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-076-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 309,
+     "quantity": 476
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Slender-Limb Powder - Pest",
+    "Slender-Limb Powder - Bone Sentry",
+    "Potion Kit (Large)"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex",
+    "Sinew Garrote"
+   ],
+   "phase": "potion",
+   "round": 9,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-081-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 309,
+     "quantity": 476
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Twin Hormone - Pest",
+    "Slender-Limb Powder - Pest",
+    "Digestive Enzyme Solution",
+    "Xenopurge Powder",
+    "Twin Hormone - Bone Sentry"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex",
+    "Sinew Garrote"
+   ],
+   "phase": "potion",
+   "round": 9,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-086-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "normal",
+     "activity": 309,
+     "quantity": 603
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Gray Matter Spinal Solution",
+    "Viscous Bile Solution",
+    "Slender-Limb Powder - Pest"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex",
+    "Sinew Garrote"
+   ],
+   "phase": "potion",
+   "round": 10,
+   "potionRefreshes": 3
+  }
+ },
+ "g8-091-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "boss",
+     "activity": 380,
+     "quantity": 603
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Anesthesia Analgesia",
+    "Laser Amputation",
+    "Trepanation"
+   ],
+   "instruments": [
+    "Adherent Metatarsals",
+    "Sloughed Cortex",
+    "Sinew Garrote"
+   ],
+   "phase": "protocol",
+   "round": 11
+  }
+ },
+ "g9-004-screen.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Incubation Sac",
+    "Aberrant Sprout",
+    "Prismatic Liver"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  }
+ },
+ "g9-007-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Aberrant Sprout",
+    "Hyperplastic Frontal Lobe",
+    "Chrysalis Specimen"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 1
+  }
+ },
+ "g9-011-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Aberrant Sprout",
+    "Contracted Claws",
+    "Prismatic Liver"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 0
+  }
+ },
+ "g9-014-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Targeted Xeno-Hormone",
+    "Potent Xenopurge Powder",
+    "Anesthetic Tincture - Aemberon"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 1,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-020-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 478
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Gray Matter Spinal Solution",
+    "Cleansing Ointment",
+    "Xenopurge Powder"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "potion",
+   "round": 2,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-027-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 76,
+     "quantity": 478
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Nettle Toggle",
+    "Black Goat Gut Suture",
+    "Two-Inch Skull Nail"
+   ],
+   "instruments": [
+    "Contracted Claws"
+   ],
+   "phase": "instrument",
+   "round": 2,
+   "instrumentRefreshes": 0
+  }
+ },
+ "g9-033-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 76,
+     "quantity": 478
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Tanned Leather Restraint",
+    "Fouled Scraper",
+    "Canine Teeth File"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "instrument",
+   "round": 2,
+   "instrumentRefreshes": 0
+  }
+ },
+ "g9-039-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 76,
+     "quantity": 478
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Rare Potion Kit (Small)",
+    "Osteolytic Ointment",
+    "Targeted Xeno-Hormone"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 3,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-043-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 76,
+     "quantity": 478
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Eggshell Powder",
+    "Osteolytic Ointment",
+    "Slough Solution"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 3,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-049-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 96,
+     "quantity": 513
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Potent Xenopurge Powder",
+    "Anesthetic Tincture - Agito",
+    "Rare Potion Kit (Small)"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 4,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-054-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 176,
+     "quantity": 513
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Gray Matter Spinal Solution",
+    "Bewitching Tincture",
+    "Xenopurge Powder"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 5,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-060-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 316,
+     "quantity": 513
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Insect Attractant",
+    "Cleansing Ointment",
+    "Hollow Spinal Solution"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 6,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-075-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 377,
+     "quantity": 513
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Slender-Limb Powder - Bone Sentry",
+    "Vivigenic Powder",
+    "Twin Hormone - Pest"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 7,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-079-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 397,
+     "quantity": 545
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Targeted Xeno-Hormone",
+    "Xenopurge Powder",
+    "Petrified Spinal Solution"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 8,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-084-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 417,
+     "quantity": 672
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Osteogenic Powder",
+    "Targeted Xeno-Hormone",
+    "Fresh Spinal Powder"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 9,
+   "potionRefreshes": 3
+  }
+ },
+ "g9-091-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    null,
+    null,
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 437,
+     "quantity": 714
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Hollow Spinal Solution",
+    "Anesthetic Tincture - Aemberon",
+    "Petrified Spinal Solution"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Black Goat Gut Suture",
+    "Fouled Scraper"
+   ],
+   "phase": "potion",
+   "round": 10,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-031-screen.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Adherent Metatarsals",
+    "Incubation Sac",
+    "Hypertrophic Pituitary"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 2
+  }
+ },
+ "g10-037-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Hypertrophic Pituitary",
+    "Aberrant Sprout",
+    "Adherent Metatarsals"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 1
+  }
+ },
+ "g10-040-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Chrysalis Specimen",
+    "Aberrant Sprout",
+    "Hypertrophic Pituitary"
+   ],
+   "instruments": [],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 0
+  }
+ },
+ "g10-045-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    {
+     "archetype": "boneSentry",
+     "rarity": "magic",
+     "activity": 5,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "normal",
+     "activity": 1,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Fresh Spinal Powder",
+    "Xeno-Hormone",
+    "Osteogenic Powder"
+   ],
+   "instruments": [
+    "Aberrant Sprout"
+   ],
+   "phase": "potion",
+   "round": 1,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-051-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 71,
+     "quantity": 120
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "boss",
+     "activity": 75,
+     "quantity": 108
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 71,
+     "quantity": 120
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Nettle Toggle",
+    "Sinew Garrote",
+    "Rawhide Restraint"
+   ],
+   "instruments": [
+    "Aberrant Sprout"
+   ],
+   "phase": "instrument",
+   "round": 1,
+   "instrumentRefreshes": 0
+  }
+ },
+ "g10-056-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 71,
+     "quantity": 120
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "boss",
+     "activity": 75,
+     "quantity": 108
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 71,
+     "quantity": 120
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Twin Hormone - Pest",
+    "Mutagenic Powder",
+    "Targeted Xeno-Hormone"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint"
+   ],
+   "phase": "potion",
+   "round": 2,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-062-board.png": {
+  "kind": "instrumentOffer",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 106,
+     "quantity": 172
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 110,
+     "quantity": 160
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 106,
+     "quantity": 120
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Black Goat Gut Suture",
+    "Clustered Eggs",
+    "Nettle Toggle"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint"
+   ],
+   "phase": "instrument",
+   "round": 2,
+   "instrumentRefreshes": 0
+  }
+ },
+ "g10-067-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 106,
+     "quantity": 172
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 110,
+     "quantity": 160
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 106,
+     "quantity": 120
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Leptomeningeal Solution",
+    "Osteogenic Powder",
+    "Petrified Spinal Solution"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 3,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-075-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 181,
+     "quantity": 172
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "rare",
+     "activity": 145,
+     "quantity": 160
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "magic",
+     "activity": 141,
+     "quantity": 120
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Petrified Spinal Solution",
+    "Brain Fog Tincture",
+    "Slough Solution"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 4,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-082-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "rare",
+     "activity": 467,
+     "quantity": 452
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Twin Hormone - Bone Sentry",
+    "Viscous Bile Solution",
+    "Xeno-Hormone"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 5,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-086-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "boneSentry",
+     "rarity": "normal",
+     "activity": 467,
+     "quantity": 514
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Xeno-Hormone",
+    "Green Bile Solution",
+    "Cleansing Ointment"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 6,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-091-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "boneSentry",
+     "rarity": "normal",
+     "activity": 487,
+     "quantity": 555
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Spinal Solution - Aemberon",
+    "Spinal Solution - Agito",
+    "Anesthetic Tincture - Agito"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 7,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-097-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 547,
+     "quantity": 555
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Xenopurge Powder",
+    "Slender-Limb Powder - Pest",
+    "Mutagenic Powder"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 8,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-102-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 547,
+     "quantity": 682
+    },
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Twin Hormone - Pest",
+    "Slough Solution",
+    "Probiotic Enzyme Solution"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 9,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-108-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "rare",
+     "activity": 547,
+     "quantity": 682
+    },
+    {
+     "archetype": "pest",
+     "rarity": "rare",
+     "activity": 15,
+     "quantity": 12
+    },
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Gray Matter Spinal Solution",
+    "Viviparous Hormone",
+    "Anesthetic Tincture - Agito"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "potion",
+   "round": 10,
+   "potionRefreshes": 3
+  }
+ },
+ "g10-113-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 607,
+     "quantity": 682
+    },
+    {
+     "archetype": "pest",
+     "rarity": "rare",
+     "activity": 15,
+     "quantity": 12
+    },
+    null,
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Live Leech Therapy",
+    "Immunosuppressive Experiment",
+    "Laser Amputation"
+   ],
+   "instruments": [
+    "Aberrant Sprout",
+    "Rawhide Restraint",
+    "Black Goat Gut Suture"
+   ],
+   "phase": "protocol",
+   "round": 11
+  }
+ },
+ "h3-073-board.png": {
+  "kind": "board",
+  "state": {
+   "tanks": [
+    {
+     "archetype": "pest",
+     "rarity": "magic",
+     "activity": 46,
+     "quantity": 24
+    },
+    {
+     "archetype": "agito",
+     "rarity": "magic",
+     "activity": 143,
+     "quantity": 36
+    },
+    {
+     "archetype": "aemberon",
+     "rarity": "normal",
+     "activity": 72,
+     "quantity": 36
+    },
+    null,
+    null,
+    null
+   ],
+   "hand": [
+    "Xenopurge Powder",
+    "Anesthetic Tincture - Aemberon",
+    "Xenopanacea: Osteotrophy"
+   ],
+   "instruments": [
+    "Contracted Claws",
+    "Sinew Garrote"
+   ],
+   "phase": "potion",
+   "round": 6,
+   "potionRefreshes": 3
+  }
  }
 }

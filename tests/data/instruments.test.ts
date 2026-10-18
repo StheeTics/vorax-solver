@@ -124,7 +124,7 @@ describe('advanced instruments', () => {
     endRound(t, [18])
     expect([t[0]!.quantity, t[1]!.quantity]).toEqual([31, 1])
   })
-  it('19 Plague Madonna fires every 2 rounds and snapshots tiers', () => {
+  it('19 Lady of the Plague Quarter fires every 2 rounds and snapshots tiers', () => {
     const t = board(m('pest', 'normal'), m('pest', 'magic'))
     const r2 = endRound(t, [19], 2)
     expect(r2.events.filter(e => e.type === 'awaken')).toHaveLength(0)
@@ -219,4 +219,8 @@ it('uses instrument names confirmed from the English client', () => {
 
 it('uses the in-game name Prismatic Liver (seen on a live instrument offer)', () => {
   expect(INSTRUMENTS.find(i => i.id === 8)?.name).toBe('Prismatic Liver')
+})
+
+it('uses the in-game name Lady of the Plague Quarter (seen on a live instrument offer)', () => {
+  expect(INSTRUMENTS.find(i => i.id === 19)?.name).toBe('Lady of the Plague Quarter')
 })

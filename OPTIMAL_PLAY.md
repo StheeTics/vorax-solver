@@ -6,7 +6,7 @@ How to score as high as possible in Surgical Preparation: which instruments to t
 
 ## Quick answer
 
-**Take Incubation Sac if you can, and Plague Madonna whenever it's offered.** When the Sac isn't offered, pick the basic that fits what's in your tanks. Every basic below is paired with Madonna, since that's the best partner for all of them:
+**Take Incubation Sac if you can, and Lady of the Plague Quarter whenever it's offered.** When the Sac isn't offered, pick the basic that fits what's in your tanks. Every basic below is paired with the Lady of the Plague Quarter, since that's the best partner for all of them:
 
 | # | Basic instrument | Archetype | Average score | Typical run (median) | Rainbow vial |
 |---|---|---|---|---|---|
@@ -25,8 +25,8 @@ How to score as high as possible in Surgical Preparation: which instruments to t
 - **Score = Activity × Quantity, added up over all tanks.** You need both. Activity on its own stalls, and so does Quantity.
 - **Usually, play the card that gains the most this round.** For every basic except Chrysalis Specimen, that simple rule scored better than trying to plan further ahead.
 - **With Chrysalis Specimen, plan ahead:** building up Pest groups early beats the biggest gain this round.
-- **Plague Madonna is the best advanced instrument for every basic.** Take it whenever it's offered.
-- **Beak of the Twice-Born is the next best for most builds,** and as good as Madonna with Incubation Sac.
+- **Lady of the Plague Quarter is the best advanced instrument for every basic.** Take it whenever it's offered.
+- **Beak of the Twice-Born is the next best for most builds,** and as good as the Lady of the Plague Quarter with Incubation Sac.
 - **Pick instruments from your board, not from a fixed plan.** Choosing the instrument that fits what's in your tanks beat always forcing the same build by about 10% on average, and by more in the worst games.
 - **If none of your wanted advanced instruments are offered, refresh.**
 - **Refresh a potion hand only when nothing in it raises your score.** Otherwise play the best card.
@@ -37,13 +37,13 @@ How to score as high as possible in Surgical Preparation: which instruments to t
 
 ## Pest
 
-Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna); take Chrysalis Specimen when the Sac isn't offered.
+Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with the Lady of the Plague Quarter); take Chrysalis Specimen when the Sac isn't offered.
 
 - **Incubation Sac:** +45 Quantity to every monster each time a monster is added, once you have 2 or more Pest groups. Pays off immediately, every time you add.
-  - **Best partners:** Plague Madonna or Beak of the Twice-Born (equal), then Black Goat Gut Suture, Tanned Leather Restraint, Rawhide Restraint.
+  - **Best partners:** Lady of the Plague Quarter or Beak of the Twice-Born (equal), then Black Goat Gut Suture, Tanned Leather Restraint, Rawhide Restraint.
   - **Beak** adds a monster every round, which triggers the Sac every round.
 - **Chrysalis Specimen:** at the end of each round, +8 Quantity to X random groups, repeated X times, where X is your number of Pest groups. With 5 Pest groups that's 25 boosts every round, for the rest of the game.
-  - **Best partners:** Plague Madonna, well ahead of Rawhide Restraint and Beak.
+  - **Best partners:** Lady of the Plague Quarter, well ahead of Rawhide Restraint and Beak.
   - **It needs planning.** It's weak until you have several Pest groups, so early rounds should go into making Pests even when another card gives more right now. Played that way it averages about 16% more than playing for each round's biggest gain.
 
 **Potions**
@@ -68,7 +68,7 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
 
 **Instruments**
 - **Basic:** **Contracted Claws.**
-- **Advanced, in order:** **Plague Madonna** (clearly first), Beak of the Twice-Born, then Pig Iron Bone Saw, Fouled Scraper, Sloughed Cortex, Canine Teeth File.
+- **Advanced, in order:** **Lady of the Plague Quarter** (clearly first), Beak of the Twice-Born, then Pig Iron Bone Saw, Fouled Scraper, Sloughed Cortex, Canine Teeth File.
 
 **Potions**
 - **Always take:**
@@ -92,7 +92,7 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
 
 **Instruments**
 - **Basic:** **Aberrant Sprout.** It beats Prismatic Liver.
-- **Advanced, in order:** Plague Madonna and Beak of the Twice-Born (close), then Rawhide Restraint, Vermicular Spinal Cord, Canine Teeth File.
+- **Advanced, in order:** Lady of the Plague Quarter and Beak of the Twice-Born (close), then Rawhide Restraint, Vermicular Spinal Cord, Canine Teeth File.
 
 **Potions**
 - **Always take:**
@@ -115,7 +115,7 @@ Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with Madonna)
 
 **Instruments**
 - **Basic:** **Hypertrophic Pituitary.** It beats Hyperplastic Frontal Lobe.
-- **Advanced, in order:** **Plague Madonna** (clearly first; it also raises your Agito's rarity), then Rawhide Restraint, Canine Teeth File, Beak of the Twice-Born.
+- **Advanced, in order:** **Lady of the Plague Quarter** (clearly first; it also raises your Agito's rarity), then Rawhide Restraint, Canine Teeth File, Beak of the Twice-Born.
 
 **Potions**
 - **Always take:**

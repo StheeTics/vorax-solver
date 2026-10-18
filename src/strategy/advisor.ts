@@ -1,4 +1,5 @@
 // Live advice for the Solver: given what is on screen, rank the choices by expected payoff.
+import { XENOPANACEA, isXenopanacea } from '@/data/xenopanacea'
 import { POTIONS } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
 import { createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
@@ -35,6 +36,8 @@ export interface Advice {
   final: boolean
   ms: number
   unknown: string[]
+  /** a rule decided the advice rather than simulation: shown instead of values */
+  note?: string
 }
 
 const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '')
@@ -43,7 +46,7 @@ const instrumentIds = new Map(INSTRUMENTS.map(i => [norm(i.name), i.id]))
 
 /** Every card and instrument name the reader should know about. */
 export function names() {
-  return { potions: POTIONS.map(p => p.name), instruments: INSTRUMENTS.map(i => i.name), basics: INSTRUMENTS.filter(i => i.pool === 'basic').map(i => i.name) }
+  return { potions: [...POTIONS.map(p => p.name), ...XENOPANACEA], instruments: INSTRUMENTS.map(i => i.name), basics: INSTRUMENTS.filter(i => i.pool === 'basic').map(i => i.name) }
 }
 
 export function toState(x: ScreenState, unknown: string[]): GameState {
@@ -88,6 +91,12 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
   const t0 = Date.now(); const unknown: string[] = []
   // Surgical Protocols change the endgame battle, not Ultimate Activity
   if (x.phase === 'protocol') return { best: null, ranking: [], board: 0, plan: false, final: true, ms: 0, unknown }
+  // a Xenopanacea is always taken: its effect isn't simulated, and it's worth more than anything beside it
+  const xeno = x.phase === 'potion' ? x.hand.findIndex(isXenopanacea) : -1
+  if (xeno >= 0) {
+    const pick = { index: xeno, targets: [], value: 0 }
+    return { best: pick, ranking: [pick], board: ultimateActivity(toState({ ...x, hand: [] }, [])), plan: false, final: true, ms: Date.now() - t0, unknown, note: 'A Xenopanacea: always take it when it’s offered.' }
+  }
   const s = toState(x, unknown)
   const seed = 0x5eed
   let ranking: Ranked[]

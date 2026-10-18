@@ -7,6 +7,7 @@ import type { Card } from '@/engine/types'
 import type { Ranked, ScreenState } from '@/strategy/advisor'
 import { CardArt } from '@/ui/svg/CardArt'
 import { ArchetypeIcon } from '@/ui/svg/icons'
+import { isXenopanacea } from '@/data/xenopanacea'
 import styles from './PickHand.module.css'
 
 const potion = new Map(POTIONS.map(p => [p.name, p]))
@@ -21,7 +22,7 @@ function look(name: string, phase: ScreenState['phase']): { card?: Card; frame: 
     return { card: i && { kind: 'instrument', id: i.id }, frame: 'rare' }
   }
   const p = potion.get(name)
-  return { card: p && { kind: 'potion', id: p.id }, frame: p?.rarity ?? 'normal' }
+  return { card: p && { kind: 'potion', id: p.id }, frame: p?.rarity ?? (isXenopanacea(name) ? 'supreme' : 'normal') }
 }
 
 /** Degrees of tilt per step from the middle of the hand, as the game fans its cards. */

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Planning-bot runs: every basic with Plague Madonna and with Beak, equipped from round 1.
+# Planning-bot runs: every basic with Lady of the Plague Quarter and with Beak, equipped from round 1.
 # planning.sh <shards per build> <games per shard> <out dir>   (raw per-shard JSON, merge with merge.py)
 cd "$(dirname "$0")/../.."
 S=$1; N=$2; OUT=$3; mkdir -p "$OUT"

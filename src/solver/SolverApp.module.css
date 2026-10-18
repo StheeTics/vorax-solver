@@ -115,6 +115,21 @@
   color: var(--keyword);
 }
 
+.unknownCard {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--keyword);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--keyword) 10%, transparent);
+  color: var(--text);
+}
+
+.unknownCard a {
+  color: var(--keyword);
+  font-weight: 700;
+}
+
 .checkTitle {
   margin: 12px 0 0;
   color: var(--text-dim);

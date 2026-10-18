@@ -196,7 +196,7 @@ export const INSTRUMENTS: InstrumentDef[] = [
     },
   },
   {
-    id: 19, name: 'Plague Madonna', pool: 'advanced', timing: { kind: 'periodic', every: 2 },
+    id: 19, name: 'Lady of the Plague Quarter', pool: 'advanced', timing: { kind: 'periodic', every: 2 },
     text: 'Every 2 rounds, {awaken} 1 random group of monsters of each rarity into 1 rarity higher',
     endOfRound(c) {
       // Snapshot every tier first so a monster awakened this trigger is not picked again (spec A1).

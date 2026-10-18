@@ -29,7 +29,7 @@ function push<T>(map: Record<string, T[]>, key: string, v: T) {
   if (list.length < KEEP) list.push(v)
 }
 
-type Op = { to: 'digit'; kind: TextKind; key: string; v: number[]; size: number } | { to: 'rarity'; key: Rarity; v: [number, number, number] } | { to: 'header'; key: HandPhase; v: number[] } | { to: 'icon'; key: string; v: number[] }
+type Op = { to: 'digit'; kind: TextKind; key: string; v: number[]; size: number } | { to: 'rarity'; key: Rarity; v: [number, number, number] } | { to: 'header'; key: HandPhase; v: number[]; size: number } | { to: 'icon'; key: string; v: number[]; size: number }
 interface Extracted { board: boolean; ops: Op[]; cards: { key: string; art: ArtFeature; text: number[] }[] }
 
 // What one labelled frame contributes, worked out once per picture: scoring rebuilds the data for every
@@ -48,7 +48,7 @@ function extract(img: Img, label: Label): Extracted {
   })
   // a hand-only label can carry the equipped instruments too (worked out by the instrument tracker)
   const equipped = label.cards?.instruments
-  if (equipped) l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: equipped[equipped.length - 1 - j] ?? 'none', v: iconPattern(img, r).map(round3) }))
+  if (equipped) l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: equipped[equipped.length - 1 - j] ?? 'none', v: iconPattern(img, r).map(round3), size: img.height }))
   const s = label.cards ? undefined : label.state
   if (s) {
     out.board = true
@@ -68,8 +68,8 @@ function extract(img: Img, label: Label): Extracted {
     if (s.round) learn('round', l.round, String(s.round))
     const refreshes = s.phase === 'potion' ? s.potionRefreshes : s.phase === 'instrument' ? s.instrumentRefreshes : undefined
     if (refreshes !== undefined) learn('refresh', l.refresh, String(refreshes))
-    out.ops.push({ to: 'header', key: s.phase, v: signature(img, l.header).map(round3) })
-    l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: s.instruments[s.instruments.length - 1 - j] ?? (label.startingItem && j === s.instruments.length ? STARTING_ITEM : 'none'), v: iconPattern(img, r).map(round3) }))
+    out.ops.push({ to: 'header', key: s.phase, v: signature(img, l.header).map(round3), size: img.height })
+    l.instrumentIcon.forEach((r, j) => out.ops.push({ to: 'icon', key: s.instruments[s.instruments.length - 1 - j] ?? (label.startingItem && j === s.instruments.length ? STARTING_ITEM : 'none'), v: iconPattern(img, r).map(round3), size: img.height }))
   }
   extracted.set(img, out)
   return out
@@ -83,7 +83,7 @@ export function buildData(frames: { img: Img; label: Label }[]): ScanData {
   const headers = {} as Record<HandPhase, number[][]>
   const instrumentIcons: Record<string, number[][]> = {}
   const all = frames.filter(f => f.label.state || f.label.cards).map(f => extract(f.img, f.label))
-  // digits look different at each screen height, so each height keeps its own examples
+  // digits, headers and icons look different at each screen height, so each height keeps its own examples
   const digitCount = new Map<string, number>()
   for (const e of all)
     for (const op of e.ops) {
@@ -94,8 +94,19 @@ export function buildData(frames: { img: Img; label: Label }[]): ScanData {
         digitCount.set(key, n + 1)
       }
       else if (op.to === 'rarity') push(rarityRgb, op.key, op.v)
-      else if (op.to === 'header') push(headers, op.key, op.v)
-      else push(instrumentIcons, op.key, op.v)
+      else if (op.to === 'header') {
+        // headers too look different at each screen height
+        const key = `header|${op.key}|${op.size}`
+        const n = digitCount.get(key) ?? 0
+        if (n < KEEP) (headers[op.key] ??= []).push(op.v)
+        digitCount.set(key, n + 1)
+      }
+      else {
+        const key = `icon|${op.key}|${op.size}`
+        const n = digitCount.get(key) ?? 0
+        if (n < KEEP) (instrumentIcons[op.key] ??= []).push(op.v)
+        digitCount.set(key, n + 1)
+      }
     }
   // boards' cards first, so the hand-only tick frames only top up cards with few examples
   for (const e of [...all.filter(e => e.board), ...all.filter(e => !e.board)])

@@ -109,7 +109,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Two-Inch Skull Nail': 1,
       'Fouled Scraper': 1,
       'Canine Teeth File': 1,
-      'Plague Madonna': 1,
+      'Lady of the Plague Quarter': 1,
       'Aberrant Stinger': 1,
       'Tanned Leather Restraint': 1,
       'Eyelid Speculum': 1,

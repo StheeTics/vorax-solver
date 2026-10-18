@@ -33,7 +33,8 @@ export function AdvicePanel({ advice, refining, state, iconsKnown }: Props) {
       <PickHand pick={advice.best && advice.best !== 'refresh' ? advice.best : null} state={state} />
       {refining && <p className={styles.refining}>Quick answer, refining…</p>}
       {advice.unknown.length > 0 && <p className={styles.unknown}>Not recognised: {advice.unknown.join(', ')}</p>}
-      {advice.ranking.length > 0 && (
+      {advice.note && <p className={styles.note}>{advice.note}</p>}
+      {!advice.note && advice.ranking.length > 0 && (
         <ol className={styles.ranking} aria-label="Choices">
           {advice.ranking.slice(0, SHOWN).map((r, i) => (
             <li key={i}>
@@ -46,7 +47,7 @@ export function AdvicePanel({ advice, refining, state, iconsKnown }: Props) {
           ))}
         </ol>
       )}
-      <p className={styles.legend}>{advice.plan ? 'Values are the expected final Ultimate Activity.' : 'Values are the expected Ultimate Activity after this round.'}</p>
+      {!advice.note && <p className={styles.legend}>{advice.plan ? 'Values are the expected final Ultimate Activity.' : 'Values are the expected Ultimate Activity after this round.'}</p>}
     </section>
   )
 }

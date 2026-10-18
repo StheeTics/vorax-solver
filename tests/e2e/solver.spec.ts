@@ -29,11 +29,11 @@ test('a screenshot fills the board and gives advice', async ({ page }) => {
   await expect(page.locator('[title^="Unsure"]')).toHaveCount(0)
 })
 
-test('an unknown card shows What is this? and the report box', async ({ page }) => {
+test('an unknown card points to the report box', async ({ page }) => {
   await page.goto('solver.html')
   await page.getByText('Screenshot', { exact: true }).click()
   await page.getByLabel('Choose a screenshot').setInputFiles('tests/fixtures/frames/unknown-card.png')
-  await expect(page.getByText('What is card 2?')).toBeVisible()
+  await expect(page.getByText(/Card 2 isn’t one the Solver knows yet/)).toBeVisible()
   await expect(page.getByRole('button', { name: 'Copy' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Open an issue on GitHub' })).toHaveAttribute('href', /template=solver-reading\.yml/)
 })

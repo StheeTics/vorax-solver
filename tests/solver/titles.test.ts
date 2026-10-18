@@ -77,3 +77,15 @@ describe('readTitles on a reading that left the cards to their names', () => {
     expect(r.state.hand).toEqual(['Eggshell Powder', 'Xeno-Hormone', 'Spinal Solution - Aemberon', 'Twin Hormone - Bone Sentry', 'Anesthetic Tincture - Aemberon'])
   })
 })
+
+describe('the Xenopanacea family (Supreme potions that print only flavour text)', () => {
+  it('names the variants seen live', () => {
+    expect(nameFit('Xenopanacea: Brood', 'Xenopanaceca: Brood | A single vessel is').q).toBeGreaterThan(nameFit('Xenopanacea: Osteotrophy', 'Xenopanaceca: Brood | A single vessel is').q + 3)
+  })
+  it('names a variant not seen yet by the family name alone', async () => {
+    const texts = ['Xenopanacea: Carapace\nHarden. Let your', 'Green Bile Solution', 'Slough Solution']
+    const pending: Reading = { state: { ...emptyState(), phase: 'potion', hand: [] }, fields: { phase: { sure: true, guess: 'potion' } }, problems: [], handPending: true }
+    const r = await readTitles(img, pending, async () => texts.shift() ?? '', async () => ({}))
+    expect(r.state.hand).toEqual(['Xenopanacea', 'Green Bile Solution', 'Slough Solution'])
+  })
+})

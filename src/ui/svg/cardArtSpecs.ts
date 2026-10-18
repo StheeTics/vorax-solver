@@ -101,7 +101,7 @@ export const INSTRUMENT_ART: Record<number, string> = {
   16: 'nail', // Two-Inch Skull Nail
   17: 'scraper', // Fouled Scraper
   18: 'file', // Canine Teeth File
-  19: 'madonna', // Plague Madonna
+  19: 'madonna', // Lady of the Plague Quarter
   20: 'stinger', // Aberrant Stinger
   21: 'buckle', // Tanned Leather Restraint
   22: 'retractor', // Eyelid Speculum

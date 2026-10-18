@@ -84,8 +84,20 @@ export function reconcile(total: Alts, aq: Alts): { total: string; aq: string } 
   }
   const aqText = first(aq)
   const totalFits = readings(total).filter(r => stats(r.text, aqText).fits)
-  const text = totalFits.length ? best(totalFits) : null
-  return text === null ? null : { total: text, aq: aqText }
+  if (totalFits.length) {
+    const text = best(totalFits)
+    return text === null ? null : { total: text, aq: aqText }
+  }
+  // a digit squeezed against the heart can be misread beyond its candidates: with the total and one number
+  // read, the other is their quotient, taken only if it has as many digits and differs in just one
+  const [a, q] = aqText.split('x')
+  const total$ = Number(totalText)
+  if (!a || !q || !Number.isInteger(total$)) return null
+  const oneOff = (read: string, want: number) => String(want).length === read.length && [...read].filter((c, i) => c !== String(want)[i]).length === 1
+  const fromQ = Number(q) > 0 && total$ % Number(q) === 0 && oneOff(a, total$ / Number(q)) ? `${total$ / Number(q)}x${q}` : null
+  const fromA = Number(a) > 0 && total$ % Number(a) === 0 && oneOff(q, total$ / Number(a)) ? `${a}x${total$ / Number(a)}` : null
+  const fixed = fromQ && fromA ? null : fromQ ?? fromA
+  return fixed && stats(totalText, fixed).fits ? { total: totalText, aq: fixed } : null
 }
 
 export interface TankRead { monster: ScreenMonster | null; fields: Record<string, FieldRead> }

@@ -46,7 +46,7 @@ it('the Solver fills the board from a reading', async () => {
   expect(screen.getByTitle('Unsure: best guess boss')).toBeTruthy()
 })
 
-it('an unknown card shows What is this? and the report box', async () => {
+it('an unknown card shows one line pointing to the report, which is open with its text', async () => {
   localStorage.setItem('vorax.solverSource', 'screenshot')
   const reading: Reading = {
     state: { ...emptyState(), hand: ['Xeno-Hormone'] },
@@ -56,8 +56,11 @@ it('an unknown card shows What is this? and the report box', async () => {
   }
   render(<SolverApp scanner={async () => reading} />)
   fireEvent.change(screen.getByLabelText('Choose a screenshot'), { target: { files: [new File(['x'], 's.png', { type: 'image/png' })] } })
-  await waitFor(() => expect(screen.getByText('What is card 2?')).toBeTruthy())
+  await waitFor(() => expect(screen.getByRole('status').textContent).toMatch(/Card 2 isn’t one the Solver knows yet/))
+  expect(screen.getByRole('link', { name: 'Report it' }).getAttribute('href')).toBe('#report')
+  expect(document.getElementById('report')).toBeTruthy()
   expect(screen.getByRole('link', { name: 'Open an issue on GitHub' })).toBeTruthy()
+  expect(screen.queryByText(/What is card/)).toBeNull()
 })
 
 it('editing a field after a reading offers the quiet report link', async () => {
@@ -76,18 +79,7 @@ it('editing a field after a reading offers the quiet report link', async () => {
   expect(screen.getByText('Reading was wrong? Report it')).toBeTruthy()
 })
 
-it('cards named in this browser can be forgotten', async () => {
-  const refs = await import('@/solver/scan/localRefs')
-  vi.spyOn(refs, 'loadLocalRefs').mockResolvedValue({ 'potion:Xeno-Hormone': [{ hist: [], grid: [] }] })
-  const forget = vi.spyOn(refs, 'forgetLocalRefs').mockResolvedValue()
-  render(<SolverApp scanner={async () => ({ state: emptyState(), fields: {}, problems: [] })} />)
-  const button = await screen.findByRole('button', { name: 'Forget the 1 card I named' })
-  fireEvent.click(button)
-  await waitFor(() => expect(forget).toHaveBeenCalled())
-  await waitFor(() => expect(screen.queryByRole('button', { name: /Forget the/ })).toBeNull())
-})
-
-it('an unknown card stays until it is named or skipped, even after the next board arrives', async () => {
+it('the line goes with the reading: the next board that reads cleanly clears it', async () => {
   localStorage.setItem('vorax.solverSource', 'screenshot')
   const unknown: Reading = {
     state: { ...emptyState(), hand: ['Xeno-Hormone'] },
@@ -100,12 +92,10 @@ it('an unknown card stays until it is named or skipped, even after the next boar
   render(<SolverApp scanner={async () => readings.shift() ?? fine} />)
   const pick = () => fireEvent.change(screen.getByLabelText('Choose a screenshot'), { target: { files: [new File(['x'], 's.png', { type: 'image/png' })] } })
   pick()
-  await waitFor(() => expect(screen.getByText('What is card 2?')).toBeTruthy())
+  await waitFor(() => expect(screen.queryByRole('status')).toBeTruthy())
   pick()
   await waitFor(() => expect(readings).toHaveLength(0))
-  expect(screen.getByText('What is card 2?')).toBeTruthy()
-  fireEvent.click(screen.getByRole('button', { name: 'Skip' }))
-  expect(screen.queryByText('What is card 2?')).toBeNull()
+  await waitFor(() => expect(screen.queryByText(/isn’t one the Solver knows/)).toBeNull())
 })
 
 it('an instrument corrected by the player stays corrected on the next board', async () => {

@@ -1,4 +1,4 @@
-import { advise, toState, type ScreenState } from '@/strategy/advisor'
+import { advise, names, toState, type ScreenState } from '@/strategy/advisor'
 import { DEFAULT_SETTINGS } from '@/engine/game'
 import { settingsForShelley } from '@/data/shelley'
 
@@ -31,4 +31,19 @@ it('a Surgical Protocol pick gets no ranking: it does not change Ultimate Activi
   const a = advise({ ...board, phase: 'protocol', hand: ['Laser Amputation', 'Laparolithotomy', 'Trepanation'] })
   expect(a.ranking).toEqual([])
   expect(a.unknown).toEqual([])
+})
+
+describe('a Xenopanacea on offer', () => {
+  it('is always the advice, whatever else is offered', () => {
+    const a = advise({ ...board, phase: 'potion', hand: ['Mutagenic Powder', 'Xenopanacea: Brood', 'Bewitching Tincture'] }, 2, 2)
+    expect(a.best).toEqual(expect.objectContaining({ index: 1 }))
+    expect(a.unknown).toEqual([])
+  })
+  it('counts an unseen variant too', () => {
+    const a = advise({ ...board, phase: 'potion', hand: ['Xenopanacea', 'Mutagenic Powder'] }, 2, 2)
+    expect(a.best).toEqual(expect.objectContaining({ index: 0 }))
+  })
+  it('is a potion name the Solver accepts (dropdowns and shared boards)', () => {
+    expect(names().potions).toEqual(expect.arrayContaining(['Xenopanacea: Osteotrophy', 'Xenopanacea: Brood', 'Xenopanacea']))
+  })
 })
