@@ -79,17 +79,29 @@ it('advice for an older board is never shown for a newer one', async () => {
   }
 })
 
-describe('the learning note on an instrument offer', () => {
+describe('an instrument whose panel icon hasn’t been seen yet', () => {
   const offer: ScreenState = { ...emptyState(), phase: 'instrument', hand: ['Nettle Toggle', 'Rawhide Restraint', 'Clustered Eggs'] }
-  it('names the offered instruments whose panel icon hasn’t been seen yet', () => {
-    render(<AdvicePanel advice={advice('refresh')} refining={false} state={offer} iconsKnown={['Rawhide Restraint']} />)
-    expect(screen.getByText(/picking Nettle Toggle or Clustered Eggs teaches the Solver its icon/)).toBeTruthy()
+  const ranked: Advice = { best: { index: 1, targets: [], value: 30 }, ranking: [1, 0, 2].map((index, i) => ({ index, targets: [], value: 30 - i })), board: 0, plan: false, final: true, ms: 1, unknown: [] }
+  it('is marked in the list of choices, saying that picking it teaches the Solver', () => {
+    render(<AdvicePanel advice={ranked} refining={false} state={offer} iconsKnown={['Rawhide Restraint']} />)
+    const items = screen.getAllByRole('listitem').map(li => li.textContent)
+    expect(items[0]).toMatch(/^Take Rawhide Restraint/)
+    expect(items[0]).not.toMatch(/teaches/)
+    expect(items[1]).toMatch(/Take Nettle Toggle.*Unknown icon: picking it teaches the Solver/)
+    expect(items[2]).toMatch(/Take Clustered Eggs.*Unknown icon: picking it teaches the Solver/)
   })
-  it('stays away once every offered icon is known, and when the known icons aren’t', () => {
-    const { unmount } = render(<AdvicePanel advice={advice('refresh')} refining={false} state={offer} iconsKnown={offer.hand} />)
+  it('isn’t marked once its icon is known, or when the known icons aren’t', () => {
+    const { unmount } = render(<AdvicePanel advice={ranked} refining={false} state={offer} iconsKnown={offer.hand} />)
     expect(screen.queryByText(/teaches the Solver/)).toBeNull()
     unmount()
-    render(<AdvicePanel advice={advice('refresh')} refining={false} state={offer} />)
+    render(<AdvicePanel advice={ranked} refining={false} state={offer} />)
     expect(screen.queryByText(/teaches the Solver/)).toBeNull()
   })
+})
+
+it('shows only the top 3 choices', () => {
+  const hand = ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture', 'Xeno-Hormone', 'Eggshell Powder']
+  const many: Advice = { best: { index: 0, targets: [], value: 9 }, ranking: hand.map((_, i) => ({ index: i, targets: [], value: 9 - i })), board: 0, plan: false, final: true, ms: 1, unknown: [] }
+  render(<AdvicePanel advice={many} refining={false} state={{ ...emptyState(), hand }} />)
+  expect(screen.getAllByRole('listitem').map(li => li.textContent)).toEqual(['Play Mutagenic Powder9', 'Play Green Bile Solution8', 'Play Bewitching Tincture7'])
 })

@@ -28,10 +28,14 @@
   font-size: 14px;
 }
 
-.learning {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: 13px;
+.teach {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 8px;
+  border: 1px solid var(--keyword);
+  border-radius: 4px;
+  color: var(--keyword);
+  font-size: inherit;
 }
 
 .ranking {

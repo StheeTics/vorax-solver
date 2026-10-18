@@ -170,10 +170,15 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             <li>Pictures stay in this browser and are gone when you close the tab.</li>
             <li>Never clicks or types for you.</li>
             <li>Shares the boards it reads (tanks, cards offered, instruments, round), with no picture, no account and nothing about you. Turn it off with the switch under the advice.</li>
+            <li>When you say which instrument you picked, shares that name and the icon's small grey pattern, never a screenshot.</li>
           </ul>
           <Attribution />
         </details>
       </header>
+      <aside className={styles.wip} role="note" aria-label="Work in progress">
+        <strong>Work in progress.</strong> The odds behind the advice are still being tuned from live games, and some
+        instruments aren't known to the Solver yet. Every game you play with it, with sharing on, helps improve it.
+      </aside>
 
       <div className={styles.sources} role="radiogroup" aria-label="Where the board comes from">
         {SOURCES.map(s => (

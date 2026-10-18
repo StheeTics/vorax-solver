@@ -101,6 +101,20 @@
   outline-offset: -2px;
 }
 
+.wip {
+  padding: 10px 14px;
+  border: 1px solid var(--keyword);
+  border-left-width: 4px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--keyword) 10%, transparent);
+  color: var(--text);
+  line-height: 1.45;
+}
+
+.wip strong {
+  color: var(--keyword);
+}
+
 .note {
   margin: -6px 0 0;
   color: var(--text-faint);

@@ -21,3 +21,12 @@ it('switching source is remembered', () => {
   fireEvent.click(screen.getByRole('radio', { name: 'Screenshot' }))
   expect(localStorage.getItem('vorax.solverSource')).toBe('screenshot')
 })
+
+it('says plainly that it is a work in progress that playing helps improve', () => {
+  render(<SolverApp />)
+  const note = screen.getByRole('note', { name: 'Work in progress' })
+  expect(note.textContent).toMatch(/work in progress/i)
+  expect(note.textContent).toMatch(/odds/i)
+  expect(note.textContent).toMatch(/instruments/i)
+  expect(note.textContent).toMatch(/improve/i)
+})
