@@ -1,0 +1,15 @@
+// Pulls new shared boards from the collector into data/live/raw/<date>.jsonl and rewrites
+// data/live/rates.json. Usage (the scheduled workflow sets these):
+//   LIVE_DATA_URL=https://… LIVE_DATA_TOKEN=… npx vite-node scripts/live/pull.ts
+import { allRows, pull } from './collect'
+import { writeRates } from './rates'
+
+const url = process.env.LIVE_DATA_URL
+const token = process.env.LIVE_DATA_TOKEN
+if (!url || !token) {
+  console.log('LIVE_DATA_URL / LIVE_DATA_TOKEN not set: no collector yet, nothing to pull.')
+  process.exit(0)
+}
+const added = await pull(url, token)
+const r = writeRates(allRows())
+console.log(`${added} new boards; ${r.boards} boards in ${r.runs} games so far`)

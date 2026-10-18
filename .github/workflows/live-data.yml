@@ -1,0 +1,71 @@
+# Pulls the boards the Solver shared from the live-data collector (worker/), measures the live odds
+# (data/live/rates.json), moves the engine's weights towards them within the guards in
+# the weights script, runs the tests, and commits. When the weights changed it starts the deploy itself: a
+# push made with the workflow's token doesn't start other workflows, a workflow_dispatch does.
+# Runs every 15 minutes while data comes in fast (GitHub may run it late), or on demand:
+# gh workflow run live-data.yml
+# Needs the repo variable LIVE_DATA_URL and the secret LIVE_DATA_TOKEN (see worker/README.md); until the
+# variable is set, the job is skipped.
+name: Live data
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: live-data
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    if: ${{ vars.LIVE_DATA_URL != '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Pull new boards and measure the live odds
+        env:
+          LIVE_DATA_URL: ${{ vars.LIVE_DATA_URL }}
+          LIVE_DATA_TOKEN: ${{ secrets.LIVE_DATA_TOKEN }}
+        run: npx vite-node scripts/live/pull.ts | tee pull.txt
+
+      - name: Update the engine's weights
+        run: npx vite-node scripts/live/weights.ts | tee weights.txt
+
+      - name: Test
+        run: npm test
+
+      - name: Commit
+        id: commit
+        run: |
+          git add data/live src/data/liveWeights.ts
+          if git diff --cached --quiet src/data/liveWeights.ts; then echo "weights=same" >> "$GITHUB_OUTPUT"; else echo "weights=changed" >> "$GITHUB_OUTPUT"; fi
+          if git diff --cached --quiet; then
+            echo "Nothing new."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          {
+            echo "Live data: $(head -1 pull.txt)"
+            echo
+            grep -v '^No weight changes' weights.txt || true
+          } > message.txt
+          git commit -F message.txt
+          git push
+
+      - name: Deploy the new weights
+        if: ${{ steps.commit.outputs.weights == 'changed' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy.yml --ref main
