@@ -1,3 +1,4 @@
+import { LIVE_WEIGHTS } from '@/data/liveWeights'
 import { computeRates, wilson } from '../../scripts/live/rates'
 import type { Snapshot } from '@/solver/share/snapshot'
 
@@ -31,7 +32,7 @@ it('counts offers, instruments and starting tanks from a run', () => {
   expect(r.spawnRarity.normal.count).toBe(1)
   expect(r.spawnRarity.normal.n).toBe(2)
   expect(r.spawnArchetype.pest.count).toBe(1)
-  expect(r.supreme.engine).toBe(0.01)
+  expect(r.supreme.engine).toBe(LIVE_WEIGHTS.supremeChance)
 })
 
 it('the same offer read twice in one round counts once', () => {
