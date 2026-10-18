@@ -3,6 +3,9 @@
 // and the outcomes are averaged.
 import { createGame, dispatch, ultimateActivity, needsTargets, canRefresh, DEFAULT_SETTINGS } from '@/engine/game'
 import type { GameState, Action, SandboxSetup } from '@/engine/types'
+import { VIAL_LEVELS } from '@/engine/rewards'
+import { BASIC_POOL, INSTRUMENTS } from '@/data/instruments'
+import STRENGTH from '@/data/instrumentStrength.json'
 
 export const play = (s: GameState, ...a: Action[]) => a.reduce((x, y) => dispatch(x, y).state, s)
 
@@ -109,15 +112,34 @@ export const evChooser = (p: Policy): Chooser => (s, seed) => choose(s, p, seed)
 export const peekChooser: Chooser = s => choosePeek(s)
 
 /**
- * Rough strength of each instrument (k): a basic's best pair, an advanced's average pair, from the
- * fair-bot pair sweep (1,000 games per pair). Only used for
- * instrument picks *inside* playouts, where a full board-aware pick would be too slow.
+ * Strength of each instrument by id, from src/data/instrumentStrength.json (scripts/sim/strength.sh, rerun
+ * by the strengths workflow whenever the odds change). Only used for instrument picks *inside* playouts,
+ * where a full board-aware pick would be too slow.
  */
-export const PRIOR: Record<number, number> = {
-  1: 886, 2: 1256, 3: 750, 4: 808, 5: 789, 6: 1061, 7: 815, 8: 778, 9: 457, 10: 486, 11: 460, 12: 517,
-  13: 673, 14: 511, 15: 573, 16: 388, 17: 505, 18: 621, 19: 893, 20: 395, 21: 533, 22: 491, 23: 767, 24: 432,
+export const PRIOR: Record<number, number> = Object.fromEntries(INSTRUMENTS.map(d => [d.id, (STRENGTH.strength as Record<string, number>)[d.name] ?? 0]))
+const priorPick = (s: GameState) => s.hand.reduce((b, c, i) => ((PRIOR[c.id] ?? 0) > (PRIOR[s.hand[b].id] ?? 0) ? i : b), 0)
+
+const median = (xs: number[]) => { const a = [...xs].sort((x, y) => x - y); return a[a.length >> 1] }
+const BASIC_IDS = new Set(BASIC_POOL.map(d => d.id))
+const MEDIAN_PRIOR = {
+  basic: median(Object.entries(PRIOR).filter(([id]) => BASIC_IDS.has(+id)).map(([, v]) => v)),
+  advanced: median(Object.entries(PRIOR).filter(([id]) => !BASIC_IDS.has(+id)).map(([, v]) => v)),
 }
-const priorPick = (s: GameState) => s.hand.reduce((b, c, i) => (PRIOR[c.id] > PRIOR[s.hand[b].id] ? i : b), 0)
+
+/** Inside playouts: the strongest offered instrument, but a below-median offer is refreshed while refreshes last. */
+export const refreshingPriorPicker: InstrumentPicker = s => {
+  const i = priorPick(s)
+  const pool = BASIC_IDS.has(s.hand[i].id) ? 'basic' : 'advanced'
+  return (PRIOR[s.hand[i].id] ?? 0) < MEDIAN_PRIOR[pool] && canRefresh(s) ? 'refresh' : i
+}
+
+export const RAINBOW = VIAL_LEVELS[VIAL_LEVELS.length - 1]
+/**
+ * A final score as the goal sees it: rainbow is worth far more than anything short of it (and more
+ * than rainbow is worth nothing), else the number of vial steps reached. Averaged over playouts this
+ * is the chance of rainbow first, then the vial tier reached.
+ */
+export const rainbowScore = (ua: number) => (ua >= RAINBOW ? 100 : VIAL_LEVELS.filter(v => ua >= v).length)
 
 /** How an instrument offer is answered: return a hand index, or 'refresh'. */
 export type InstrumentPicker = (s: GameState, seed: number) => number | 'refresh'
@@ -138,25 +160,35 @@ export const priorPicker: InstrumentPicker = s => priorPick(s)
  * `playouts` times from the current board; the best average final score wins.
  * Playouts use common seeds across options so the comparison is fair.
  */
-export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser): { offers: number[]; refresh: number | null } {
+/**
+ * What an instrument choice is judged by. 'rainbow' (the advice): the goal score, with weak offers
+ * refreshed inside playouts so a refresh kept has a value. 'mean': the old way, average final score,
+ * and playouts never refresh (which made spending a refresh look free).
+ */
+export type Goal = 'rainbow' | 'mean'
+
+/** offers/refresh: mean goal value per option; rainbow/refreshRainbow: the share of its playouts that reached rainbow */
+export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser, goal: Goal = 'rainbow'): { offers: number[]; refresh: number | null; rainbow: number[]; refreshRainbow: number | null } {
   const slim = { ...s, log: [] }
+  const picker = goal === 'rainbow' ? refreshingPriorPicker : priorPicker
+  const value = goal === 'rainbow' ? (x: GameState) => rainbowScore(ultimateActivity(x)) : ultimateActivity
   const score = (first: (x: GameState) => GameState) => {
-    let sum = 0
+    let sum = 0, rainbows = 0
     for (let k = 0; k < playouts; k++) {
       const sk = mix(seed, 7000 + k)
-      sum += ultimateActivity(finish(first(reseed(slim, sk)), sk, rollout, priorPicker))
+      const end = finish(first(reseed(slim, sk)), sk, rollout, picker)
+      sum += value(end)
+      if (ultimateActivity(end) >= RAINBOW) rainbows++
     }
-    return sum / playouts
+    return { mean: sum / playouts, rainbow: rainbows / playouts }
   }
-  const offers = slim.hand.map((_, i) => score(x => play(x, { type: 'selectCard', index: i }, { type: 'confirm' })))
-  const refresh = canRefresh(slim)
-    ? score(x => { const r = play(x, { type: 'refresh' }); return play(r, { type: 'selectCard', index: priorPick(r) }, { type: 'confirm' }) })
-    : null
-  return { offers, refresh }
+  const each = slim.hand.map((_, i) => score(x => play(x, { type: 'selectCard', index: i }, { type: 'confirm' })))
+  const r = canRefresh(slim) ? score(x => play(x, { type: 'refresh' })) : null
+  return { offers: each.map(e => e.mean), refresh: r && r.mean, rainbow: each.map(e => e.rainbow), refreshRainbow: r && r.rainbow }
 }
 
-export const boardPicker = (playouts: number, rollout: Chooser): InstrumentPicker => (s, seed) => {
-  const { offers, refresh } = rankInstruments(s, seed, playouts, rollout)
+export const boardPicker = (playouts: number, rollout: Chooser, goal: Goal = 'rainbow'): InstrumentPicker => (s, seed) => {
+  const { offers, refresh } = rankInstruments(s, seed, playouts, rollout, goal)
   const best = offers.indexOf(Math.max(...offers))
   return refresh !== null && refresh > offers[best] ? 'refresh' : best
 }

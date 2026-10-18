@@ -1,0 +1,54 @@
+# Recomputes the instrument strengths (src/data/instrumentStrength.json) whenever the card odds
+# (src/data/liveWeights.ts) change on main, commits them and redeploys the site, so the Solver's playouts
+# always pick instruments by strengths measured under the current odds. Or on demand:
+# gh workflow run strengths.yml
+# A push made with the workflow's token doesn't start other workflows, so the deploy is started here.
+name: Instrument strengths
+
+on:
+  push:
+    branches: [main]
+    paths: [src/data/liveWeights.ts, src/engine/**, src/data/instruments.ts, src/data/potions/**, scripts/sim/strength*]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: strengths
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+
+      - name: Measure every instrument (1,000 games each)
+        run: bash scripts/sim/strength.sh 1000 "$(nproc)"
+
+      - name: Test
+        run: npm test
+
+      - name: Commit and redeploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add src/data/instrumentStrength.json
+          if git diff --cached --quiet; then
+            echo "Strengths unchanged."
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Instrument strengths for the odds of $(grep -oP "updated: '\K[^']+" src/data/liveWeights.ts)"
+          git pull --rebase
+          git push
+          gh workflow run deploy.yml

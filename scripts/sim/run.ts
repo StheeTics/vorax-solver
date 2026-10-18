@@ -3,6 +3,7 @@
 //   mode:   real  <Plan[]>      everything dealt; instruments by the plan's fixed wish list
 //           board <number>      everything dealt; instruments picked from the board (<number> playouts per option)
 //           fixed <number[][]>  listed instruments equipped from round 1
+// GOAL=mean judges instrument picks by the average final score (the old way) instead of the rainbow goal.
 // RAW=1 adds per-game scores (and, in board mode, every instrument decision) for merge.py.
 import { instrument } from '@/data/instruments'
 import { ultimateActivity } from '@/engine/game'
@@ -22,7 +23,7 @@ if (mode === 'real') for (const p of JSON.parse(json) as Plan[]) {
   out({ label: p.label }, scores)
 }
 if (mode === 'board') {
-  const picker = boardPicker(Number(json), evChooser({ samples: 4, horizon: 0 }))
+  const picker = boardPicker(Number(json), evChooser({ samples: 4, horizon: 0 }), process.env.GOAL === 'mean' ? 'mean' : 'rainbow')
   const scores: number[] = []; const decisions: object[] = []
   const board = (s: GameState) => s.tanks.map(t => (t ? `${t.rarity[0]}${t.archetype}` : '-')).join(' ')
   for (let seed = SEED0; seed < SEED0 + N; seed++) {

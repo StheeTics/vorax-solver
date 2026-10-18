@@ -47,3 +47,22 @@ describe('a Xenopanacea on offer', () => {
     expect(names().potions).toEqual(expect.arrayContaining(['Xenopanacea: Osteotrophy', 'Xenopanacea: Brood', 'Xenopanacea']))
   })
 })
+
+it('between equal scores, it keeps the board the build needs (live game: Adherent Metatarsals, round 2)', () => {
+  // turning tank 1 or tank 2 into an Agito scores the same this round, but tank 1 is one of the two
+  // Bone Sentries Adherent Metatarsals needs
+  const a = advise({
+    tanks: [
+      { archetype: 'boneSentry', rarity: 'magic', activity: 32, quantity: 36 },
+      { archetype: 'aemberon', rarity: 'magic', activity: 32, quantity: 36 },
+      { archetype: 'boneSentry', rarity: 'magic', activity: 5, quantity: 24 },
+      null, null, null,
+    ],
+    hand: ['Anesthetic Tincture - Agito', 'Anesthetic Tincture - Aemberon', 'Twin Hormone - Pest'],
+    instruments: ['Adherent Metatarsals'],
+    phase: 'potion',
+    round: 2,
+    potionRefreshes: 3,
+  })
+  expect(a.best).toMatchObject({ index: 0, targets: [1] })
+})

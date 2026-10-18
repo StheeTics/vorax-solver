@@ -82,6 +82,22 @@ export const PLANNING = { samples: 6, horizon: 13, rollSamples: 2 }
  */
 export const planningHelps = (instrumentNames: string[]) => instrumentNames.some(n => norm(n) === norm('Chrysalis Specimen'))
 
+/** A few rounds of look-ahead, only to order options that score the same this round. */
+const TIE_BREAK = { samples: 32, horizon: 4 }
+
+/**
+ * Options tied with the best this round (say, the same potion on two equal tanks) are put in order by
+ * playing a few more rounds, so the board the build needs (two Bone Sentries for Adherent Metatarsals)
+ * isn't given up on a coin flip.
+ */
+function breakTies(s: GameState, ranking: Ranked[], seed: number): Ranked[] {
+  const tied = ranking.filter(r => r.value === ranking[0]?.value)
+  if (tied.length < 2) return ranking
+  const toAction = (r: Ranked) => [{ type: 'selectCard', index: r.index } as const, ...r.targets.map(tank => ({ type: 'toggleTarget', tank }) as const), { type: 'confirm' } as const]
+  const ahead = new Map(tied.map(r => [r, expected(s, toAction(r), TIE_BREAK, seed)]))
+  return [...tied.sort((a, b) => ahead.get(b)! - ahead.get(a)!), ...ranking.slice(tied.length)]
+}
+
 /**
  * Rank the current choices. `samples`: fresh outcomes per potion option; `playouts`: games per instrument option.
  * `plan`: judge potions by the final score (planning bot, ~0.2-1 s) instead of this round's score (~10 ms);
@@ -109,9 +125,11 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
       const targets = o.flatMap(a => (a.type === 'toggleTarget' ? [a.tank] : []))
       return { index, targets, value: Math.round(expected(s, o, p, seed)) }
     }).sort((a, b) => b.value - a.value)
+    ranking = breakTies(s, ranking, seed)
     best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
   } else {
-    const { offers, refresh } = rankInstruments(s, seed, playouts, evChooser({ samples: 4, horizon: 0 }))
+    // judged by the average final score: the rainbow goal ('rainbow') made no measurable difference in 240 games yet
+    const { offers, refresh } = rankInstruments(s, seed, playouts, evChooser({ samples: 4, horizon: 0 }), 'mean')
     ranking = offers.map((v, index) => ({ index, targets: [], value: Math.round(v) })).sort((a, b) => b.value - a.value)
     best = refresh !== null && refresh > ranking[0].value ? 'refresh' : ranking[0]
   }
