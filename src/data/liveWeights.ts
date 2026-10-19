@@ -96,7 +96,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Adherent Metatarsals': 0.5,
       'Contracted Claws': 1,
       'Aberrant Sprout': 1,
-      'Prismatic Liver': 1
+      'Prismatic Liver': 0.5146875
     },
     advanced: {
       'Clustered Eggs': 1,
@@ -105,7 +105,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Vermicular Spinal Cord': 1,
       'Rawhide Restraint': 1,
       'Black Goat Gut Suture': 1,
-      'Pig Iron Bone Saw': 0.5,
+      'Pig Iron Bone Saw': 1,
       'Two-Inch Skull Nail': 1,
       'Fouled Scraper': 1,
       'Canine Teeth File': 1,
