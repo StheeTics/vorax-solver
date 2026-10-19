@@ -14,3 +14,7 @@ it('leaves out a pair with anything unsure on either board: a misread would look
   expect(pairs([board(0, 2), board(1, 3, ['hand2'])])).toHaveLength(0)
   expect(pairs([board(0, 2, []), board(1, 3, [])])).toHaveLength(1)
 })
+
+it('leaves out a board flagged unreadable', () => {
+  expect(pairs([{ ...board(0, 2), unreadable: true }, board(1, 3)])).toHaveLength(0)
+})

@@ -12,6 +12,8 @@ function cleanCard(card) {
     updating: !!card.updating,
     // the Solver window's question or what stops it following the game: the window is hidden, so the card says it
     ask: typeof card.ask === 'string' && card.ask ? text(card.ask, 300) : null,
+    // all of it, most pressing first (pages before it sent only `ask`)
+    asks: Array.isArray(card.asks) ? card.asks.filter((a) => typeof a === 'string' && a).slice(0, 4).map((a) => text(a, 300)) : [],
   };
 }
 

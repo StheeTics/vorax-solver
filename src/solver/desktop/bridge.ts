@@ -36,24 +36,30 @@ export interface OverlayCard {
   round: number | null
   /** a newer board is being worked out: the card is the last board's */
   updating: boolean
-  /** a question the Solver window is asking (which instrument was taken): the card shows it with a button
-   *  that opens the window, which the app keeps hidden */
+  /** what the card should say (the Solver window's questions, what stops it following the game), most pressing
+   *  first; Show me opens the window, which the app keeps hidden. Apps before 0.1.7 show only `ask`. */
+  asks: string[]
   ask: string | null
 }
 
-/** The question for the card: what stops the Solver following the game (the log off, the window not seen), the player's Intern Shelley level until it's picked (the advice depends on
- *  it), an instrument the Solver couldn't tell (it waits for the answer), tanks whose
- *  numbers weren't read (they change the advice most), or an instrument read unsure. */
-export function overlayAsk(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>, shelleyUnset = false, trouble: Trouble | null = null): string | null {
-  // the log's one step fits on the card; the window's several are in the Solver window
-  if (trouble) return `${TROUBLES[trouble].card} ${trouble === 'logOff' ? TROUBLES.logOff.steps[0] : 'Show me says what to check.'}`
-  if (shelleyUnset) return 'Which Intern Shelley level do you have? Pick it in the Solver: it sets your instrument refreshes.'
-  if (pending > 0) return 'Which instrument did you take? The Solver couldn’t tell.'
+/** Everything the card should say, most pressing first: what stops the Solver following or reading the game,
+ *  the player's Intern Shelley level until it's picked (the advice depends on it), an instrument it couldn't
+ *  tell (it waits for the answer), tanks whose numbers weren't read, an instrument read unsure. */
+export function overlayAsks(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>, shelleyUnset = false, troubles: Trouble[] = []): string[] {
+  const out: string[] = []
+  // the log's one step fits on the card; the others' several are in the Solver window
+  for (const t of troubles) out.push(`${TROUBLES[t].card} ${t === 'logOff' ? TROUBLES.logOff.steps[0] : 'Show me says what to check.'}`)
+  if (shelleyUnset) out.push('Which Intern Shelley level do you have? Pick it in the Solver: it sets your instrument refreshes.')
+  if (pending > 0) out.push('Which instrument did you take? The Solver couldn’t tell.')
+  // a screen it can't read already says the numbers are off
   const tanks = unreadTanks(fields, corrections)
-  if (tanks.length) return `${unreadNote(tanks)} Check them in the Solver.`
-  const unsure = Object.entries(fields).some(([k, f]) => /^instrument\d$/.test(k) && !f.sure && !(k in corrections))
-  return unsure ? 'An instrument may be misread: check it in the Solver.' : null
+  if (tanks.length && !troubles.some(t => t === 'cantRead' || t === 'windowed')) out.push(`${unreadNote(tanks)} Check them in the Solver.`)
+  if (Object.entries(fields).some(([k, f]) => /^instrument\d$/.test(k) && !f.sure && !(k in corrections))) out.push('An instrument may be misread: check it in the Solver.')
+  return out
 }
+
+/** The most pressing of them. */
+export const overlayAsk = (...a: Parameters<typeof overlayAsks>): string | null => overlayAsks(...a)[0] ?? null
 
 export const desktopBridge = (): DesktopBridge | null => (typeof window !== 'undefined' && (window as unknown as { VoraxDesktop?: DesktopBridge }).VoraxDesktop) || null
 
@@ -70,8 +76,9 @@ export function bridgeLog(bridge: DesktopBridge): FileLike {
 
 const OTHERS = 2
 
-export function overlayCard(shown: Shown | null, updating: boolean, ask: string | null = null, depends: Depends[] | null = null): OverlayCard {
-  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, ask }
+export function overlayCard(shown: Shown | null, updating: boolean, asks: string[] = [], depends: Depends[] | null = null): OverlayCard {
+  const ask = asks.length ? `${asks[0]}${asks.length > 1 ? ` (and ${asks.length - 1} more in the Solver)` : ''}` : null
+  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, asks, ask }
   // an unconfirmed pick changes the best move: each instrument's, not one move on a guess
   if (shown && depends) return { ...card, move: 'Depends on which instrument you took', others: depends.map(d => `With ${d.name}: ${d.move}`) }
   if (!shown) return { ...card, move: updating ? 'Working out the best move…' : 'Waiting for the cards…' }
@@ -90,8 +97,9 @@ export function overlayCard(shown: Shown | null, updating: boolean, ask: string 
 }
 
 /** Keeps the overlay card in step with the advice on the page. */
-export function useOverlay(shown: Shown | null, updating: boolean, ask: string | null = null, bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null): void {
+export function useOverlay(shown: Shown | null, updating: boolean, asks: string[] = [], bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null): void {
+  const key = asks.join('\n')
   useEffect(() => {
-    bridge?.showAdvice(overlayCard(shown, updating, ask, depends))
-  }, [shown, updating, ask, bridge, depends])
+    bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends))
+  }, [shown, updating, key, bridge, depends])
 }

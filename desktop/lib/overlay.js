@@ -23,8 +23,10 @@ function render() {
   others.replaceChildren(...(c.others || []).map((o) => Object.assign(document.createElement('li'), { textContent: o })));
   others.hidden = !(c.others && c.others.length);
   // the Solver window's question: it's hidden, so the card asks, and its button opens the window
-  $('ask').hidden = !c.ask;
-  $('ask-text').textContent = c.ask || '';
+  // every message, one per line (a page from before sends only `ask`)
+  const asks = c.asks && c.asks.length ? c.asks : c.ask ? [c.ask] : [];
+  $('ask').hidden = !asks.length;
+  $('ask-text').replaceChildren(...asks.map((a) => Object.assign(document.createElement('span'), { className: 'ask-line', textContent: a })));
   // the app's own update first (downloading, or ready to install), then the site's
   const app = update.app === 'ready' || update.app === 'downloading';
   $('update').hidden = !(app || update.site);

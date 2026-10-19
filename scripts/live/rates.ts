@@ -44,7 +44,9 @@ export interface Rates {
 /** Whether every field named was read for sure (boards from before unsure fields were shared were all sure). */
 const sure = (r: Snapshot, test: (field: string) => boolean) => !(r.unsure ?? []).some(test)
 
-export function computeRates(rows: Snapshot[]): Rates {
+export function computeRates(all: Snapshot[]): Rates {
+  // a picture that wasn't the game screen teaches nothing
+  const rows = all.filter(r => !r.unreadable)
   // an offer read twice (a re-read after a correction) counts once; only hands read for sure, with the
   // phase and round that say which pool they came from
   const seen = new Set<string>()

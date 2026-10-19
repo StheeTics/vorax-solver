@@ -30,6 +30,9 @@ export interface Snapshot {
   unsure?: FieldKey[]
   advice?: SharedAdvice
   debug?: SharedDebug
+  /** a picture that wasn't the game screen: shared (with its setup) so a setup that breaks every read shows up;
+   *  nothing is learned from it */
+  unreadable?: true
 }
 
 /** The game's window in Vorax Overlay: its outer size and the picture inside it (a title bar and borders make
@@ -41,12 +44,13 @@ export interface GameWindow { outer: [number, number]; client: [number, number];
 export type SharedDebug = Environment & Omit<ReadDebug, 'ms'> & { frame: [number, number]; ms?: number; scores: Record<FieldKey, [number, number]>; window?: GameWindow }
 
 export function debugOf(r: Reading, unsure: FieldKey[], env: Environment, win: GameWindow | null): SharedDebug {
-  const round = (v: number | undefined) => Math.round((v ?? 0) * 1000) / 1000
+  // what the collector keeps: scores within -1..1, a line of at most 16 characters
+  const round = (v: number | undefined) => Math.max(-1, Math.min(1, Math.round((v ?? 0) * 1000) / 1000))
   const scores = Object.fromEntries(unsure.filter(k => r.fields[k]?.score !== undefined).map(k => [k, [round(r.fields[k].score), round(r.fields[k].second)] as [number, number]]))
   const d = r.debug
   return {
     frame: [r.frame?.width ?? 0, r.frame?.height ?? 0], ...env, ...(d?.ms !== undefined ? { ms: d.ms } : {}),
-    off: d?.off ?? 0, corrected: d?.corrected ?? false, tanks: d?.tanks ?? [], scores, ...(win ? { window: win } : {}),
+    off: d?.off ?? 0, corrected: d?.corrected ?? false, tanks: (d?.tanks ?? []).map(t => t && { ...t, total: t.total.slice(0, 16), aq: t.aq.slice(0, 16) }), scores, ...(win ? { window: win } : {}),
   }
 }
 
@@ -57,9 +61,9 @@ export function sharedAdvice(shown: Shown | null): SharedAdvice | undefined {
   return { move: best === 'refresh' ? 'Refresh' : describe(best, shown.board, true), activity: end ? Math.round(end.activity) : null, reached: end ? end.reached : null }
 }
 
-/** Every board read from the game, sure or not (each card seen counts toward the odds), never a Manual one
- *  or a screen that isn't the game. */
-export const shareable = (r: Reading, source: Source): boolean => source !== 'demo' && !r.problems.some(p => p.kind === 'notFound')
+/** Every board read from the game, sure or not (each card seen counts toward the odds), and pictures that
+ *  weren't the game screen (flagged unreadable); never a Manual one. */
+export const shareable = (_r: Reading, source: Source): boolean => source !== 'demo'
 
 /** The fields the reader wasn't sure of, the player didn't correct, or (cards) didn't recognise. */
 export function unsureFields(r: Reading, corrected: FieldKey[]): FieldKey[] {
@@ -94,5 +98,6 @@ export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: str
     unsure: [...ctx.unsure],
     ...(ctx.advice ? { advice: ctx.advice } : {}),
     ...(ctx.debug ? { debug: ctx.debug } : {}),
+    ...(r.problems.some(p => p.kind === 'notFound') ? { unreadable: true as const } : {}),
   }
 }

@@ -43,6 +43,7 @@ export function validate(raw: unknown, names: Names) {
     round: s.round, phase: s.phase as string, refreshes: s.refreshes, shelley: s.shelley, corrected: s.corrected as string[],
     tanks, hand: s.hand as string[], instruments: s.instruments as string[],
     ...(s.unsure !== undefined ? { unsure: s.unsure as string[] } : {}),
+    ...(s.unreadable === true ? { unreadable: true } : {}),
     ...adviceOf(s.advice),
     ...debugOf(s.debug),
   }
@@ -68,12 +69,15 @@ function debugOf(raw: unknown): { debug?: Record<string, unknown> } {
     }
     const m = t as Record<string, unknown>
     const rgb = m?.rgb
-    if (!Array.isArray(rgb) || rgb.length !== 3 || !rgb.every(c => int(c, 0, 255)) || !str(m.total, /^[\dx]{0,16}$/) || !str(m.aq, /^[\dx]{0,16}$/)) return {}
-    tanks.push({ rgb, total: m.total, aq: m.aq })
+    // a broken read's lines can run long: kept, cut to length (a line of other characters isn't a read)
+    if (!Array.isArray(rgb) || rgb.length !== 3 || !rgb.every(c => int(c, 0, 255)) || !str(m.total, /^[\dx]*$/) || !str(m.aq, /^[\dx]*$/)) return {}
+    tanks.push({ rgb, total: m.total.slice(0, 16), aq: m.aq.slice(0, 16) })
   }
   if (!d.scores || typeof d.scores !== 'object' || Array.isArray(d.scores)) return {}
   const scores = Object.entries(d.scores as Record<string, unknown>)
-  if (scores.length > 40 || !scores.every(([k, v]) => FIELD.test(k) && pair(v, -1, 1))) return {}
+  // match scores can land a hair outside -1..1 from rounding: clamped
+  if (scores.length > 40 || !scores.every(([k, v]) => FIELD.test(k) && pair(v, -2, 2))) return {}
+  const clamp1 = (v: [number, number]) => v.map(x => Math.max(-1, Math.min(1, x)))
   let win: { window?: { outer: [number, number]; client: [number, number]; scale: number } } = {}
   if (d.window !== undefined) {
     const w = d.window as Record<string, unknown>
@@ -83,7 +87,7 @@ function debugOf(raw: unknown): { debug?: Record<string, unknown> } {
   return {
     debug: {
       frame: d.frame, dpr: d.dpr, hdr: d.hdr, browser: d.browser, ...(d.ms !== undefined ? { ms: d.ms } : {}),
-      off: d.off, corrected: d.corrected, tanks, scores: Object.fromEntries(scores), ...win,
+      off: d.off, corrected: d.corrected, tanks, scores: Object.fromEntries(scores.map(([k, v]) => [k, clamp1(v as [number, number])])), ...win,
     },
   }
 }

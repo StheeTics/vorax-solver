@@ -1,5 +1,5 @@
 import { act, render, screen } from '@testing-library/react'
-import { bridgeLog, overlayAsk, overlayCard, type DesktopBridge } from '@/solver/desktop/bridge'
+import { bridgeLog, overlayAsk, overlayAsks, overlayCard, type DesktopBridge } from '@/solver/desktop/bridge'
 import { TROUBLES } from '@/solver/live/troubles'
 import { LiveSource, type LiveDeps } from '@/solver/live/LiveSource'
 import type { Advice, ScreenState } from '@/strategy/advisor'
@@ -80,7 +80,7 @@ describe('the overlay card', () => {
   })
 
   it('carries the Solver’s open question, so the player sees it over the game', () => {
-    expect(overlayCard(null, false, 'Which instrument did you take?').ask).toBe('Which instrument did you take?')
+    expect(overlayCard(null, false, ['Which instrument did you take?']).ask).toBe('Which instrument did you take?')
     expect(overlayCard(null, false).ask).toBeNull()
   })
 
@@ -92,8 +92,28 @@ describe('the overlay card', () => {
   })
 
   it('says first what stops the Solver following the game (the log off, the window not seen): nothing works without it', () => {
-    expect(overlayAsk(1, {}, {}, true, 'logOff')).toBe(`${TROUBLES.logOff.card} ${TROUBLES.logOff.steps[0]}`)
-    expect(overlayAsk(0, {}, {}, false, 'windowBlocked')).toBe(`${TROUBLES.windowBlocked.card} Show me says what to check.`)
+    expect(overlayAsk(1, {}, {}, true, ['logOff'])).toBe(`${TROUBLES.logOff.card} ${TROUBLES.logOff.steps[0]}`)
+    expect(overlayAsk(0, {}, {}, false, ['windowBlocked'])).toBe(`${TROUBLES.windowBlocked.card} Show me says what to check.`)
+  })
+
+  it('the card has every message at once, most pressing first: a Shelley question no longer hides the rest', () => {
+    const asks = overlayAsks(1, { 'tank1.activity': { sure: false } }, {}, true, ['logOff'])
+    expect(asks).toEqual([
+      `${TROUBLES.logOff.card} ${TROUBLES.logOff.steps[0]}`,
+      'Which Intern Shelley level do you have? Pick it in the Solver: it sets your instrument refreshes.',
+      'Which instrument did you take? The Solver couldn’t tell.',
+      'Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them in the Solver.',
+    ])
+  })
+
+  it('with a screen it can’t read, that is said instead of each tank’s numbers', () => {
+    expect(overlayAsks(0, { 'tank1.activity': { sure: false } }, {}, false, ['cantRead'])).toEqual([`${TROUBLES.cantRead.card} Show me says what to check.`])
+  })
+
+  it('the card carries them all, and older apps the first in its one line', () => {
+    const card = overlayCard(null, false, ['a', 'b'])
+    expect(card.asks).toEqual(['a', 'b'])
+    expect(card.ask).toBe('a (and 1 more in the Solver)')
   })
 
   it('asks for the Intern Shelley level first, until the player picks it', () => {
@@ -134,7 +154,7 @@ describe('sending the advice to the overlay', () => {
     const { renderHook } = await import('@testing-library/react')
     const { useOverlay } = await import('@/solver/desktop/bridge')
     const { bridge } = fakeBridge()
-    const { rerender } = renderHook(({ updating }) => useOverlay(null, updating, null, bridge), { initialProps: { updating: false } })
+    const { rerender } = renderHook(({ updating }) => useOverlay(null, updating, [], bridge), { initialProps: { updating: false } })
     expect(bridge.showAdvice).toHaveBeenLastCalledWith(expect.objectContaining({ move: 'Waiting for the cards…' }))
     rerender({ updating: true })
     expect(bridge.showAdvice).toHaveBeenLastCalledWith(expect.objectContaining({ move: 'Working out the best move…', updating: true }))
@@ -142,7 +162,7 @@ describe('sending the advice to the overlay', () => {
   it('on the website (no app) it does nothing', async () => {
     const { renderHook } = await import('@testing-library/react')
     const { useOverlay } = await import('@/solver/desktop/bridge')
-    expect(() => renderHook(() => useOverlay(null, false, null, null))).not.toThrow()
+    expect(() => renderHook(() => useOverlay(null, false, [], null))).not.toThrow()
   })
 })
 

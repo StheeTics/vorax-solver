@@ -137,6 +137,10 @@ describe('problems by setup: which screens, windows, HDR or browsers misread', (
     expect(find('browser', 'Electron (app)')).toMatchObject({ boards: 2 })
     expect(find('browser', 'Chrome')).toMatchObject({ boards: 2 })
   })
+  it('a picture that wasn’t the game screen counts as a board read with nothing sure', () => {
+    const q = summarize([row('2026-10-19T09:00:00Z', 'e', board('g9', 1, { debug: dbg([1866, 1080], { browser: 'Electron 44', window: { outer: [1936, 1119], client: [1920, 1080], scale: 1 } }), unreadable: true }))], new Date('2026-10-19T12:00:00Z')).problems
+    expect(q.find(x => x.by === 'window' && x.group === 'windowed')).toMatchObject({ boards: 1, unsure: 1, numbers: 1 })
+  })
   it('boards from before the setup was shared aren’t counted', () => {
     expect(p.filter(x => x.by === 'screen').reduce((s, x) => s + x.boards, 0)).toBe(4)
   })

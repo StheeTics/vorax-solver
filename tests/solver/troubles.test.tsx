@@ -53,3 +53,22 @@ describe('inside Vorax Overlay, when the game window can’t be shared', () => {
     }
   })
 })
+
+describe('a screen the Solver can’t read', () => {
+  it('is raised when most tanks’ numbers can’t be read, or several pictures in a row aren’t the game screen', async () => {
+    const { screenTrouble } = await import('@/solver/live/troubles')
+    expect(screenTrouble({ filled: 5, unread: 5, notGame: 0, windowed: false })).toBe('cantRead')
+    expect(screenTrouble({ filled: 4, unread: 2, notGame: 0, windowed: false })).toBe('cantRead')
+    expect(screenTrouble({ filled: 4, unread: 1, notGame: 0, windowed: false })).toBeNull()
+    expect(screenTrouble({ filled: 1, unread: 1, notGame: 0, windowed: false })).toBeNull()
+    expect(screenTrouble({ filled: 0, unread: 0, notGame: 3, windowed: false })).toBe('cantRead')
+    expect(screenTrouble({ filled: 0, unread: 0, notGame: 2, windowed: false })).toBeNull()
+  })
+  it('says so plainly when the app sees the game is windowed', async () => {
+    const { screenTrouble } = await import('@/solver/live/troubles')
+    expect(screenTrouble({ filled: 5, unread: 5, notGame: 0, windowed: true })).toBe('windowed')
+    expect(TROUBLES.windowed.card).toMatch(/windowed/)
+    expect(TROUBLES.windowed.steps.join(' ')).toMatch(/borderless or fullscreen/)
+    expect(TROUBLES.cantRead.card).toMatch(/can’t read your game screen/)
+  })
+})

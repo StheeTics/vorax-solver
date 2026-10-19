@@ -18,7 +18,8 @@ describe('what is shared', () => {
     expect(shareable(reading, 'live')).toBe(true)
     expect(shareable({ ...reading, fields: { ...reading.fields, hand0: { sure: false } } }, 'live')).toBe(true)
     expect(shareable({ ...reading, problems: [{ kind: 'unknownArt', field: 'hand1', crop: { x: 0, y: 0, w: 1, h: 1 } }] }, 'live')).toBe(true)
-    expect(shareable({ ...reading, problems: [{ kind: 'notFound' }] }, 'live')).toBe(false)
+    // a picture that isn't the game screen is shared too (flagged): a setup that breaks every read shows up
+    expect(shareable({ ...reading, problems: [{ kind: 'notFound' }] }, 'live')).toBe(true)
   })
 
   it('the fields shared as unsure: those the reader wasn’t sure of and the player didn’t correct, and cards it didn’t recognise', () => {
@@ -27,6 +28,11 @@ describe('what is shared', () => {
     expect(unsureFields(unsure, ['hand0'])).toEqual(['tank0.activity'])
     expect(unsureFields(reading, [])).toEqual([])
     expect(unsureFields({ ...reading, problems: [{ kind: 'unknownArt', field: 'hand1', crop: { x: 0, y: 0, w: 1, h: 1 } }] }, [])).toEqual(['hand1'])
+  })
+
+  it('a picture that isn’t the game screen is flagged unreadable', () => {
+    expect(toSnapshot({ ...reading, problems: [{ kind: 'notFound' }] }, ctx).unreadable).toBe(true)
+    expect(toSnapshot(reading, ctx)).not.toHaveProperty('unreadable')
   })
 
   it('a snapshot names its unsure fields', () => {
@@ -187,6 +193,14 @@ describe('the setup and what the reader saw, shared to find out why a setup misr
     })
     expect(debugOf({ ...reading, debug: undefined }, [], env, null)).toMatchObject({ frame: [3440, 1440], tanks: [] })
     expect(debugOf(reading, [], env, null)).not.toHaveProperty('window')
+  })
+
+  it('a broken read’s long lines and scores are cut to what the collector keeps', async () => {
+    const { debugOf } = await import('@/solver/share/snapshot')
+    const r: Reading = { ...reading, fields: { 'tank0.activity': { sure: false, score: 1.00004, second: -1.3 } }, debug: { off: 0.5, corrected: true, tanks: [{ rgb: [1, 2, 3], total: '9'.repeat(40), aq: '' }] } }
+    const d = debugOf(r, ['tank0.activity'], { dpr: 1, hdr: false, browser: 'Edge 131' }, null)
+    expect(d.tanks[0]!.total).toHaveLength(16)
+    expect(d.scores['tank0.activity']).toEqual([1, -1])
   })
 
   it('a snapshot carries it', () => {

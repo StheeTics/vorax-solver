@@ -4,7 +4,7 @@
 export interface StatRow { received: string; client: string; body: string }
 
 interface Tank { activity: number; quantity: number }
-interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
+interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
 
 interface Debug { frame: [number, number]; hdr: boolean; browser: string; window?: { outer: [number, number]; client: [number, number] } }
 
@@ -78,8 +78,9 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
       const k = `${by}|${group}`
       const g = setups.get(k) ?? { by, group, boards: 0, unsure: 0, numbers: 0 }
       g.boards++
-      if (b.unsure?.length) g.unsure++
-      if (b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.numbers++
+      // a picture that wasn't the game screen: nothing on it read
+      if (b.unsure?.length || b.unreadable) g.unsure++
+      if (b.unreadable || b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.numbers++
       setups.set(k, g)
     }
     const app = /-overlay$/.test(b.app)

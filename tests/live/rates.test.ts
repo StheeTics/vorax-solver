@@ -109,3 +109,9 @@ it('learns only from what was read for sure: a hand with an unsure card, or an u
   expect(r.spawnRarity.boss.count).toBe(0)
   expect(r.spawnRarity.normal.n).toBe(3)
 })
+
+it('a board flagged unreadable teaches nothing', () => {
+  const r = computeRates([base({ unreadable: true, hand: ['Xeno-Hormone', 'Mutagenic Powder', 'Green Bile Solution'], tanks: [{ archetype: 'agito', rarity: 'boss', activity: 1, quantity: 1 }, null, null, null, null, null] })])
+  expect(r.potionOffer['Xeno-Hormone'].count).toBe(0)
+  expect(r.spawnRarity.boss.n).toBe(0)
+})

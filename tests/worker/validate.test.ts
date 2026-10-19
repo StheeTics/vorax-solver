@@ -20,6 +20,11 @@ it('keeps the fields the Solver wasn’t sure of; boards from before had none', 
   expect(validate({ ...good, unsure: 'hand0' }, names)).toBeNull()
 })
 
+it('keeps a board flagged unreadable (a picture that wasn’t the game screen)', () => {
+  expect(validate({ ...good, unreadable: true }, names)).toEqual({ ...good, unreadable: true })
+  expect(validate({ ...good, unreadable: 'yes' }, names)).toEqual(good)
+})
+
 it('drops extra keys', () => {
   expect(validate({ ...good, ip: '1.2.3.4', name: 'me' }, names)).toEqual(good)
 })
@@ -74,6 +79,10 @@ describe('the debug part: kept field by field, dropped whole (board kept) when a
   it('rebuilt from the keys it knows, like the board: anything else is left behind', () => {
     const sent = { ...debug, window: { ...debug.window, title: 'Torchlight' }, ip: '1.2.3.4' }
     expect(validate({ ...good, debug: sent }, names)).toEqual({ ...good, debug })
+  })
+  it('a broken read’s values are trimmed, not a reason to drop it: those are the boards it’s for', () => {
+    const broken = { ...debug, tanks: [{ rgb: [1, 2, 3], total: '1'.repeat(30), aq: '12x'.repeat(10) }], scores: { 'tank0.activity': [1.0000004, -1.2] } }
+    expect(validate({ ...good, debug: broken }, names)!.debug).toMatchObject({ tanks: [{ total: '1'.repeat(16), aq: '12x'.repeat(10).slice(0, 16) }], scores: { 'tank0.activity': [1, -1] } })
   })
   it.each([
     ['a browser that isn’t a short name', { browser: '<img src=x>' }],

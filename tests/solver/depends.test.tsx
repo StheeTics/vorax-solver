@@ -33,7 +33,7 @@ describe('advice for each instrument an unconfirmed pick could be', () => {
     expect(screen.queryByRole('heading', { name: 'Play Mutagenic Powder (card 1)' })).toBeNull()
   })
   it('and so does the card over the game', () => {
-    const card = overlayCard({ board, advice: advice(0, 450_000) }, false, null, depends)
+    const card = overlayCard({ board, advice: advice(0, 450_000) }, false, [], depends)
     expect(card.move).toBe('Depends on which instrument you took')
     expect(card.others).toEqual(['With Chrysalis Specimen: Play Green Bile Solution (card 2)', 'With Hyperplastic Frontal Lobe: Play Mutagenic Powder (card 1)'])
   })

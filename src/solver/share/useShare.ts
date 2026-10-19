@@ -29,6 +29,7 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
   const held = useRef<{ reading: Reading; source: Source; corrected: FieldKey[]; advice?: SharedAdvice } | null>(null)
   // in Vorax Overlay, the game window as last measured: asked for with each board, used with the next
   const win = useRef<GameWindow | null>(null)
+  const lastNotGame = useRef(false)
 
   if (!queue.current && sendingAllowed()) queue.current = createQueue({ send: post })
 
@@ -36,6 +37,10 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
     const h = held.current
     held.current = null
     if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source)) return
+    // pictures that aren't the game screen come in runs (a menu, a loading screen): one of each run is enough
+    const notGame = h.reading.problems.some(p => p.kind === 'notFound')
+    if (notGame && lastNotGame.current) return
+    lastNotGame.current = notGame
     const trigger = h.reading.frame?.trigger ?? 'screenshot'
     if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
     const unsure = unsureFields(h.reading, h.corrected)

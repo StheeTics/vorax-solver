@@ -162,6 +162,17 @@
     color: var(--text);
   }
 
+  /* one message per line, the most pressing first */
+  .ask-line {
+    display: block;
+  }
+
+  .ask-line + .ask-line {
+    margin-top: 4px;
+    padding-top: 4px;
+    border-top: 1px solid var(--iron);
+  }
+
   .update button {
     padding: 3px 10px;
     border: 1px solid var(--gold);

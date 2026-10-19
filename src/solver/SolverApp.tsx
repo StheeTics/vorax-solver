@@ -7,11 +7,12 @@ import { loadShelleyLevel, saveShelleyLevel, shelleyChosen } from '@/ui/settings
 import { ShelleyPicker } from '@/ui/ShelleyPicker'
 import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
-import { desktopBridge, overlayAsk, useOverlay } from './desktop/bridge'
+import { desktopBridge, overlayAsks, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
 import { dependsOn } from './advice/depends'
 import { useAlternatives } from './advice/useAlternatives'
-import type { Trouble } from './live/troubles'
+import { screenTrouble, type Trouble } from './live/troubles'
+import { cropTo, gameArea } from './live/windowCrop'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -95,7 +96,13 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     [openPick, board],
   )
   const depends = dependsOn(useAlternatives(options))
-  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley, trouble), undefined, depends)
+  // a screen it can't read (most tanks unreadable, or pictures that aren't the game): said first, with the cause
+  // when the app sees the game is windowed
+  const [notGame, setNotGame] = useState(0)
+  const [windowed, setWindowed] = useState(false)
+  const screen = linked ? null : screenTrouble({ filled: (reading?.state.tanks ?? []).filter(Boolean).length, unread: unreadTanks(fields, corrections).length, notGame, windowed })
+  const troubles = [trouble, screen].filter((t): t is Trouble => !!t)
+  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles), undefined, depends)
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -103,9 +110,15 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   }, [advice, state])
 
   // A frame from Live or a screenshot becomes the board; fields the reader was unsure of are marked.
-  const onFrame = async (img: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep) => {
+  const onFrame = async (captured: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep) => {
     setReadingBusy(true)
     try {
+      // a windowed game's capture holds its title bar and borders: the game alone is read
+      const win = await desktopBridge()?.gameWindow?.().catch(() => null)
+      const area = win ? gameArea(captured, win) : null
+      const cut = area ? cropTo(captured, area) : null
+      const img = cut ? (typeof ImageData === 'undefined' ? (cut as unknown as ImageData) : new ImageData(cut.data, cut.width, cut.height)) : captured
+      setWindowed(!!area)
       const readFrom = Date.now()
       const read$ = await read(img, trigger, refs ?? local)
       const ms = Date.now() - readFrom
@@ -117,6 +130,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         return
       }
       setFrame(img)
+      setNotGame(n => (raw.problems.some(p => p.kind === 'notFound') ? n + 1 : 0))
       let r = raw
       if (!raw.problems.some(p => p.kind === 'notFound')) {
         const t = trackInstruments(tracker.current, raw, trigger)
