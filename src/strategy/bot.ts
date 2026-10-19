@@ -211,6 +211,13 @@ export interface LookAhead {
   playouts: number
   /** how hard the rounds inside the futures steer toward what the instruments need (Policy.steer) */
   steer?: number
+  /** outcomes averaged per option in each round inside the futures (default 2) */
+  innerSamples?: number
+  /**
+   * Successive halving, for about the same number of futures: 8 for every option, the better half (at
+   * least 2) 16 more, the best 2 another 32, so close calls get the most futures.
+   */
+  halving?: boolean
 }
 
 /** One option played to the end: this round's expected score, and over its futures the mean score counted
@@ -231,17 +238,30 @@ export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
   const shortlist = now.filter((c, i) => now.findIndex(d => cardOf(d.o) === cardOf(c.o)) === i)
   for (const c of now) if (shortlist.length < la.top && !shortlist.includes(c)) shortlist.push(c)
   if (slim.openBox === null && canRefresh(slim)) shortlist.push({ o: [{ type: 'refresh' }], v: ultimateActivity(slim) })
-  const inner = evChooser({ samples: 2, horizon: 0, steer: la.steer })
-  return shortlist.map(c => {
-    let goal = 0, reached = 0
-    for (let k = 0; k < la.playouts; k++) {
+  const inner = evChooser({ samples: la.innerSamples ?? 2, horizon: 0, steer: la.steer })
+  const runs = shortlist.map(c => ({ c, n: 0, goal: 0, reached: 0 }))
+  const playMore = (r: (typeof runs)[number], n: number) => {
+    for (let k = r.n; k < r.n + n; k++) {
       const sk = mix(seed, 9000 + k)
-      const ua = ultimateActivity(finish(play(reseed(slim, sk), ...c.o), sk, inner, priorPicker))
-      goal += goalScore(ua)
-      if (ua >= TARGET) reached++
+      const ua = ultimateActivity(finish(play(reseed(slim, sk), ...r.c.o), sk, inner, priorPicker))
+      r.goal += goalScore(ua)
+      if (ua >= TARGET) r.reached++
     }
-    return { o: c.o, now: c.v, goal: goal / la.playouts, reached: reached / la.playouts }
-  }).sort((a, b) => b.goal - a.goal)
+    r.n += n
+  }
+  const mean = (r: (typeof runs)[number]) => r.goal / r.n
+  if (la.halving) {
+    let alive = runs
+    for (const [n, keep] of [[8, Math.max(2, Math.ceil(runs.length / 2))], [16, 2], [32, 0]] as const) {
+      for (const r of alive) playMore(r, n)
+      if (keep) alive = [...alive].sort((a, b) => mean(b) - mean(a)).slice(0, keep)
+    }
+  } else for (const r of runs) playMore(r, la.playouts)
+  // options dropped early keep their estimate from fewer futures, below the ones kept
+  return runs
+    .map(r => ({ o: r.c.o, now: r.c.v, goal: mean(r), reached: r.reached / r.n, n: r.n }))
+    .sort((a, b) => b.n - a.n || b.goal - a.goal)
+    .map(a => ({ o: a.o, now: a.now, goal: a.goal, reached: a.reached }))
 }
 
 /** lookAhead's best option; `value` stays this round's expected score, which finish() compares with the board to decide on a refresh. */

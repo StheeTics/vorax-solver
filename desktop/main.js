@@ -32,7 +32,7 @@ const STEAM_APP = '1974050'; // Torchlight: Infinite on Steam
 // not Tartarus Overlay's (Ctrl+Alt+O/A/P): players often run both
 const HOTKEYS = { overlay: 'Control+Alt+V', solver: 'Control+Alt+S', snap: 'Control+Alt+X' };
 const ICON = path.join(__dirname, 'build', 'icon.png');
-const OVERLAY_WIDTH = 340;
+const OVERLAY_WIDTH = 360; // Tartarus Overlay's, so the two cards look alike side by side
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
@@ -263,7 +263,10 @@ async function lookForGame() {
       if (game.running) {
         await refreshLog();
         placeOverlay();
-      } else if (siteUpdate) reloadSolver('site update, game closed');
+      } else {
+        if (siteUpdate) reloadSolver('site update, game closed');
+        installWhenFree();
+      }
       send('solver', 'game', { running: game.running });
       rebuildMenu();
     }
@@ -529,7 +532,7 @@ ipcMain.handle('log:read', async (e, start, end) => {
 let overlayHeight = 160;
 ipcMain.on('overlay:height', (e, h) => {
   if (!fromOverlay(e) || !Number.isFinite(h)) return;
-  const height = Math.max(30, Math.min(600, Math.ceil(h)));
+  const height = Math.max(16, Math.min(600, Math.ceil(h)));
   if (height === overlayHeight) return;
   overlayHeight = height;
   const b = wins.overlay.getBounds();
@@ -593,8 +596,9 @@ function reloadSolver(why) {
   loadSolver();
 }
 
-// App: electron-updater checks this repo's GitHub Releases every 6 hours, downloads in the background and
-// installs on quit; the overlay offers Restart meanwhile.
+// App: electron-updater checks this repo's GitHub Releases at start and every hour and downloads a new version
+// in the background. It installs it by itself (quietly, then starts again) while the game isn't running, or
+// as soon as the game closes; during a game the overlay offers Restart, and quitting installs it too.
 let appUpdate = '';
 let autoUpdater = null;
 function startAppUpdates() {
@@ -610,11 +614,22 @@ function startAppUpdates() {
     note('app update downloaded:', info && info.version);
     send('overlay', 'update', updateState());
     rebuildMenu();
+    installWhenFree();
   });
   autoUpdater.on('error', (e) => note('app update check failed:', String((e && e.message) || e)));
   const check = () => autoUpdater.checkForUpdates().catch(() => {});
   check();
-  setInterval(check, 6 * 60 * 60 * 1000);
+  setInterval(check, 60 * 60 * 1000);
+}
+// Installs a downloaded update unless the game is running (then it waits for the game to close).
+function installWhenFree() {
+  if (appUpdate !== 'ready' || game.running) return;
+  setTimeout(() => {
+    if (appUpdate === 'ready' && !game.running) {
+      note('installing the app update: the game isn’t running');
+      installUpdate();
+    }
+  }, 5000);
 }
 function installUpdate() {
   quitting = true;

@@ -1,5 +1,7 @@
 export const REPO_URL = 'https://github.com/tidewarden/tli-vorax-simulator'
 export const ISSUES_URL = `${REPO_URL}/issues/new/choose`
+/** Vorax Overlay, the Windows app (desktop/): the newest release's installer, whatever its version. */
+export const DOWNLOAD_URL = `${REPO_URL}/releases/latest/download/Vorax-Overlay-Setup.exe`
 /** The Optimal Play guide page, served next to the game. */
 export const GUIDE_URL = `${import.meta.env.BASE_URL}optimal-play.html`
 export const HOME_URL = import.meta.env.BASE_URL

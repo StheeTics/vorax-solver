@@ -37,14 +37,17 @@ npm run local      # against the dev server (npm run dev in the repo root)
 - **Site changes**: every 10 minutes the shell compares the site's `version.json` with the page's build. It
   reloads at once while the game isn't running; during play the overlay offers Reload, and the page reloads
   by itself when the game closes.
-- **App changes**: `electron-updater` checks this repo's GitHub Releases every 6 hours, downloads in the
-  background and installs on quit (the overlay offers Restart). Unsigned builds show SmartScreen's
-  "Windows protected your PC" on first install.
+- **App changes**: `electron-updater` checks this repo's GitHub Releases at start and every hour and
+  downloads in the background. It installs by itself (quietly, then starts again) while the game isn't
+  running, or as soon as the game closes; during a game the overlay offers Restart. Unsigned builds show
+  SmartScreen's "Windows protected your PC" on first install.
+- The installer is always `Vorax-Overlay-Setup.exe`, so the website's download link
+  (`releases/latest/download/Vorax-Overlay-Setup.exe`) never changes.
 
 ## Release
 
 1. Bump `version` in `package.json` (and `npm install` to update the lock file), commit, push.
 2. `git tag -a vX.Y.Z -m "Vorax Overlay X.Y.Z" && git push origin vX.Y.Z` (plain `v` tags: electron-builder and
    electron-updater expect them).
-3. `.github/workflows/desktop.yml` builds `Vorax-Overlay-Setup-X.Y.Z.exe` on Windows and publishes it, with
+3. `.github/workflows/desktop.yml` builds `Vorax-Overlay-Setup.exe` on Windows and publishes it, with
    `latest.yml` (what installed copies read), as release `vX.Y.Z`.

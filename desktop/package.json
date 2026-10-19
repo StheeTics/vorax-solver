@@ -1,7 +1,7 @@
 {
   "name": "vorax-overlay",
   "productName": "Vorax Overlay",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "The Vorax Solver as a Windows app, with its advice in an overlay over the game.",
   "author": "tidewarden",
   "license": "MIT",
@@ -34,7 +34,7 @@
     ],
     "directories": { "output": "dist" },
     "win": { "target": ["nsis"], "icon": "build/icon.png" },
-    "nsis": { "oneClick": true, "perMachine": false, "artifactName": "Vorax-Overlay-Setup-${version}.${ext}" },
+    "nsis": { "oneClick": true, "perMachine": false, "artifactName": "Vorax-Overlay-Setup.${ext}" },
     "publish": [{ "provider": "github", "owner": "tidewarden", "repo": "tli-vorax-simulator", "releaseType": "release" }]
   }
 }

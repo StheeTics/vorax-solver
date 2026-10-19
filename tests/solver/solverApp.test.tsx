@@ -39,3 +39,17 @@ it('puts the advice first and the board to correct below it', () => {
   expect(advice.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   expect(screen.getByRole('heading', { name: /What it read/ })).toBeTruthy()
 })
+
+it('links the Windows app from the Solver, but not inside the app', () => {
+  const { unmount } = render(<SolverApp />)
+  expect(screen.getByRole('link', { name: /Windows app/ })).toBeTruthy()
+  unmount()
+  const w = window as unknown as { VoraxDesktop?: unknown }
+  w.VoraxDesktop = { logSize: async () => null, readLog: async () => new ArrayBuffer(0), onGame: () => {}, onSnap: () => {}, showAdvice: () => {} }
+  try {
+    render(<SolverApp />)
+    expect(screen.queryByRole('link', { name: /Windows app/ })).toBeNull()
+  } finally {
+    delete w.VoraxDesktop
+  }
+})

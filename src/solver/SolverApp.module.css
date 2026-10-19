@@ -25,6 +25,22 @@
   gap: 12px 20px;
 }
 
+/* the Windows app's download, beside "What can this see?" (which then needn't push right itself) */
+.app + .about {
+  margin-left: 0;
+}
+
+.app {
+  margin-left: auto;
+  color: var(--gold);
+  font-size: 14px;
+}
+
+.app:hover,
+.app:focus-visible {
+  color: var(--gold-hi);
+}
+
 .home {
   display: grid;
   place-items: center;

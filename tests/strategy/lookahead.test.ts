@@ -61,3 +61,10 @@ describe('what the look-ahead plays to the end of the run', () => {
     expect(lookAhead({ ...incubation, potionRefreshes: 0 }, 1, { top: 4, playouts: 2 }).some(isRefresh)).toBe(false)
   })
 })
+
+it('successive halving still ranks every option, the most-played ones first', async () => {
+  const { lookAhead } = await import('@/strategy/bot')
+  const plain = lookAhead(incubation, 1, { top: 4, playouts: 2 })
+  const halved = lookAhead(incubation, 1, { top: 4, playouts: 2, halving: true })
+  expect(halved).toHaveLength(plain.length)
+})

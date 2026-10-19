@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ScreenState } from '@/strategy/advisor'
 import { Attribution } from '@/ui/Attribution'
 import { Footnote } from '@/ui/Footnote'
-import { HOME_URL } from '@/ui/links'
+import { DOWNLOAD_URL, HOME_URL } from '@/ui/links'
 import { loadShelleyLevel, saveShelleyLevel } from '@/ui/settingsStore'
 import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
-import { useOverlay } from './desktop/bridge'
+import { desktopBridge, useOverlay } from './desktop/bridge'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -155,6 +155,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       <header className={styles.head}>
         <a className={`ghost-button ${styles.home}`} href={HOME_URL}>‹ Home</a>
         <h1 className={styles.title}>Vorax Solver</h1>
+        {!desktopBridge() && <a className={styles.app} href={DOWNLOAD_URL}>Windows app: advice over the game</a>}
         <details className={styles.about}>
           <summary>What can this see?</summary>
           <ul>

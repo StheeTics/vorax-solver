@@ -1,5 +1,5 @@
 // Usage: vite-node scripts/sim/run.ts <games> <policy> <mode> <json>
-//   policy: peek | ev:<samples>:<horizon>[:<rollSamples>] | plan:<top>:<playouts>[:<steer>] (potions judged by how the run ends; steer: futures build toward the instruments)
+//   policy: peek | ev:<samples>:<horizon>[:<rollSamples>] | plan:<top>:<playouts>[:<steer>[:<innerSamples>[:halving]]] (potions judged by how the run ends; steer: futures build toward the instruments)
 //   mode:   real  <Plan[]>      everything dealt; instruments by the plan's fixed wish list
 //           board <number>      everything dealt; instruments picked from the board (<number> playouts per option)
 //           fixed <number[][]>  listed instruments equipped from round 1
@@ -13,7 +13,7 @@ import { runGame, stats, evChooser, peekChooser, planChooser, planPicker, boardP
 
 const [, , nArg, pol, mode, json] = process.argv
 const N = Number(nArg); const SEED0 = Number(process.env.SEED0 ?? 1_000_000); const RAW = !!process.env.RAW
-const chooser: Chooser = pol === 'peek' ? peekChooser : pol.startsWith('plan:') ? (() => { const [, top, playouts, steer] = pol.split(':').map(Number); return planChooser({ top, playouts, steer: steer || 0 }) })() : (() => { const [, k, h, r] = pol.split(":").map(Number); return evChooser({ samples: k, horizon: h, rollSamples: r || 1 }) })()
+const chooser: Chooser = pol === 'peek' ? peekChooser : pol.startsWith('plan:') ? (() => { const [, top, playouts, steer, inner] = pol.split(':').map(Number); return planChooser({ top, playouts, steer: steer || 0, innerSamples: inner || 2, halving: pol.endsWith(':halving') }) })() : (() => { const [, k, h, r] = pol.split(":").map(Number); return evChooser({ samples: k, horizon: h, rollSamples: r || 1 }) })()
 const t0 = Date.now()
 const out = (o: object, scores: number[], extra: object = {}) =>
   console.log(JSON.stringify({ ...o, policy: pol, ...stats(scores), ...(RAW ? { scores, ...extra } : {}), secs: (Date.now() - t0) / 1000 }))
@@ -24,7 +24,8 @@ if (mode === 'real') for (const p of JSON.parse(json) as Plan[]) {
   out({ label: p.label }, scores)
 }
 if (mode === 'board') {
-  const picker = boardPicker(Number(json), evChooser({ samples: 4, horizon: 0 }), process.env.GOAL === 'mean' ? 'mean' : 'target', Number(process.env.REFRESH_PLAYOUTS ?? json))
+  // INSTR_STEER=<x>: the instrument futures steer toward the instruments too
+  const picker = boardPicker(Number(json), evChooser({ samples: 4, horizon: 0, steer: Number(process.env.INSTR_STEER ?? 0) }), process.env.GOAL === 'mean' ? 'mean' : 'target', Number(process.env.REFRESH_PLAYOUTS ?? json))
   const scores: number[] = []; const decisions: object[] = []
   const board = (s: GameState) => s.tanks.map(t => (t ? `${t.rarity[0]}${t.archetype}` : '-')).join(' ')
   for (let seed = SEED0; seed < SEED0 + N; seed++) {

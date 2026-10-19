@@ -40,7 +40,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --title "Vorax Overlay ${GITHUB_REF_NAME#v}" --notes "Download **Vorax-Overlay-Setup-${GITHUB_REF_NAME#v}.exe** below and run it. Windows may say \"Windows protected your PC\" the first time (the app isn't code-signed): click More info, then Run anyway. Installed copies update themselves."
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --title "Vorax Overlay ${GITHUB_REF_NAME#v}" --notes "Download **Vorax-Overlay-Setup.exe** below and run it. Windows may say \"Windows protected your PC\" the first time (the app isn't code-signed): click More info, then Run anyway. Installed copies update themselves."
 
       - name: Build and upload the installer
         env:

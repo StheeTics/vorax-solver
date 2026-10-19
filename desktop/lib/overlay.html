@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com">
 <title>Vorax Overlay</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&family=Big+Shoulders+Stencil+Display:wght@800&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
   /* The site's colours (src/styles/tokens.css), for a card over the game. */
   :root {
@@ -20,9 +20,11 @@
     --text-dim: #b8aba3;
     --text-faint: #7d716b;
     --keyword: #ff5b5b;
-    --font-display: 'Cinzel', 'Times New Roman', serif;
-    --font-body: 'Inter', 'Segoe UI', system-ui, sans-serif;
-    --radius: 8px;
+    /* Tartarus Overlay's fonts, so the two cards read alike */
+    --font-display: 'Big Shoulders Stencil Display', 'Arial Narrow', Impact, sans-serif;
+    --font-body: 'Barlow Semi Condensed', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', ui-monospace, Consolas, monospace;
+    --radius: 6px;
     color-scheme: dark;
   }
 
@@ -47,11 +49,12 @@
     overflow: hidden;
   }
 
+  /* sizes as Tartarus Overlay's card, so the two look alike */
   .head {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 2px 3px 2px 8px;
+    gap: 8px;
+    padding: 5px 6px 5px 10px;
     border-bottom: 1px solid var(--iron);
     background: color-mix(in srgb, var(--bg-2) 90%, transparent);
     cursor: move;
@@ -59,13 +62,14 @@
 
   .brand {
     color: var(--gold);
-    font: 700 12px/1 var(--font-display);
+    font: 800 15px/1 var(--font-display);
     letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .sep {
     color: var(--iron-hi);
-    font-size: 12px;
+    font-size: 13px;
   }
 
   .status {
@@ -73,14 +77,9 @@
     min-width: 0;
     overflow: hidden;
     color: var(--text-dim);
-    font-size: 12px;
+    font: 500 11.5px/1.2 var(--font-mono);
     white-space: nowrap;
     text-overflow: ellipsis;
-  }
-
-  .folded .status {
-    color: var(--gold-hi);
-    font-weight: 600;
   }
 
   .head button {
@@ -103,13 +102,12 @@
     color: var(--gold-hi);
   }
 
-  .body { padding: 8px 10px 10px; }
+  .body { padding: 8px 10px 9px; }
 
   .eyebrow {
     margin: 0 0 2px;
     color: var(--gold);
-    font-size: 10.5px;
-    font-weight: 600;
+    font: 500 10.5px/1.2 var(--font-mono);
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -117,7 +115,7 @@
   .move {
     margin: 0 0 4px;
     color: var(--gold-hi);
-    font: 700 19px/1.2 var(--font-body);
+    font: 700 21px/1.15 var(--font-body);
     text-wrap: balance;
   }
 
@@ -194,8 +192,29 @@
     color: var(--gold-hi);
   }
 
+  /* folded to a thin bar: Tartarus Overlay's folded sizes */
   .folded .body { display: none; }
-  .folded .head { border-bottom: 0; }
+
+  .folded .head {
+    gap: 6px;
+    padding: 1px 2px 1px 7px;
+    border-bottom: 0;
+  }
+
+  .folded .brand { font-size: 12px; }
+
+  .folded .sep { font-size: 11px; }
+
+  .folded .status {
+    color: var(--gold-hi);
+    font: 600 12.5px/16px var(--font-body);
+  }
+
+  .folded .head button {
+    width: 16px;
+    height: 16px;
+    font-size: 12px;
+  }
 
   [hidden] { display: none !important; }
 </style>

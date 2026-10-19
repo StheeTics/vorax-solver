@@ -1,6 +1,6 @@
 import { Attribution } from '@/ui/Attribution'
 import { Footnote } from '@/ui/Footnote'
-import { SIMULATOR_URL, SOLVER_URL } from '@/ui/links'
+import { DOWNLOAD_URL, SIMULATOR_URL, SOLVER_URL } from '@/ui/links'
 import styles from './Landing.module.css'
 
 export function Landing() {
@@ -23,6 +23,9 @@ export function Landing() {
             <span className={styles.blurb}>Live advice for your real game, from a screenshot or by following your game.</span>
           </a>
           <p className={styles.note}>Read-only. It looks at your screen and log; it never clicks or types for you.</p>
+          <p className={styles.note}>
+            Windows: <a href={DOWNLOAD_URL}>Download Vorax Overlay</a>, the Solver as an app with its advice over the game. It finds the game and its log by itself.
+          </p>
         </div>
       </div>
       <footer className={styles.footer}>
