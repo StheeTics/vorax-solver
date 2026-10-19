@@ -58,9 +58,11 @@ interface Props {
   deps?: LiveDeps
   /** inside Vorax Overlay: the log comes from the app, and the game window is shared while the game runs */
   desktop?: DesktopBridge | null
+  /** whether the log looks off (no game lines since the window was shared), for the app's card */
+  onLogOff?(off: boolean): void
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge() }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onLogOff }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -136,6 +138,10 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
     const t = setTimeout(() => setNoLog(true), NO_LOG_MS)
     return () => clearTimeout(t)
   }, [share, status?.detailSeen])
+
+  const logOff = useRef(onLogOff)
+  logOff.current = onLogOff
+  useEffect(() => logOff.current?.(noLog), [noLog])
 
   const connect = async (get: () => Promise<FileLike>) => {
     setError('')

@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { LiveSource, type LiveDeps } from '@/solver/live/LiveSource'
 import type { LiveEvent } from '@/solver/live/liveLoop'
 
-function setup() {
+function setup(onLogOff?: (off: boolean) => void) {
   let emit: (e: LiveEvent) => void = () => {}
   let ended: () => void = () => {}
   const following = { stop: vi.fn(), snapNow: vi.fn(), cancel: vi.fn() }
@@ -17,7 +17,7 @@ function setup() {
     pickLog: vi.fn(async () => ({ getFile: async () => ({ size: 0, slice: () => ({ arrayBuffer: async () => new ArrayBuffer(0) }) }) })),
   }
   const onFrame = vi.fn()
-  render(<LiveSource onFrame={onFrame} deps={deps} />)
+  render(<LiveSource onFrame={onFrame} deps={deps} onLogOff={onLogOff} />)
   return { deps, onFrame, share, following, emit: (e: LiveEvent) => act(() => emit(e)), end: () => act(() => ended()) }
 }
 
@@ -67,6 +67,22 @@ it('warns when the log shows no game lines 30 s after sharing', async () => {
     t.emit({ type: 'status', detailSeen: false, refreshes: 0, over: false, lines: 10 })
     await act(async () => vi.advanceTimersByTime(30_000))
     expect(screen.getByText(/Enable Log looks off/)).toBeTruthy()
+  } finally {
+    vi.useRealTimers()
+  }
+})
+
+it('tells the page when the log looks off, and when lines arrive after all, so the app’s card can say it', async () => {
+  vi.useFakeTimers()
+  try {
+    const onLogOff = vi.fn()
+    const t = setup(onLogOff)
+    await connect()
+    t.emit({ type: 'status', detailSeen: false, refreshes: 0, over: false, lines: 10 })
+    await act(async () => vi.advanceTimersByTime(30_000))
+    expect(onLogOff).toHaveBeenLastCalledWith(true)
+    await act(async () => t.emit({ type: 'status', detailSeen: true, refreshes: 0, over: false, lines: 40 }))
+    expect(onLogOff).toHaveBeenLastCalledWith(false)
   } finally {
     vi.useRealTimers()
   }

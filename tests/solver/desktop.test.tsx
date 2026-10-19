@@ -90,6 +90,10 @@ describe('the overlay card', () => {
     expect(overlayAsk(0, { 'tank0.rarity': { sure: false }, instrument0: { sure: true } }, {})).toBeNull()
   })
 
+  it('says first when the game’s log is off: nothing works without it', () => {
+    expect(overlayAsk(1, {}, {}, true, true)).toBe('The game’s log is off, so the Solver can’t follow your game. In the game: Esc, Account Related, Enable Log, then log out and back in.')
+  })
+
   it('asks for the Intern Shelley level first, until the player picks it', () => {
     expect(overlayAsk(1, { 'tank1.activity': { sure: false } }, {}, true)).toBe('Which Intern Shelley level do you have? Pick it in the Solver: it sets your instrument refreshes.')
     expect(overlayAsk(0, {}, {}, false)).toBeNull()

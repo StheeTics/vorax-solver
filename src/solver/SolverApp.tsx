@@ -84,7 +84,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   })
   // inside Vorax Overlay, the card over the game shows the same advice, and the question about an
   // instrument, since the app keeps this window hidden
-  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley))
+  const [logOff, setLogOff] = useState(false)
+  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley, logOff))
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -208,7 +209,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} />
+            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onLogOff={setLogOff} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}
