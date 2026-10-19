@@ -1,7 +1,4 @@
 // The engine's odds, measured from live games (scripts/live/weights.ts writes this file).
-// 2026-10-18: set by hand from 14 captured games (127 potion deals, 47 instrument offers). Potions are weighted
-// by rarity (offered: Normal 37%, Magic 39%, Rare 21%); instruments in two tiers per pool, the strongest
-// offered about a third (basic) or a quarter (advanced) as often as the rest. Too few games for per-card odds.
 // Offer weights are relative: a card's chance is its weight over the pool's total.
 import type { Rarity } from '@/engine/types'
 
@@ -15,7 +12,7 @@ export interface LiveWeights {
 }
 
 export const LIVE_WEIGHTS: LiveWeights = {
-  updated: '2026-10-18',
+  updated: '2026-10-19',
   supremeChance: 0.013,
   potionOffer: {
     'Probiotic Enzyme Solution': 0.878,
@@ -24,23 +21,23 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Osteolytic Ointment': 0.878,
     'Cleansing Ointment': 0.878,
     'Fresh Spinal Powder': 0.878,
-    'Petrified Spinal Solution': 0.878,
-    'Viviparous Hormone': 1.0,
-    'Eggshell Powder': 1.0,
-    'Brain Fog Tincture': 1.0,
-    'Osteogenic Powder': 1.0,
-    'Gray Matter Spinal Solution': 1.0,
-    'Hollow Spinal Solution': 1.0,
-    'Green Bile Solution': 1.0,
-    'Compound Leech Solution': 1.0,
-    'Digestive Enzyme Solution': 1.0,
-    'Vivigenic Powder': 1.0,
-    'Potent Xenopurge Powder': 1.0,
-    'Xenopurge Powder': 1.0,
-    'Pure Leech Solution': 1.0,
-    'Bewitching Tincture': 1.0,
-    'Mutagenic Powder': 1.0,
-    'Viscous Bile Solution': 1.0,
+    'Petrified Spinal Solution': 1.6953731847348865,
+    'Viviparous Hormone': 1,
+    'Eggshell Powder': 1,
+    'Brain Fog Tincture': 1,
+    'Osteogenic Powder': 2,
+    'Gray Matter Spinal Solution': 1,
+    'Hollow Spinal Solution': 1,
+    'Green Bile Solution': 1,
+    'Compound Leech Solution': 1,
+    'Digestive Enzyme Solution': 1,
+    'Vivigenic Powder': 1,
+    'Potent Xenopurge Powder': 1,
+    'Xenopurge Powder': 1,
+    'Pure Leech Solution': 1,
+    'Bewitching Tincture': 1,
+    'Mutagenic Powder': 1,
+    'Viscous Bile Solution': 1,
     'Slender-Limb Powder - Pest': 1.538,
     'Twin Hormone - Pest': 1.538,
     'Spinal Solution - Agito': 1.538,
@@ -96,7 +93,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Incubation Sac': 0.33,
       'Hyperplastic Frontal Lobe': 0.33,
       'Hypertrophic Pituitary': 1,
-      'Adherent Metatarsals': 1,
+      'Adherent Metatarsals': 0.5,
       'Contracted Claws': 1,
       'Aberrant Sprout': 1,
       'Prismatic Liver': 1
@@ -108,7 +105,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Vermicular Spinal Cord': 1,
       'Rawhide Restraint': 1,
       'Black Goat Gut Suture': 1,
-      'Pig Iron Bone Saw': 0.25,
+      'Pig Iron Bone Saw': 0.5,
       'Two-Inch Skull Nail': 1,
       'Fouled Scraper': 1,
       'Canine Teeth File': 1,
@@ -122,9 +119,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
     }
   },
   spawnRarity: {
-    normal: 30,
+    normal: 53.38983050847458,
     magic: 40,
-    rare: 20,
-    boss: 10
+    rare: 11.864406779661017,
+    boss: 5
   }
 }
