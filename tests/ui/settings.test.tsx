@@ -32,3 +32,10 @@ it('main menu: Shelley level picker replaces the Settings button and shows the b
   expect(screen.getByText(/\+0 Surgical Instrument refreshes/)).toBeTruthy()
   expect(loadShelleyLevel()).toBe(1)
 })
+
+it('the compact picker (the Solver’s) says the bonus briefly, on the label’s own line', async () => {
+  const { ShelleyPicker } = await import('@/ui/ShelleyPicker')
+  render(<ShelleyPicker level={6} onChange={() => {}} compact />)
+  const label = screen.getByText('Intern Shelley level')
+  expect(label.textContent).toMatch(/^Intern Shelley level\s*\+2 refreshes$/)
+})

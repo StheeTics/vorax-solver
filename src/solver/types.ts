@@ -1,7 +1,8 @@
 import type { ScreenState } from '@/strategy/advisor'
 import { POTION_REFRESHES } from '@/data/shelley'
 
-export type Source = 'live' | 'screenshot' | 'manual'
+/** where the board comes from: the game, followed live; or a demo board opened by a link (never shared) */
+export type Source = 'live' | 'demo'
 
 /** 'round' | 'phase' | 'refreshes' | `tank${0-5}.${'empty'|'archetype'|'rarity'|'activity'|'quantity'}` | `hand${0-2}` | `instrument${0-2}` */
 export type FieldKey = string

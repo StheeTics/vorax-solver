@@ -50,24 +50,6 @@ const FOLDERS = [
   'D:\\SteamLibrary\\steamapps\\common\\Torchlight Infinite\\UE_game\\TorchLight\\Saved\\Logs',
 ]
 
-const RULES_KEY = 'vorax.liveRules'
-function loadRules(): TriggerRules {
-  try {
-    const t = JSON.parse(localStorage.getItem(RULES_KEY) ?? 'null') as { settleMs?: number; maxMs?: number } | null
-    return { ...DEFAULT_RULES, ...(t?.settleMs ? { settleMs: t.settleMs } : {}), ...(t?.maxMs ? { maxMs: t.maxMs } : {}) }
-  } catch {
-    return DEFAULT_RULES
-  }
-}
-function saveRules(r: TriggerRules | null) {
-  try {
-    if (r) localStorage.setItem(RULES_KEY, JSON.stringify({ settleMs: r.settleMs, maxMs: r.maxMs }))
-    else localStorage.removeItem(RULES_KEY)
-  } catch {
-    // not remembered
-  }
-}
-
 const NO_LOG_MS = 30_000
 
 interface Props {
@@ -85,7 +67,7 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
   const [status, setStatus] = useState<Extract<LiveEvent, { type: 'status' }> | null>(null)
   const [frames, setFrames] = useState(0)
   const [noLog, setNoLog] = useState(false)
-  const [rules, setRules] = useState(loadRules)
+  const rules = DEFAULT_RULES
   const [dir, setDir] = useState<FileSystemDirectoryHandle | null>(null)
   const [saved, setSaved] = useState(0)
   const [tickError, setTickError] = useState('')
@@ -225,11 +207,6 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
       if ((err as Error).name !== 'AbortError') setError(String(err))
     }
   }
-  const changeRules = (patch: Partial<TriggerRules>) => {
-    const next = { ...rules, ...patch }
-    setRules(next)
-    saveRules(next)
-  }
 
   const step = !log ? 1 : !share ? 2 : 3
 
@@ -318,12 +295,6 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
         </div>
       )}
 
-      <details className={styles.small}>
-        <summary>Triggers (testing)</summary>
-        <label>Quiet before a picture (ms) <input type="number" min={100} max={5000} value={rules.settleMs} onChange={e => changeRules({ settleMs: Number(e.target.value) || DEFAULT_RULES.settleMs })} /></label>{' '}
-        <label>Longest wait (ms) <input type="number" min={500} max={10000} value={rules.maxMs} onChange={e => changeRules({ maxMs: Number(e.target.value) || DEFAULT_RULES.maxMs })} /></label>{' '}
-        <button type="button" className="ghost-button" onClick={() => (setRules(DEFAULT_RULES), saveRules(null))}>Reset</button>
-      </details>
     </section>
   )
 }

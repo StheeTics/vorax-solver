@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ScreenState } from '@/strategy/advisor'
 import { Attribution } from '@/ui/Attribution'
 import { Footnote } from '@/ui/Footnote'
-import { DOWNLOAD_URL, HOME_URL } from '@/ui/links'
+import { DOWNLOAD_URL, HOME_URL, SOLVER_URL } from '@/ui/links'
 import { loadShelleyLevel, saveShelleyLevel } from '@/ui/settingsStore'
 import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
@@ -10,7 +10,6 @@ import { desktopBridge, useOverlay } from './desktop/bridge'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
-import { ScreenshotSource } from './screenshot/ScreenshotSource'
 import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
 import { useShare } from './share/useShare'
@@ -20,7 +19,7 @@ import { loadLocalRefs } from './scan/localRefs'
 import { newTracker, trackInstruments, type PickQuestion } from './track'
 import type { LocalRefs } from './scan/scan'
 import { useScan, type Scanner } from './scan/useScan'
-import { loadSource, saveSource } from './sourceStore'
+import { boardFromLink, demoPick } from './boardLink'
 import { emptyState, liveSupported, type FieldKey, type FieldRead, type Reading, type Source } from './types'
 import styles from './SolverApp.module.css'
 
@@ -41,15 +40,13 @@ type Keep = (value: unknown, what?: 'reading' | 'advice' | 'pick') => void
 
 let askId = 0
 
-const SOURCES: { id: Source; label: string }[] = [
-  { id: 'live', label: 'Live' },
-  { id: 'screenshot', label: 'Screenshot' },
-  { id: 'manual', label: 'Manual' },
-]
 
 export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
-  const [source, setSource] = useState(loadSource)
-  const [state, setState] = useState<ScreenState>(emptyState)
+  // a board link (?board=… or ?demo) opens a demo on that board: it's changed by hand under Board state, and
+  // never shared
+  const [linked] = useState(() => (typeof location === 'undefined' ? null : boardFromLink(location.search)))
+  const source: Source = linked ? 'demo' : 'live'
+  const [state, setState] = useState<ScreenState>(() => linked ?? emptyState())
   const [fields, setFields] = useState<Record<FieldKey, FieldRead>>({})
   const [shelley, setShelley] = useState(loadShelleyLevel)
   const [frame, setFrame] = useState<ImageData | null>(null)
@@ -74,7 +71,11 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   // instruments are remembered through a game rather than re-read from their small icons each time
   const tracker = useRef(newTracker())
   // picks the tracker can't place wait here for the player's answers, oldest first; a new one never replaces one
-  const [pickAsks, setPickAsks] = useState<{ id: number; question: PickQuestion; count: number; frame: ImageData; keep?: Keep }[]>([])
+  // ?demo=pick opens with the question asked about an instrument whose icon the Solver hasn't seen
+  const [pickAsks, setPickAsks] = useState<{ id: number; question: PickQuestion; count: number; frame: ImageData; keep?: Keep }[]>(() => {
+    const ask = linked && typeof location !== 'undefined' ? demoPick(location.search) : null
+    return ask ? [{ id: ++askId, ...ask }] : []
+  })
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -130,13 +131,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     setState(s => ({ ...s, instruments: owned }))
     setFields(f => ({ ...f, [`instrument${question.slot}`]: { sure: true, guess: name } }))
     keep?.({ picked: name, slot: question.slot, offer: question.offer }, 'pick')
-    setLocal(await loadLocalRefs())
+    if (!linked) setLocal(await loadLocalRefs())
   }
 
-  const pick = (s: Source) => {
-    setSource(s)
-    saveSource(s)
-  }
   const edit = (next: ScreenState, field: FieldKey) => {
     setState(next)
     if (reading) setCorrections(c => ({ ...c, [field]: valueOf(next, field) }))
@@ -164,36 +161,37 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             <li>Sees only the one window you share, and only when the log shows a move or you press Snap now.</li>
             <li>Pictures stay in this browser and are gone when you close the tab.</li>
             <li>Never clicks or types for you.</li>
-            <li>Shares the boards it reads (tanks, cards offered, instruments, round), with no picture, no account and nothing about you. Turn it off with the switch under the advice.</li>
+            <li>Shares the boards it reads (tanks, cards offered, instruments, round), with no picture, no account and nothing about you. Turn it off with the switch beside Board state.</li>
             <li>When you say which instrument you picked, shares that name and the icon's small grey pattern, never a screenshot.</li>
           </ul>
           <Attribution />
         </details>
       </header>
       <aside className={styles.wip} role="note" aria-label="Work in progress">
-        <strong>Work in progress.</strong> The odds behind the advice are still being tuned from live games, and some
-        instruments aren't known to the Solver yet. Every game you play with it, with sharing on, helps improve it.
+        <strong>Work in progress:</strong> the odds are still being tuned from live games, and some instruments aren’t known yet.
+        Playing with sharing on helps improve it.
       </aside>
 
-      <div className={styles.sourceBar}>
-        <div className={styles.sources} role="radiogroup" aria-label="Where the board comes from">
-          {SOURCES.map(s => (
-            <label key={s.id} className={styles.source} data-on={source === s.id}>
-              <input type="radio" name="source" value={s.id} checked={source === s.id} disabled={s.id === 'live' && !canLive} onChange={() => pick(s.id)} />
-              {s.label}
-            </label>
-          ))}
-        </div>
-        {!desktopBridge() && (
-          <a className={styles.appTab} href={DOWNLOAD_URL} title="Vorax Overlay: the Solver as a Windows app, with its advice over the game. Finds the game and its log by itself.">
-            <span aria-hidden="true">⤓</span>Windows App (Best Experience)
-          </a>
-        )}
-      </div>
-      {!canLive && <p className={styles.note}>Live needs Chrome or Edge on a PC. Screenshot and Manual work here.</p>}
-
-      {source === 'live' && canLive && <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} />}
-      {source === 'screenshot' && <ScreenshotSource onFrame={img => void onFrame(img)} />}
+      {linked ? (
+        <p className={styles.demo} role="note" aria-label="Demo board">
+          <strong>Demo board:</strong> change anything under Board state and the advice follows. <a href={SOLVER_URL}>Follow your own game</a>
+        </p>
+      ) : (
+        <>
+          {!desktopBridge() && (
+            <div className={styles.sourceBar}>
+              <a className={styles.appTab} href={DOWNLOAD_URL} title="Vorax Overlay: the Solver as a Windows app, with its advice over the game. Finds the game and its log by itself.">
+                <span aria-hidden="true">⤓</span>Windows App (Best Experience)
+              </a>
+            </div>
+          )}
+          {canLive ? (
+            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} />
+          ) : (
+            <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
+          )}
+        </>
+      )}
       {reading$ && <p className={styles.note}>Reading the picture…</p>}
       {reading?.problems.some(p => p.kind === 'notFound') && (
         <p className={styles.warn}>That doesn’t look like the Surgical Preparation screen.</p>
@@ -210,7 +208,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
 
       <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} />
       {pickAsks.map(a => (
-        <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} />
+        <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} learn={!linked} />
       ))}
       {unknownCards.length > 0 && (
         <p className={styles.unknownCard} role="status">
@@ -218,9 +216,11 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
           <a href="#report">Report it</a> so {unknownCards.length > 1 ? 'they' : 'it'} can be added.
         </p>
       )}
-      <ShareSwitch />
 
-      <h2 className={styles.checkTitle}>What it read</h2>
+      <div className={styles.checkHead}>
+        <h2 className={styles.checkTitle}>Board state</h2>
+        <ShareSwitch />
+      </div>
       <p className={styles.note}>If something here doesn’t match the game, correct it and the advice above follows.</p>
       <BoardPanel state={state} fields={fields} onChange={edit} shelley={shelley} onShelley={changeShelley} />
       <div id="report">

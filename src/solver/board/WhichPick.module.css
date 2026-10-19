@@ -15,3 +15,29 @@
 .why {
   color: var(--text);
 }
+
+/* the instruments that were on offer, side by side */
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.choice {
+  padding: 7px 14px;
+  font-size: 15px;
+}
+
+.choice:hover,
+.choice:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold-hi);
+}
+
+/* skipping: last in the row, quieter than an answer */
+.skip {
+  margin-left: 8px;
+  border-color: transparent;
+  color: var(--text-faint);
+}

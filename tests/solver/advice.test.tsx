@@ -23,11 +23,16 @@ it('runAdvice gives potions only the look-ahead answer, no quick answer first', 
   expect(fake.mock.calls[0][3]).toBe(true)
 })
 
-it('look-ahead choices show the predicted end of the run and how often it reached 950,000', () => {
-  const ahead: Advice = { ...advice({ index: 0, targets: [], value: 950_000, end: { activity: 900_000, reached: 0.4 } }), plan: true }
+it('no list of choices: the move sits between the tanks and the cards, where the eye goes', () => {
+  const ahead: Advice = { ...advice({ index: 0, targets: [1], value: 950_000, end: { activity: 900_000, reached: 0.4 } }), plan: true }
   render(<AdvicePanel advice={ahead} updating={false} state={state} />)
-  expect(screen.getByRole('list', { name: 'Choices' }).textContent).toMatch(/900,000.*40% rainbow/)
-  expect(screen.getByText(/end of the run/)).toBeTruthy()
+  expect(screen.queryByRole('list', { name: 'Choices' })).toBeNull()
+  expect(screen.queryByText(/played to the end of the run|Values are/)).toBeNull()
+  const tanks = screen.getByRole('list', { name: 'Tanks' })
+  const move = screen.getByRole('heading', { level: 2 })
+  const cards = screen.getByRole('list', { name: 'Cards on offer' })
+  expect(tanks.compareDocumentPosition(move) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  expect(move.compareDocumentPosition(cards) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
 })
 
 it('panel headline names the card and tanks', () => {
@@ -100,14 +105,13 @@ it('advice for an older board is only ever shown with that board, never paired w
 describe('an instrument whose panel icon hasn’t been seen yet', () => {
   const offer: ScreenState = { ...emptyState(), phase: 'instrument', hand: ['Nettle Toggle', 'Rawhide Restraint', 'Clustered Eggs'] }
   const ranked: Advice = { best: { index: 1, targets: [], value: 30 }, ranking: [1, 0, 2].map((index, i) => ({ index, targets: [], value: 30 - i })), board: 0, plan: false, final: true, ms: 1, unknown: [] }
-  it('is marked in the list of choices, saying that picking it teaches the Solver', () => {
+  it('is named under the cards, saying that picking it teaches the Solver', () => {
     render(<AdvicePanel advice={ranked} updating={false} state={offer} iconsKnown={['Rawhide Restraint']} />)
-    const items = [...screen.getByRole('list', { name: 'Choices' }).querySelectorAll(':scope > li')].map(li => li.textContent)
-    expect(items[0]).toMatch(/^Take Rawhide Restraint/)
-    expect(items[0]).not.toMatch(/teaches/)
-    expect(items[1]).toMatch(/Take Nettle Toggle.*Unknown icon: picking it teaches the Solver/)
-    expect(items[2]).toMatch(/Take Clustered Eggs.*Unknown icon: picking it teaches the Solver/)
+    const note = screen.getByText(/teaches the Solver/)
+    expect(note.textContent).toMatch(/Nettle Toggle.*Clustered Eggs/)
+    expect(note.textContent).not.toMatch(/Rawhide/)
   })
+
   it('isn’t marked once its icon is known, or when the known icons aren’t', () => {
     const { unmount } = render(<AdvicePanel advice={ranked} updating={false} state={offer} iconsKnown={offer.hand} />)
     expect(screen.queryByText(/teaches the Solver/)).toBeNull()
@@ -117,12 +121,6 @@ describe('an instrument whose panel icon hasn’t been seen yet', () => {
   })
 })
 
-it('shows only the top 3 choices', () => {
-  const hand = ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture', 'Xeno-Hormone', 'Eggshell Powder']
-  const many: Advice = { best: { index: 0, targets: [], value: 9 }, ranking: hand.map((_, i) => ({ index: i, targets: [], value: 9 - i })), board: 0, plan: false, final: true, ms: 1, unknown: [] }
-  render(<AdvicePanel advice={many} updating={false} state={{ ...emptyState(), hand }} />)
-  expect([...screen.getByRole('list', { name: 'Choices' }).querySelectorAll(':scope > li')].map(li => li.textContent)).toEqual(['Play Mutagenic Powder9', 'Play Green Bile Solution8', 'Play Bewitching Tincture7'])
-})
 
 describe('the pick, shown as the hand', () => {
   const hand = ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture']
@@ -160,4 +158,13 @@ describe('the pick, shown as the hand', () => {
     expect(screen.queryByRole('list', { name: 'Tanks' })).toBeNull()
     expect(screen.getByRole('list', { name: 'Cards on offer' })).toBeTruthy()
   })
+})
+
+it('opens with where you are: the round, what you’re choosing, and the refreshes left', () => {
+  const s: ScreenState = { ...state, round: 4, potionRefreshes: 2 }
+  render(<AdvicePanel advice={advice({ index: 0, targets: [], value: 5 })} updating={false} state={s} />)
+  const head = screen.getByRole('group', { name: 'This board' })
+  expect(head.textContent).toMatch(/Round 4/)
+  expect(head.textContent).toMatch(/choose a potion/)
+  expect(head.textContent).toMatch(/2 refreshes left/)
 })

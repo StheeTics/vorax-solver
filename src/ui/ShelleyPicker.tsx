@@ -4,9 +4,10 @@ import styles from './ShelleyPicker.module.css'
 /** compact: a smaller, left-aligned picker for a form, with the refresh bonus beside its label. */
 export function ShelleyPicker({ level, onChange, compact = false }: { level: number; onChange(level: number): void; compact?: boolean }) {
   const bonus = instrumentRefreshesFor(level)
+  // compact, beside the label, it's said briefly so it fits on that line
   const note = (
     <span className={styles.note}>
-      +{bonus} Surgical Instrument refresh{bonus === 1 ? '' : 'es'}
+      +{bonus} {compact ? '' : 'Surgical Instrument '}refresh{bonus === 1 ? '' : 'es'}
     </span>
   )
   return (

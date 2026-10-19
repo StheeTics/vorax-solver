@@ -28,7 +28,8 @@ function look(name: string, phase: ScreenState['phase']): { card?: Card; frame: 
 /** Degrees of tilt per step from the middle of the hand, as the game fans its cards. */
 const FAN_TILT = 3
 
-export function PickHand({ pick, state }: { pick: Ranked | null; state: ScreenState }) {
+/** children: what to do, shown between the tanks and the cards (the eye goes from the board to the hand) */
+export function PickHand({ pick, state, children }: { pick: Ranked | null; state: ScreenState; children?: React.ReactNode }) {
   const targets = pick?.targets ?? []
   return (
     <div className={styles.stage}>
@@ -58,6 +59,7 @@ export function PickHand({ pick, state }: { pick: Ranked | null; state: ScreenSt
           })}
         </ol>
       )}
+      {children}
       <ol className={styles.hand} aria-label="Cards on offer">
         {state.hand.map((name, i) => {
           const { card, frame } = look(name, state.phase)

@@ -3,10 +3,18 @@ import { Landing } from '@/landing/Landing'
 import { MainMenu } from '@/ui/MainMenu'
 import { HOME_URL, TARTARUS_URL } from '@/ui/links'
 
-it('landing links to the simulator and the solver', () => {
+it('landing links to the simulator and to the solver in the browser', () => {
   render(<Landing />)
-  expect(screen.getByRole('link', { name: /^simulator/i }).getAttribute('href')).toMatch(/simulator\.html$/)
-  expect(screen.getByRole('link', { name: /^solver/i }).getAttribute('href')).toMatch(/solver\.html$/)
+  expect(screen.getByRole('link', { name: 'Open the Simulator' }).getAttribute('href')).toMatch(/simulator\.html$/)
+  expect(screen.getByRole('link', { name: 'Open the Solver' }).getAttribute('href')).toMatch(/solver\.html$/)
+})
+
+it('opening the Solver is the main action, and the steps to use it come in order', () => {
+  render(<Landing />)
+  expect(screen.getByRole('link', { name: 'Open the Solver' }).className).toMatch(/primary/)
+  const steps = screen.getByRole('list', { name: 'How the Solver works' })
+  expect(steps.tagName).toBe('OL')
+  expect(steps.textContent).toMatch(/Enable Log.*connect your game.*Play/s)
 })
 
 it('landing shows the read-only line', () => {
@@ -25,10 +33,7 @@ it('main menu links home', () => {
   expect(screen.getByRole('link', { name: /home/i }).getAttribute('href')).toBe(HOME_URL)
 })
 
-it('offers the Windows app, on its newest release page on GitHub', async () => {
-  const { DOWNLOAD_URL } = await import('@/ui/links')
+it('doesn’t push the Windows app download from the landing page (the Solver page offers it)', () => {
   render(<Landing />)
-  const link = screen.getByRole('link', { name: /Download Vorax Overlay/ })
-  expect(link.getAttribute('href')).toBe(DOWNLOAD_URL)
-  expect(DOWNLOAD_URL).toBe('https://github.com/tidewarden/tli-vorax-simulator/releases/latest')
+  expect(screen.queryByRole('link', { name: /Download/ })).toBeNull()
 })

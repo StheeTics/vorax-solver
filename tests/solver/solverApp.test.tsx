@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 import { SolverApp } from '@/solver/SolverApp'
 import { HOME_URL } from '@/ui/links'
 
@@ -10,16 +10,16 @@ it('has a home link, the privacy panel and the attribution', () => {
   expect(screen.getByRole('link', { name: 'Tartarus Simulator' })).toBeTruthy()
 })
 
-it('Live is disabled with a note where the browser lacks support', () => {
+it('where Live can’t run, it says so and points to the Windows app', () => {
   render(<SolverApp />)
-  expect((screen.getByRole('radio', { name: 'Live' }) as HTMLInputElement).disabled).toBe(true)
-  expect(screen.getByText('Live needs Chrome or Edge on a PC. Screenshot and Manual work here.')).toBeTruthy()
+  expect(screen.getByText(/Live needs Chrome or Edge on a PC/)).toBeTruthy()
+  expect(screen.getAllByRole('link', { name: /Windows App/ }).length).toBeGreaterThan(0)
 })
 
-it('switching source is remembered', () => {
+it('there is only Live: no Screenshot or Manual mode to choose', () => {
   render(<SolverApp />)
-  fireEvent.click(screen.getByRole('radio', { name: 'Screenshot' }))
-  expect(localStorage.getItem('vorax.solverSource')).toBe('screenshot')
+  expect(screen.queryByRole('radiogroup', { name: 'Where the board comes from' })).toBeNull()
+  expect(screen.queryByText('Screenshot')).toBeNull()
 })
 
 it('says plainly that it is a work in progress that playing helps improve', () => {
@@ -37,7 +37,7 @@ it('puts the advice first and the board to correct below it', () => {
   const advice = screen.getByRole('region', { name: 'Advice' })
   const board = screen.getByLabelText('Round')
   expect(advice.compareDocumentPosition(board) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
-  expect(screen.getByRole('heading', { name: /What it read/ })).toBeTruthy()
+  expect(screen.getByRole('heading', { name: /Board state/ })).toBeTruthy()
 })
 
 it('links the Windows app from the Solver, but not inside the app', () => {
@@ -51,5 +51,34 @@ it('links the Windows app from the Solver, but not inside the app', () => {
     expect(screen.queryByRole('link', { name: /Windows App \(Best Experience\)/ })).toBeNull()
   } finally {
     delete w.VoraxDesktop
+  }
+})
+
+
+it('a board link opens the Solver on that board (the demo)', async () => {
+  window.history.pushState({}, '', '/solver.html?demo')
+  try {
+    render(<SolverApp />)
+    expect(screen.getByRole('note', { name: 'Demo board' }).textContent).toMatch(/change anything/i)
+    expect((screen.getAllByRole('combobox').find(s => (s as HTMLSelectElement).value === 'Mutagenic Powder'))).toBeTruthy()
+  } finally {
+    window.history.pushState({}, '', '/')
+  }
+})
+
+it('?demo=pick shows the “Which instrument did you pick?” question; answering fills the board and teaches nothing', async () => {
+  const { fireEvent } = await import('@testing-library/react')
+  window.history.pushState({}, '', '/solver.html?demo=pick')
+  const fetch = vi.spyOn(globalThis, 'fetch')
+  try {
+    render(<SolverApp />)
+    const ask = screen.getByRole('group', { name: 'Which instrument did you pick?' })
+    fireEvent.click(within(ask).getByRole('button', { name: 'Two-Inch Skull Nail' }))
+    await screen.findByDisplayValue('Two-Inch Skull Nail')
+    expect(screen.queryByRole('group', { name: 'Which instrument did you pick?' })).toBeNull()
+    expect(fetch).not.toHaveBeenCalled()
+  } finally {
+    fetch.mockRestore()
+    window.history.pushState({}, '', '/')
   }
 })

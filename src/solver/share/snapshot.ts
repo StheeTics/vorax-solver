@@ -14,7 +14,7 @@ export interface Snapshot {
   run: string
   seq: number
   app: string
-  source: 'live' | 'screenshot'
+  source: 'live'
   trigger: string
   round: number
   phase: 'potion' | 'instrument' | 'protocol'
@@ -36,7 +36,7 @@ export function sharedAdvice(shown: Shown | null): SharedAdvice | undefined {
 
 /** Only boards the reader was sure of, or the player corrected, from a real screen. */
 export function shareable(r: Reading, source: Source, corrected: FieldKey[]): boolean {
-  if (source === 'manual' || r.problems.some(p => p.kind === 'notFound' || p.kind === 'unknownArt')) return false
+  if (source === 'demo' || r.problems.some(p => p.kind === 'notFound' || p.kind === 'unknownArt')) return false
   return Object.entries(r.fields).every(([k, f]) => f.sure || corrected.includes(k))
 }
 
@@ -46,7 +46,7 @@ export const isFinalBoard = (r: Reading) => r.state.phase === 'protocol' && r.st
 
 export const startsRun = (r: Reading, trigger: string) => trigger === 'screen' || (r.state.phase === 'instrument' && r.state.round === 1)
 
-export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live' | 'screenshot'; trigger: string; shelley: number; corrected: FieldKey[]; advice?: SharedAdvice }): Snapshot {
+export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; advice?: SharedAdvice }): Snapshot {
   const s = r.state
   return {
     uid: crypto.randomUUID(),

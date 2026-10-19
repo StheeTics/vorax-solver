@@ -16,11 +16,13 @@ interface Props {
   frame: ImageData
   onPicked(name: string): void
   onSkip(): void
+  /** false on the demo page: the answer is only shown, not learned or shared */
+  learn?: boolean
 }
 
 /** A pick the Solver can't place (an offer with an instrument whose icon it hasn't seen): the player says
  *  which it was, this browser remembers that icon, and (with sharing on) it's shared for the built-in data. */
-export function WhichPick({ question, count, frame, onPicked, onSkip }: Props) {
+export function WhichPick({ question, count, frame, onPicked, onSkip, learn = true }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null)
   // the panel fills from the right, newest on the right
   const rect = layout(frame).instrumentIcon[count - 1 - question.slot]
@@ -35,7 +37,7 @@ export function WhichPick({ question, count, frame, onPicked, onSkip }: Props) {
   }, [frame, rect])
 
   const choose = async (name: string) => {
-    if (rect) {
+    if (rect && learn) {
       const pattern = iconPattern(frame, rect)
       await addLocalRef(`icon:${name}`, pattern as unknown as ArtFeature)
       void shareIcon(name, pattern)
@@ -49,11 +51,13 @@ export function WhichPick({ question, count, frame, onPicked, onSkip }: Props) {
       <div className={styles.pick}>
         <span className={own.question}>Which instrument did you pick?</span>
         <span className={own.why}>The Solver hasn't seen this icon yet. Your answer teaches it.</span>
-        {question.offer.map(n => (
-          <button key={n} type="button" onClick={() => void choose(n)}>{n}</button>
-        ))}
+        <div className={own.choices}>
+          {question.offer.map(n => (
+            <button key={n} type="button" className={`ghost-button ${own.choice}`} onClick={() => void choose(n)}>{n}</button>
+          ))}
+          <button type="button" className={`ghost-button ${own.choice} ${own.skip}`} onClick={onSkip}>Skip</button>
+        </div>
       </div>
-      <button type="button" className="ghost-button" onClick={onSkip}>Skip</button>
     </div>
   )
 }

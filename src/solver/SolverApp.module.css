@@ -25,7 +25,6 @@
   gap: 12px 20px;
 }
 
-
 .home {
   display: grid;
   place-items: center;
@@ -72,17 +71,12 @@
   overflow: hidden;
 }
 
-.sources {
-  display: flex;
-}
-
 /* the Windows app's download, the bar's last segment */
 .appTab {
   display: flex;
   align-items: center;
   gap: 6px;
   padding: 8px 18px;
-  border-left: 1px solid var(--gold-lo);
   background: color-mix(in srgb, var(--gold) 12%, transparent);
   color: var(--gold-hi);
   font-weight: 600;
@@ -95,43 +89,12 @@
   outline: none;
 }
 
-.source {
-  display: flex;
-  align-items: center;
-  padding: 8px 18px;
-  cursor: pointer;
-  color: var(--text-dim);
-  font-weight: 600;
-}
-
-.source input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.source[data-on='true'] {
-  background: linear-gradient(180deg, var(--gold), var(--gold-lo));
-  color: #1a0c04;
-}
-
-.source:has(input:disabled) {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.source:has(input:focus-visible) {
-  outline: 2px solid var(--gold-hi);
-  outline-offset: -2px;
-}
-
 .wip {
-  padding: 10px 14px;
-  border: 1px solid var(--keyword);
-  border-left-width: 4px;
-  border-radius: 6px;
-  background: color-mix(in srgb, var(--keyword) 10%, transparent);
-  color: var(--text);
+  margin: -4px 0 0;
+  padding-left: 10px;
+  border-left: 3px solid var(--keyword);
+  color: var(--text-dim);
+  font-size: 13.5px;
   line-height: 1.45;
 }
 
@@ -154,8 +117,17 @@
   font-weight: 700;
 }
 
-.checkTitle {
+.checkHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
   margin: 12px 0 0;
+}
+
+.checkTitle {
+  margin: 0;
   color: var(--text-dim);
   font-size: 20px;
 }
@@ -205,4 +177,23 @@
   font-size: 13px;
   text-decoration: underline;
   cursor: pointer;
+}
+
+/* a demo board, opened by a link */
+.demo {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--gold-lo);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--gold) 8%, transparent);
+  color: var(--text-dim);
+}
+
+.demo strong {
+  color: var(--gold-hi);
+}
+
+.demo a {
+  margin-left: 6px;
+  color: var(--gold);
 }

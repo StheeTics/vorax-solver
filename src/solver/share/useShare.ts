@@ -31,10 +31,10 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
   const release = () => {
     const h = held.current
     held.current = null
-    if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source, h.corrected) || h.source === 'manual') return
+    if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source, h.corrected) || h.source === 'demo') return
     const trigger = h.reading.frame?.trigger ?? 'screenshot'
     if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
-    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: h.source, trigger, shelley, corrected: h.corrected, advice: h.advice }))
+    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, advice: h.advice }))
   }
 
   useEffect(() => {

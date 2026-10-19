@@ -14,11 +14,11 @@ const ctx = { run: 'r1', seq: 2, app: 'abc', source: 'live' as const, trigger: '
 
 describe('what is shared', () => {
   it('never Manual boards, never unsure ones, and corrected ones count as sure', () => {
-    expect(shareable(reading, 'manual', [])).toBe(false)
+    expect(shareable(reading, 'demo', [])).toBe(false)
     expect(shareable(reading, 'live', [])).toBe(true)
     const unsure = { ...reading, fields: { ...reading.fields, hand0: { sure: false } } }
     expect(shareable(unsure, 'live', [])).toBe(false)
-    expect(shareable(unsure, 'screenshot', ['hand0'])).toBe(true)
+    expect(shareable(unsure, 'live', ['hand0'])).toBe(true)
     expect(shareable({ ...reading, problems: [{ kind: 'notFound' }] }, 'live', [])).toBe(false)
   })
 
