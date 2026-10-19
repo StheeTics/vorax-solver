@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs'
 
-it('the live-data workflow pulls, proposes weights, tests, then commits, every 15 minutes', () => {
+it('the live-data workflow pulls, applies the odds, tests, then commits, every hour', () => {
   const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
-  expect(t).toContain("cron: '*/15 * * * *'")
+  expect(t).toContain("cron: '17 * * * *'")
   const order = ['cron:', 'contents: write', 'scripts/live/pull.ts', 'scripts/live/weights.ts', 'npm test', 'git commit']
   let at = -1
   for (const s of order) {
@@ -18,10 +18,13 @@ it('it does nothing harmful before the collector exists', () => {
   expect(t).toMatch(/if: \$\{\{ vars\.LIVE_DATA_URL != '' \}\}/)
 })
 
-it('only proposes weight changes, and never deploys: the data is reviewed before the odds change', () => {
+it('applies the odds changes the data supports (the guards are in propose.ts), and new odds go out through the strengths workflow', () => {
   const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
-  expect(t).toContain('scripts/live/weights.ts --propose')
-  expect(t).not.toContain('git add data/live src/data/liveWeights.ts')
+  expect(t).toContain('npx vite-node scripts/live/weights.ts | tee weights.txt')
+  expect(t).not.toContain('scripts/live/weights.ts --propose')
+  expect(t).toContain('git add data/live src/data/liveWeights.ts')
+  // the strengths are re-measured under the new odds before the site redeploys
+  expect(t).toContain('gh workflow run strengths.yml')
   expect(t).not.toContain('gh workflow run deploy.yml')
 })
 
