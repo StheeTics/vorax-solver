@@ -42,13 +42,13 @@ it('puts the advice first and the board to correct below it', () => {
 
 it('links the Windows app from the Solver, but not inside the app', () => {
   const { unmount } = render(<SolverApp />)
-  expect(screen.getByRole('link', { name: /Windows app/ })).toBeTruthy()
+  expect(screen.getByRole('link', { name: /Windows App \(Best Experience\)/ })).toBeTruthy()
   unmount()
   const w = window as unknown as { VoraxDesktop?: unknown }
   w.VoraxDesktop = { logSize: async () => null, readLog: async () => new ArrayBuffer(0), onGame: () => {}, onSnap: () => {}, showAdvice: () => {} }
   try {
     render(<SolverApp />)
-    expect(screen.queryByRole('link', { name: /Windows app/ })).toBeNull()
+    expect(screen.queryByRole('link', { name: /Windows App \(Best Experience\)/ })).toBeNull()
   } finally {
     delete w.VoraxDesktop
   }
