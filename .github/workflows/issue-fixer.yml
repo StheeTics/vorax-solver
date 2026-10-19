@@ -119,9 +119,19 @@ jobs:
         run: |
           [ -f "$OUT" ] && jq -r '.[] | select(.type == "result") | (.result // .subtype)' "$OUT" | head -c 600 || echo "No output file."
 
+      - name: If Claude couldn't run, leave the issue to be tried again next hour
+        if: steps.pick.outputs.number && steps.claude.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          N: ${{ steps.pick.outputs.number }}
+        run: |
+          gh issue edit "$N" -R "$REPO" --remove-label checked-by-claude
+          exit 1
+
       - name: Check the fix (no tokens here)
         id: check
-        if: steps.pick.outputs.number
+        if: steps.pick.outputs.number && steps.claude.outcome == 'success'
         env:
           REPO: ${{ github.repository }}
         run: |
@@ -149,7 +159,7 @@ jobs:
           if [ $before -ne 0 ] && [ $after -eq 0 ]; then echo "ok=yes" >> "$GITHUB_OUTPUT"; else echo "ok=no" >> "$GITHUB_OUTPUT"; fi
 
       - name: Open a pull request, or comment with what was found
-        if: steps.pick.outputs.number
+        if: steps.pick.outputs.number && steps.claude.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
