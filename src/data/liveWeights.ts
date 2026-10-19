@@ -95,7 +95,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Hypertrophic Pituitary': 1,
       'Adherent Metatarsals': 0.5,
       'Contracted Claws': 1,
-      'Aberrant Sprout': 1,
+      'Aberrant Sprout': 0.5887867647058823,
       'Prismatic Liver': 0.5146875
     },
     advanced: {
