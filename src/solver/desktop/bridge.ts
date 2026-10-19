@@ -19,6 +19,8 @@ export interface DesktopBridge {
   /** the app's "take a picture now" hotkey */
   onSnap(cb: () => void): void
   showAdvice(card: OverlayCard): void
+  /** brings the app's hidden Solver window up, to ask the player something (apps from 0.1.5 on) */
+  showSolver?(): void
   /** the game window's outer size, the picture's, and the display scaling (apps from 0.1.4 on) */
   gameWindow?(): Promise<GameWindow | null>
 }

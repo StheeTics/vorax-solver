@@ -12,10 +12,13 @@ export function loadShelleyLevel(): number {
   }
 }
 
-/** Whether the player has picked their Intern Shelley level (until then the default stands in for it). */
+const ASKED = 'vorax.shelleyAsked'
+
+/** Whether the player has answered "Which Intern Shelley level do you have?". Everyone is asked once, those
+ *  with a level saved from before too: it used to default to 6 without a word. */
 export function shelleyChosen(): boolean {
   try {
-    return (SHELLEY_LEVELS as readonly number[]).includes(Number(localStorage.getItem(KEY)))
+    return localStorage.getItem(ASKED) === '1'
   } catch {
     return false
   }
@@ -24,6 +27,7 @@ export function shelleyChosen(): boolean {
 export function saveShelleyLevel(level: number): void {
   try {
     localStorage.setItem(KEY, String(level))
+    localStorage.setItem(ASKED, '1')
   } catch {
     // Storage unavailable (private window etc.) — the level just won't persist.
   }

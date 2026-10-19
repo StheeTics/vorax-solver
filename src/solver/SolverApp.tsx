@@ -53,6 +53,10 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [shelley, setShelley] = useState(loadShelleyLevel)
   // until the player picks their level, the default stands in for it and they're asked (a demo board brings its own)
   const [askShelley, setAskShelley] = useState(() => !linked && !shelleyChosen())
+  // in the app the Solver window is hidden: it comes up to ask
+  useEffect(() => {
+    if (askShelley) desktopBridge()?.showSolver?.()
+  }, [])
   const [frame, setFrame] = useState<ImageData | null>(null)
   const [reading, setReading] = useState<Reading | null>(null)
   const [reading$, setReadingBusy] = useState(false)

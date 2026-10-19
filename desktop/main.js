@@ -514,6 +514,8 @@ ipcMain.on('advice', (e, card) => {
   send('overlay', 'card', lastCard);
 });
 ipcMain.handle('game:get', (e) => (fromSolver(e) ? { running: game.running } : null));
+// the page brings its window up to ask the player something (their Intern Shelley level, the first time)
+ipcMain.on('solver:show', (e) => fromSolver(e) && showSolver());
 // for working out why a setup misreads: the game window's outer size, the picture inside it (a title bar and
 // borders make them differ) and the display's scaling; sizes only, nothing else about the window
 ipcMain.handle('game:window', (e) => {

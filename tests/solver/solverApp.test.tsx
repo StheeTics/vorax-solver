@@ -97,9 +97,33 @@ describe('the Intern Shelley level is asked for until the player picks it', () =
     })
   })
 
-  it('a player who picked one isn’t asked again', () => {
+  it('a player with a level saved from before is asked once too, with it already picked: one click keeps it', () => {
     localStorage.setItem('vorax.shelleyLevel', '3')
     render(<SolverApp />)
+    const ask = screen.getByRole('region', { name: 'Your Intern Shelley level' })
+    expect(within(ask).getByRole('radio', { name: '3' }).getAttribute('aria-checked')).toBe('true')
+    within(ask).getByRole('radio', { name: '3' }).click()
+    return Promise.resolve().then(() => {
+      expect(screen.queryByRole('region', { name: 'Your Intern Shelley level' })).toBeNull()
+      expect(localStorage.getItem('vorax.shelleyLevel')).toBe('3')
+    })
+  })
+
+  it('once answered, it’s remembered: not asked again', () => {
+    localStorage.setItem('vorax.shelleyLevel', '3')
+    localStorage.setItem('vorax.shelleyAsked', '1')
+    render(<SolverApp />)
     expect(screen.queryByRole('region', { name: 'Your Intern Shelley level' })).toBeNull()
+  })
+
+  it('in the app, whose Solver window is hidden, the window opens to ask', () => {
+    const showSolver = vi.fn()
+    ;(window as unknown as { VoraxDesktop?: unknown }).VoraxDesktop = { logSize: async () => null, readLog: async () => new ArrayBuffer(0), onGame: () => {}, onSnap: () => {}, showAdvice: () => {}, showSolver }
+    try {
+      render(<SolverApp />)
+      expect(showSolver).toHaveBeenCalled()
+    } finally {
+      delete (window as unknown as { VoraxDesktop?: unknown }).VoraxDesktop
+    }
   })
 })
