@@ -92,9 +92,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Chrysalis Specimen': 0.33,
       'Incubation Sac': 0.33,
       'Hyperplastic Frontal Lobe': 0.33,
-      'Hypertrophic Pituitary': 0.6890211397058824,
+      'Hypertrophic Pituitary': 0.41978548075484845,
       'Adherent Metatarsals': 0.25,
-      'Contracted Claws': 0.6571024694600063,
+      'Contracted Claws': 0.4722586658492045,
       'Aberrant Sprout': 0.37972027699968885,
       'Prismatic Liver': 0.300611885958087
     },
