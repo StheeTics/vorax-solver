@@ -177,6 +177,7 @@ const win32 = (() => {
     const RECT = koffi.struct('RECT', { left: 'long', top: 'long', right: 'long', bottom: 'long' });
     const foreground = user32.func('__stdcall', 'GetForegroundWindow', 'intptr', []);
     const getRect = user32.func('__stdcall', 'GetWindowRect', 'bool', ['intptr', koffi.out(koffi.pointer(RECT))]);
+    const getClientRect = user32.func('__stdcall', 'GetClientRect', 'bool', ['intptr', koffi.out(koffi.pointer(RECT))]);
     const iconic = user32.func('__stdcall', 'IsIconic', 'bool', ['intptr']);
     const visible = user32.func('__stdcall', 'IsWindowVisible', 'bool', ['intptr']);
     const nextWindow = user32.func('__stdcall', 'FindWindowExW', 'intptr', ['intptr', 'intptr', 'void *', 'void *']);
@@ -229,6 +230,11 @@ const win32 = (() => {
         return getRect(hwnd, r) ? { x: r.left, y: r.top, width: r.right - r.left, height: r.bottom - r.top } : null;
       },
       minimized: (hwnd) => !!iconic(hwnd),
+      /** The picture inside the window, without its title bar and borders: its size only. */
+      client(hwnd) {
+        const r = {};
+        return getClientRect(hwnd, r) ? { width: r.right - r.left, height: r.bottom - r.top } : null;
+      },
     };
   } catch (e) {
     return null;
@@ -508,6 +514,17 @@ ipcMain.on('advice', (e, card) => {
   send('overlay', 'card', lastCard);
 });
 ipcMain.handle('game:get', (e) => (fromSolver(e) ? { running: game.running } : null));
+// for working out why a setup misreads: the game window's outer size, the picture inside it (a title bar and
+// borders make them differ) and the display's scaling; sizes only, nothing else about the window
+ipcMain.handle('game:window', (e) => {
+  if (!fromSolver(e) || !win32 || !game.running || !game.hwnd) return null;
+  const outer = win32.rect(game.hwnd);
+  const client = win32.client(game.hwnd);
+  if (!outer || !client) return null;
+  // the window's rect is in screen pixels; the display it's on is found in Electron's own units
+  const scale = screen.getDisplayMatching(screen.screenToDipRect(null, { x: outer.x, y: outer.y, width: outer.width, height: outer.height })).scaleFactor;
+  return { outer: [outer.width, outer.height], client: [client.width, client.height], scale };
+});
 ipcMain.handle('log:size', async (e) => {
   if (!fromSolver(e)) return null;
   if (!logPath) await refreshLog();

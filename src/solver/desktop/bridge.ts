@@ -4,6 +4,7 @@
 // hotkey, and sends the advice to the overlay card over the game. On the website there is no bridge.
 import { useEffect } from 'react'
 import type { FileLike } from '../live/logFollower'
+import type { GameWindow } from '../share/snapshot'
 import type { FieldKey, FieldRead } from '../types'
 import { unreadNote, unreadTanks } from '../advice/unread'
 import type { Shown } from '../advice/useAdvice'
@@ -18,6 +19,8 @@ export interface DesktopBridge {
   /** the app's "take a picture now" hotkey */
   onSnap(cb: () => void): void
   showAdvice(card: OverlayCard): void
+  /** the game window's outer size, the picture's, and the display scaling (apps from 0.1.4 on) */
+  gameWindow?(): Promise<GameWindow | null>
 }
 
 /** What the overlay card shows: plain text only. */

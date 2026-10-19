@@ -104,7 +104,7 @@ export function reconcile(total: Alts, aq: Alts): { total: string; aq: string } 
   return fixed && stats(totalText, fixed).fits ? { total: totalText, aq: fixed } : null
 }
 
-export interface TankRead { monster: ScreenMonster | null; fields: Record<string, FieldRead> }
+export interface TankRead { monster: ScreenMonster | null; fields: Record<string, FieldRead>; debug: { rgb: [number, number, number]; total: string; aq: string } | null }
 
 /**
  * Rarity from a name's colour. Measured on live frames: Normal is greyish white (saturation under 0.18, a
@@ -125,7 +125,7 @@ export function rarityOf(rgb: [number, number, number]): { rarity: Rarity; sure:
 export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: ScanData): TankRead {
   const fields: Record<string, FieldRead> = {}
   const rgb = brightest(img, l.nameBand[i])
-  if (Math.max(...rgb) < NAME_MIN) return { monster: null, fields: { [`tank${i}.empty`]: { sure: true } } }
+  if (Math.max(...rgb) < NAME_MIN) return { monster: null, fields: { [`tank${i}.empty`]: { sure: true } }, debug: null }
 
   const { rarity, sure } = rarityOf(rgb)
   fields[`tank${i}.rarity`] = { sure, guess: rarity }
@@ -143,5 +143,6 @@ export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: 
   const fits = st.fits && !!total && !!aq && (!!fix || (total.score >= DIGIT_MIN && aq.score >= DIGIT_MIN))
   fields[`tank${i}.activity`] = { sure: fits, guess: String(st.activity), score: aq?.score, second: aq?.second }
   fields[`tank${i}.quantity`] = { sure: fits, guess: String(st.quantity), score: aq?.score, second: aq?.second }
-  return { monster: { archetype, rarity, activity: st.activity, quantity: st.quantity }, fields }
+  const debug = { rgb: rgb.map(Math.round) as [number, number, number], total: total?.text ?? '', aq: aq?.text ?? '' }
+  return { monster: { archetype, rarity, activity: st.activity, quantity: st.quantity }, fields, debug }
 }

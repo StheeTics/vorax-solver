@@ -20,6 +20,17 @@ export type Problem =
   | { kind: 'unknownArt'; field: FieldKey; crop: Rect; hand?: 5 }
   | { kind: 'unknownName'; name: string }
 
+/** What the reader saw, shared with a board to find out why a setup misreads: numbers and short texts only. */
+export interface ReadDebug {
+  /** how far the frame's colours were from a normal capture's (levels.ts), and whether they were corrected */
+  off: number
+  corrected: boolean
+  /** per tank: its name's measured colour, and its number lines as read before any fixing ('' when nothing was found) */
+  tanks: ({ rgb: [number, number, number]; total: string; aq: string } | null)[]
+  /** how long the read took */
+  ms?: number
+}
+
 export interface Reading {
   state: ScreenState
   fields: Record<FieldKey, FieldRead>
@@ -35,6 +46,7 @@ export interface Reading {
   handPending?: true
   /** with handPending: how many cards the hand holds (5 from a Potion Kit) */
   handSize?: 3 | 5
+  debug?: ReadDebug
 }
 
 export const emptyState = (): ScreenState => ({ tanks: [null, null, null, null, null, null], hand: [], instruments: [], phase: 'potion', round: 1, potionRefreshes: POTION_REFRESHES })

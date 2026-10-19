@@ -159,3 +159,38 @@ it('sharing is on by default and the choice is remembered', () => {
   saveShare(false)
   expect(loadShare()).toBe(false)
 })
+
+describe('the setup and what the reader saw, shared to find out why a setup misreads', () => {
+  it('names the browser and its version from the user agent: no more', async () => {
+    const { browserOf } = await import('@/solver/share/setup')
+    expect(browserOf('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.2903.70')).toBe('Edge 131')
+    expect(browserOf('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.6778.86 Safari/537.36')).toBe('Chrome 131')
+    expect(browserOf('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) VoraxOverlay/0.1.3 Chrome/130.0.6723.191 Electron/33.2.1 Safari/537.36')).toBe('Electron 33')
+    expect(browserOf('Mozilla/5.0 (Windows NT 10.0; rv:132.0) Gecko/20100101 Firefox/132.0')).toBe('Firefox 132')
+    expect(browserOf('something else')).toBe('other')
+  })
+
+  it('the debug part: the capture, the screen, the colours, each tank’s lines as read, and the scores of what was unsure', async () => {
+    const { debugOf } = await import('@/solver/share/snapshot')
+    const r: Reading = {
+      ...reading,
+      fields: { ...reading.fields, 'tank0.activity': { sure: false, guess: '1', score: 0.61, second: 0.58 } },
+      debug: { off: 0.04, corrected: false, tanks: [{ rgb: [200, 210, 230], total: '120', aq: '5x2' }, null, null, null, null, null], ms: 412 },
+    }
+    const env = { dpr: 1.25, hdr: true, browser: 'Chrome 131' }
+    const win = { outer: [1936, 1119] as [number, number], client: [1920, 1080] as [number, number], scale: 1.25 }
+    expect(debugOf(r, ['tank0.activity'], env, win)).toEqual({
+      frame: [3440, 1440], dpr: 1.25, hdr: true, browser: 'Chrome 131', ms: 412, off: 0.04, corrected: false,
+      tanks: [{ rgb: [200, 210, 230], total: '120', aq: '5x2' }, null, null, null, null, null],
+      scores: { 'tank0.activity': [0.61, 0.58] },
+      window: win,
+    })
+    expect(debugOf({ ...reading, debug: undefined }, [], env, null)).toMatchObject({ frame: [3440, 1440], tanks: [] })
+    expect(debugOf(reading, [], env, null)).not.toHaveProperty('window')
+  })
+
+  it('a snapshot carries it', () => {
+    const debug = { frame: [1920, 1080] as [number, number], dpr: 1, hdr: false, browser: 'Edge 131', off: 0, corrected: false, tanks: [], scores: {} }
+    expect(toSnapshot(reading, { ...ctx, debug }).debug).toEqual(debug)
+  })
+})

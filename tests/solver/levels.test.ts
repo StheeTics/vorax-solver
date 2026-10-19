@@ -69,3 +69,23 @@ describe('levels', () => {
     expect(out.data[0] < out.data[1] && out.data[1] < out.data[2]).toBe(true)
   })
 })
+
+describe('what the reader saw, for finding out why a setup misreads', () => {
+  const r = scan(board, data)
+  it('how far the colours were from normal, and that a normal capture is left as it is', () => {
+    expect(r.debug!.off).toBeLessThan(0.12)
+    expect(r.debug!.corrected).toBe(false)
+  })
+  it('a recoloured capture is corrected, and says how far off it was', () => {
+    const d = scan(recolour(board, x => 35 + 0.8 * x, 0.8), data).debug!
+    expect(d.off).toBeGreaterThan(0.12)
+    expect(d.corrected).toBe(true)
+  })
+  it('each filled tank’s number lines as read, before any fixing, and its name’s colour', () => {
+    const t = r.debug!.tanks
+    expect(t[0]).toBeNull()
+    expect(t[1]).toMatchObject({ total: '112320', aq: '416x270' })
+    expect(t[1]!.rgb).toHaveLength(3)
+    expect(t[3]).toMatchObject({ total: '7616', aq: '112x68' })
+  })
+})

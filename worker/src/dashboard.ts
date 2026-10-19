@@ -156,6 +156,11 @@ export const DASHBOARD_HTML = `<!doctype html>
         <p class="sub">Games by the highest round they reached.</p>
         <div id="rounds"></div>
       </section>
+      <section class="card">
+        <h2>Problems by setup</h2>
+        <p class="sub">Boards read with something unsure, and with a tank’s numbers unsure, by the player’s screen shape, window (the app tells windowed from borderless), HDR and browser. A setup far above the others is where to look.</p>
+        <div class="scroll" id="problems"></div>
+      </section>
       <section class="card half">
         <h2>Games per site version</h2>
         <p class="sub">The website's build each game was played on.</p>
@@ -317,6 +322,9 @@ async function load(pw) {
     { html: g.finished ? (g.score >= 950000 ? pill('ok', 'Rainbow') : pill('idle', 'Finished')) : '' },
     { html: '<span class="sub">' + esc(g.instruments.join(', ')) + '</span>' },
   ]), [2, 3, 4])
+  $('problems').innerHTML = s.problems && s.problems.length
+    ? table(['Setup', '', 'Boards', 'Something unsure', 'Tank numbers unsure'], s.problems.map(p => [p.by, p.group, num(p.boards), pct(p.unsure), pct(p.numbers)]), [2, 3, 4])
+    : '<p class="sub">No boards with their setup yet: they come from the Solver since this section was added.</p>'
   $('versions').innerHTML = table(['Version', 'Games'], Object.entries(s.versions).sort((a, b) => b[1] - a[1]), [1])
   try {
     const rc = await (await fetch(RULES, { cache: 'no-store' })).json()

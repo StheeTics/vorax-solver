@@ -13,5 +13,6 @@ if (/\/solver\.html$/.test(location.pathname)) {
     },
     onSnap: (cb) => ipcRenderer.on('snap', () => cb()),
     showAdvice: (card) => ipcRenderer.send('advice', card),
+    gameWindow: () => ipcRenderer.invoke('game:window'),
   });
 }

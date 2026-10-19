@@ -59,7 +59,9 @@ export const offNormal = (q: number[], ref: number[]) => Math.max(...q.map((v, i
  *  (57% of their numbers read, against 84%). */
 export const OFF_NORMAL = 0.12
 
-/** The frame with a normal capture's colours: as it is if it already has them, else matched to `ref`. */
-export function normalColours(img: Img, ref: number[], areas: Rect[]): Img {
-  return offNormal(levels(img, areas), ref) > OFF_NORMAL ? matchLevels(img, ref, areas) : img
+/** The frame with a normal capture's colours: as it is if it already has them, else matched to `ref`; with
+ *  how far off it was. */
+export function normalColours(img: Img, ref: number[], areas: Rect[]): { img: Img; off: number; corrected: boolean } {
+  const off = offNormal(levels(img, areas), ref)
+  return off > OFF_NORMAL ? { img: matchLevels(img, ref, areas), off, corrected: true } : { img, off, corrected: false }
 }

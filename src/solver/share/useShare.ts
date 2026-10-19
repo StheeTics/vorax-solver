@@ -3,7 +3,9 @@ import type { FieldKey, Reading, Source } from '../types'
 import { appTag, ENDPOINT, sendingAllowed } from './endpoint'
 import { createQueue } from './queue'
 import { loadShare } from './shareStore'
-import { isFinalBoard, shareable, startsRun, toSnapshot, unsureFields, type SharedAdvice, type Snapshot } from './snapshot'
+import { debugOf, isFinalBoard, shareable, startsRun, toSnapshot, unsureFields, type GameWindow, type SharedAdvice, type Snapshot } from './snapshot'
+import { environment } from './setup'
+import { desktopBridge } from '../desktop/bridge'
 
 const BUILD = typeof __BUILD__ === 'string' ? __BUILD__ : 'dev'
 
@@ -25,6 +27,8 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
   const queue = useRef<ReturnType<typeof createQueue> | null>(null)
   const run = useRef({ id: '', seq: 0 })
   const held = useRef<{ reading: Reading; source: Source; corrected: FieldKey[]; advice?: SharedAdvice } | null>(null)
+  // in Vorax Overlay, the game window as last measured: asked for with each board, used with the next
+  const win = useRef<GameWindow | null>(null)
 
   if (!queue.current && sendingAllowed()) queue.current = createQueue({ send: post })
 
@@ -34,11 +38,14 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
     if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source)) return
     const trigger = h.reading.frame?.trigger ?? 'screenshot'
     if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
-    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, unsure: unsureFields(h.reading, h.corrected), advice: h.advice }))
+    const unsure = unsureFields(h.reading, h.corrected)
+    const debug = debugOf(h.reading, unsure, environment(), win.current)
+    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, unsure, advice: h.advice, debug }))
   }
 
   useEffect(() => {
     if (!reading) return
+    void desktopBridge()?.gameWindow?.().then(w => (win.current = w), () => {})
     release()
     held.current = { reading, source, corrected: [] }
     // the game's last board: nothing follows to send it with, so it goes now (its final score)

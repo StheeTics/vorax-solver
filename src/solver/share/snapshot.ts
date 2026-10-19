@@ -1,7 +1,8 @@
 // What the Solver shares for the odds study: one board it read, with no picture, no time and nothing
 // about the player. Boards of one game share a run id, in seq order.
 import type { ScreenMonster } from '@/strategy/advisor'
-import type { FieldKey, Reading, Source } from '../types'
+import type { FieldKey, Reading, ReadDebug, Source } from '../types'
+import type { Environment } from './setup'
 import type { Shown } from '../advice/useAdvice'
 import { describe } from '../advice/describe'
 
@@ -28,6 +29,25 @@ export interface Snapshot {
    *  (boards shared before had none, being all sure) */
   unsure?: FieldKey[]
   advice?: SharedAdvice
+  debug?: SharedDebug
+}
+
+/** The game's window in Vorax Overlay: its outer size and the picture inside it (a title bar and borders make
+ *  them differ, which moves everything the reader looks for), and Windows' display scaling. */
+export interface GameWindow { outer: [number, number]; client: [number, number]; scale: number }
+
+/** What helps find out why a setup misreads: the capture's size, the screen, the browser, the colours, each
+ *  tank's lines as read, and the match scores of the unsure fields. */
+export type SharedDebug = Environment & Omit<ReadDebug, 'ms'> & { frame: [number, number]; ms?: number; scores: Record<FieldKey, [number, number]>; window?: GameWindow }
+
+export function debugOf(r: Reading, unsure: FieldKey[], env: Environment, win: GameWindow | null): SharedDebug {
+  const round = (v: number | undefined) => Math.round((v ?? 0) * 1000) / 1000
+  const scores = Object.fromEntries(unsure.filter(k => r.fields[k]?.score !== undefined).map(k => [k, [round(r.fields[k].score), round(r.fields[k].second)] as [number, number]]))
+  const d = r.debug
+  return {
+    frame: [r.frame?.width ?? 0, r.frame?.height ?? 0], ...env, ...(d?.ms !== undefined ? { ms: d.ms } : {}),
+    off: d?.off ?? 0, corrected: d?.corrected ?? false, tanks: d?.tanks ?? [], scores, ...(win ? { window: win } : {}),
+  }
 }
 
 export function sharedAdvice(shown: Shown | null): SharedAdvice | undefined {
@@ -54,7 +74,7 @@ export const isFinalBoard = (r: Reading) => r.state.phase === 'protocol' && r.st
 
 export const startsRun = (r: Reading, trigger: string) => trigger === 'screen' || (r.state.phase === 'instrument' && r.state.round === 1)
 
-export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; unsure: FieldKey[]; advice?: SharedAdvice }): Snapshot {
+export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; unsure: FieldKey[]; advice?: SharedAdvice; debug?: SharedDebug }): Snapshot {
   const s = r.state
   return {
     uid: crypto.randomUUID(),
@@ -73,5 +93,6 @@ export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: str
     corrected: [...ctx.corrected],
     unsure: [...ctx.unsure],
     ...(ctx.advice ? { advice: ctx.advice } : {}),
+    ...(ctx.debug ? { debug: ctx.debug } : {}),
   }
 }

@@ -44,6 +44,47 @@ export function validate(raw: unknown, names: Names) {
     tanks, hand: s.hand as string[], instruments: s.instruments as string[],
     ...(s.unsure !== undefined ? { unsure: s.unsure as string[] } : {}),
     ...adviceOf(s.advice),
+    ...debugOf(s.debug),
+  }
+}
+
+const num = (v: unknown, lo: number, hi: number): v is number => typeof v === 'number' && Number.isFinite(v) && v >= lo && v <= hi
+const pair = (v: unknown, lo: number, hi: number): v is [number, number] => Array.isArray(v) && v.length === 2 && v.every(x => num(x, lo, hi))
+const size = (v: unknown): v is [number, number] => Array.isArray(v) && v.length === 2 && v.every(x => int(x, 0, 20_000))
+
+/** What the reader saw and the player's setup, to find out why a setup misreads (src/solver/share/snapshot.ts
+ *  SharedDebug): rebuilt from the keys it knows; anything malformed drops it, the board kept. */
+function debugOf(raw: unknown): { debug?: Record<string, unknown> } {
+  if (!raw || typeof raw !== 'object') return {}
+  const d = raw as Record<string, unknown>
+  if (!size(d.frame) || !num(d.dpr, 0.25, 8) || typeof d.hdr !== 'boolean' || !str(d.browser, /^[\w.]{1,16}( \d{1,4})?$/)) return {}
+  if (!num(d.off, 0, 1) || typeof d.corrected !== 'boolean' || (d.ms !== undefined && !int(d.ms, 0, 600_000))) return {}
+  if (!Array.isArray(d.tanks) || d.tanks.length > 6) return {}
+  const tanks = []
+  for (const t of d.tanks) {
+    if (t === null) {
+      tanks.push(null)
+      continue
+    }
+    const m = t as Record<string, unknown>
+    const rgb = m?.rgb
+    if (!Array.isArray(rgb) || rgb.length !== 3 || !rgb.every(c => int(c, 0, 255)) || !str(m.total, /^[\dx]{0,16}$/) || !str(m.aq, /^[\dx]{0,16}$/)) return {}
+    tanks.push({ rgb, total: m.total, aq: m.aq })
+  }
+  if (!d.scores || typeof d.scores !== 'object' || Array.isArray(d.scores)) return {}
+  const scores = Object.entries(d.scores as Record<string, unknown>)
+  if (scores.length > 40 || !scores.every(([k, v]) => FIELD.test(k) && pair(v, -1, 1))) return {}
+  let win: { window?: { outer: [number, number]; client: [number, number]; scale: number } } = {}
+  if (d.window !== undefined) {
+    const w = d.window as Record<string, unknown>
+    if (!w || !size(w.outer) || !size(w.client) || !num(w.scale, 0.25, 8)) return {}
+    win = { window: { outer: w.outer, client: w.client, scale: w.scale } }
+  }
+  return {
+    debug: {
+      frame: d.frame, dpr: d.dpr, hdr: d.hdr, browser: d.browser, ...(d.ms !== undefined ? { ms: d.ms } : {}),
+      off: d.off, corrected: d.corrected, tanks, scores: Object.fromEntries(scores), ...win,
+    },
   }
 }
 

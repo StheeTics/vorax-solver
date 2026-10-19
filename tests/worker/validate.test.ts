@@ -54,3 +54,35 @@ it('keeps the advice shown with a board, and drops a malformed one without losin
   expect(validate({ ...good, advice }, names)).toEqual({ ...good, advice })
   expect(validate({ ...good, advice: { move: 'x'.repeat(500), activity: -3 } }, names)).toEqual(good)
 })
+
+describe('the debug part: kept field by field, dropped whole (board kept) when anything in it is off', () => {
+  const debug = {
+    frame: [1920, 1200], dpr: 1.25, hdr: true, browser: 'Electron 33', ms: 412, off: 0.31, corrected: true,
+    tanks: [{ rgb: [200, 210, 230], total: '120', aq: '5x24361' }, null, null, null, null, null],
+    scores: { 'tank0.activity': [0.61, 0.58] },
+    window: { outer: [1936, 1239], client: [1920, 1200], scale: 1.25 },
+  }
+  it('keeps a well-formed one', () => {
+    expect(validate({ ...good, debug }, names)).toEqual({ ...good, debug })
+  })
+  it('without the optional parts', () => {
+    const plain: Record<string, unknown> = { ...debug }
+    delete plain.window
+    delete plain.ms
+    expect(validate({ ...good, debug: plain }, names)).toEqual({ ...good, debug: plain })
+  })
+  it('rebuilt from the keys it knows, like the board: anything else is left behind', () => {
+    const sent = { ...debug, window: { ...debug.window, title: 'Torchlight' }, ip: '1.2.3.4' }
+    expect(validate({ ...good, debug: sent }, names)).toEqual({ ...good, debug })
+  })
+  it.each([
+    ['a browser that isn’t a short name', { browser: '<img src=x>' }],
+    ['a line read with letters in it', { tanks: [{ rgb: [1, 2, 3], total: 'abc', aq: '' }] }],
+    ['a colour out of range', { tanks: [{ rgb: [1, 2, 300], total: '', aq: '' }] }],
+    ['a huge frame', { frame: [100000, 10] }],
+    ['a score for a field that doesn’t exist', { scores: { 'password': [0.5, 0.4] } }],
+    ['too many tanks', { tanks: Array(7).fill(null) }],
+  ])('drops it with %s', (_, change) => {
+    expect(validate({ ...good, debug: { ...debug, ...change } }, names)).toEqual(good)
+  })
+})

@@ -20,7 +20,8 @@ export type LocalRefs = Record<string, ArtFeature[]>
 export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, { pictures = true }: { pictures?: boolean } = {}): Reading {
   // read with the colours a normal capture has, whatever HDR or gamma this PC captures with
   const l = layout(captured)
-  const img = normalColours(captured, normal, readAreas(l))
+  const colours = normalColours(captured, normal, readAreas(l))
+  const img = colours.img
   const g = gray(img)
   const fields: Record<string, FieldRead> = {}
   const problems: Problem[] = []
@@ -61,5 +62,5 @@ export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, { pic
   const instrumentRanks = inst.ranks
 
   for (const [k, f] of Object.entries(fields)) if (!f.sure && /^tank\d\.(activity|quantity)$/.test(k) && !problems.some(p => p.kind === 'unreadable' && p.field === k)) problems.push({ kind: 'unreadable', field: k })
-  return { state, fields, problems, frame, instrumentRanks, iconsKnown: inst.known, handRanks: hand.ranks, ...(hand.ranks ? {} : { handPending: true as const, handSize: hand.phase === 'protocol' ? 3 : fanSize(img, l) }) }
+  return { state, fields, problems, frame, debug: { off: Math.round(colours.off * 1000) / 1000, corrected: colours.corrected, tanks: tanks.map(t => t.debug) }, instrumentRanks, iconsKnown: inst.known, handRanks: hand.ranks, ...(hand.ranks ? {} : { handPending: true as const, handSize: hand.phase === 'protocol' ? 3 : fanSize(img, l) }) }
 }

@@ -4,7 +4,23 @@
 export interface StatRow { received: string; client: string; body: string }
 
 interface Tank { activity: number; quantity: number }
-interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
+interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
+
+interface Debug { frame: [number, number]; hdr: boolean; browser: string; window?: { outer: [number, number]; client: [number, number] } }
+
+/** The screen's shape by name, when it's within 3% of a common one. */
+const SHAPES: [string, number][] = [['4:3', 4 / 3], ['16:10', 1.6], ['16:9', 16 / 9], ['21:9', 2.37], ['32:9', 32 / 9]]
+export function shape([w, h]: [number, number]): string {
+  const r = w / h
+  return SHAPES.find(([, v]) => Math.abs(r - v) / v < 0.03)?.[0] ?? `${r.toFixed(2)}:1`
+}
+
+/** The groups a board's setup falls in, one per question. */
+function setupOf(d: Debug): [string, string][] {
+  const win = !d.window ? 'website' : d.window.outer[0] === d.window.client[0] && d.window.outer[1] === d.window.client[1] ? 'borderless or fullscreen' : 'windowed'
+  const browser = d.browser.split(' ')[0]
+  return [['screen', shape(d.frame)], ['window', win], ['HDR', d.hdr ? 'on' : 'off'], ['browser', browser === 'Electron' ? 'Electron (app)' : browser]]
+}
 
 /** The advice's goal (src/strategy/bot.ts TARGET): with the endgame battle bonus it reaches rainbow. */
 const TARGET = 950_000
@@ -28,6 +44,9 @@ export interface Stats {
   recent: { start: string; boards: number; round: number; app: boolean; instruments: string[]; score: number; finished: boolean }[]
   /** games that reached the round-13 Surgical Protocol: its board's total is the final score */
   finished: { games: number; reached: number; finals: number[]; average: number }
+  /** for each setup (screen shape, windowed or not, HDR, browser): boards, and the shares read with something
+   *  unsure and with a tank's numbers unsure */
+  problems: { by: string; group: string; boards: number; unsure: number; numbers: number }[]
   /** the advice's predicted chance of 950,000 (in 20% bands) against how those finished games ended */
   calibration: { band: string; predicted: number; games: number; reached: number }[]
 }
@@ -39,6 +58,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
   const days = new Map<string, { boards: number; games: Set<string>; players: Set<string> }>()
   let corrected = 0
   let unsure = 0
+  const setups = new Map<string, { by: string; group: string; boards: number; unsure: number; numbers: number }>()
   for (const r of rows) {
     let b: Board
     try {
@@ -54,6 +74,14 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     days.set(day, d)
     if (b.corrected?.length) corrected++
     if (b.unsure?.length) unsure++
+    if (b.debug?.frame) for (const [by, group] of setupOf(b.debug)) {
+      const k = `${by}|${group}`
+      const g = setups.get(k) ?? { by, group, boards: 0, unsure: 0, numbers: 0 }
+      g.boards++
+      if (b.unsure?.length) g.unsure++
+      if (b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.numbers++
+      setups.set(k, g)
+    }
     const app = /-overlay$/.test(b.app)
     const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [], last: -1, score: 0 }
     g.boards++
@@ -103,6 +131,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     rounds,
     corrected: rows.length ? corrected / rows.length : 0,
     unsure: rows.length ? unsure / rows.length : 0,
+    problems: [...setups.values()].map(g => ({ ...g, unsure: g.unsure / g.boards, numbers: g.numbers / g.boards })).sort((a, b) => a.by.localeCompare(b.by) || b.boards - a.boards),
     versions,
     recent: list.sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, instruments: g.instruments, score: g.final ?? g.score, finished: g.final !== null })),
   }

@@ -109,3 +109,35 @@ describe('the dashboard routes', () => {
     for (const f of ['live-data.yml', 'strengths.yml', 'daily-check.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
   })
 })
+
+describe('problems by setup: which screens, windows, HDR or browsers misread', () => {
+  const dbg = (frame: [number, number], extra: Record<string, unknown> = {}) => ({ frame, dpr: 1, hdr: false, browser: 'Chrome 131', off: 0, corrected: false, tanks: [], scores: {}, ...extra })
+  const rows = [
+    row('2026-10-19T09:00:00Z', 'a', board('g1', 2, { debug: dbg([1920, 1080]) })),
+    row('2026-10-19T09:00:00Z', 'a', board('g1', 3, { debug: dbg([1920, 1080]), unsure: ['hand0'] })),
+    row('2026-10-19T09:00:00Z', 'b', board('g2', 2, { debug: dbg([1920, 1200], { hdr: true, browser: 'Electron 33', window: { outer: [1936, 1239], client: [1920, 1200], scale: 1 } }), unsure: ['tank1.activity'] })),
+    row('2026-10-19T09:00:00Z', 'c', board('g3', 2, { debug: dbg([3440, 1440], { browser: 'Electron 33', window: { outer: [3440, 1440], client: [3440, 1440], scale: 1 } }) })),
+    row('2026-10-19T09:00:00Z', 'd', board('g4', 2)),
+  ]
+  const p = summarize(rows, new Date('2026-10-19T12:00:00Z')).problems
+  const find = (by: string, group: string) => p.find(x => x.by === by && x.group === group)
+  it('by screen shape', () => {
+    expect(find('screen', '16:9')).toEqual({ by: 'screen', group: '16:9', boards: 2, unsure: 0.5, numbers: 0 })
+    expect(find('screen', '16:10')).toEqual({ by: 'screen', group: '16:10', boards: 1, unsure: 1, numbers: 1 })
+    expect(find('screen', '21:9')).toMatchObject({ boards: 1, unsure: 0 })
+  })
+  it('by window: the app says whether the game is windowed (its title bar and borders) or borderless', () => {
+    expect(find('window', 'windowed')).toMatchObject({ boards: 1, numbers: 1 })
+    expect(find('window', 'borderless or fullscreen')).toMatchObject({ boards: 1 })
+    expect(find('window', 'website')).toMatchObject({ boards: 2 })
+  })
+  it('by HDR and by browser, without its version', () => {
+    expect(find('HDR', 'on')).toMatchObject({ boards: 1 })
+    expect(find('HDR', 'off')).toMatchObject({ boards: 3 })
+    expect(find('browser', 'Electron (app)')).toMatchObject({ boards: 2 })
+    expect(find('browser', 'Chrome')).toMatchObject({ boards: 2 })
+  })
+  it('boards from before the setup was shared aren’t counted', () => {
+    expect(p.filter(x => x.by === 'screen').reduce((s, x) => s + x.boards, 0)).toBe(4)
+  })
+})
