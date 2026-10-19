@@ -41,8 +41,8 @@ npm run local      # against the dev server (npm run dev in the repo root)
   downloads in the background. It installs by itself (quietly, then starts again) while the game isn't
   running, or as soon as the game closes; during a game the overlay offers Restart. Unsigned builds show
   SmartScreen's "Windows protected your PC" on first install.
-- The installer is always `Vorax-Overlay-Setup.exe`, so the website's download link
-  (`releases/latest/download/Vorax-Overlay-Setup.exe`) never changes.
+- The installer is always `Vorax-Overlay-Setup.exe`. The website links to the newest release's page
+  (`releases/latest`), so people see the notes and choose the download on GitHub.
 
 ## Release
 

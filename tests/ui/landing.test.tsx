@@ -25,10 +25,10 @@ it('main menu links home', () => {
   expect(screen.getByRole('link', { name: /home/i }).getAttribute('href')).toBe(HOME_URL)
 })
 
-it('offers the Windows app, straight to the newest installer', async () => {
+it('offers the Windows app, on its newest release page on GitHub', async () => {
   const { DOWNLOAD_URL } = await import('@/ui/links')
   render(<Landing />)
   const link = screen.getByRole('link', { name: /Download Vorax Overlay/ })
   expect(link.getAttribute('href')).toBe(DOWNLOAD_URL)
-  expect(DOWNLOAD_URL).toBe('https://github.com/tidewarden/tli-vorax-simulator/releases/latest/download/Vorax-Overlay-Setup.exe')
+  expect(DOWNLOAD_URL).toBe('https://github.com/tidewarden/tli-vorax-simulator/releases/latest')
 })
