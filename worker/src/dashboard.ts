@@ -48,6 +48,10 @@ export const DASHBOARD_HTML = `<!doctype html>
     <div class="tiles" id="tiles"></div>
     <h2>Per day</h2>
     <div class="panel"><p class="legend"><span><i class="key" style="background:var(--gold)"></i>Games</span><span><i class="key" style="background:var(--blue)"></i>Players</span></p><div id="days"></div></div>
+    <h2>Real results</h2>
+    <div class="panel" id="real"></div>
+    <h2>Card effects in real games</h2>
+    <div class="panel" id="rules"></div>
     <h2>How far games got (highest round)</h2>
     <div class="panel" id="rounds"></div>
     <h2>Odds and advice over time</h2>
@@ -61,6 +65,7 @@ export const DASHBOARD_HTML = `<!doctype html>
 <script>
 const KEY = 'vorax.dashboard'
 const HISTORY = 'https://raw.githubusercontent.com/tidewarden/tli-vorax-simulator/main/data/live/history.jsonl'
+const RULES = 'https://raw.githubusercontent.com/tidewarden/tli-vorax-simulator/main/data/live/rules-check.json'
 const $ = id => document.getElementById(id)
 const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
 const pct = x => Math.round(100 * x) + '%'
@@ -94,6 +99,20 @@ async function load(pw) {
   $('rounds').innerHTML = table(['Highest round', 'Games', ''], rounds.map(([r, n]) => [r, n, '█'.repeat(Math.round(40 * n / Math.max(...rounds.map(x => x[1]))))]), [1])
   $('recent').innerHTML = table(['Started', 'Where', 'Boards', 'Round', 'Instruments'], s.recent.map(g => [g.start.replace('T', ' ').slice(0, 16), g.app ? 'App' : 'Website', g.boards, g.round, g.instruments.join(', ')]), [2, 3])
   $('versions').innerHTML = table(['Version', 'Games'], Object.entries(s.versions).sort((a, b) => b[1] - a[1]), [1])
+  const f = s.finished, median = f.finals.length ? f.finals.slice().sort((a, b) => a - b)[f.finals.length >> 1] : 0
+  $('real').innerHTML = (f.games
+    ? '<p>' + f.games + ' finished game' + (f.games === 1 ? '' : 's') + ' (reached the round-13 Surgical Protocol): <b>' + f.reached + ' reached 950k</b> (' + pct(f.reached / f.games) + '), median final ' + Math.round(median / 1000) + 'k. The simulator expects about 50%.</p>'
+    : '<p class="sub">No finished games shared yet.</p>')
+    + (s.calibration.length
+      ? '<p class="sub">Predicted against real: each board’s advice gave a chance of 950k; this is how those games ended. Close numbers mean the simulator is honest.</p>' + table(['Predicted', 'Average prediction', 'Boards', 'Their games reached 950k'], s.calibration.map(c => [c.band, pct(c.predicted), c.games, pct(c.reached / c.games)]), [1, 2, 3])
+      : '<p class="sub">Predicted against real appears once boards carry the advice shown (Solver builds from 2026-10-19).</p>')
+  try {
+    const rc = await (await fetch(RULES, { cache: 'no-store' })).json()
+    $('rules').innerHTML = '<p>' + rc.checked + ' real moves replayed in the simulator: <b>' + rc.reproduced + ' reproduced exactly</b>, ' + rc.missed.length + ' not. A move the simulator can’t reproduce points at a card effect it gets wrong, or a misread board.</p>'
+      + (rc.missed.length ? table(['Round', 'Cards on offer', 'Instruments', 'Closest the simulator got', 'Tanks off'], rc.missed.map(m => [m.round, m.hand.join(', '), m.instruments.join(', '), m.best, m.gap]), [0, 4]) : '')
+  } catch (e) {
+    $('rules').innerHTML = '<p class="sub">The card-effect check couldn’t be read from the repo.</p>'
+  }
   $('sub').textContent = 'Updated ' + s.generated.replace('T', ' ').slice(0, 16) + ' UTC. Players are counted per day: the collector keeps no lasting ID of anyone.'
   try {
     const t = await (await fetch(HISTORY, { cache: 'no-store' })).text()

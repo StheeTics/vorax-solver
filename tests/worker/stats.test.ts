@@ -32,6 +32,30 @@ describe('the dashboard summary', () => {
   })
 })
 
+describe('real results', () => {
+  const tank = (activity: number, quantity: number) => ({ archetype: 'aemberon', rarity: 'boss', activity, quantity })
+  const rows = [
+    // a finished game: its last board is the round-13 Surgical Protocol, whose total is the final score
+    row('2026-10-18T10:00:00Z', 'a', board('g1', 5, { advice: { move: 'Play X', activity: 900000, reached: 0.6 } })),
+    row('2026-10-18T10:10:00Z', 'a', board('g1', 13, { phase: 'protocol', tanks: [tank(1000, 1000), null, null, null, null, null] })),
+    // another, short of 950k
+    row('2026-10-18T11:00:00Z', 'b', board('g2', 5, { advice: { move: 'Play Y', activity: 400000, reached: 0.1 } })),
+    row('2026-10-18T11:10:00Z', 'b', board('g2', 13, { phase: 'protocol', tanks: [tank(500, 500), null, null, null, null, null] })),
+    // unfinished
+    row('2026-10-18T12:00:00Z', 'c', board('g3', 4)),
+  ]
+  const s = summarize(rows, new Date('2026-10-19T00:00:00Z'))
+  it('the final score of every finished game, and how many reached 950,000', () => {
+    expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000] })
+  })
+  it('predicted against real: the advice’s chance of 950,000, in bands, against how those games ended', () => {
+    expect(s.calibration).toEqual([
+      { band: '0–20%', predicted: 0.1, games: 1, reached: 0 },
+      { band: '60–80%', predicted: 0.6, games: 1, reached: 1 },
+    ])
+  })
+})
+
 describe('the dashboard routes', () => {
   const store = { stats: async () => [row('2026-10-18T10:00:00Z', 'a', board('g1', 2))] } as unknown as Store
   const env = { EXPORT_TOKEN: 'x', IP_SALT: 's', DASHBOARD_TOKEN: 'open-sesame', LIMIT: { limit: async () => ({ success: true }) } }

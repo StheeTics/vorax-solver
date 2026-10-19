@@ -41,3 +41,9 @@ it('a Potion Kit’s five-card hand is kept, with its cards corrected by place',
   const five = ['Xeno-Hormone', 'Mutagenic Powder', 'Xeno-Hormone', 'Mutagenic Powder', 'Xeno-Hormone']
   expect(validate({ ...good, hand: five, corrected: ['hand4'] }, names)).toMatchObject({ hand: five, corrected: ['hand4'] })
 })
+
+it('keeps the advice shown with a board, and drops a malformed one without losing the board', () => {
+  const advice = { move: 'Play Xeno-Hormone (card 1) → tank 2', activity: 812000, reached: 0.4 }
+  expect(validate({ ...good, advice }, names)).toEqual({ ...good, advice })
+  expect(validate({ ...good, advice: { move: 'x'.repeat(500), activity: -3 } }, names)).toEqual(good)
+})

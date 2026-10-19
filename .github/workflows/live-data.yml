@@ -41,6 +41,9 @@ jobs:
       - name: Propose weight changes (not applied)
         run: npx vite-node scripts/live/weights.ts --propose | tee weights.txt
 
+      - name: Replay real moves in the simulator (card-effect check)
+        run: npx vite-node scripts/live/checkRules.ts data/live/raw | tee rules.txt
+
       - name: Test
         run: npm test
 

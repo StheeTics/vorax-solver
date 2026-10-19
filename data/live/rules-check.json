@@ -1,0 +1,198 @@
+{
+  "checked": 49,
+  "reproduced": 38,
+  "missed": [
+    {
+      "run": "0807d9e9-2837-4ffc-9d2a-1c25516b72f8",
+      "seq": 2,
+      "round": 3,
+      "hand": [
+        "Slender-Limb Powder - Pest",
+        "Xeno-Hormone",
+        "Spinal Solution - Agito"
+      ],
+      "instruments": [
+        "Incubation Sac"
+      ],
+      "best": "Xeno-Hormone → tank 2",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "0807d9e9-2837-4ffc-9d2a-1c25516b72f8",
+      "seq": 9,
+      "round": 9,
+      "hand": [
+        "Xeno-Hormone",
+        "Pure Leech Solution",
+        "Green Bile Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Rawhide Restraint",
+        "Vermicular Spinal Cord"
+      ],
+      "best": "Xeno-Hormone → tank 5 → tank 6",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "db96902e-bb6f-44d4-af94-e7c041cad261",
+      "seq": 1,
+      "round": 2,
+      "hand": [
+        "Osteogenic Powder",
+        "Petrified Spinal Solution",
+        "Eggshell Powder"
+      ],
+      "instruments": [
+        "Prismatic Liver"
+      ],
+      "best": "Petrified Spinal Solution → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "db96902e-bb6f-44d4-af94-e7c041cad261",
+      "seq": 4,
+      "round": 4,
+      "hand": [
+        "Petrified Spinal Solution",
+        "Slender-Limb Powder - Bone Sentry",
+        "Viviparous Hormone"
+      ],
+      "instruments": [
+        "Prismatic Liver"
+      ],
+      "best": "Petrified Spinal Solution → tank 4",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "db96902e-bb6f-44d4-af94-e7c041cad261",
+      "seq": 7,
+      "round": 7,
+      "hand": [
+        "Leptomeningeal Solution",
+        "Slough Solution",
+        "Eggshell Powder"
+      ],
+      "instruments": [
+        "Prismatic Liver",
+        "Eyelid Speculum",
+        "Clustered Eggs"
+      ],
+      "best": "Slough Solution → tank 2 → tank 4",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "db96902e-bb6f-44d4-af94-e7c041cad261",
+      "seq": 10,
+      "round": 9,
+      "hand": [
+        "Gray Matter Spinal Solution",
+        "Slender-Limb Powder - Bone Sentry",
+        "Xeno-Hormone"
+      ],
+      "instruments": [
+        "Prismatic Liver",
+        "Eyelid Speculum",
+        "Clustered Eggs"
+      ],
+      "best": "Xeno-Hormone → tank 1 → tank 4",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "e473c11f-cd58-46dd-853a-73e95d2a5e5c",
+      "seq": 1,
+      "round": 2,
+      "hand": [
+        "Brain Fog Tincture",
+        "Compound Leech Solution",
+        "Osteogenic Powder"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Incubation Sac",
+        "Aberrant Sprout"
+      ],
+      "best": "Brain Fog Tincture",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "e473c11f-cd58-46dd-853a-73e95d2a5e5c",
+      "seq": 2,
+      "round": 3,
+      "hand": [
+        "Slender-Limb Powder - Pest",
+        "Twin Hormone - Pest",
+        "Potion Kit (Large)"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Incubation Sac",
+        "Aberrant Sprout"
+      ],
+      "best": "Slender-Limb Powder - Pest",
+      "gap": 3.5,
+      "reproduced": false
+    },
+    {
+      "run": "5ffbb321-7a38-40d2-8a65-3877a4095dcb",
+      "seq": 6,
+      "round": 3,
+      "hand": [
+        "Eggshell Powder",
+        "Osteolytic Ointment",
+        "Slough Solution"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Black Goat Gut Suture",
+        "Fouled Scraper"
+      ],
+      "best": "Eggshell Powder",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "6c2bb610-b601-42cd-8e8e-5056a08ff4eb",
+      "seq": 3,
+      "round": 3,
+      "hand": [
+        "Leptomeningeal Solution",
+        "Osteogenic Powder",
+        "Petrified Spinal Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Rawhide Restraint",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Petrified Spinal Solution → tank 1",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "6c2bb610-b601-42cd-8e8e-5056a08ff4eb",
+      "seq": 4,
+      "round": 4,
+      "hand": [
+        "Petrified Spinal Solution",
+        "Brain Fog Tincture",
+        "Slough Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Rawhide Restraint",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Slough Solution → tank 2",
+      "gap": 1,
+      "reproduced": false
+    }
+  ]
+}

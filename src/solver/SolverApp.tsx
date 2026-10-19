@@ -14,6 +14,7 @@ import { ScreenshotSource } from './screenshot/ScreenshotSource'
 import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
 import { useShare } from './share/useShare'
+import { sharedAdvice } from './share/snapshot'
 import { WhichPick } from './board/WhichPick'
 import { loadLocalRefs } from './scan/localRefs'
 import { newTracker, trackInstruments, type PickQuestion } from './track'
@@ -58,7 +59,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [local, setLocal] = useState<LocalRefs>({})
   useEffect(() => void loadLocalRefs().then(setLocal), [])
   const workerScan = useScan()
-  useShare(reading, source, shelley, corrections)
   const read = scanner ?? workerScan
   const canLive = liveSupported()
   const board = useMemo(() => ({ ...state, shelley }), [state, shelley])
@@ -67,6 +67,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   useOverlay(shown, updating)
   // the advice for the board on screen now (capture mode saves it beside the frame)
   const advice = shown && shown.board === board ? shown.advice : null
+  // shared with the board, so real games can check the predictions
+  useShare(reading, source, shelley, corrections, useMemo(() => (advice ? sharedAdvice({ board, advice }) : undefined), [advice, board]))
   // capture mode: the final advice for a saved frame is saved beside it
   const keepAdvice = useRef<Keep | null>(null)
   // instruments are remembered through a game rather than re-read from their small icons each time

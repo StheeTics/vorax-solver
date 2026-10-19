@@ -2,6 +2,12 @@
 // about the player. Boards of one game share a run id, in seq order.
 import type { ScreenMonster } from '@/strategy/advisor'
 import type { FieldKey, Reading, Source } from '../types'
+import type { Shown } from '../advice/useAdvice'
+import { describe } from '../advice/describe'
+
+/** The advice shown for a board, so real games can check the predictions: the move in words, and its
+ *  predicted end (average counted to 950,000, share of futures reaching it) when the look-ahead gave one. */
+export interface SharedAdvice { move: string; activity: number | null; reached: number | null }
 
 export interface Snapshot {
   uid: string
@@ -18,6 +24,14 @@ export interface Snapshot {
   instruments: string[]
   shelley: number
   corrected: FieldKey[]
+  advice?: SharedAdvice
+}
+
+export function sharedAdvice(shown: Shown | null): SharedAdvice | undefined {
+  const best = shown?.advice.best
+  if (!shown || !best) return undefined
+  const end = best === 'refresh' ? shown.advice.refreshEnd : best.end
+  return { move: best === 'refresh' ? 'Refresh' : describe(best, shown.board, true), activity: end ? Math.round(end.activity) : null, reached: end ? end.reached : null }
 }
 
 /** Only boards the reader was sure of, or the player corrected, from a real screen. */
@@ -28,7 +42,7 @@ export function shareable(r: Reading, source: Source, corrected: FieldKey[]): bo
 
 export const startsRun = (r: Reading, trigger: string) => trigger === 'screen' || (r.state.phase === 'instrument' && r.state.round === 1)
 
-export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live' | 'screenshot'; trigger: string; shelley: number; corrected: FieldKey[] }): Snapshot {
+export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live' | 'screenshot'; trigger: string; shelley: number; corrected: FieldKey[]; advice?: SharedAdvice }): Snapshot {
   const s = r.state
   return {
     uid: crypto.randomUUID(),
@@ -45,5 +59,6 @@ export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: str
     instruments: [...s.instruments],
     shelley: ctx.shelley,
     corrected: [...ctx.corrected],
+    ...(ctx.advice ? { advice: ctx.advice } : {}),
   }
 }

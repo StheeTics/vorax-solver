@@ -3,7 +3,7 @@ import type { FieldKey, Reading, Source } from '../types'
 import { appTag, ENDPOINT, sendingAllowed } from './endpoint'
 import { createQueue } from './queue'
 import { loadShare } from './shareStore'
-import { shareable, startsRun, toSnapshot, type Snapshot } from './snapshot'
+import { shareable, startsRun, toSnapshot, type SharedAdvice, type Snapshot } from './snapshot'
 
 const BUILD = typeof __BUILD__ === 'string' ? __BUILD__ : 'dev'
 
@@ -20,10 +20,11 @@ async function post(batch: Snapshot[]): Promise<boolean> {
  * Shares each board read from a real screen, once the next one arrives (or the page closes), so the
  * player's corrections go with it.
  */
-export function useShare(reading: Reading | null, source: Source, shelley: number, corrections: Record<FieldKey, string>) {
+/** advice: what the Solver advised for the board on screen, shared with it */
+export function useShare(reading: Reading | null, source: Source, shelley: number, corrections: Record<FieldKey, string>, advice?: SharedAdvice) {
   const queue = useRef<ReturnType<typeof createQueue> | null>(null)
   const run = useRef({ id: '', seq: 0 })
-  const held = useRef<{ reading: Reading; source: Source; corrected: FieldKey[] } | null>(null)
+  const held = useRef<{ reading: Reading; source: Source; corrected: FieldKey[]; advice?: SharedAdvice } | null>(null)
 
   if (!queue.current && sendingAllowed()) queue.current = createQueue({ send: post })
 
@@ -33,7 +34,7 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
     if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source, h.corrected) || h.source === 'manual') return
     const trigger = h.reading.frame?.trigger ?? 'screenshot'
     if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
-    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: h.source, trigger, shelley, corrected: h.corrected }))
+    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: h.source, trigger, shelley, corrected: h.corrected, advice: h.advice }))
   }
 
   useEffect(() => {
@@ -45,6 +46,10 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
   useEffect(() => {
     if (held.current) held.current.corrected = Object.keys(corrections)
   }, [corrections])
+
+  useEffect(() => {
+    if (held.current && advice) held.current.advice = advice
+  }, [advice])
 
   useEffect(() => {
     const onHide = () => {

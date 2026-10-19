@@ -40,7 +40,18 @@ export function validate(raw: unknown, names: Names) {
     uid: s.uid, run: s.run, seq: s.seq, app: s.app, source: s.source as string, trigger: s.trigger,
     round: s.round, phase: s.phase as string, refreshes: s.refreshes, shelley: s.shelley, corrected: s.corrected as string[],
     tanks, hand: s.hand as string[], instruments: s.instruments as string[],
+    ...adviceOf(s.advice),
   }
+}
+
+/** The advice shown with a board ({ move, activity, reached }); a malformed one is dropped, the board kept. */
+function adviceOf(raw: unknown): { advice?: { move: string; activity: number | null; reached: number | null } } {
+  if (!raw || typeof raw !== 'object') return {}
+  const a = raw as Record<string, unknown>
+  const okActivity = a.activity === null || int(a.activity, 0, 100 * MAX_STAT)
+  const okReached = a.reached === null || (typeof a.reached === 'number' && a.reached >= 0 && a.reached <= 1)
+  if (!str(a.move, /^[^<>]{1,160}$/) || !okActivity || !okReached) return {}
+  return { advice: { move: a.move, activity: a.activity as number | null, reached: a.reached as number | null } }
 }
 
 /** Values in an instrument icon's pattern: 24x24 grey levels, centred and scaled to length 1. */

@@ -3,7 +3,12 @@
 
 export interface StatRow { received: string; client: string; body: string }
 
-interface Board { run: string; round: number; app: string; corrected?: string[]; instruments?: string[] }
+interface Tank { activity: number; quantity: number }
+interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
+
+/** The advice's goal (src/strategy/bot.ts TARGET): with the endgame battle bonus it reaches rainbow. */
+const TARGET = 950_000
+const total = (b: Board) => (b.tanks ?? []).reduce((s, t) => s + (t ? t.activity * t.quantity : 0), 0)
 
 export interface Stats {
   generated: string
@@ -17,12 +22,16 @@ export interface Stats {
   /** games per site version */
   versions: Record<string, number>
   recent: { start: string; boards: number; round: number; app: boolean; instruments: string[] }[]
+  /** games that reached the round-13 Surgical Protocol: its board's total is the final score */
+  finished: { games: number; reached: number; finals: number[] }
+  /** the advice's predicted chance of 950,000 (in 20% bands) against how those finished games ended */
+  calibration: { band: string; predicted: number; games: number; reached: number }[]
 }
 
 const RECENT = 25
 
 export function summarize(rows: StatRow[], now = new Date()): Stats {
-  const games = new Map<string, { start: string; day: string; boards: number; round: number; app: boolean; version: string; instruments: string[] }>()
+  const games = new Map<string, { start: string; day: string; boards: number; round: number; app: boolean; version: string; instruments: string[]; final: number | null; predictions: number[] }>()
   const days = new Map<string, { boards: number; games: Set<string>; players: Set<string> }>()
   let corrected = 0
   for (const r of rows) {
@@ -40,10 +49,12 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     days.set(day, d)
     if (b.corrected?.length) corrected++
     const app = /-overlay$/.test(b.app)
-    const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [] }
+    const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [] }
     g.boards++
     g.round = Math.max(g.round, b.round)
     if (b.instruments?.length) g.instruments = b.instruments
+    if (b.round === 13 && b.phase === 'protocol') g.final = total(b)
+    if (typeof b.advice?.reached === 'number') g.predictions.push(b.advice.reached)
     games.set(b.run, g)
   }
   const list = [...games.values()]
@@ -54,8 +65,20 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     rounds[g.round] = (rounds[g.round] ?? 0) + 1
     versions[g.version] = (versions[g.version] ?? 0) + 1
   }
+  const finished = list.filter(g => g.final !== null)
+  const bands = new Map<number, { sum: number; games: number; reached: number }>()
+  for (const g of finished) for (const p of g.predictions) {
+    const k = Math.min(4, Math.floor(p * 5))
+    const band = bands.get(k) ?? { sum: 0, games: 0, reached: 0 }
+    band.sum += p
+    band.games++
+    if (g.final! >= TARGET) band.reached++
+    bands.set(k, band)
+  }
   return {
     generated: now.toISOString(),
+    finished: { games: finished.length, reached: finished.filter(g => g.final! >= TARGET).length, finals: finished.map(g => g.final!) },
+    calibration: [...bands.entries()].sort(([a], [b]) => a - b).map(([k, b]) => ({ band: `${k * 20}–${k * 20 + 20}%`, predicted: Math.round((100 * b.sum) / b.games) / 100, games: b.games, reached: b.reached })),
     totals: { boards: rows.length, games: list.length, playersToday: days.get(today)?.players.size ?? 0 },
     days: [...days.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([day, d]) => {
       const played = list.filter(g => g.day === day)

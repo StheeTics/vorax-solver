@@ -35,6 +35,21 @@ describe('what is shared', () => {
     expect(s.uid).toMatch(/^[0-9a-f-]{20,}$/)
     for (const k of ['time', 'at', 'date', 'frame', 'width']) expect(s).not.toHaveProperty(k)
   })
+
+  it('a snapshot carries the advice shown for that board, to check predictions against real games', () => {
+    const advice = { move: 'Play Xeno-Hormone (card 1) → tank 2', activity: 812_000, reached: 0.4 }
+    expect(toSnapshot(reading, { ...ctx, advice }).advice).toEqual(advice)
+    expect(toSnapshot(reading, ctx)).not.toHaveProperty('advice')
+  })
+
+  it('the advice to share: the move in words and its prediction', async () => {
+    const { sharedAdvice } = await import('@/solver/share/snapshot')
+    const board = { ...reading.state, hand: ['Xeno-Hormone', 'Mutagenic Powder'] }
+    const best = { index: 1, targets: [0], value: 1, end: { activity: 812_000.4, reached: 0.4 } }
+    expect(sharedAdvice({ board, advice: { best, ranking: [best], board: 0, plan: true, final: true, ms: 1, unknown: [] } })).toEqual({ move: 'Play Mutagenic Powder (card 2) → tank 1', activity: 812_000, reached: 0.4 })
+    expect(sharedAdvice({ board, advice: { best: 'refresh', ranking: [], board: 0, plan: true, final: true, ms: 1, unknown: [], refreshEnd: { activity: 500_000, reached: 0.1 } } })).toEqual({ move: 'Refresh', activity: 500_000, reached: 0.1 })
+    expect(sharedAdvice(null)).toBeUndefined()
+  })
 })
 
 describe('the upload queue', () => {
