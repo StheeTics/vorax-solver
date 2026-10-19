@@ -35,6 +35,9 @@ function memory(): Store & { rows: { id: number; uid: string; client: string; bo
     async export(after, limit) {
       return rows.filter(r => r.id > after).slice(0, limit)
     },
+    async stats() {
+      return rows.map(r => ({ received: '2026-10-18T00:00:00Z', client: r.client, body: r.body }))
+    },
   }
 }
 

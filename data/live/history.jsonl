@@ -1,0 +1,5 @@
+{"date": "2026-10-18", "change": "Odds measured from 14 live games (advice: this round's score only)", "games": 240, "reached": 0.233, "average": 621850, "median": 599964}
+{"date": "2026-10-18", "change": "Potion look-ahead to the end of the run (best 4 options x 32 futures)", "games": 240, "reached": 0.283, "average": 665651, "median": 676872}
+{"date": "2026-10-18", "change": "Goal: the score counted up to 950,000", "games": 240, "reached": 0.329, "average": 703054, "median": 754452}
+{"date": "2026-10-18", "change": "Look-ahead plays every card on offer and a reroll", "games": 240, "reached": 0.467, "average": 783727, "median": 918369}
+{"date": "2026-10-18", "change": "Futures steer toward what the instruments need", "games": 240, "reached": 0.496, "average": 786155, "median": 945057}

@@ -3,6 +3,8 @@
 // quota is counted against a salted hash that changes every day.
 import names from './names.json'
 import { validate, validateIcon } from './validate'
+import { summarize, type StatRow } from './stats'
+import { DASHBOARD_HTML } from './dashboard'
 
 export interface Store {
   /** stores rows with new uids; returns how many were new */
@@ -13,10 +15,14 @@ export interface Store {
   /** stores an icon with a new uid; returns 1 if it was new */
   insertIcon(row: { uid: string; client: string; body: string }): Promise<number>
   exportIcons(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
+  /** every board with when it came and its daily player code, for the dashboard's counts */
+  stats(): Promise<StatRow[]>
 }
 
 export interface Env {
   EXPORT_TOKEN: string
+  /** the analytics page's password (wrangler secret put DASHBOARD_TOKEN) */
+  DASHBOARD_TOKEN?: string
   IP_SALT: string
   LIMIT: { limit(o: { key: string }): Promise<{ success: boolean }> }
   DB?: D1Like
@@ -109,6 +115,15 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
   }
 
+  // The private analytics page and its numbers (counts only; see stats.ts).
+  if (url.pathname === '/dashboard' && req.method === 'GET') {
+    return new Response(DASHBOARD_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } })
+  }
+  if (url.pathname === '/v1/stats' && req.method === 'GET') {
+    if (!env.DASHBOARD_TOKEN || req.headers.get('authorization') !== `Bearer ${env.DASHBOARD_TOKEN}`) return json({ error: 'password' }, 401)
+    return json(summarize(await store.stats()), 200, { 'cache-control': 'no-store' })
+  }
+
   return json({ error: 'not found' }, 404)
 }
 
@@ -141,6 +156,10 @@ export function d1Store(db: D1Like): Store {
     },
     async exportIcons(after, limit) {
       const { results } = await db.prepare('SELECT id, uid, received, body FROM icons WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
+      return results
+    },
+    async stats() {
+      const { results } = await db.prepare('SELECT received, client, body FROM snapshots ORDER BY id').bind().all<StatRow>()
       return results
     },
   }
