@@ -15,8 +15,8 @@ describe('the dashboard summary', () => {
 
   it('counts boards, games and players (different devices) per day', () => {
     expect(s.days).toEqual([
-      { day: '2026-10-18', boards: 3, games: 2, players: 2, website: 1, app: 1 },
-      { day: '2026-10-19', boards: 1, games: 1, players: 1, website: 1, app: 0 },
+      { day: '2026-10-18', boards: 3, games: 2, players: 2, website: 1, app: 1, finished: 0, averageFinal: null },
+      { day: '2026-10-19', boards: 1, games: 1, players: 1, website: 1, app: 0, finished: 0, averageFinal: null },
     ])
     expect(s.totals).toMatchObject({ boards: 4, games: 3 })
   })
@@ -45,6 +45,9 @@ describe('real results', () => {
     row('2026-10-18T12:00:00Z', 'c', board('g3', 4)),
   ]
   const s = summarize(rows, new Date('2026-10-19T00:00:00Z'))
+  it('the average final score per day, to see games getting better', () => {
+    expect(s.days.map(d => [d.day, d.finished, d.averageFinal])).toEqual([['2026-10-18', 2, 625_000]])
+  })
   it('the final score of every finished game, how many reached 950,000, and the average', () => {
     expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000], average: 625_000 })
   })

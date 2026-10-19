@@ -22,6 +22,13 @@ describe('what is shared', () => {
     expect(shareable({ ...reading, problems: [{ kind: 'notFound' }] }, 'live', [])).toBe(false)
   })
 
+  it('the round-13 Surgical Protocol is a game’s final board: shared at once, so every finished game has its final score', async () => {
+    const { isFinalBoard } = await import('@/solver/share/snapshot')
+    expect(isFinalBoard({ ...reading, state: { ...reading.state, phase: 'protocol', round: 13 } })).toBe(true)
+    expect(isFinalBoard({ ...reading, state: { ...reading.state, phase: 'protocol', round: 11 } })).toBe(false)
+    expect(isFinalBoard(reading)).toBe(false)
+  })
+
   it('a run starts at the game screen or a round-1 instrument offer', () => {
     expect(startsRun(reading, 'screen')).toBe(true)
     expect(startsRun({ ...reading, state: { ...reading.state, phase: 'instrument', round: 1 } }, 'board')).toBe(true)

@@ -1,0 +1,58 @@
+# Once a day, when the odds changed in the last day: 240 simulated games with the advice as shipped
+# (instruments by the average final score; potions looking ahead to the end of the run, steering 0.3),
+# and a line in data/live/history.jsonl, the dashboard's "Odds and advice over time". The advice itself
+# needs no rerun to follow new odds: its look-ahead plays its futures with the current odds.
+# Or on demand: gh workflow run daily-check.yml
+name: Daily check
+
+on:
+  schedule:
+    - cron: '40 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-check
+  cancel-in-progress: false
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Did the odds change in the last day?
+        id: changed
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ -n "$(git log --since='25 hours ago' --format=%h -- src/data/liveWeights.ts)" ]; then echo "run=yes" >> "$GITHUB_OUTPUT"; else echo "The odds didn't change: nothing to check."; fi
+
+      - uses: actions/setup-node@v4
+        if: steps.changed.outputs.run == 'yes'
+        with:
+          node-version: 22
+          cache: npm
+      - if: steps.changed.outputs.run == 'yes'
+        run: npm ci
+
+      - name: Simulate 240 games with the advice as shipped
+        if: steps.changed.outputs.run == 'yes'
+        run: |
+          shards=$(nproc)
+          KEEP=sim-run GOAL=mean bash scripts/sim/shard.sh "$shards" $((240 / shards)) plan:4:32:0.3 board 16
+
+      - name: Add the result to the dashboard's history
+        if: steps.changed.outputs.run == 'yes'
+        run: |
+          python3 scripts/sim/history.py sim-run "$(date -u +%Y-%m-%d)" "Daily check: the advice under the odds of $(grep -oP "updated: '\K[^']+" src/data/liveWeights.ts)"
+          tail -1 data/live/history.jsonl
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add data/live/history.jsonl
+          git commit -m "Daily check: $(tail -1 data/live/history.jsonl | python3 -c "import json,sys; e=json.load(sys.stdin); print(f\"{round(100*e['reached'])}% of 240 simulated games reached 950k\")")"
+          git pull --rebase
+          git push

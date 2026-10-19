@@ -40,6 +40,10 @@ export function shareable(r: Reading, source: Source, corrected: FieldKey[]): bo
   return Object.entries(r.fields).every(([k, f]) => f.sure || corrected.includes(k))
 }
 
+/** The game's last board (the round-13 Surgical Protocol): its total is the final score, and no board follows
+ *  to send it with, so it's shared at once. */
+export const isFinalBoard = (r: Reading) => r.state.phase === 'protocol' && r.state.round === 13
+
 export const startsRun = (r: Reading, trigger: string) => trigger === 'screen' || (r.state.phase === 'instrument' && r.state.round === 1)
 
 export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live' | 'screenshot'; trigger: string; shelley: number; corrected: FieldKey[]; advice?: SharedAdvice }): Snapshot {

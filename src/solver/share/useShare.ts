@@ -3,7 +3,7 @@ import type { FieldKey, Reading, Source } from '../types'
 import { appTag, ENDPOINT, sendingAllowed } from './endpoint'
 import { createQueue } from './queue'
 import { loadShare } from './shareStore'
-import { shareable, startsRun, toSnapshot, type SharedAdvice, type Snapshot } from './snapshot'
+import { isFinalBoard, shareable, startsRun, toSnapshot, type SharedAdvice, type Snapshot } from './snapshot'
 
 const BUILD = typeof __BUILD__ === 'string' ? __BUILD__ : 'dev'
 
@@ -41,6 +41,11 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
     if (!reading) return
     release()
     held.current = { reading, source, corrected: [] }
+    // the game's last board: nothing follows to send it with, so it goes now (its final score)
+    if (isFinalBoard(reading)) {
+      release()
+      void queue.current?.flush()
+    }
   }, [reading])
 
   useEffect(() => {

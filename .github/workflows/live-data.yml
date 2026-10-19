@@ -1,8 +1,10 @@
-# Pulls the boards and named panel icons the Solver shared from the live-data collector (worker/), measures
-# the live odds (data/live/rates.json), writes the weight changes they suggest to data/live/proposal.md,
-# runs the tests, and commits the data. It changes no weights and deploys nothing: the data is reviewed
-# first, and weights are applied by hand (the weights script without --propose).
-# Runs every 15 minutes while data comes in fast (GitHub may run it late), or on demand:
+# Every hour: pulls the boards and named panel icons the Solver shared from the live-data collector (worker/),
+# measures the live odds (data/live/rates.json), and applies the odds changes the data supports, within the
+# guards in scripts/live/propose.ts (30+ sightings, outside the 95% range, at most 2x per update). It replays
+# the real moves in the simulator (data/live/rules-check.json), runs the tests and commits. When the odds
+# changed, it notes the change in the dashboard's history and starts the strengths workflow, which
+# re-measures the instrument strengths under the new odds and redeploys the site (a push made with the
+# workflow's token starts no other workflow by itself). Or on demand:
 # gh workflow run live-data.yml
 # Needs the repo variable LIVE_DATA_URL and the secret LIVE_DATA_TOKEN (see worker/README.md); until the
 # variable is set, the job is skipped.
@@ -10,11 +12,12 @@ name: Live data
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 concurrency:
   group: live-data
@@ -38,8 +41,8 @@ jobs:
           LIVE_DATA_TOKEN: ${{ secrets.LIVE_DATA_TOKEN }}
         run: npx vite-node scripts/live/pull.ts | tee pull.txt
 
-      - name: Propose weight changes (not applied)
-        run: npx vite-node scripts/live/weights.ts --propose | tee weights.txt
+      - name: Apply the odds changes the live data supports
+        run: npx vite-node scripts/live/weights.ts | tee weights.txt
 
       - name: Replay real moves in the simulator (card-effect check)
         run: npx vite-node scripts/live/checkRules.ts data/live/raw | tee rules.txt
@@ -47,9 +50,18 @@ jobs:
       - name: Test
         run: npm test
 
-      - name: Commit
+      - name: Note an odds change in the dashboard's history
         run: |
-          git add data/live
+          if ! git diff --quiet src/data/liveWeights.ts; then
+            python3 -c "import json,sys; print(json.dumps({'date': sys.argv[1], 'change': 'Odds updated from live data: ' + sys.argv[2]}))" "$(date -u +%Y-%m-%d)" "$(head -1 weights.txt)" >> data/live/history.jsonl
+          fi
+
+      - name: Commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          odds=$(git diff --quiet src/data/liveWeights.ts || echo changed)
+          git add data/live src/data/liveWeights.ts
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0
@@ -63,3 +75,5 @@ jobs:
           } > message.txt
           git commit -F message.txt
           git push
+          # new odds: re-measure the strengths, which then redeploys the site
+          if [ -n "$odds" ]; then gh workflow run strengths.yml; fi

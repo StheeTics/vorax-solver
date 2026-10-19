@@ -48,6 +48,8 @@ export const DASHBOARD_HTML = `<!doctype html>
     <div class="tiles" id="tiles"></div>
     <h2>Per day</h2>
     <div class="panel"><p class="legend"><span><i class="key" style="background:var(--gold)"></i>Games</span><span><i class="key" style="background:var(--blue)"></i>Players</span></p><div id="days"></div></div>
+    <h2>Average final score per day</h2>
+    <div class="panel"><p class="sub">Games that finished that day (reached the round-13 Surgical Protocol); the dashed line is 950k, rainbow with the battle bonus. As more people play and the odds and advice improve, this should climb.</p><div id="scores"></div></div>
     <h2>Real results</h2>
     <div class="panel" id="real"></div>
     <h2>Card effects in real games</h2>
@@ -84,6 +86,23 @@ function bars(days) {
   return s + '<text x="0" y="14">' + top + '</text></svg>'
 }
 
+function scoreChart(days) {
+  const pts = days.filter(d => d.averageFinal !== null)
+  if (!pts.length) return '<p class="sub">No finished games yet.</p>'
+  const w = Math.max(360, pts.length * 70), h = 200, top = Math.max(1100000, ...pts.map(d => d.averageFinal)) * 1.05
+  const x = i => 40 + (pts.length === 1 ? (w - 60) / 2 : i * ((w - 60) / (pts.length - 1)))
+  const y = v => h - 26 - (v / top) * (h - 40)
+  let s = '<svg width="' + w + '" height="' + h + '" role="img" aria-label="Average final score per day">'
+  s += '<line x1="34" x2="' + (w - 10) + '" y1="' + y(950000) + '" y2="' + y(950000) + '" stroke="#ff5b5b" stroke-dasharray="5 4"/><text x="0" y="' + (y(950000) + 4) + '">950k</text>'
+  s += '<polyline fill="none" stroke="#e3b25a" stroke-width="2" points="' + pts.map((d, i) => x(i) + ',' + y(d.averageFinal)).join(' ') + '"/>'
+  pts.forEach((d, i) => {
+    s += '<circle cx="' + x(i) + '" cy="' + y(d.averageFinal) + '" r="4" fill="#ffd98a"><title>' + d.day + ': ' + Math.round(d.averageFinal).toLocaleString('en-US') + ' average over ' + d.finished + ' finished</title></circle>'
+    s += '<text x="' + (x(i) - 14) + '" y="' + (y(d.averageFinal) - 9) + '">' + Math.round(d.averageFinal / 1000) + 'k (' + d.finished + ')</text>'
+    s += '<text x="' + (x(i) - 14) + '" y="' + (h - 8) + '">' + d.day.slice(5) + '</text>'
+  })
+  return s + '</svg>'
+}
+
 async function load(pw) {
   const r = await fetch('/v1/stats', { headers: { authorization: 'Bearer ' + pw } })
   if (r.status === 401) throw new Error('Wrong password.')
@@ -96,6 +115,7 @@ async function load(pw) {
     [pct(s.totals.games ? appGames / s.totals.games : 0), 'of games in Vorax Overlay'], [pct(s.corrected), 'of boards corrected by hand'],
   ].map(([v, l]) => '<div class="tile"><b>' + esc(v) + '</b><span>' + esc(l) + '</span></div>').join('')
   $('days').innerHTML = bars(s.days) + table(['Day', 'Games', 'Players', 'Boards', 'Website', 'App'], s.days.slice().reverse().map(d => [d.day, d.games, d.players, d.boards, d.website, d.app]), [1, 2, 3, 4, 5])
+  $('scores').innerHTML = scoreChart(s.days)
   const rounds = Object.entries(s.rounds).sort((a, b) => a[0] - b[0])
   $('rounds').innerHTML = table(['Highest round', 'Games', ''], rounds.map(([r, n]) => [r, n, '█'.repeat(Math.round(40 * n / Math.max(...rounds.map(x => x[1]))))]), [1])
   const score = g => (g.score ? Math.round(g.score).toLocaleString('en-US') : '–') + (g.finished ? (g.score >= 950000 ? ' ✓' : '') : g.score ? ' (round ' + g.round + ')' : '')

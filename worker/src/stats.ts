@@ -13,8 +13,9 @@ const total = (b: Board) => (b.tanks ?? []).reduce((s, t) => s + (t ? t.activity
 export interface Stats {
   generated: string
   totals: { boards: number; games: number; playersToday: number }
-  /** per day: boards, games, players (different devices that day), games played on the website / in the app */
-  days: { day: string; boards: number; games: number; players: number; website: number; app: number }[]
+  /** per day: boards, games, players (different devices that day), games played on the website / in the app,
+   *  and the games finished that day with their average final score (null when none finished) */
+  days: { day: string; boards: number; games: number; players: number; website: number; app: number; finished: number; averageFinal: number | null }[]
   /** games by the highest round they reached */
   rounds: Record<number, number>
   /** the share of boards a player corrected */
@@ -88,7 +89,11 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     totals: { boards: rows.length, games: list.length, playersToday: days.get(today)?.players.size ?? 0 },
     days: [...days.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([day, d]) => {
       const played = list.filter(g => g.day === day)
-      return { day, boards: d.boards, games: d.games.size, players: d.players.size, website: played.filter(g => !g.app).length, app: played.filter(g => g.app).length }
+      const done = played.filter(g => g.final !== null)
+      return {
+        day, boards: d.boards, games: d.games.size, players: d.players.size, website: played.filter(g => !g.app).length, app: played.filter(g => g.app).length,
+        finished: done.length, averageFinal: done.length ? Math.round(done.reduce((s, g) => s + g.final!, 0) / done.length) : null,
+      }
     }),
     rounds,
     corrected: rows.length ? corrected / rows.length : 0,
