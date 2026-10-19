@@ -12,6 +12,15 @@ export function loadShelleyLevel(): number {
   }
 }
 
+/** Whether the player has picked their Intern Shelley level (until then the default stands in for it). */
+export function shelleyChosen(): boolean {
+  try {
+    return (SHELLEY_LEVELS as readonly number[]).includes(Number(localStorage.getItem(KEY)))
+  } catch {
+    return false
+  }
+}
+
 export function saveShelleyLevel(level: number): void {
   try {
     localStorage.setItem(KEY, String(level))

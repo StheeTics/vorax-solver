@@ -37,9 +37,11 @@ export interface OverlayCard {
   ask: string | null
 }
 
-/** The question for the card: an instrument the Solver couldn't tell (it waits for the answer), tanks whose
+/** The question for the card: the player's Intern Shelley level until it's picked (the advice depends on
+ *  it), an instrument the Solver couldn't tell (it waits for the answer), tanks whose
  *  numbers weren't read (they change the advice most), or an instrument read unsure. */
-export function overlayAsk(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>): string | null {
+export function overlayAsk(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>, shelleyUnset = false): string | null {
+  if (shelleyUnset) return 'Which Intern Shelley level do you have? Pick it in the Solver: it sets your instrument refreshes.'
   if (pending > 0) return 'Which instrument did you take? The Solver couldn’t tell.'
   const tanks = unreadTanks(fields, corrections)
   if (tanks.length) return `${unreadNote(tanks)} Check them in the Solver.`

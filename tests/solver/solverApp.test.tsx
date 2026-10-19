@@ -82,3 +82,24 @@ it('?demo=pick shows the “Which instrument did you pick?” question; answerin
     window.history.pushState({}, '', '/')
   }
 })
+
+describe('the Intern Shelley level is asked for until the player picks it', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('a new player is asked first, and picking a level saves it and closes the question', () => {
+    render(<SolverApp />)
+    const ask = screen.getByRole('region', { name: 'Your Intern Shelley level' })
+    expect(within(ask).getByText(/Which Intern Shelley level do you have\?/)).toBeTruthy()
+    within(ask).getByRole('radio', { name: '4' }).click()
+    return Promise.resolve().then(() => {
+      expect(screen.queryByRole('region', { name: 'Your Intern Shelley level' })).toBeNull()
+      expect(localStorage.getItem('vorax.shelleyLevel')).toBe('4')
+    })
+  })
+
+  it('a player who picked one isn’t asked again', () => {
+    localStorage.setItem('vorax.shelleyLevel', '3')
+    render(<SolverApp />)
+    expect(screen.queryByRole('region', { name: 'Your Intern Shelley level' })).toBeNull()
+  })
+})

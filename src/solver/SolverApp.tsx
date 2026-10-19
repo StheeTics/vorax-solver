@@ -3,7 +3,8 @@ import type { ScreenState } from '@/strategy/advisor'
 import { Attribution } from '@/ui/Attribution'
 import { Footnote } from '@/ui/Footnote'
 import { DOWNLOAD_URL, HOME_URL, SOLVER_URL } from '@/ui/links'
-import { loadShelleyLevel, saveShelleyLevel } from '@/ui/settingsStore'
+import { loadShelleyLevel, saveShelleyLevel, shelleyChosen } from '@/ui/settingsStore'
+import { ShelleyPicker } from '@/ui/ShelleyPicker'
 import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
 import { desktopBridge, overlayAsk, useOverlay } from './desktop/bridge'
@@ -50,6 +51,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [state, setState] = useState<ScreenState>(() => linked ?? emptyState())
   const [fields, setFields] = useState<Record<FieldKey, FieldRead>>({})
   const [shelley, setShelley] = useState(loadShelleyLevel)
+  // until the player picks their level, the default stands in for it and they're asked (a demo board brings its own)
+  const [askShelley, setAskShelley] = useState(() => !linked && !shelleyChosen())
   const [frame, setFrame] = useState<ImageData | null>(null)
   const [reading, setReading] = useState<Reading | null>(null)
   const [reading$, setReadingBusy] = useState(false)
@@ -77,7 +80,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   })
   // inside Vorax Overlay, the card over the game shows the same advice, and the question about an
   // instrument, since the app keeps this window hidden
-  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections))
+  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley))
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -151,6 +154,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const changeShelley = (l: number) => {
     setShelley(l)
     saveShelleyLevel(l)
+    setAskShelley(false)
   }
 
   return (
@@ -172,6 +176,15 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
           <Attribution />
         </details>
       </header>
+      {askShelley && (
+        <section className={styles.shelleyAsk} aria-label="Your Intern Shelley level">
+          <p>
+            <strong>Which Intern Shelley level do you have?</strong> It sets how many times you can refresh the instruments, so the advice depends on it.
+            You can change it any time under Board state.
+          </p>
+          <ShelleyPicker level={shelley} onChange={changeShelley} />
+        </section>
+      )}
       <aside className={styles.wip} role="note" aria-label="Work in progress">
         <strong>Work in progress:</strong> the odds are still being tuned from live games, and some instruments aren’t known yet.
         Playing with sharing on helps improve it.
