@@ -80,6 +80,7 @@ jobs:
             grep -v '^No learned icons' icons.txt || true
           } > message.txt
           git commit -F message.txt
+          git pull --rebase
           git push
           # new odds: re-measure the strengths, which then redeploys the site; new icons alone: redeploy
           if [ -n "$odds" ]; then gh workflow run strengths.yml; elif [ -n "$icons" ]; then gh workflow run deploy.yml; fi

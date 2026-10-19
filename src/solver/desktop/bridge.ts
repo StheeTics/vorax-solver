@@ -4,6 +4,7 @@
 // hotkey, and sends the advice to the overlay card over the game. On the website there is no bridge.
 import { useEffect } from 'react'
 import type { FileLike } from '../live/logFollower'
+import type { FieldKey, FieldRead } from '../types'
 import type { Shown } from '../advice/useAdvice'
 import { describe, predicted } from '../advice/describe'
 
@@ -27,6 +28,16 @@ export interface OverlayCard {
   round: number | null
   /** a newer board is being worked out: the card is the last board's */
   updating: boolean
+  /** a question the Solver window is asking (which instrument was taken): the card shows it with a button
+   *  that opens the window, which the app keeps hidden */
+  ask: string | null
+}
+
+/** The question for the card: an instrument the Solver couldn't tell (it asks which), or one read unsure. */
+export function overlayAsk(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>): string | null {
+  if (pending > 0) return 'Which instrument did you take? The Solver couldn’t tell.'
+  const unsure = Object.entries(fields).some(([k, f]) => /^instrument\d$/.test(k) && !f.sure && !(k in corrections))
+  return unsure ? 'An instrument may be misread: check it in the Solver.' : null
 }
 
 export const desktopBridge = (): DesktopBridge | null => (typeof window !== 'undefined' && (window as unknown as { VoraxDesktop?: DesktopBridge }).VoraxDesktop) || null
@@ -44,8 +55,8 @@ export function bridgeLog(bridge: DesktopBridge): FileLike {
 
 const OTHERS = 2
 
-export function overlayCard(shown: Shown | null, updating: boolean): OverlayCard {
-  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating }
+export function overlayCard(shown: Shown | null, updating: boolean, ask: string | null = null): OverlayCard {
+  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, ask }
   if (!shown) return { ...card, move: updating ? 'Working out the best move…' : 'Waiting for the cards…' }
   const { advice, board } = shown
   if (board.phase === 'protocol') return { ...card, move: 'Surgical Protocol', detail: 'Protocols don’t change Ultimate Activity: pick the one that suits your endgame battle.' }
@@ -62,8 +73,8 @@ export function overlayCard(shown: Shown | null, updating: boolean): OverlayCard
 }
 
 /** Keeps the overlay card in step with the advice on the page. */
-export function useOverlay(shown: Shown | null, updating: boolean, bridge: DesktopBridge | null = desktopBridge()): void {
+export function useOverlay(shown: Shown | null, updating: boolean, ask: string | null = null, bridge: DesktopBridge | null = desktopBridge()): void {
   useEffect(() => {
-    bridge?.showAdvice(overlayCard(shown, updating))
-  }, [shown, updating, bridge])
+    bridge?.showAdvice(overlayCard(shown, updating, ask))
+  }, [shown, updating, ask, bridge])
 }

@@ -544,6 +544,8 @@ ipcMain.on('overlay:fold', (e, folded) => {
   saveSettings();
 });
 ipcMain.on('overlay:solver', (e) => fromOverlay(e) && toggleSolver());
+// the card's question: the Solver window opens on it (never hides, as the Solver button can)
+ipcMain.on('overlay:answer', (e) => fromOverlay(e) && showSolver());
 ipcMain.on('overlay:snap', (e) => fromOverlay(e) && game.running && send('solver', 'snap'));
 ipcMain.on('overlay:reload', (e) => fromOverlay(e) && reloadSolver('the player asked'));
 ipcMain.on('overlay:restart', (e) => fromOverlay(e) && updateNow());

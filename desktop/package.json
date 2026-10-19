@@ -1,7 +1,7 @@
 {
   "name": "vorax-overlay",
   "productName": "Vorax Overlay",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "The Vorax Solver as a Windows app, with its advice in an overlay over the game.",
   "author": "tidewarden",
   "license": "MIT",
@@ -32,9 +32,27 @@
       "!node_modules/koffi/build/koffi/{darwin_arm64,darwin_x64,freebsd_arm64,freebsd_ia32,freebsd_x64,linux_arm64,linux_armhf,linux_ia32,linux_loong64,linux_riscv64d,linux_x64,musl_arm64,musl_x64,openbsd_ia32,openbsd_x64,win32_arm64,win32_ia32}/**",
       "!node_modules/koffi/{src,vendor,doc}/**"
     ],
-    "directories": { "output": "dist" },
-    "win": { "target": ["nsis"], "icon": "build/icon.png" },
-    "nsis": { "oneClick": true, "perMachine": false, "artifactName": "Vorax-Overlay-Setup.${ext}" },
-    "publish": [{ "provider": "github", "owner": "tidewarden", "repo": "tli-vorax-simulator", "releaseType": "release" }]
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png"
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "artifactName": "Vorax-Overlay-Setup.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "tidewarden",
+        "repo": "tli-vorax-simulator",
+        "releaseType": "release"
+      }
+    ]
   }
 }

@@ -22,6 +22,9 @@ function render() {
   const others = $('others');
   others.replaceChildren(...(c.others || []).map((o) => Object.assign(document.createElement('li'), { textContent: o })));
   others.hidden = !(c.others && c.others.length);
+  // the Solver window's question: it's hidden, so the card asks, and its button opens the window
+  $('ask').hidden = !c.ask;
+  $('ask-text').textContent = c.ask || '';
   // the app's own update first (downloading, or ready to install), then the site's
   const app = update.app === 'ready' || update.app === 'downloading';
   $('update').hidden = !(app || update.site);
@@ -44,6 +47,7 @@ $('fold').addEventListener('click', () => {
 render();
 });
 $('solver').addEventListener('click', () => api.openSolver());
+$('ask-button').addEventListener('click', () => api.answer());
 $('snap').addEventListener('click', () => api.snap());
 $('update-button').addEventListener('click', () => (update.app === 'ready' || update.app === 'downloading' ? api.restart() : api.reload()));
 

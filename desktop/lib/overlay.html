@@ -156,6 +156,12 @@
 
   .update span { flex: 1; }
 
+  /* the Solver window's question (which instrument was taken): the window is hidden, so it's asked here */
+  .ask {
+    border: 1px solid var(--gold-lo);
+    color: var(--text);
+  }
+
   .update button {
     padding: 3px 10px;
     border: 1px solid var(--gold);
@@ -234,6 +240,10 @@
       <p class="move" id="move">Waiting for the cards…</p>
       <p class="detail" id="detail" hidden></p>
       <ul class="others" id="others" hidden></ul>
+      <div class="update ask" id="ask" hidden>
+        <span id="ask-text"></span>
+        <button type="button" id="ask-button">Answer</button>
+      </div>
       <div class="update" id="update" hidden>
         <span id="update-text"></span>
         <button type="button" id="update-button"></button>

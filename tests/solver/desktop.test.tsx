@@ -1,5 +1,5 @@
 import { act, render, screen } from '@testing-library/react'
-import { bridgeLog, overlayCard, type DesktopBridge } from '@/solver/desktop/bridge'
+import { bridgeLog, overlayAsk, overlayCard, type DesktopBridge } from '@/solver/desktop/bridge'
 import { LiveSource, type LiveDeps } from '@/solver/live/LiveSource'
 import type { Advice, ScreenState } from '@/strategy/advisor'
 
@@ -78,6 +78,19 @@ describe('the overlay card', () => {
     expect(card.updating).toBe(false)
   })
 
+  it('carries the Solver’s open question, so the player sees it over the game', () => {
+    expect(overlayCard(null, false, 'Which instrument did you take?').ask).toBe('Which instrument did you take?')
+    expect(overlayCard(null, false).ask).toBeNull()
+  })
+
+  it('asks over the game when an instrument couldn’t be told, or may be misread', () => {
+    expect(overlayAsk(1, {}, {})).toBe('Which instrument did you take? The Solver couldn’t tell.')
+    expect(overlayAsk(0, { instrument1: { sure: false } }, {})).toBe('An instrument may be misread: check it in the Solver.')
+    expect(overlayAsk(0, { instrument1: { sure: false } }, { instrument1: 'Canine Teeth File' })).toBeNull()
+    // only instruments: an unsure tank number is the Solver window's to show
+    expect(overlayAsk(0, { 'tank0.activity': { sure: false }, instrument0: { sure: true } }, {})).toBeNull()
+  })
+
   it('says it is working before the first answer', () => {
     expect(overlayCard(null, true).move).toBe('Working out the best move…')
   })
@@ -103,7 +116,7 @@ describe('sending the advice to the overlay', () => {
     const { renderHook } = await import('@testing-library/react')
     const { useOverlay } = await import('@/solver/desktop/bridge')
     const { bridge } = fakeBridge()
-    const { rerender } = renderHook(({ updating }) => useOverlay(null, updating, bridge), { initialProps: { updating: false } })
+    const { rerender } = renderHook(({ updating }) => useOverlay(null, updating, null, bridge), { initialProps: { updating: false } })
     expect(bridge.showAdvice).toHaveBeenLastCalledWith(expect.objectContaining({ move: 'Waiting for the cards…' }))
     rerender({ updating: true })
     expect(bridge.showAdvice).toHaveBeenLastCalledWith(expect.objectContaining({ move: 'Working out the best move…', updating: true }))
@@ -111,7 +124,7 @@ describe('sending the advice to the overlay', () => {
   it('on the website (no app) it does nothing', async () => {
     const { renderHook } = await import('@testing-library/react')
     const { useOverlay } = await import('@/solver/desktop/bridge')
-    expect(() => renderHook(() => useOverlay(null, false, null))).not.toThrow()
+    expect(() => renderHook(() => useOverlay(null, false, null, null))).not.toThrow()
   })
 })
 

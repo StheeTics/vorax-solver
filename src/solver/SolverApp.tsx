@@ -6,7 +6,7 @@ import { DOWNLOAD_URL, HOME_URL, SOLVER_URL } from '@/ui/links'
 import { loadShelleyLevel, saveShelleyLevel } from '@/ui/settingsStore'
 import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
-import { desktopBridge, useOverlay } from './desktop/bridge'
+import { desktopBridge, overlayAsk, useOverlay } from './desktop/bridge'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -60,8 +60,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const canLive = liveSupported()
   const board = useMemo(() => ({ ...state, shelley }), [state, shelley])
   const { shown, updating } = useAdvice(board)
-  // inside Vorax Overlay, the card over the game shows the same advice
-  useOverlay(shown, updating)
   // the advice for the board on screen now (capture mode saves it beside the frame)
   const advice = shown && shown.board === board ? shown.advice : null
   // shared with the board, so real games can check the predictions
@@ -76,6 +74,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     const ask = linked && typeof location !== 'undefined' ? demoPick(location.search) : null
     return ask ? [{ id: ++askId, ...ask }] : []
   })
+  // inside Vorax Overlay, the card over the game shows the same advice, and the question about an
+  // instrument, since the app keeps this window hidden
+  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections))
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')

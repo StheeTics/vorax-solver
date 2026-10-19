@@ -43,3 +43,11 @@ it('teaches the reader the icons players named, every hour, and redeploys when t
   expect(t).toContain('src/solver/scan/learnedIcons.json')
   expect(t).toContain('gh workflow run deploy.yml')
 })
+
+it('every workflow that commits to main rebases onto it first: another job may have pushed meanwhile', () => {
+  for (const f of ['live-data', 'strengths', 'daily-check']) {
+    const t = readFileSync(`.github/workflows/${f}.yml`, 'utf8')
+    expect(t.indexOf('git pull --rebase'), f).toBeGreaterThan(t.indexOf('git commit'))
+    expect(t.indexOf('git pull --rebase'), f).toBeLessThan(t.indexOf('git push'))
+  }
+})
