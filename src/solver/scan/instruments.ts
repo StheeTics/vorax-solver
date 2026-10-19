@@ -5,6 +5,7 @@ import type { FieldRead, Rect } from '../types'
 import type { ScanData } from './data'
 import type { Layout } from './layout'
 import { signature, type Img } from './pixels'
+import learned from './learnedIcons.json'
 
 // An empty slot is dark glass: under 0.2% of its pixels are bright, against at least 2% for any icon, at
 // every screen size measured. Matching empty slots against pictures of empty slots didn't carry over to
@@ -39,9 +40,16 @@ export const STARTING_ITEM = '(starting item)'
 /** Panel icons a player named in this browser (WhichPick), kept under `icon:${name}` beside the named cards. */
 export const ICON_PREFIX = 'icon:'
 
+/** The built-in panel icons, with the ones players taught that were confirmed (scripts/live/mergeIcons.ts). */
+export function allIcons(data: Pick<ScanData, 'instrumentIcons'>): Record<string, number[][]> {
+  const icons: Record<string, number[][]> = { ...data.instrumentIcons }
+  for (const [name, vs] of Object.entries(learned as Record<string, number[][]>)) icons[name] = [...(icons[name] ?? []), ...vs]
+  return icons
+}
+
 // Cards named in the browser are whole-card pictures, not panel icons, so only the icon: entries take part.
 export function readInstruments(img: Img, l: Layout, data: ScanData, local: Record<string, unknown[]> = {}): { names: string[]; fields: Record<string, FieldRead>; ranks: [string, number][][]; known: string[] } {
-  const icons: Record<string, number[][]> = { ...data.instrumentIcons }
+  const icons = allIcons(data)
   for (const [k, vs] of Object.entries(local)) if (k.startsWith(ICON_PREFIX)) icons[k.slice(ICON_PREFIX.length)] = [...(icons[k.slice(ICON_PREFIX.length)] ?? []), ...(vs as number[][])]
   const fromRight: string[] = []
   const reads: FieldRead[] = []

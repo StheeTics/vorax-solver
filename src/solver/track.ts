@@ -53,8 +53,9 @@ export function trackInstruments(
     owned.forEach((n, i) => (fields[`instrument${i}`] = { sure: true, guess: n }))
     const sure = score >= SURE && score - (pick[1]?.[1] ?? 0) >= GAP
     fields[`instrument${count - 1}`] = { sure, guess: name, score, second: pick[1]?.[1] }
-    // an offer with an instrument we have no icon picture of: the player says which one it was
-    if (!sure && unpictured.length) ask = { offer: [...offer], slot: count - 1 }
+    // not confident which one it was (no picture of it yet, or the pictures don't match well): the player says,
+    // and the answer trains the reader
+    if (!sure) ask = { offer: [...offer], slot: count - 1 }
     offer = null
   } else {
     // out of step (joined mid-game, or a missed picture): take the panel as read

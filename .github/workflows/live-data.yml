@@ -1,4 +1,5 @@
 # Every hour: pulls the boards and named panel icons the Solver shared from the live-data collector (worker/),
+# teaches the reader the icons players named (src/solver/scan/learnedIcons.json, scripts/live/mergeIcons.ts),
 # measures the live odds (data/live/rates.json), and applies the odds changes the data supports, within the
 # guards in scripts/live/propose.ts (30+ sightings, outside the 95% range, at most 2x per update). It replays
 # the real moves in the simulator (data/live/rules-check.json), runs the tests and commits. When the odds
@@ -41,6 +42,9 @@ jobs:
           LIVE_DATA_TOKEN: ${{ secrets.LIVE_DATA_TOKEN }}
         run: npx vite-node scripts/live/pull.ts | tee pull.txt
 
+      - name: Teach the reader the instrument icons players named
+        run: npx vite-node scripts/live/learnIcons.ts | tee icons.txt
+
       - name: Apply the odds changes the live data supports
         run: npx vite-node scripts/live/weights.ts | tee weights.txt
 
@@ -61,7 +65,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           odds=$(git diff --quiet src/data/liveWeights.ts || echo changed)
-          git add data/live src/data/liveWeights.ts
+          icons=$(git diff --quiet src/solver/scan/learnedIcons.json || echo changed)
+          git add data/live src/data/liveWeights.ts src/solver/scan/learnedIcons.json
           if git diff --cached --quiet; then
             echo "Nothing new."
             exit 0
@@ -72,8 +77,9 @@ jobs:
             echo "Live data: $(head -1 pull.txt)"
             echo
             grep -v '^No weight changes' weights.txt || true
+            grep -v '^No learned icons' icons.txt || true
           } > message.txt
           git commit -F message.txt
           git push
-          # new odds: re-measure the strengths, which then redeploys the site
-          if [ -n "$odds" ]; then gh workflow run strengths.yml; fi
+          # new odds: re-measure the strengths, which then redeploys the site; new icons alone: redeploy
+          if [ -n "$odds" ]; then gh workflow run strengths.yml; elif [ -n "$icons" ]; then gh workflow run deploy.yml; fi

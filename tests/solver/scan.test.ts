@@ -175,3 +175,11 @@ describe.skipIf(!existsSync('training/h2-066-board.png'))('the permanent item at
     }
   })
 })
+
+it('icons players taught (learnedIcons.json) are read like the built-in ones', async () => {
+  const { allIcons } = await import('@/solver/scan/instruments')
+  const learned = (await import('@/solver/scan/learnedIcons.json')).default as Record<string, number[][]>
+  const icons = allIcons({ instrumentIcons: { Foo: [[1]] } } as never)
+  for (const [name, vs] of Object.entries(learned)) for (const v of vs) expect(icons[name]).toContainEqual(v)
+  expect(icons.Foo).toEqual([[1]])
+})

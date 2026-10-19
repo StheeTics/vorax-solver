@@ -101,3 +101,12 @@ describe('a screen that shows something in the panel before any instrument is pi
     expect(r.instruments).toEqual(['Aberrant Sprout', 'Pig Iron Bone Saw'])
   })
 })
+
+it('asks which instrument was picked whenever it isn’t confident, even when it has pictures of all the offer, so answers keep training it', () => {
+  let t = newTracker()
+  t = { ...t, owned: [], offer }
+  // every offered instrument has a picture, but the new icon matches none of them well
+  const r = trackInstruments(t, reading({ panel: [[['Hyperplastic Frontal Lobe', 0.62], ['Adherent Metatarsals', 0.6], ['Contracted Claws', 0.4]]] }), 'board')
+  expect(r.fields.instrument0.sure).toBe(false)
+  expect(r.ask).toEqual({ offer, slot: 0 })
+})

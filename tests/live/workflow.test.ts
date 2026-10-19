@@ -23,9 +23,8 @@ it('applies the odds changes the data supports (the guards are in propose.ts), a
   expect(t).toContain('npx vite-node scripts/live/weights.ts | tee weights.txt')
   expect(t).not.toContain('scripts/live/weights.ts --propose')
   expect(t).toContain('git add data/live src/data/liveWeights.ts')
-  // the strengths are re-measured under the new odds before the site redeploys
+  // the strengths are re-measured under the new odds before the site redeploys (they deploy it)
   expect(t).toContain('gh workflow run strengths.yml')
-  expect(t).not.toContain('gh workflow run deploy.yml')
 })
 
 it('pulls the named panel icons too', () => {
@@ -35,4 +34,12 @@ it('pulls the named panel icons too', () => {
 it('pull leaves the odds file alone when no new boards came in, so a quiet run commits nothing', () => {
   const t = readFileSync('scripts/live/pull.ts', 'utf8')
   expect(t).toMatch(/if \(added > 0 \|\| !existsSync/)
+})
+
+it('teaches the reader the icons players named, every hour, and redeploys when that changed it', () => {
+  const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
+  expect(t.indexOf('scripts/live/learnIcons.ts')).toBeGreaterThan(t.indexOf('scripts/live/pull.ts'))
+  expect(t.indexOf('scripts/live/learnIcons.ts')).toBeLessThan(t.indexOf('npm test'))
+  expect(t).toContain('src/solver/scan/learnedIcons.json')
+  expect(t).toContain('gh workflow run deploy.yml')
 })
