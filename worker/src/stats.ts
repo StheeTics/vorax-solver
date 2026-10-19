@@ -21,9 +21,10 @@ export interface Stats {
   corrected: number
   /** games per site version */
   versions: Record<string, number>
-  recent: { start: string; boards: number; round: number; app: boolean; instruments: string[] }[]
+  /** score: the final score when the game finished, else the total on its last shared board */
+  recent: { start: string; boards: number; round: number; app: boolean; instruments: string[]; score: number; finished: boolean }[]
   /** games that reached the round-13 Surgical Protocol: its board's total is the final score */
-  finished: { games: number; reached: number; finals: number[] }
+  finished: { games: number; reached: number; finals: number[]; average: number }
   /** the advice's predicted chance of 950,000 (in 20% bands) against how those finished games ended */
   calibration: { band: string; predicted: number; games: number; reached: number }[]
 }
@@ -31,7 +32,7 @@ export interface Stats {
 const RECENT = 25
 
 export function summarize(rows: StatRow[], now = new Date()): Stats {
-  const games = new Map<string, { start: string; day: string; boards: number; round: number; app: boolean; version: string; instruments: string[]; final: number | null; predictions: number[] }>()
+  const games = new Map<string, { start: string; day: string; boards: number; round: number; app: boolean; version: string; instruments: string[]; final: number | null; predictions: number[]; last: number; score: number }>()
   const days = new Map<string, { boards: number; games: Set<string>; players: Set<string> }>()
   let corrected = 0
   for (const r of rows) {
@@ -49,8 +50,13 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     days.set(day, d)
     if (b.corrected?.length) corrected++
     const app = /-overlay$/.test(b.app)
-    const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [] }
+    const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [], last: -1, score: 0 }
     g.boards++
+    const seq = b.seq ?? g.boards
+    if (seq >= g.last) {
+      g.last = seq
+      g.score = total(b)
+    }
     g.round = Math.max(g.round, b.round)
     if (b.instruments?.length) g.instruments = b.instruments
     if (b.round === 13 && b.phase === 'protocol') g.final = total(b)
@@ -77,7 +83,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
   }
   return {
     generated: now.toISOString(),
-    finished: { games: finished.length, reached: finished.filter(g => g.final! >= TARGET).length, finals: finished.map(g => g.final!) },
+    finished: { games: finished.length, reached: finished.filter(g => g.final! >= TARGET).length, finals: finished.map(g => g.final!), average: finished.length ? Math.round(finished.reduce((s, g) => s + g.final!, 0) / finished.length) : 0 },
     calibration: [...bands.entries()].sort(([a], [b]) => a - b).map(([k, b]) => ({ band: `${k * 20}–${k * 20 + 20}%`, predicted: Math.round((100 * b.sum) / b.games) / 100, games: b.games, reached: b.reached })),
     totals: { boards: rows.length, games: list.length, playersToday: days.get(today)?.players.size ?? 0 },
     days: [...days.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([day, d]) => {
@@ -87,6 +93,6 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     rounds,
     corrected: rows.length ? corrected / rows.length : 0,
     versions,
-    recent: list.sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, instruments: g.instruments })),
+    recent: list.sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, instruments: g.instruments, score: g.final ?? g.score, finished: g.final !== null })),
   }
 }

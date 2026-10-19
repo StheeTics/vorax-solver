@@ -27,7 +27,7 @@ describe('the dashboard summary', () => {
     expect(s.corrected).toBe(0.25)
   })
   it('the latest games, newest first, without anything about who played', () => {
-    expect(s.recent[0]).toEqual({ start: '2026-10-19T09:00:00Z', boards: 1, round: 13, app: false, instruments: ['Incubation Sac'] })
+    expect(s.recent[0]).toEqual({ start: '2026-10-19T09:00:00Z', boards: 1, round: 13, app: false, instruments: ['Incubation Sac'], score: 0, finished: false })
     expect(JSON.stringify(s)).not.toMatch(/"a2"|"client"/)
   })
 })
@@ -45,8 +45,13 @@ describe('real results', () => {
     row('2026-10-18T12:00:00Z', 'c', board('g3', 4)),
   ]
   const s = summarize(rows, new Date('2026-10-19T00:00:00Z'))
-  it('the final score of every finished game, and how many reached 950,000', () => {
-    expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000] })
+  it('the final score of every finished game, how many reached 950,000, and the average', () => {
+    expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000], average: 625_000 })
+  })
+  it('each recent game shows its score: final when finished, else at its last board', () => {
+    const byStart = Object.fromEntries(s.recent.map(g => [g.start, g]))
+    expect(byStart['2026-10-18T10:00:00Z']).toMatchObject({ score: 1_000_000, finished: true })
+    expect(byStart['2026-10-18T12:00:00Z']).toMatchObject({ score: 0, finished: false, round: 4 })
   })
   it('predicted against real: the advice’s chance of 950,000, in bands, against how those games ended', () => {
     expect(s.calibration).toEqual([

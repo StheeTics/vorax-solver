@@ -92,12 +92,14 @@ async function load(pw) {
   const appGames = s.days.reduce((n, d) => n + d.app, 0)
   $('tiles').innerHTML = [
     [s.totals.games, 'games shared'], [s.totals.boards, 'boards read'], [s.totals.playersToday, 'players today'],
+    [s.finished.games ? Math.round(s.finished.average / 1000) + 'k' : '–', 'average final score (' + s.finished.games + ' finished)'],
     [pct(s.totals.games ? appGames / s.totals.games : 0), 'of games in Vorax Overlay'], [pct(s.corrected), 'of boards corrected by hand'],
   ].map(([v, l]) => '<div class="tile"><b>' + esc(v) + '</b><span>' + esc(l) + '</span></div>').join('')
   $('days').innerHTML = bars(s.days) + table(['Day', 'Games', 'Players', 'Boards', 'Website', 'App'], s.days.slice().reverse().map(d => [d.day, d.games, d.players, d.boards, d.website, d.app]), [1, 2, 3, 4, 5])
   const rounds = Object.entries(s.rounds).sort((a, b) => a[0] - b[0])
   $('rounds').innerHTML = table(['Highest round', 'Games', ''], rounds.map(([r, n]) => [r, n, '█'.repeat(Math.round(40 * n / Math.max(...rounds.map(x => x[1]))))]), [1])
-  $('recent').innerHTML = table(['Started', 'Where', 'Boards', 'Round', 'Instruments'], s.recent.map(g => [g.start.replace('T', ' ').slice(0, 16), g.app ? 'App' : 'Website', g.boards, g.round, g.instruments.join(', ')]), [2, 3])
+  const score = g => (g.score ? Math.round(g.score).toLocaleString('en-US') : '–') + (g.finished ? (g.score >= 950000 ? ' ✓' : '') : g.score ? ' (round ' + g.round + ')' : '')
+  $('recent').innerHTML = '<p class="sub">Score: the final score when the game finished (✓ reached 950k), else the score on its last shared board.</p>' + table(['Started', 'Where', 'Boards', 'Round', 'Score', 'Instruments'], s.recent.map(g => [g.start.replace('T', ' ').slice(0, 16), g.app ? 'App' : 'Website', g.boards, g.round, score(g), g.instruments.join(', ')]), [2, 3, 4])
   $('versions').innerHTML = table(['Version', 'Games'], Object.entries(s.versions).sort((a, b) => b[1] - a[1]), [1])
   const f = s.finished, median = f.finals.length ? f.finals.slice().sort((a, b) => a - b)[f.finals.length >> 1] : 0
   $('real').innerHTML = (f.games
