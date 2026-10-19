@@ -75,7 +75,9 @@ jobs:
           ls -la .issue
 
       - name: Claude looks for a fix (files only)
+        id: claude
         if: steps.pick.outputs.number
+        continue-on-error: true
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
@@ -84,7 +86,7 @@ jobs:
             --model claude-opus-5-5
             --max-turns 80
             --allowedTools Read,Glob,Grep,Edit,Write
-            --disallowedTools Bash,WebFetch,WebSearch,NotebookEdit
+            --disallowedTools Bash,WebFetch,WebSearch,NotebookEdit,Read(./.git/**),Read(.git/**)
           prompt: |
             You are fixing a reported problem in the Vorax simulator and Solver (a fan tool for Torchlight
             Infinite's Surgical Preparation). Read AGENTS.md first and follow it.
@@ -109,6 +111,13 @@ jobs:
             Otherwise make no code changes, and write .issue/report.json: {"verdict": "no-fix",
             "summary": "<what you found: likely cause, what's missing to be sure, or why it isn't a bug>"}.
             Write the summary for the person who reported it: plain words, no jargon.
+
+      - name: If Claude stopped early, show its last message (only its own words, never tool output)
+        if: steps.pick.outputs.number && steps.claude.outcome == 'failure'
+        env:
+          OUT: ${{ steps.claude.outputs.execution_file }}
+        run: |
+          [ -f "$OUT" ] && jq -r '.[] | select(.type == "result") | (.result // .subtype)' "$OUT" | head -c 600 || echo "No output file."
 
       - name: Check the fix (no tokens here)
         id: check
