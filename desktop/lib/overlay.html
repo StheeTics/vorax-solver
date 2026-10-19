@@ -162,6 +162,31 @@
     color: var(--text);
   }
 
+  /* the instrument question, answered right here: one button per instrument offered */
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0 0;
+  }
+
+  .choices button {
+    flex: 1 1 auto;
+    padding: 5px 8px;
+    border: 1px solid var(--gold);
+    border-radius: 5px;
+    background: var(--gold-lo);
+    color: var(--gold-hi);
+    font: 600 12px var(--font-body);
+    cursor: pointer;
+  }
+
+  .choices button:hover,
+  .choices button:focus-visible {
+    background: var(--gold);
+    color: var(--bg-0);
+  }
+
   /* one message per line, the most pressing first */
   .ask-line {
     display: block;
@@ -255,6 +280,7 @@
         <span id="ask-text"></span>
         <button type="button" id="ask-button">Show me</button>
       </div>
+      <div class="choices" id="choices" role="group" aria-label="Which instrument did you take?" hidden></div>
       <div class="update" id="update" hidden>
         <span id="update-text"></span>
         <button type="button" id="update-button"></button>

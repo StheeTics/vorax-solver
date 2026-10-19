@@ -21,6 +21,8 @@ export interface DesktopBridge {
   /** the app's "take a picture now" hotkey */
   onSnap(cb: () => void): void
   showAdvice(card: OverlayCard): void
+  /** an instrument the player chose on the card, answering "Which instrument did you take?" (apps from 0.1.8 on) */
+  onChoose?(cb: (name: string) => void): void
   /** brings the app's hidden Solver window up, to ask the player something (apps from 0.1.5 on) */
   showSolver?(): void
   /** the game window's outer size, the picture's, and the display scaling (apps from 0.1.4 on) */
@@ -40,6 +42,8 @@ export interface OverlayCard {
    *  first; Show me opens the window, which the app keeps hidden. Apps before 0.1.7 show only `ask`. */
   asks: string[]
   ask: string | null
+  /** the open instrument question's offer: answered with a click on the card (apps from 0.1.8 on) */
+  choices: string[]
 }
 
 /** Everything the card should say, most pressing first: what stops the Solver following or reading the game,
@@ -76,9 +80,9 @@ export function bridgeLog(bridge: DesktopBridge): FileLike {
 
 const OTHERS = 2
 
-export function overlayCard(shown: Shown | null, updating: boolean, asks: string[] = [], depends: Depends[] | null = null): OverlayCard {
+export function overlayCard(shown: Shown | null, updating: boolean, asks: string[] = [], depends: Depends[] | null = null, choices: string[] = []): OverlayCard {
   const ask = asks.length ? `${asks[0]}${asks.length > 1 ? ` (and ${asks.length - 1} more in the Solver)` : ''}` : null
-  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, asks, ask }
+  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, asks, ask, choices }
   // an unconfirmed pick changes the best move: each instrument's, not one move on a guess
   if (shown && depends) return { ...card, move: 'Depends on which instrument you took', others: depends.map(d => `With ${d.name}: ${d.move}`) }
   if (!shown) return { ...card, move: updating ? 'Working out the best move…' : 'Waiting for the cards…' }
@@ -97,9 +101,10 @@ export function overlayCard(shown: Shown | null, updating: boolean, asks: string
 }
 
 /** Keeps the overlay card in step with the advice on the page. */
-export function useOverlay(shown: Shown | null, updating: boolean, asks: string[] = [], bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null): void {
+export function useOverlay(shown: Shown | null, updating: boolean, asks: string[] = [], bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null, choices: string[] = []): void {
   const key = asks.join('\n')
+  const offer = choices.join('\n')
   useEffect(() => {
-    bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends))
-  }, [shown, updating, key, bridge, depends])
+    bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends, offer ? offer.split('\n') : []))
+  }, [shown, updating, key, bridge, depends, offer])
 }

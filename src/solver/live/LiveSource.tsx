@@ -62,9 +62,11 @@ interface Props {
   desktop?: DesktopBridge | null
   /** what stops the Solver following the game (the log off, the window not shared), for the app's card */
   onTrouble?(trouble: Trouble | null): void
+  /** set to a function that takes a picture now (another look at a new instrument icon) */
+  snap?: { current: (() => void) | null }
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -76,6 +78,7 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
   const [saved, setSaved] = useState(0)
   const [tickError, setTickError] = useState('')
   const following = useRef<Following | null>(null)
+  if (snap) snap.current = () => following.current?.snapNow()
   const gate = useRef(changeGate())
   const ticking = useRef(false)
   const shareRef = useRef<WindowShare | null>(null)

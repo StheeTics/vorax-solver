@@ -110,6 +110,11 @@ describe('the overlay card', () => {
     expect(overlayAsks(0, { 'tank1.activity': { sure: false } }, {}, false, ['cantRead'])).toEqual([`${TROUBLES.cantRead.card} Show me says what to check.`])
   })
 
+  it('the card carries the open instrument question’s choices, to answer right there', () => {
+    expect(overlayCard(null, false, ['Which instrument did you take?'], null, ['Clustered Eggs', 'Fouled Scraper', 'Rawhide Restraint']).choices).toEqual(['Clustered Eggs', 'Fouled Scraper', 'Rawhide Restraint'])
+    expect(overlayCard(null, false).choices).toEqual([])
+  })
+
   it('the card carries them all, and older apps the first in its one line', () => {
     const card = overlayCard(null, false, ['a', 'b'])
     expect(card.asks).toEqual(['a', 'b'])

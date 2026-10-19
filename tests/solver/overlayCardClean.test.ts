@@ -12,7 +12,8 @@ it('lets through everything the page’s card carries, the question included', (
 
 it('only plain text, cut to length; anything else is left out', () => {
   expect(cleanCard({ move: 'Refresh', detail: 1, others: ['a', 2, 'c', 'd'], round: 'x', updating: 1, ask: { html: '<b>' }, asks: ['q', 3, 'r', 's', 't', 'u'], extra: 'no' }))
-    .toEqual({ move: 'Refresh', detail: '', others: ['a', '', 'c'], round: null, updating: true, ask: null, asks: ['q', 'r', 's', 't'] })
+    .toEqual({ move: 'Refresh', detail: '', others: ['a', '', 'c'], round: null, updating: true, ask: null, asks: ['q', 'r', 's', 't'], choices: [] })
   expect(cleanCard({ ask: 'x'.repeat(500) })!.ask).toHaveLength(300)
+  expect(cleanCard({ choices: ['Fouled Scraper', 2, 'Rawhide Restraint', 'a', 'b'] })!.choices).toEqual(['Fouled Scraper', 'Rawhide Restraint', 'a'])
   expect(cleanCard(null)).toBeNull()
 })

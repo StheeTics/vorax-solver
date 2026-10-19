@@ -52,6 +52,20 @@ it('returns to step 2 when sharing ends, and cancels a pending snap', async () =
   expect(screen.getByRole('button', { name: 'Share the game window' })).toBeTruthy()
 })
 
+it('gives the page a way to take another picture (a second look at a new instrument icon)', async () => {
+  const snap: { current: (() => void) | null } = { current: null }
+  const t = (() => {
+    let emit: (e: LiveEvent) => void = () => {}
+    const following = { stop: vi.fn(), snapNow: vi.fn(), cancel: vi.fn() }
+    const deps: LiveDeps = { shareWindow: vi.fn(), follow: vi.fn((_h, on) => ((emit = on), following)), pickLog: vi.fn(async () => ({ getFile: async () => ({ size: 0, slice: () => ({ arrayBuffer: async () => new ArrayBuffer(0) }) }) })) }
+    render(<LiveSource onFrame={vi.fn()} deps={deps} snap={snap} />)
+    return { following, emit }
+  })()
+  await connect()
+  snap.current!()
+  expect(t.following.snapNow).toHaveBeenCalled()
+})
+
 it('Snap now asks the follower for a manual snap', async () => {
   const t = setup()
   await connect()

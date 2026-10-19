@@ -14,6 +14,8 @@ function cleanCard(card) {
     ask: typeof card.ask === 'string' && card.ask ? text(card.ask, 300) : null,
     // all of it, most pressing first (pages before it sent only `ask`)
     asks: Array.isArray(card.asks) ? card.asks.filter((a) => typeof a === 'string' && a).slice(0, 4).map((a) => text(a, 300)) : [],
+    // the open instrument question's offer, answered with a click on the card
+    choices: Array.isArray(card.choices) ? card.choices.filter((a) => typeof a === 'string' && a).slice(0, 3).map((a) => text(a, 80)) : [],
   };
 }
 

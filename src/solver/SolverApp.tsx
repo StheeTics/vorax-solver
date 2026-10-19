@@ -20,7 +20,7 @@ import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
 import { useShare } from './share/useShare'
 import { sharedAdvice } from './share/snapshot'
-import { WhichPick } from './board/WhichPick'
+import { WhichPick, teachPick } from './board/WhichPick'
 import { loadLocalRefs } from './scan/localRefs'
 import { confirmPick, newTracker, trackInstruments, type PickQuestion } from './track'
 import type { LocalRefs } from './scan/scan'
@@ -45,6 +45,10 @@ function valueOf(s: ScreenState, field: FieldKey): string {
 type Keep = (value: unknown, what?: 'reading' | 'advice' | 'pick') => void
 
 let askId = 0
+
+/** How long after a pick the Solver looks at the panel again: long enough for the new icon to land at the
+ *  game's normal speed (the first picture is taken 0.4 s after the log goes quiet, measured at x4). */
+const RELOOK_MS = 1500
 
 
 export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
@@ -90,7 +94,10 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   // instrument, since the app keeps this window hidden
   const [trouble, setTrouble] = useState<Trouble | null>(null)
   // a pick it isn't sure of: the advice for each instrument it could be, and whether the best move differs
-  const openPick = pickAsks[0]?.question
+  const snapAgain = useRef<(() => void) | null>(null)
+  // a pick still being checked (the next boards look again) counts too, before any question is asked
+  const [checking, setChecking] = useState<PickQuestion | null>(null)
+  const openPick = pickAsks[0]?.question ?? checking
   const options = useMemo(
     () => (openPick && board.hand.length ? openPick.offer.map(name => ({ name, board: { ...board, instruments: board.instruments.map((n, i) => (i === openPick.slot ? name : n)) } })) : null),
     [openPick, board],
@@ -102,7 +109,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [windowed, setWindowed] = useState(false)
   const screen = linked ? null : screenTrouble({ filled: (reading?.state.tanks ?? []).filter(Boolean).length, unread: unreadTanks(fields, corrections).length, notGame, windowed })
   const troubles = [trouble, screen].filter((t): t is Trouble => !!t)
-  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles), undefined, depends)
+  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles), undefined, depends, pickAsks[0]?.question.offer ?? [])
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -136,6 +143,12 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         const t = trackInstruments(tracker.current, raw, trigger)
         tracker.current = t.tracker
         const ask = t.ask
+        const open = t.tracker.unsure[0]
+        setChecking(open ? { offer: open.offer, slot: open.slot } : null)
+        // a new icon not clear on its first picture may still be sliding in: another look once it's landed
+        if (t.tracker.unsure.some(q => q.looks === 0)) setTimeout(() => snapAgain.current?.(), RELOOK_MS)
+        // a pick a later board showed clearly needs no answer
+        if (t.settled.length) setPickAsks(list => list.filter(a => !t.settled.includes(a.question.slot)))
         if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++askId, question: ask, count: t.instruments.length, frame: img, keep }])
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
         r = { ...raw, state: { ...raw.state, instruments: t.instruments }, fields: { ...fields, ...t.fields } }
@@ -162,6 +175,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     const { question, keep } = asked
     setPickAsks(list => list.filter(a => a.id !== id))
     tracker.current = confirmPick(tracker.current, question.slot, name)
+    setChecking(c => (c?.slot === question.slot ? null : c))
     const owned = tracker.current.owned
     setState(s => ({ ...s, instruments: owned }))
     setFields(f => ({ ...f, [`instrument${question.slot}`]: { sure: true, guess: name } }))
@@ -169,11 +183,26 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     if (!linked) setLocal(await loadLocalRefs())
   }
 
+  // in the app: the instrument question answered with a click on the card, as if answered here
+  const fromCard = useRef<(name: string) => void>(() => {})
+  fromCard.current = (name: string) => {
+    const a = pickAsks[0]
+    if (!a || !a.question.offer.includes(name)) return
+    void (async () => {
+      if (!linked) await teachPick(a.frame, a.count, a.question, name)
+      await answerPick(a.id, name)
+    })()
+  }
+  useEffect(() => desktopBridge()?.onChoose?.(name => fromCard.current(name)), [])
+
   const edit = (next: ScreenState, field: FieldKey) => {
     setState(next)
     if (reading) setCorrections(c => ({ ...c, [field]: valueOf(next, field) }))
     // a corrected instrument is the player's word: no longer an unsure pick
-    if (field.startsWith('instrument')) tracker.current = { ...tracker.current, owned: [...next.instruments], unsure: tracker.current.unsure.filter(q => `instrument${q.slot}` !== field) }
+    if (field.startsWith('instrument')) {
+      tracker.current = { ...tracker.current, owned: [...next.instruments], unsure: tracker.current.unsure.filter(q => `instrument${q.slot}` !== field) }
+      setChecking(c => (c && `instrument${c.slot}` === field ? null : c))
+    }
     setFields(f => {
       const rest = { ...f }
       delete rest[field]
@@ -233,7 +262,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} />
+            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}

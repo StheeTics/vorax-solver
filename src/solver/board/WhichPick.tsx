@@ -20,6 +20,16 @@ interface Props {
   learn?: boolean
 }
 
+/** Learns the new icon as `name`: this browser remembers it, and (with sharing on) it's shared for everyone.
+ *  The same whether the player answers here or on the app's card. */
+export async function teachPick(frame: ImageData, count: number, question: PickQuestion, name: string): Promise<void> {
+  const rect = layout(frame).instrumentIcon[count - 1 - question.slot]
+  if (!rect) return
+  const pattern = iconPattern(frame, rect)
+  await addLocalRef(`icon:${name}`, pattern as unknown as ArtFeature)
+  void shareIcon(name, pattern)
+}
+
 /** A pick the Solver can't place (an offer with an instrument whose icon it hasn't seen): the player says
  *  which it was, this browser remembers that icon, and (with sharing on) it's shared for the built-in data. */
 export function WhichPick({ question, count, frame, onPicked, onSkip, learn = true }: Props) {
@@ -37,11 +47,7 @@ export function WhichPick({ question, count, frame, onPicked, onSkip, learn = tr
   }, [frame, rect])
 
   const choose = async (name: string) => {
-    if (rect && learn) {
-      const pattern = iconPattern(frame, rect)
-      await addLocalRef(`icon:${name}`, pattern as unknown as ArtFeature)
-      void shareIcon(name, pattern)
-    }
+    if (learn) await teachPick(frame, count, question, name)
     onPicked(name)
   }
 

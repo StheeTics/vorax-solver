@@ -69,10 +69,32 @@ it('with two offered instruments not yet pictured, the new icon is taken to be o
   expect(r.fields.instrument0.sure).toBe(false)
 })
 
-it('asks which instrument was picked when it can’t tell and the offer had one with no icon picture', () => {
+/** The same panel read on `n` more boards. */
+const again = (t: InstrumentTracker, panel: [string, number][][], n: number) => {
+  let r = trackInstruments(t, reading({ round: 3, panel }), 'board')
+  for (let i = 1; i < n; i++) r = trackInstruments(r.tracker, reading({ round: 3, panel }), 'board')
+  return r
+}
+
+it('asks which instrument was picked when the next look can’t tell either (the offer had one with no icon picture)', () => {
   const t = { ...newTracker(), owned: [], offer: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Vermicular Spinal Cord'] }
-  const r = trackInstruments(t, reading({ panel: [[['Hypertrophic Pituitary', 0.55], ['Rawhide Restraint', 0.41]]] }), 'board')
-  expect(r.ask).toEqual({ offer: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Vermicular Spinal Cord'], slot: 0 })
+  const panel: [string, number][][] = [[['Hypertrophic Pituitary', 0.55], ['Rawhide Restraint', 0.41]]]
+  const first = trackInstruments(t, reading({ panel }), 'board')
+  expect(first.ask).toBeUndefined()
+  expect(again(first.tracker, panel, 1).ask).toEqual({ offer: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Vermicular Spinal Cord'], slot: 0 })
+  // asked once, not on every look after
+  expect(again(first.tracker, panel, 2).ask).toBeUndefined()
+})
+
+it('doesn’t judge a new icon on the first picture after the pick (it can still be sliding in): no question then', () => {
+  const t = { ...newTracker(), owned: [], offer }
+  const r = trackInstruments(t, reading({ panel: [[['Hyperplastic Frontal Lobe', 0.4], ['Contracted Claws', 0.3]]] }), 'board')
+  expect(r.fields.instrument0.sure).toBe(false)
+  expect(r.ask).toBeUndefined()
+  // the next board shows it clearly: settled, never asked
+  const next = trackInstruments(r.tracker, reading({ round: 3, panel: [[['Contracted Claws', 0.96], ['Adherent Metatarsals', 0.5]]] }), 'board')
+  expect(next.instruments).toEqual(['Contracted Claws'])
+  expect(next.ask).toBeUndefined()
 })
 
 it('doesn’t ask when the new icon clearly is one of the offer', () => {
@@ -102,13 +124,14 @@ describe('a screen that shows something in the panel before any instrument is pi
   })
 })
 
-it('asks which instrument was picked whenever it isn’t confident, even when it has pictures of all the offer, so answers keep training it', () => {
+it('asks which instrument was picked whenever it stays unsure, even when it has pictures of all the offer, so answers keep training it', () => {
   let t = newTracker()
   t = { ...t, owned: [], offer }
   // every offered instrument has a picture, but the new icon matches none of them well
-  const r = trackInstruments(t, reading({ panel: [[['Hyperplastic Frontal Lobe', 0.62], ['Adherent Metatarsals', 0.6], ['Contracted Claws', 0.4]]] }), 'board')
+  const panel: [string, number][][] = [[['Hyperplastic Frontal Lobe', 0.62], ['Adherent Metatarsals', 0.6], ['Contracted Claws', 0.4]]]
+  const r = trackInstruments(t, reading({ panel }), 'board')
   expect(r.fields.instrument0.sure).toBe(false)
-  expect(r.ask).toEqual({ offer, slot: 0 })
+  expect(again(r.tracker, panel, 1).ask).toEqual({ offer, slot: 0 })
 })
 
 describe('a pick the Solver wasn’t sure of stays unsure until the player says', () => {
@@ -122,7 +145,7 @@ describe('a pick the Solver wasn’t sure of stays unsure until the player says'
     expect(first.fields.instrument0.sure).toBe(false)
     const later = trackInstruments(first.tracker, reading({ round: 3, panel: [[['Hyperplastic Frontal Lobe', 0.5]]] }), 'board')
     expect(later.fields.instrument0).toMatchObject({ sure: false, guess: 'Hyperplastic Frontal Lobe' })
-    expect(later.tracker.unsure).toEqual([{ slot: 0, offer: ['Hypertrophic Pituitary', 'Hyperplastic Frontal Lobe', 'Chrysalis Specimen'] }])
+    expect(later.tracker.unsure).toMatchObject([{ slot: 0, offer: ['Hypertrophic Pituitary', 'Hyperplastic Frontal Lobe', 'Chrysalis Specimen'] }])
   })
   it('until confirmed', async () => {
     const { confirmPick } = await import('@/solver/track')
@@ -135,6 +158,21 @@ describe('a pick the Solver wasn’t sure of stays unsure until the player says'
   it('confirming a slot the tracker doesn’t hold yet (a demo board, a game joined mid-way) still sets it', async () => {
     const { confirmPick } = await import('@/solver/track')
     expect(confirmPick(newTracker(), 0, 'Two-Inch Skull Nail').owned).toEqual(['Two-Inch Skull Nail'])
+  })
+  it('settles by itself when a later board shows the icon clearly (the first picture can catch it sliding in)', () => {
+    const first = unsurePick()
+    const later = trackInstruments(first.tracker, reading({ round: 3, panel: [[['Chrysalis Specimen', 0.95], ['Hyperplastic Frontal Lobe', 0.5]]] }), 'board')
+    expect(later.instruments).toEqual(['Chrysalis Specimen'])
+    expect(later.fields.instrument0).toMatchObject({ sure: true, guess: 'Chrysalis Specimen' })
+    expect(later.tracker.unsure).toEqual([])
+    expect(later.settled).toEqual([0])
+  })
+  it('only from the offer it came from, and only when clear', () => {
+    const first = unsurePick()
+    // clear, but not one of the offer
+    expect(trackInstruments(first.tracker, reading({ round: 3, panel: [[['Aberrant Sprout', 0.97]]] }), 'board').tracker.unsure).toHaveLength(1)
+    // one of the offer, but not clear enough
+    expect(trackInstruments(first.tracker, reading({ round: 3, panel: [[['Chrysalis Specimen', 0.8]]] }), 'board').tracker.unsure).toHaveLength(1)
   })
   it('a sure pick isn’t kept as unsure', () => {
     let t = newTracker()

@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { act, render, screen, within } from '@testing-library/react'
 import { SolverApp } from '@/solver/SolverApp'
 import { HOME_URL } from '@/ui/links'
 
@@ -79,6 +79,27 @@ it('?demo=pick shows the “Which instrument did you pick?” question; answerin
     expect(fetch).not.toHaveBeenCalled()
   } finally {
     fetch.mockRestore()
+    window.history.pushState({}, '', '/')
+  }
+})
+
+it('in the app, the instrument question is answered from the card over the game', async () => {
+  window.history.pushState({}, '', '/solver.html?demo=pick')
+  let choose: (name: string) => void = () => {}
+  const cards: { choices?: string[] }[] = []
+  ;(window as unknown as { VoraxDesktop?: unknown }).VoraxDesktop = {
+    logSize: async () => null, readLog: async () => new ArrayBuffer(0), onGame: () => {}, onSnap: () => {}, showAdvice: (c: { choices?: string[] }) => cards.push(c),
+    onChoose: (cb: (n: string) => void) => (choose = cb),
+  }
+  try {
+    render(<SolverApp />)
+    expect(cards.at(-1)!.choices).toEqual(['Two-Inch Skull Nail', 'Sinew Garrote', 'Nettle Toggle'])
+    await act(async () => choose('Two-Inch Skull Nail'))
+    await screen.findByDisplayValue('Two-Inch Skull Nail')
+    expect(screen.queryByRole('group', { name: 'Which instrument did you pick?' })).toBeNull()
+    expect(cards.at(-1)!.choices).toEqual([])
+  } finally {
+    delete (window as unknown as { VoraxDesktop?: unknown }).VoraxDesktop
     window.history.pushState({}, '', '/')
   }
 })

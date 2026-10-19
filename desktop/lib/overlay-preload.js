@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('VoraxOverlay', {
   fold: (folded) => ipcRenderer.send('overlay:fold', folded),
   openSolver: () => ipcRenderer.send('overlay:solver'),
   answer: () => ipcRenderer.send('overlay:answer'),
+  choose: (name) => ipcRenderer.send('overlay:choose', name),
   reload: () => ipcRenderer.send('overlay:reload'),
   restart: () => ipcRenderer.send('overlay:restart'),
   snap: () => ipcRenderer.send('overlay:snap'),

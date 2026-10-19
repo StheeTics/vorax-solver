@@ -8,9 +8,15 @@ export interface InstrumentTracker {
   owned: string[]
   /** the last instrument offer's cards, until one of them is picked */
   offer: string[] | null
-  /** picks it wasn't sure of, until the player says: each stays unsure (the advice says what it depends on) */
-  unsure: PickQuestion[]
+  /** picks it wasn't sure of, until a later board shows them clearly or the player says; `looks`: boards seen
+   *  since the pick */
+  unsure: (PickQuestion & { looks: number })[]
 }
+
+/** Looks after the pick's first picture before the player is asked: that picture can catch the new icon
+ *  sliding into the panel (the game's log says nothing of it), so the Solver takes another a moment later
+ *  (SolverApp RELOOK_MS) and asks only if that one isn't clear either. */
+const ASK_AFTER = 1
 
 export const newTracker = (): InstrumentTracker => ({ owned: [], offer: null, unsure: [] })
 
@@ -31,7 +37,7 @@ export function trackInstruments(
   t: InstrumentTracker,
   r: Reading,
   trigger?: string,
-): { tracker: InstrumentTracker; instruments: string[]; fields: Record<string, FieldRead>; ask?: PickQuestion } {
+): { tracker: InstrumentTracker; instruments: string[]; fields: Record<string, FieldRead>; ask?: PickQuestion; settled: number[] } {
   const s = r.state
   const start = trigger === 'screen' || (s.phase === 'instrument' && s.round === 1 && s.instruments.length === 0)
   let owned = start ? [] : [...t.owned]
@@ -50,6 +56,22 @@ export function trackInstruments(
   const ranks = r.instrumentRanks ?? []
   const fields: Record<string, FieldRead> = {}
   let ask: PickQuestion | undefined
+  // an unsure pick looked at again: the first picture can catch the icon sliding in; on a later board, a clear
+  // match with one of the offer it came from settles it
+  const settled: number[] = []
+  if (count >= owned.length) {
+    for (const q of unsure) {
+      const scored = q.offer.map(n => [n, ranks[q.slot]?.find(([name]) => name === n)?.[1] ?? 0] as const).sort((a, b) => b[1] - a[1])
+      if (scored[0][1] >= SURE && scored[0][1] - (scored[1]?.[1] ?? 0) >= GAP) {
+        owned = owned.map((n, i) => (i === q.slot ? scored[0][0] : n))
+        settled.push(q.slot)
+      }
+    }
+    unsure = unsure.filter(q => !settled.includes(q.slot)).map(q => ({ ...q, looks: q.looks + 1 }))
+    // still unclear after a few boards: the player is asked
+    const due = unsure.find(q => q.looks === ASK_AFTER)
+    if (due) ask = { offer: [...due.offer], slot: due.slot }
+  }
   if (count === owned.length) {
     owned.forEach((n, i) => (fields[`instrument${i}`] = known(n, i)))
   } else if (count === owned.length + 1 && offer) {
@@ -67,10 +89,8 @@ export function trackInstruments(
     fields[`instrument${count - 1}`] = { sure, guess: name, score, second: pick[1]?.[1] }
     // not confident which one it was (no picture of it yet, or the pictures don't match well): the player says,
     // and the answer trains the reader
-    if (!sure) {
-      ask = { offer: [...offer], slot: count - 1 }
-      unsure = [...unsure, ask]
-    }
+    // not judged on this picture: later boards look again, and only then is the player asked
+    if (!sure) unsure = [...unsure, { offer: [...offer], slot: count - 1, looks: 0 }]
     offer = null
   } else {
     // out of step (joined mid-game, or a missed picture): take the panel as read
@@ -78,5 +98,5 @@ export function trackInstruments(
     unsure = unsure.filter(q => q.slot < owned.length)
     owned.forEach((n, i) => (fields[`instrument${i}`] = r.fields[`instrument${i}`] ?? { sure: false, guess: n }))
   }
-  return { tracker: { owned, offer: nextOffer ?? offer, unsure }, instruments: owned, fields, ...(ask ? { ask } : {}) }
+  return { tracker: { owned, offer: nextOffer ?? offer, unsure }, instruments: owned, fields, settled, ...(ask ? { ask } : {}) }
 }

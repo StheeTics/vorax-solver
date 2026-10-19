@@ -27,6 +27,14 @@ function render() {
   const asks = c.asks && c.asks.length ? c.asks : c.ask ? [c.ask] : [];
   $('ask').hidden = !asks.length;
   $('ask-text').replaceChildren(...asks.map((a) => Object.assign(document.createElement('span'), { className: 'ask-line', textContent: a })));
+  // the instrument question's offer: one click answers it
+  const choices = c.choices || [];
+  $('choices').hidden = !choices.length;
+  $('choices').replaceChildren(...choices.map((n) => {
+    const b = Object.assign(document.createElement('button'), { type: 'button', textContent: n });
+    b.addEventListener('click', () => api.choose(n));
+    return b;
+  }));
   // the app's own update first (downloading, or ready to install), then the site's
   const app = update.app === 'ready' || update.app === 'downloading';
   $('update').hidden = !(app || update.site);
