@@ -184,7 +184,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </div>
         {!desktopBridge() && (
           <a className={styles.appTab} href={DOWNLOAD_URL} title="Vorax Overlay: the Solver as a Windows app, with its advice over the game. Finds the game and its log by itself.">
-            <span aria-hidden="true">⤓</span>Windows app
+            <span aria-hidden="true">⤓</span>Windows App (Best Experience)
           </a>
         )}
       </div>
