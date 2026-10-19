@@ -25,21 +25,6 @@
   gap: 12px 20px;
 }
 
-/* the Windows app's download, beside "What can this see?" (which then needn't push right itself) */
-.app + .about {
-  margin-left: 0;
-}
-
-.app {
-  margin-left: auto;
-  color: var(--gold);
-  font-size: 14px;
-}
-
-.app:hover,
-.app:focus-visible {
-  color: var(--gold-hi);
-}
 
 .home {
   display: grid;
@@ -79,12 +64,35 @@
   color: var(--gold);
 }
 
-.sources {
+.sourceBar {
   display: inline-flex;
   align-self: flex-start;
   border: 1px solid var(--gold-lo);
   border-radius: 999px;
   overflow: hidden;
+}
+
+.sources {
+  display: flex;
+}
+
+/* the Windows app's download, the bar's last segment */
+.appTab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-left: 1px solid var(--gold-lo);
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+  color: var(--gold-hi);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.appTab:hover,
+.appTab:focus-visible {
+  background: color-mix(in srgb, var(--gold) 28%, transparent);
+  outline: none;
 }
 
 .source {

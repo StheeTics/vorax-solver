@@ -155,7 +155,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       <header className={styles.head}>
         <a className={`ghost-button ${styles.home}`} href={HOME_URL}>‹ Home</a>
         <h1 className={styles.title}>Vorax Solver</h1>
-        {!desktopBridge() && <a className={styles.app} href={DOWNLOAD_URL}>Windows app: advice over the game</a>}
         <details className={styles.about}>
           <summary>What can this see?</summary>
           <ul>
@@ -174,13 +173,20 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         instruments aren't known to the Solver yet. Every game you play with it, with sharing on, helps improve it.
       </aside>
 
-      <div className={styles.sources} role="radiogroup" aria-label="Where the board comes from">
-        {SOURCES.map(s => (
-          <label key={s.id} className={styles.source} data-on={source === s.id}>
-            <input type="radio" name="source" value={s.id} checked={source === s.id} disabled={s.id === 'live' && !canLive} onChange={() => pick(s.id)} />
-            {s.label}
-          </label>
-        ))}
+      <div className={styles.sourceBar}>
+        <div className={styles.sources} role="radiogroup" aria-label="Where the board comes from">
+          {SOURCES.map(s => (
+            <label key={s.id} className={styles.source} data-on={source === s.id}>
+              <input type="radio" name="source" value={s.id} checked={source === s.id} disabled={s.id === 'live' && !canLive} onChange={() => pick(s.id)} />
+              {s.label}
+            </label>
+          ))}
+        </div>
+        {!desktopBridge() && (
+          <a className={styles.appTab} href={DOWNLOAD_URL} title="Vorax Overlay: the Solver as a Windows app, with its advice over the game. Finds the game and its log by itself.">
+            <span aria-hidden="true">⤓</span>Windows app
+          </a>
+        )}
       </div>
       {!canLive && <p className={styles.note}>Live needs Chrome or Edge on a PC. Screenshot and Manual work here.</p>}
 
