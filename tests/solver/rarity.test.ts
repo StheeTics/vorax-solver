@@ -86,6 +86,13 @@ describe('digits that don’t fit the total are corrected from it', () => {
     // 5148 / 36 = 143, but "943" read as "333" would need two digits changed
     expect(reconcile(alts([['5'], ['1'], ['4'], ['8']]), alts([['3'], ['3'], ['3'], ['x'], ['3'], ['6']]))).toBeNull()
   })
+  it('drops a stray glyph at either end of a line (a sliver of the heart) when the rest fits', () => {
+    // "416 x 270" read as "416x2701" on a frame captured through HDR
+    expect(reconcile(alts([['1'], ['1'], ['2'], ['3'], ['2'], ['0']]), alts([['4'], ['1'], ['6'], ['x'], ['2'], ['7'], ['0'], ['1']]))).toEqual({ total: '112320', aq: '416x270' })
+    expect(reconcile(alts([['1'], ['1'], ['2'], ['3'], ['2'], ['0']]), alts([['1'], ['4'], ['1'], ['6'], ['x'], ['2'], ['7'], ['0']]))).toEqual({ total: '112320', aq: '416x270' })
+    // "112320" read as "1123201"
+    expect(reconcile(alts([['1'], ['1'], ['2'], ['3'], ['2'], ['0'], ['1']]), alts([['4'], ['1'], ['6'], ['x'], ['2'], ['7'], ['0']]))).toEqual({ total: '112320', aq: '416x270' })
+  })
   it('gives up when nothing fits, or when two readings fit equally well', () => {
     expect(reconcile(alts([['9'], ['9']]), alts([['2'], ['x'], ['3']]))).toBeNull()
     // 3x4 and 2x6 both make 12, each using one second choice

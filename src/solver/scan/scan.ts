@@ -8,6 +8,8 @@ import { readText } from './digits'
 import { readTank } from './tanks'
 import { cardsPresent, fanSize, headerOnly, readHand } from './cards'
 import { readInstruments } from './instruments'
+import { normalColours, readAreas } from './levels'
+import normal from './levels.json'
 
 const DIGIT_MIN = 0.75
 
@@ -15,8 +17,10 @@ export type LocalRefs = Record<string, ArtFeature[]>
 
 /** pictures: false leaves the cards to their printed names, read afterwards (titles.ts): their pictures are
  *  most of the work, and needed only for a name that can't be read. */
-export function scan(img: Img, data: ScanData, local: LocalRefs = {}, { pictures = true }: { pictures?: boolean } = {}): Reading {
-  const l = layout(img)
+export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, { pictures = true }: { pictures?: boolean } = {}): Reading {
+  // read with the colours a normal capture has, whatever HDR or gamma this PC captures with
+  const l = layout(captured)
+  const img = normalColours(captured, normal, readAreas(l))
   const g = gray(img)
   const fields: Record<string, FieldRead> = {}
   const problems: Problem[] = []
