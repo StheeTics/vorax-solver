@@ -31,6 +31,10 @@ export const DASHBOARD_HTML = `<!doctype html>
   input { padding: 8px 10px; border: 1px solid var(--gold-lo); border-radius: 6px; background: var(--bg-1); color: var(--text); font: inherit; }
   button { padding: 8px 14px; border: 1px solid var(--gold); border-radius: 6px; background: var(--gold-lo); color: var(--gold-hi); font: 600 14px inherit; cursor: pointer; }
   .err { color: var(--red); }
+  .ok { color: #7fd18b; font-weight: 600; }
+  .bad { color: var(--red); font-weight: 600; }
+  .warn { color: var(--gold-hi); font-weight: 600; }
+  td a { color: var(--gold); }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -46,6 +50,8 @@ export const DASHBOARD_HTML = `<!doctype html>
   </form>
   <div id="out" hidden>
     <div class="tiles" id="tiles"></div>
+    <h2>Automation health</h2>
+    <div class="panel" id="health"><p class="sub">Reading GitHub…</p></div>
     <h2>Per day</h2>
     <div class="panel"><p class="legend"><span><i class="key" style="background:var(--gold)"></i>Games</span><span><i class="key" style="background:var(--blue)"></i>Players</span></p><div id="days"></div></div>
     <h2>Average final score per day</h2>
@@ -86,6 +92,41 @@ function bars(days) {
   return s + '<text x="0" y="14">' + top + '</text></svg>'
 }
 
+// The repo's automated loops, from GitHub's public list of workflow runs (no token: the repo is public).
+// every: how often it should run, in hours (null: only when something triggers it); late after 2.5x that.
+const LOOPS = [
+  { file: 'live-data.yml', name: 'Odds from live data', every: 1 },
+  { file: 'strengths.yml', name: 'Instrument strengths', every: null },
+  { file: 'daily-check.yml', name: 'Daily check (simulation)', every: 24 },
+  { file: 'issue-fixer.yml', name: 'Issue fixer', every: 1 },
+  { file: 'deploy.yml', name: 'Website deploy', every: null },
+  { file: 'desktop.yml', name: 'Windows app release', every: null },
+]
+const ago = t => {
+  const m = Math.round((Date.now() - new Date(t)) / 60000)
+  return m < 60 ? m + ' min ago' : m < 48 * 60 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' days ago'
+}
+async function health() {
+  const rows = await Promise.all(LOOPS.map(async l => {
+    try {
+      const r = await fetch('https://api.github.com/repos/tidewarden/tli-vorax-simulator/actions/workflows/' + l.file + '/runs?per_page=20', { headers: { accept: 'application/vnd.github+json' } })
+      if (!r.ok) throw new Error(r.status)
+      const runs = (await r.json()).workflow_runs
+      const last = runs[0], good = runs.find(x => x.conclusion === 'success')
+      let state = '<span class="ok">Healthy</span>'
+      if (!last) state = '<span class="sub">Not run yet</span>'
+      else if (last.status !== 'completed') state = '<span class="warn">Running</span>'
+      else if (last.conclusion !== 'success') state = '<span class="bad">Failing</span>'
+      else if (l.every && Date.now() - new Date(last.created_at) > l.every * 2.5 * 3600000) state = '<span class="warn">Late</span>'
+      const lastCell = last ? '<a href="' + esc(last.html_url) + '" target="_blank" rel="noopener">' + ago(last.created_at) + '</a> · ' + esc(last.status === 'completed' ? last.conclusion : last.status) : '–'
+      return '<tr><td>' + esc(l.name) + '</td><td>' + state + '</td><td>' + lastCell + '</td><td>' + (good ? ago(good.created_at) : '–') + '</td><td class="sub">' + (l.every ? 'every ' + (l.every === 1 ? 'hour' : 'day') : 'when needed') + '</td></tr>'
+    } catch (e) {
+      return '<tr><td>' + esc(l.name) + '</td><td class="sub" colspan="4">GitHub didn’t answer (it allows 60 looks an hour without signing in).</td></tr>'
+    }
+  }))
+  $('health').innerHTML = '<table><thead><tr><th>Loop</th><th>Status</th><th>Last run</th><th>Last success</th><th>Runs</th></tr></thead><tbody>' + rows.join('') + '</tbody></table>'
+}
+
 function scoreChart(days) {
   const pts = days.filter(d => d.averageFinal !== null)
   if (!pts.length) return '<p class="sub">No finished games yet.</p>'
@@ -115,6 +156,7 @@ async function load(pw) {
     [pct(s.totals.games ? appGames / s.totals.games : 0), 'of games in Vorax Overlay'], [pct(s.corrected), 'of boards corrected by hand'],
   ].map(([v, l]) => '<div class="tile"><b>' + esc(v) + '</b><span>' + esc(l) + '</span></div>').join('')
   $('days').innerHTML = bars(s.days) + table(['Day', 'Games', 'Players', 'Boards', 'Website', 'App'], s.days.slice().reverse().map(d => [d.day, d.games, d.players, d.boards, d.website, d.app]), [1, 2, 3, 4, 5])
+  void health()
   $('scores').innerHTML = scoreChart(s.days)
   const rounds = Object.entries(s.rounds).sort((a, b) => a[0] - b[0])
   $('rounds').innerHTML = table(['Highest round', 'Games', ''], rounds.map(([r, n]) => [r, n, '█'.repeat(Math.round(40 * n / Math.max(...rounds.map(x => x[1]))))]), [1])

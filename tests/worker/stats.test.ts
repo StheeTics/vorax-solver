@@ -80,5 +80,7 @@ describe('the dashboard routes', () => {
     const html = await res.text()
     expect(html).toMatch(/password/i)
     expect(html).not.toMatch(/open-sesame/)
+    // the automated loops' health, from GitHub's public run list
+    for (const f of ['live-data.yml', 'strengths.yml', 'daily-check.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
   })
 })
