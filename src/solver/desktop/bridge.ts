@@ -5,6 +5,7 @@
 import { useEffect } from 'react'
 import type { FileLike } from '../live/logFollower'
 import type { GameWindow } from '../share/snapshot'
+import type { Depends } from '../advice/depends'
 import type { FieldKey, FieldRead } from '../types'
 import { unreadNote, unreadTanks } from '../advice/unread'
 import { TROUBLES, type Trouble } from '../live/troubles'
@@ -69,8 +70,10 @@ export function bridgeLog(bridge: DesktopBridge): FileLike {
 
 const OTHERS = 2
 
-export function overlayCard(shown: Shown | null, updating: boolean, ask: string | null = null): OverlayCard {
+export function overlayCard(shown: Shown | null, updating: boolean, ask: string | null = null, depends: Depends[] | null = null): OverlayCard {
   const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, ask }
+  // an unconfirmed pick changes the best move: each instrument's, not one move on a guess
+  if (shown && depends) return { ...card, move: 'Depends on which instrument you took', others: depends.map(d => `With ${d.name}: ${d.move}`) }
   if (!shown) return { ...card, move: updating ? 'Working out the best move…' : 'Waiting for the cards…' }
   const { advice, board } = shown
   if (board.phase === 'protocol') return { ...card, move: 'Surgical Protocol', detail: 'Protocols don’t change Ultimate Activity: pick the one that suits your endgame battle.' }
@@ -87,8 +90,8 @@ export function overlayCard(shown: Shown | null, updating: boolean, ask: string 
 }
 
 /** Keeps the overlay card in step with the advice on the page. */
-export function useOverlay(shown: Shown | null, updating: boolean, ask: string | null = null, bridge: DesktopBridge | null = desktopBridge()): void {
+export function useOverlay(shown: Shown | null, updating: boolean, ask: string | null = null, bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null): void {
   useEffect(() => {
-    bridge?.showAdvice(overlayCard(shown, updating, ask))
-  }, [shown, updating, ask, bridge])
+    bridge?.showAdvice(overlayCard(shown, updating, ask, depends))
+  }, [shown, updating, ask, bridge, depends])
 }

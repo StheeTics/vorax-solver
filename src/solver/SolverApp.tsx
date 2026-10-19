@@ -9,6 +9,8 @@ import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
 import { desktopBridge, overlayAsk, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
+import { dependsOn } from './advice/depends'
+import { useAlternatives } from './advice/useAlternatives'
 import type { Trouble } from './live/troubles'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
@@ -19,7 +21,7 @@ import { useShare } from './share/useShare'
 import { sharedAdvice } from './share/snapshot'
 import { WhichPick } from './board/WhichPick'
 import { loadLocalRefs } from './scan/localRefs'
-import { newTracker, trackInstruments, type PickQuestion } from './track'
+import { confirmPick, newTracker, trackInstruments, type PickQuestion } from './track'
 import type { LocalRefs } from './scan/scan'
 import { useScan, type Scanner } from './scan/useScan'
 import { boardFromLink, demoPick } from './boardLink'
@@ -86,7 +88,14 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   // inside Vorax Overlay, the card over the game shows the same advice, and the question about an
   // instrument, since the app keeps this window hidden
   const [trouble, setTrouble] = useState<Trouble | null>(null)
-  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley, trouble))
+  // a pick it isn't sure of: the advice for each instrument it could be, and whether the best move differs
+  const openPick = pickAsks[0]?.question
+  const options = useMemo(
+    () => (openPick && board.hand.length ? openPick.offer.map(name => ({ name, board: { ...board, instruments: board.instruments.map((n, i) => (i === openPick.slot ? name : n)) } })) : null),
+    [openPick, board],
+  )
+  const depends = dependsOn(useAlternatives(options))
+  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley, trouble), undefined, depends)
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -138,9 +147,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     if (!asked) return
     const { question, keep } = asked
     setPickAsks(list => list.filter(a => a.id !== id))
-    const owned = [...tracker.current.owned]
-    owned[question.slot] = name
-    tracker.current = { ...tracker.current, owned }
+    tracker.current = confirmPick(tracker.current, question.slot, name)
+    const owned = tracker.current.owned
     setState(s => ({ ...s, instruments: owned }))
     setFields(f => ({ ...f, [`instrument${question.slot}`]: { sure: true, guess: name } }))
     keep?.({ picked: name, slot: question.slot, offer: question.offer }, 'pick')
@@ -150,7 +158,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const edit = (next: ScreenState, field: FieldKey) => {
     setState(next)
     if (reading) setCorrections(c => ({ ...c, [field]: valueOf(next, field) }))
-    if (field.startsWith('instrument')) tracker.current = { ...tracker.current, owned: [...next.instruments] }
+    // a corrected instrument is the player's word: no longer an unsure pick
+    if (field.startsWith('instrument')) tracker.current = { ...tracker.current, owned: [...next.instruments], unsure: tracker.current.unsure.filter(q => `instrument${q.slot}` !== field) }
     setFields(f => {
       const rest = { ...f }
       delete rest[field]
@@ -230,7 +239,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </div>
       )}
 
-      <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} unread={unreadTanks(fields, corrections)} />
+      <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} unread={unreadTanks(fields, corrections)} depends={depends} />
       {pickAsks.map(a => (
         <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} learn={!linked} />
       ))}

@@ -8,9 +8,18 @@ export interface InstrumentTracker {
   owned: string[]
   /** the last instrument offer's cards, until one of them is picked */
   offer: string[] | null
+  /** picks it wasn't sure of, until the player says: each stays unsure (the advice says what it depends on) */
+  unsure: PickQuestion[]
 }
 
-export const newTracker = (): InstrumentTracker => ({ owned: [], offer: null })
+export const newTracker = (): InstrumentTracker => ({ owned: [], offer: null, unsure: [] })
+
+/** The player says which instrument a pick was: it's known from then on. */
+export function confirmPick(t: InstrumentTracker, slot: number, name: string): InstrumentTracker {
+  const owned = [...t.owned]
+  owned[slot] = name
+  return { ...t, owned, unsure: (t.unsure ?? []).filter(q => q.slot !== slot) }
+}
 
 const SURE = 0.9
 const GAP = 0.01
@@ -28,6 +37,9 @@ export function trackInstruments(
   let owned = start ? [] : [...t.owned]
   // a pick comes from the offer before this picture; this picture's offer is for the next pick
   let offer = start ? null : t.offer
+  let unsure = start ? [] : (t.unsure ?? [])
+  // an owned instrument is sure unless it's a pick the player hasn't confirmed
+  const known = (n: string, i: number): FieldRead => (unsure.some(q => q.slot === i) ? { sure: false, guess: n } : { sure: true, guess: n })
   const nextOffer = s.phase === 'instrument' && s.hand.length ? [...s.hand] : null
   if (!offer && start) offer = nextOffer
 
@@ -39,7 +51,7 @@ export function trackInstruments(
   const fields: Record<string, FieldRead> = {}
   let ask: PickQuestion | undefined
   if (count === owned.length) {
-    owned.forEach((n, i) => (fields[`instrument${i}`] = { sure: true, guess: n }))
+    owned.forEach((n, i) => (fields[`instrument${i}`] = known(n, i)))
   } else if (count === owned.length + 1 && offer) {
     const pick = offer
       .map(n => [n, ranks[count - 1]?.find(([name]) => name === n)?.[1] ?? 0] as const)
@@ -50,17 +62,21 @@ export function trackInstruments(
     const unpictured = offer.filter(n => !ranks[count - 1]?.some(([k]) => k === n))
     if (score < SURE && unpictured.length) [name, score] = [unpictured[0], 0]
     owned = [...owned, name]
-    owned.forEach((n, i) => (fields[`instrument${i}`] = { sure: true, guess: n }))
+    owned.forEach((n, i) => (fields[`instrument${i}`] = known(n, i)))
     const sure = score >= SURE && score - (pick[1]?.[1] ?? 0) >= GAP
     fields[`instrument${count - 1}`] = { sure, guess: name, score, second: pick[1]?.[1] }
     // not confident which one it was (no picture of it yet, or the pictures don't match well): the player says,
     // and the answer trains the reader
-    if (!sure) ask = { offer: [...offer], slot: count - 1 }
+    if (!sure) {
+      ask = { offer: [...offer], slot: count - 1 }
+      unsure = [...unsure, ask]
+    }
     offer = null
   } else {
     // out of step (joined mid-game, or a missed picture): take the panel as read
     owned = [...s.instruments]
+    unsure = unsure.filter(q => q.slot < owned.length)
     owned.forEach((n, i) => (fields[`instrument${i}`] = r.fields[`instrument${i}`] ?? { sure: false, guess: n }))
   }
-  return { tracker: { owned, offer: nextOffer ?? offer }, instruments: owned, fields, ...(ask ? { ask } : {}) }
+  return { tracker: { owned, offer: nextOffer ?? offer, unsure }, instruments: owned, fields, ...(ask ? { ask } : {}) }
 }

@@ -110,3 +110,36 @@ it('asks which instrument was picked whenever it isn’t confident, even when it
   expect(r.fields.instrument0.sure).toBe(false)
   expect(r.ask).toEqual({ offer, slot: 0 })
 })
+
+describe('a pick the Solver wasn’t sure of stays unsure until the player says', () => {
+  const unsurePick = () => {
+    let t = newTracker()
+    t = { ...t, owned: [], offer: ['Hypertrophic Pituitary', 'Hyperplastic Frontal Lobe', 'Chrysalis Specimen'] }
+    return trackInstruments(t, reading({ panel: [[['Hyperplastic Frontal Lobe', 0.515], ['Chrysalis Specimen', 0.2], ['Hypertrophic Pituitary', 0.1]]] }), 'board')
+  }
+  it('on the boards after it too, with the offer it came from', () => {
+    const first = unsurePick()
+    expect(first.fields.instrument0.sure).toBe(false)
+    const later = trackInstruments(first.tracker, reading({ round: 3, panel: [[['Hyperplastic Frontal Lobe', 0.5]]] }), 'board')
+    expect(later.fields.instrument0).toMatchObject({ sure: false, guess: 'Hyperplastic Frontal Lobe' })
+    expect(later.tracker.unsure).toEqual([{ slot: 0, offer: ['Hypertrophic Pituitary', 'Hyperplastic Frontal Lobe', 'Chrysalis Specimen'] }])
+  })
+  it('until confirmed', async () => {
+    const { confirmPick } = await import('@/solver/track')
+    const t = confirmPick(unsurePick().tracker, 0, 'Chrysalis Specimen')
+    expect(t.owned).toEqual(['Chrysalis Specimen'])
+    expect(t.unsure).toEqual([])
+    const later = trackInstruments(t, reading({ round: 3, panel: [[['Hyperplastic Frontal Lobe', 0.5]]] }), 'board')
+    expect(later.fields.instrument0).toEqual({ sure: true, guess: 'Chrysalis Specimen' })
+  })
+  it('confirming a slot the tracker doesn’t hold yet (a demo board, a game joined mid-way) still sets it', async () => {
+    const { confirmPick } = await import('@/solver/track')
+    expect(confirmPick(newTracker(), 0, 'Two-Inch Skull Nail').owned).toEqual(['Two-Inch Skull Nail'])
+  })
+  it('a sure pick isn’t kept as unsure', () => {
+    let t = newTracker()
+    t = { ...t, owned: [], offer }
+    const r = trackInstruments(t, reading({ panel: [[['Contracted Claws', 0.97], ['Adherent Metatarsals', 0.5]]] }), 'board')
+    expect(r.tracker.unsure).toEqual([])
+  })
+})

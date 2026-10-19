@@ -3,6 +3,7 @@ import styles from './AdvicePanel.module.css'
 import { PickHand } from './PickHand'
 import { describe, predicted } from './describe'
 import { unreadNote } from './unread'
+import type { Depends } from './depends'
 
 interface Props {
   advice: Advice | null
@@ -14,6 +15,8 @@ interface Props {
   iconsKnown?: string[]
   /** tanks (from 1) whose numbers weren't read for sure: the advice may be off until they're checked */
   unread?: number[]
+  /** an unconfirmed pick changes the best move: each instrument's, instead of one move on a guess */
+  depends?: Depends[] | null
 }
 
 /** The game's refresh die: bone white with red pips. */
@@ -28,7 +31,7 @@ const Die = () => (
 
 const refreshesLeft = (s: ScreenState) => (s.phase === 'instrument' ? s.instrumentRefreshes : s.potionRefreshes) ?? 0
 
-export function AdvicePanel({ advice, updating, state, iconsKnown, unread = [] }: Props) {
+export function AdvicePanel({ advice, updating, state, iconsKnown, unread = [], depends = null }: Props) {
   // until every panel icon is known, an offered instrument whose icon hasn't been seen says picking it teaches the Solver
   const unseen = state.phase === 'instrument' && iconsKnown ? state.hand.filter(n => n && !iconsKnown.includes(n)) : []
   if (state.phase === 'protocol')
@@ -47,8 +50,20 @@ export function AdvicePanel({ advice, updating, state, iconsKnown, unread = [] }
         </span>
       </div>
       {updating && <p className={styles.updating} role="status">Working out the new board…</p>}
-      <PickHand pick={advice.best && advice.best !== 'refresh' ? advice.best : null} state={state}>
-        {advice.best && (
+      <PickHand pick={!depends && advice.best && advice.best !== 'refresh' ? advice.best : null} state={state}>
+        {depends ? (
+          <section className={styles.move} aria-label="Depends on your instrument">
+            <p className={styles.unknown}>The best move depends on which instrument you took. Say which in the question above.</p>
+            <ul className={styles.depends}>
+              {depends.map(d => (
+                <li key={d.name}>
+                  With {d.name}: <b>{d.move}</b>
+                  {d.end && <span className={styles.refreshEnd}> {d.end}</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : advice.best && (
           <div className={styles.move}>
             <h2 className={styles.best}>{advice.best === 'refresh' ? 'Refresh' : describe(advice.best, state, true)}</h2>
             {advice.best === 'refresh' && advice.refreshEnd && <p className={styles.refreshEnd}>Ends around {predicted(advice.refreshEnd)}</p>}

@@ -2,9 +2,10 @@
 // into the reader for everyone: src/solver/scan/learnedIcons.json, read beside the built-in icons.
 //  - For an instrument the reader knows, an answer must match that instrument's icon (and better than any
 //    other's): one wrong click can't teach everyone a wrong picture.
-//  - For one it has no icon for, an answer goes in unless it looks like another instrument. Answers rarely
-//    agree with each other (the same icon is cut a few pixels apart on different screens), and a wrong one does
-//    little harm: the reader only trusts an icon matched at 0.8 or more, else it asks the player as before.
+//  - For one it has no icon for, only answers that agree with another player's (two pictures of one icon), and
+//    that don't look like another instrument. A single answer used to go in, and a wrong one did harm: it was
+//    the only picture of Chrysalis Specimen, the reader took a real one for another instrument, and the advice
+//    followed (2026-10-19).
 // Run by scripts/live/learnIcons.ts (the hourly live-data workflow).
 
 export interface TaughtIcon { uid: string; name: string; pattern: number[] }
@@ -35,7 +36,8 @@ export function acceptIcons(taught: TaughtIcon[], builtIn: Record<string, number
     for (const t of list) {
       const other = Math.max(-1, ...Object.entries(builtIn).filter(([n]) => n !== name && !NOT_INSTRUMENTS.has(n)).map(([, vs]) => best(t.pattern, vs)))
       const known = builtIn[name]?.length
-      const ok = known ? best(t.pattern, builtIn[name]) >= MATCH && best(t.pattern, builtIn[name]) > other : other < LIKE_OTHER
+      const agreed = list.some(o => o.uid !== t.uid && dot(o.pattern, t.pattern) >= MATCH)
+      const ok = known ? best(t.pattern, builtIn[name]) >= MATCH && best(t.pattern, builtIn[name]) > other : agreed && other < LIKE_OTHER
       if (ok) accepted.push({ p: t.pattern })
     }
     if (accepted.length) out[name] = accepted.slice(0, KEEP).map(a => a.p)

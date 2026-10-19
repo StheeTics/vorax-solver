@@ -115,3 +115,15 @@
   margin: 0;
   color: var(--text-dim);
 }
+
+/* each instrument an unconfirmed pick could be, with its best move */
+.depends {
+  margin: 6px 0 0;
+  padding-left: 18px;
+  color: var(--text-dim);
+  line-height: 1.5;
+}
+
+.depends b {
+  color: var(--text);
+}
