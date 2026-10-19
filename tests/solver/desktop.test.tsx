@@ -1,5 +1,6 @@
 import { act, render, screen } from '@testing-library/react'
 import { bridgeLog, overlayAsk, overlayCard, type DesktopBridge } from '@/solver/desktop/bridge'
+import { TROUBLES } from '@/solver/live/troubles'
 import { LiveSource, type LiveDeps } from '@/solver/live/LiveSource'
 import type { Advice, ScreenState } from '@/strategy/advisor'
 
@@ -90,8 +91,9 @@ describe('the overlay card', () => {
     expect(overlayAsk(0, { 'tank0.rarity': { sure: false }, instrument0: { sure: true } }, {})).toBeNull()
   })
 
-  it('says first when the game’s log is off: nothing works without it', () => {
-    expect(overlayAsk(1, {}, {}, true, true)).toBe('The game’s log is off, so the Solver can’t follow your game. In the game: Esc, Account Related, Enable Log, then log out and back in.')
+  it('says first what stops the Solver following the game (the log off, the window not seen): nothing works without it', () => {
+    expect(overlayAsk(1, {}, {}, true, 'logOff')).toBe(`${TROUBLES.logOff.card} ${TROUBLES.logOff.steps[0]}`)
+    expect(overlayAsk(0, {}, {}, false, 'windowBlocked')).toBe(`${TROUBLES.windowBlocked.card} Show me says what to check.`)
   })
 
   it('asks for the Intern Shelley level first, until the player picks it', () => {

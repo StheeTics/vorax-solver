@@ -6,6 +6,7 @@ import { waitStable } from './stable'
 import { DEFAULT_RULES, type TriggerRules } from './triggers'
 import { NotAWindowError, shareWindow, toPng, type WindowShare } from './windowCapture'
 import { bridgeLog, desktopBridge, type DesktopBridge } from '../desktop/bridge'
+import { TROUBLES, troubleOf, type Trouble } from './troubles'
 import styles from './LiveSource.module.css'
 
 export interface Following { stop(): void; snapNow(): void; cancel(): void }
@@ -51,6 +52,7 @@ const FOLDERS = [
 ]
 
 const NO_LOG_MS = 30_000
+const RETRY_SHARE_MS = 15_000
 
 interface Props {
   /** keep: in capture mode, saves what was read from this frame (or advised for it) beside it */
@@ -58,11 +60,11 @@ interface Props {
   deps?: LiveDeps
   /** inside Vorax Overlay: the log comes from the app, and the game window is shared while the game runs */
   desktop?: DesktopBridge | null
-  /** whether the log looks off (no game lines since the window was shared), for the app's card */
-  onLogOff?(off: boolean): void
+  /** what stops the Solver following the game (the log off, the window not shared), for the app's card */
+  onTrouble?(trouble: Trouble | null): void
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onLogOff }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -139,9 +141,12 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
     return () => clearTimeout(t)
   }, [share, status?.detailSeen])
 
-  const logOff = useRef(onLogOff)
-  logOff.current = onLogOff
-  useEffect(() => logOff.current?.(noLog), [noLog])
+  // in the app: why the game window couldn't be shared, until it is
+  const [shareTrouble, setShareTrouble] = useState<Trouble | null>(null)
+  const trouble = shareTrouble ?? (noLog ? 'logOff' : null)
+  const tell = useRef(onTrouble)
+  tell.current = onTrouble
+  useEffect(() => tell.current?.(trouble), [trouble])
 
   const connect = async (get: () => Promise<FileLike>) => {
     setError('')
@@ -170,8 +175,11 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
         setShare(null)
       })
       setShare(s)
+      setShareTrouble(null)
     } catch (err) {
-      if (err instanceof NotAWindowError) setError(err.message)
+      // the app shares the game window itself: a failure there is explained, and tried again
+      if (desktop) setShareTrouble(troubleOf(err))
+      else if (err instanceof NotAWindowError) setError(err.message)
       else if ((err as Error).name !== 'NotAllowedError') setError(String(err))
     }
   }
@@ -200,6 +208,17 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
     })
     desktop.onSnap(() => following.current?.snapNow())
   }, [desktop])
+  // a window that couldn't be shared is tried again while the game runs (it may have been minimized, or the
+  // player fixed what stopped it)
+  useEffect(() => {
+    if (!desktop || !gameRunning || share || !shareTrouble) return
+    const t = setTimeout(() => {
+      if (starting.current) return
+      starting.current = true
+      void desktopActions.current.startShare().finally(() => (starting.current = false))
+    }, RETRY_SHARE_MS)
+    return () => clearTimeout(t)
+  }, [desktop, gameRunning, share, shareTrouble])
   const pickFolder = async () => {
     try {
       const picker = (window as unknown as { showDirectoryPicker(o: object): Promise<FileSystemDirectoryHandle> }).showDirectoryPicker
@@ -233,7 +252,15 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
               </span>
             </div>
           )}
-          {noLog && <p className={styles.warn}>Enable Log looks off: no game lines have arrived. Press Esc, Account Related, Enable Log, then log out and back in.</p>}
+          {trouble ? (
+            <div className={styles.warn} role="alert">
+              <p>{TROUBLES[trouble].card}</p>
+              <ul>
+                {TROUBLES[trouble].steps.map(s => <li key={s}>{s}</li>)}
+              </ul>
+              {shareTrouble && <p className={styles.small}>Trying again every {RETRY_SHARE_MS / 1000} seconds.</p>}
+            </div>
+          ) : null}
           {error && <p className={styles.warn}>{error}</p>}
         </div>
       </section>

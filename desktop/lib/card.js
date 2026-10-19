@@ -1,0 +1,18 @@
+// The card from the Solver page, cleaned before it crosses into the overlay: only plain text, cut to length.
+// Every field the page's card carries (src/solver/desktop/bridge.ts OverlayCard) has to be let through here.
+const text = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
+
+function cleanCard(card) {
+  if (!card || typeof card !== 'object') return null;
+  return {
+    move: text(card.move, 200),
+    detail: text(card.detail, 300),
+    others: Array.isArray(card.others) ? card.others.slice(0, 3).map((o) => text(o, 200)) : [],
+    round: Number.isFinite(card.round) ? card.round : null,
+    updating: !!card.updating,
+    // the Solver window's question or what stops it following the game: the window is hidden, so the card says it
+    ask: typeof card.ask === 'string' && card.ask ? text(card.ask, 300) : null,
+  };
+}
+
+module.exports = { cleanCard };

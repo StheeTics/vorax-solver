@@ -10,6 +10,7 @@
 // Pictures and the log never leave the PC. Boards are shared only by the page's own sharing switch.
 // Nothing here touches the game: no clicks, no keys (AGENTS.md).
 
+const { cleanCard } = require('./lib/card');
 const { app, BrowserWindow, Menu, Notification, Tray, desktopCapturer, dialog, globalShortcut, ipcMain, nativeImage, net, screen, session, shell } = require('electron');
 const fs = require('fs');
 const os = require('os');
@@ -500,17 +501,12 @@ function setOverlayOn(on) {
 // ---------- Between the page and the overlay ----------
 
 let lastCard = null;
-const text = (v, max) => (typeof v === 'string' ? v.slice(0, max) : '');
 ipcMain.on('advice', (e, card) => {
-  if (!fromSolver(e) || !card || typeof card !== 'object') return;
+  if (!fromSolver(e)) return;
   // only plain text crosses into the overlay
-  lastCard = {
-    move: text(card.move, 200),
-    detail: text(card.detail, 300),
-    others: Array.isArray(card.others) ? card.others.slice(0, 3).map((o) => text(o, 200)) : [],
-    round: Number.isFinite(card.round) ? card.round : null,
-    updating: !!card.updating,
-  };
+  const clean = cleanCard(card);
+  if (!clean) return;
+  lastCard = clean;
   send('overlay', 'card', lastCard);
 });
 ipcMain.handle('game:get', (e) => (fromSolver(e) ? { running: game.running } : null));
@@ -713,10 +709,15 @@ function permissions() {
     if (!mine) return callback({});
     desktopCapturer.getSources({ types: ['window'], thumbnailSize: { width: 0, height: 0 }, fetchWindowIcons: false })
       .then((sources) => {
-        let s = sources.find((x) => GAME_TITLE.test(x.name));
-        // Windows has the game's window, but the capture's list left it out: ask for it by its handle.
+        const matching = sources.filter((x) => GAME_TITLE.test(x.name));
+        let s = matching[0];
+        // Windows has the game's window, but the capture's list left it out: ask for it by its handle. (A window
+        // left out is usually one Windows won't capture, such as a game run as administrator.)
         if (!s && game.running && game.hwnd) s = { id: `window:${game.hwnd}:0`, name: game.title };
-        note(s ? `window share: "${s.name.trim()}"` : 'window share refused: no game window');
+        // for a player's debug log: which window, and whether Windows offered it for capture
+        note(!s ? 'window share refused: no game window'
+          : matching.length ? `window share: "${s.name.trim()}" (${s.id}; ${matching.length} matching window${matching.length === 1 ? '' : 's'} offered: ${matching.map((x) => `"${x.name.trim()}"`).join(', ')})`
+          : `window share: "${s.name.trim()}" by its handle, not offered for capture (game run as administrator?)`);
         callback(s ? { video: s } : {});
       })
       .catch((e) => {

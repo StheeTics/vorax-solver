@@ -9,6 +9,7 @@ import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
 import { desktopBridge, overlayAsk, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
+import type { Trouble } from './live/troubles'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -84,8 +85,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   })
   // inside Vorax Overlay, the card over the game shows the same advice, and the question about an
   // instrument, since the app keeps this window hidden
-  const [logOff, setLogOff] = useState(false)
-  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley, logOff))
+  const [trouble, setTrouble] = useState<Trouble | null>(null)
+  useOverlay(shown, updating, overlayAsk(pickAsks.length, fields, corrections, askShelley, trouble))
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -209,7 +210,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onLogOff={setLogOff} />
+            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}

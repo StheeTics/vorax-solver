@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { LiveSource, type LiveDeps } from '@/solver/live/LiveSource'
 import type { LiveEvent } from '@/solver/live/liveLoop'
 
-function setup(onLogOff?: (off: boolean) => void) {
+function setup(onTrouble?: (t: string | null) => void) {
   let emit: (e: LiveEvent) => void = () => {}
   let ended: () => void = () => {}
   const following = { stop: vi.fn(), snapNow: vi.fn(), cancel: vi.fn() }
@@ -17,7 +17,7 @@ function setup(onLogOff?: (off: boolean) => void) {
     pickLog: vi.fn(async () => ({ getFile: async () => ({ size: 0, slice: () => ({ arrayBuffer: async () => new ArrayBuffer(0) }) }) })),
   }
   const onFrame = vi.fn()
-  render(<LiveSource onFrame={onFrame} deps={deps} onLogOff={onLogOff} />)
+  render(<LiveSource onFrame={onFrame} deps={deps} onTrouble={onTrouble} />)
   return { deps, onFrame, share, following, emit: (e: LiveEvent) => act(() => emit(e)), end: () => act(() => ended()) }
 }
 
@@ -75,14 +75,14 @@ it('warns when the log shows no game lines 30 s after sharing', async () => {
 it('tells the page when the log looks off, and when lines arrive after all, so the app’s card can say it', async () => {
   vi.useFakeTimers()
   try {
-    const onLogOff = vi.fn()
-    const t = setup(onLogOff)
+    const onTrouble = vi.fn()
+    const t = setup(onTrouble)
     await connect()
     t.emit({ type: 'status', detailSeen: false, refreshes: 0, over: false, lines: 10 })
     await act(async () => vi.advanceTimersByTime(30_000))
-    expect(onLogOff).toHaveBeenLastCalledWith(true)
+    expect(onTrouble).toHaveBeenLastCalledWith('logOff')
     await act(async () => t.emit({ type: 'status', detailSeen: true, refreshes: 0, over: false, lines: 40 }))
-    expect(onLogOff).toHaveBeenLastCalledWith(false)
+    expect(onTrouble).toHaveBeenLastCalledWith(null)
   } finally {
     vi.useRealTimers()
   }
