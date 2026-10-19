@@ -10,7 +10,7 @@
 // Pictures and the log never leave the PC. Boards are shared only by the page's own sharing switch.
 // Nothing here touches the game: no clicks, no keys (AGENTS.md).
 
-const { app, BrowserWindow, Menu, Tray, desktopCapturer, dialog, globalShortcut, ipcMain, nativeImage, net, screen, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, Notification, Tray, desktopCapturer, dialog, globalShortcut, ipcMain, nativeImage, net, screen, session, shell } = require('electron');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -471,8 +471,8 @@ function updateOverlay() {
   if (!win || win.isDestroyed()) return;
   const want = overlayWanted();
   // other overlays over the game also ask to stay on top, and the last to ask gets the clicks: while the card
-  // shows, it asks again every 2 s (not while it's being dragged)
-  if (want && overlayShown && !dragFrom && Date.now() - lastRaise > 2000) {
+  // shows, it asks again every 2 s
+  if (want && overlayShown && Date.now() - lastRaise > 2000) {
     lastRaise = Date.now();
     win.setAlwaysOnTop(true, 'screen-saver');
     win.moveTop();
@@ -545,27 +545,8 @@ ipcMain.on('overlay:fold', (e, folded) => {
 });
 ipcMain.on('overlay:solver', (e) => fromOverlay(e) && toggleSolver());
 ipcMain.on('overlay:snap', (e) => fromOverlay(e) && game.running && send('solver', 'snap'));
-// Dragging the card by its bar: the pointer's screen position at the start and the card's, then the card
-// follows the pointer.
-let dragFrom = null;
-ipcMain.on('overlay:drag-start', (e, x, y) => {
-  if (!fromOverlay(e) || !Number.isFinite(x) || !Number.isFinite(y)) return;
-  const b = wins.overlay.getBounds();
-  dragFrom = { x, y, bx: b.x, by: b.y };
-});
-ipcMain.on('overlay:drag', (e, x, y) => {
-  if (!fromOverlay(e) || !dragFrom || !Number.isFinite(x) || !Number.isFinite(y)) return;
-  wins.overlay.setBounds({ x: Math.round(dragFrom.bx + x - dragFrom.x), y: Math.round(dragFrom.by + y - dragFrom.y), width: OVERLAY_WIDTH, height: overlayHeight });
-});
-ipcMain.on('overlay:drag-end', (e) => {
-  if (!fromOverlay(e) || !dragFrom) return;
-  dragFrom = null;
-  const b = wins.overlay.getBounds();
-  settings.overlay = { x: b.x, y: b.y };
-  saveSettings();
-});
 ipcMain.on('overlay:reload', (e) => fromOverlay(e) && reloadSolver('the player asked'));
-ipcMain.on('overlay:restart', (e) => fromOverlay(e) && appUpdate === 'ready' && installUpdate());
+ipcMain.on('overlay:restart', (e) => fromOverlay(e) && updateNow());
 
 // ---------- Updates ----------
 
@@ -599,7 +580,12 @@ function reloadSolver(why) {
 // App: electron-updater checks this repo's GitHub Releases at start and every hour and downloads a new version
 // in the background. It installs it by itself (quietly, then starts again) while the game isn't running, or
 // as soon as the game closes; during a game the overlay offers Restart, and quitting installs it too.
+// appUpdate: '' none; 'downloading' a new version is coming down; 'ready' downloaded, installs on Restart
 let appUpdate = '';
+let appVersion = '';
+let appProgress = 0;
+// the player pressed Update (the card or the notification) before the download finished
+let installWhenReady = false;
 let autoUpdater = null;
 function startAppUpdates() {
   if (!app.isPackaged) return;
@@ -608,12 +594,27 @@ function startAppUpdates() {
   } catch (e) {
     return;
   }
+  autoUpdater.autoDownload = true;
   autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.on('update-available', (info) => {
+    appUpdate = 'downloading';
+    appVersion = (info && info.version) || '';
+    appProgress = 0;
+    note('app update available:', appVersion);
+    send('overlay', 'update', updateState());
+  });
+  autoUpdater.on('download-progress', (p) => {
+    appProgress = Math.round((p && p.percent) || 0);
+    send('overlay', 'update', updateState());
+  });
   autoUpdater.on('update-downloaded', (info) => {
     appUpdate = 'ready';
-    note('app update downloaded:', info && info.version);
+    appVersion = (info && info.version) || appVersion;
+    note('app update downloaded:', appVersion);
     send('overlay', 'update', updateState());
     rebuildMenu();
+    if (installWhenReady) return installUpdate();
+    notifyUpdate();
     installWhenFree();
   });
   autoUpdater.on('error', (e) => note('app update check failed:', String((e && e.message) || e)));
@@ -621,12 +622,27 @@ function startAppUpdates() {
   check();
   setInterval(check, 60 * 60 * 1000);
 }
+// A Windows notification: clicking it installs the update and starts the app again.
+function notifyUpdate() {
+  if (!Notification.isSupported()) return;
+  const n = new Notification({ title: `Vorax Overlay ${appVersion} is ready`, body: game.running ? 'Click to update now (the app restarts in a few seconds), or it updates when the game closes.' : 'Click to update now.', icon: ICON });
+  n.on('click', () => updateNow());
+  n.show();
+}
+// Update, from the card's button, the notification or the tray: now if downloaded, else as soon as it is.
+function updateNow() {
+  if (appUpdate === 'ready') return installUpdate();
+  if (appUpdate === 'downloading') {
+    installWhenReady = true;
+    send('overlay', 'update', updateState());
+  }
+}
 // Installs a downloaded update unless the game is running (then it waits for the game to close).
 function installWhenFree() {
   if (appUpdate !== 'ready' || game.running) return;
   setTimeout(() => {
     if (appUpdate === 'ready' && !game.running) {
-      note('installing the app update: the game isn’t running');
+      note('installing the app update: the game isn\u2019t running');
       installUpdate();
     }
   }, 5000);
@@ -635,7 +651,7 @@ function installUpdate() {
   quitting = true;
   autoUpdater.quitAndInstall(true, true);
 }
-const updateState = () => ({ site: siteUpdate, app: appUpdate === 'ready' });
+const updateState = () => ({ site: siteUpdate, app: appUpdate, version: appVersion, progress: appProgress, waiting: installWhenReady });
 
 // ---------- Tray and hotkeys ----------
 
@@ -652,7 +668,7 @@ function rebuildMenu() {
     { label: 'Choose the game log…', click: () => void pickLog() },
     { label: 'Let the game go first (lower priority)', type: 'checkbox', checked: settings.gameFirst, click: (i) => ((settings.gameFirst = i.checked), saveSettings(), tunePriority()) },
     { type: 'separator' },
-    appUpdate === 'ready' ? { label: 'Restart to update', click: installUpdate } : { label: `Version ${app.getVersion()}`, enabled: false },
+    appUpdate ? { label: appUpdate === 'ready' ? `Update to ${appVersion} now` : `Update to ${appVersion} (downloading)`, click: updateNow } : { label: `Version ${app.getVersion()}`, enabled: false },
     { label: 'Open the debug log folder', click: () => shell.openPath(path.dirname(LOG_FILE)) },
     { label: 'Quit', click: () => ((quitting = true), app.quit()) },
   ]));

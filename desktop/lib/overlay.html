@@ -57,6 +57,7 @@
     padding: 5px 6px 5px 10px;
     border-bottom: 1px solid var(--iron);
     background: color-mix(in srgb, var(--bg-2) 90%, transparent);
+    -webkit-app-region: drag;
     cursor: move;
   }
 
@@ -83,6 +84,7 @@
   }
 
   .head button {
+    -webkit-app-region: no-drag;
     display: grid;
     place-items: center;
     width: 22px;

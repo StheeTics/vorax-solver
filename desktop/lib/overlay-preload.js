@@ -9,7 +9,4 @@ contextBridge.exposeInMainWorld('VoraxOverlay', {
   reload: () => ipcRenderer.send('overlay:reload'),
   restart: () => ipcRenderer.send('overlay:restart'),
   snap: () => ipcRenderer.send('overlay:snap'),
-  dragStart: (x, y) => ipcRenderer.send('overlay:drag-start', x, y),
-  drag: (x, y) => ipcRenderer.send('overlay:drag', x, y),
-  dragEnd: () => ipcRenderer.send('overlay:drag-end'),
 });

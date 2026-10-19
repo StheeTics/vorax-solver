@@ -39,7 +39,8 @@ npm run local      # against the dev server (npm run dev in the repo root)
   by itself when the game closes.
 - **App changes**: `electron-updater` checks this repo's GitHub Releases at start and every hour and
   downloads in the background. It installs by itself (quietly, then starts again) while the game isn't
-  running, or as soon as the game closes; during a game the overlay offers Restart. Unsigned builds show
+  running, or as soon as the game closes. A Windows notification says when a new version is ready (click it
+  to update now), and the card shows it with an Update button and the download's progress. Unsigned builds show
   SmartScreen's "Windows protected your PC" on first install.
 - The installer is always `Vorax-Overlay-Setup.exe`. The website links to the newest release's page
   (`releases/latest`), so people see the notes and choose the download on GitHub.
