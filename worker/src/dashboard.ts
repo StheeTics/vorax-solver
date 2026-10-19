@@ -103,7 +103,7 @@ async function load(pw) {
   $('versions').innerHTML = table(['Version', 'Games'], Object.entries(s.versions).sort((a, b) => b[1] - a[1]), [1])
   const f = s.finished, median = f.finals.length ? f.finals.slice().sort((a, b) => a - b)[f.finals.length >> 1] : 0
   $('real').innerHTML = (f.games
-    ? '<p>' + f.games + ' finished game' + (f.games === 1 ? '' : 's') + ' (reached the round-13 Surgical Protocol): <b>' + f.reached + ' reached 950k</b> (' + pct(f.reached / f.games) + '), median final ' + Math.round(median / 1000) + 'k. The simulator expects about 50%.</p>'
+    ? '<p>' + f.games + ' finished game' + (f.games === 1 ? '' : 's') + ' (reached the round-13 Surgical Protocol): <b>' + f.reached + ' reached 950k</b> (' + pct(f.reached / f.games) + '), average final ' + Math.round(f.average / 1000) + 'k, median ' + Math.round(median / 1000) + 'k. The simulator expects about 50% to reach 950k.</p>'
     : '<p class="sub">No finished games shared yet.</p>')
     + (s.calibration.length
       ? '<p class="sub">Predicted against real: each board’s advice gave a chance of 950k; this is how those games ended. Close numbers mean the simulator is honest.</p>' + table(['Predicted', 'Average prediction', 'Boards', 'Their games reached 950k'], s.calibration.map(c => [c.band, pct(c.predicted), c.games, pct(c.reached / c.games)]), [1, 2, 3])
