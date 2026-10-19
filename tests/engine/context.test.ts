@@ -1,4 +1,4 @@
-import { board, ctx, m } from '../helpers'
+import { board, ctx, m, rollFor } from '../helpers'
 import { MAX_CHAIN_DEPTH } from '@/engine/context'
 import { stubRng } from '@/engine/rng'
 import type { InstrumentDef } from '@/data/defs'
@@ -19,7 +19,7 @@ describe('add', () => {
 })
 
 it('mutate random rarity rerolls by weight and keeps stats', () => {
-  const { c, events } = ctx(board(m('pest', 'normal', 7, 9)), { rng: stubRng([0.5]) })
+  const { c, events } = ctx(board(m('pest', 'normal', 7, 9)), { rng: stubRng([rollFor('magic')]) })
   c.mutate(0, 'aemberon', 'random')
   expect(c.tanks[0]).toEqual({ archetype: 'aemberon', rarity: 'magic', activity: 7, quantity: 9 })
   expect(events).toHaveLength(1)

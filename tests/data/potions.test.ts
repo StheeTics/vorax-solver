@@ -1,4 +1,4 @@
-import { board, ctx, m } from '../helpers'
+import { board, ctx, m, rollFor } from '../helpers'
 import { POTIONS, potion, BOX_POOL, SUPREME_POOL, NORMAL_POOL } from '@/data/potions'
 import { stubRng, type Rng } from '@/engine/rng'
 import type { Tanks } from '@/engine/types'
@@ -187,10 +187,10 @@ describe('normal potions', () => {
 
 describe('supreme potions', () => {
   it('35 Compound Revitalizing Pill', () => {
-    const t = board(m('pest', 'magic'), m('boneSentry', 'rare')); run(35, t, [], stubRng([0.5]))
+    const t = board(m('pest', 'magic'), m('boneSentry', 'rare')); run(35, t, [], stubRng([rollFor('magic')]))
     expect(t[0]).toEqual({ archetype: 'aemberon', rarity: 'magic', activity: 27, quantity: 24 })
     expect(t[1]).toEqual({ archetype: 'aemberon', rarity: 'magic', activity: 37, quantity: 12 })
-    const u = board(m('pest', 'magic'), m('boneSentry', 'rare')); run(35, u, [], stubRng([0.95]))
+    const u = board(m('pest', 'magic'), m('boneSentry', 'rare')); run(35, u, [], stubRng([rollFor('boss')]))
     expect(u[0]).toMatchObject({ rarity: 'boss', activity: 16, quantity: 35 })
     expect(u[1]).toMatchObject({ rarity: 'boss', activity: 26, quantity: 23 })
   })

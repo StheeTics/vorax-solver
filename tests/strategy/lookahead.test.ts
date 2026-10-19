@@ -19,8 +19,8 @@ const metatarsals = toState({
 describe('potions judged by how the whole run ends', () => {
   const choice = planChooser({ top: 4, playouts: 32 })(metatarsals, 1)
 
-  it('picks one of the options on offer', () => {
-    expect(options(metatarsals).map(o => JSON.stringify(o))).toContain(JSON.stringify(choice.best))
+  it('picks one of the options on offer, or a reroll', () => {
+    expect([...options(metatarsals), [{ type: 'refresh' }]].map(o => JSON.stringify(o))).toContain(JSON.stringify(choice.best))
   })
 
   it('does not turn one of the two Bone Sentries Adherent Metatarsals needs into something else', () => {

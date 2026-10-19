@@ -1,11 +1,11 @@
+import { rollFor } from '../helpers'
 import { rollRarity, nextRarity, monsterName, createMonster, isRareOrBoss, total } from '@/data/archetypes'
 import { stubRng } from '@/engine/rng'
 
-it('rollRarity uses 30/40/20/10 weights', () => {
-  expect(rollRarity(stubRng([0.29]))).toBe('normal')
-  expect(rollRarity(stubRng([0.30]))).toBe('magic')
-  expect(rollRarity(stubRng([0.89]))).toBe('rare')
-  expect(rollRarity(stubRng([0.90]))).toBe('boss')
+it('rollRarity rolls each rarity within its share of the spawn odds, in order', () => {
+  for (const r of ['normal', 'magic', 'rare', 'boss'] as const) expect(rollRarity(stubRng([rollFor(r)]))).toBe(r)
+  expect(rollRarity(stubRng([0]))).toBe('normal')
+  expect(rollRarity(stubRng([0.999999]))).toBe('boss')
 })
 it('nextRarity caps at boss', () => {
   expect(nextRarity('normal')).toBe('magic')
