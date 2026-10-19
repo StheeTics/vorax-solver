@@ -94,7 +94,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Hyperplastic Frontal Lobe': 0.33,
       'Hypertrophic Pituitary': 0.6890211397058824,
       'Adherent Metatarsals': 0.5,
-      'Contracted Claws': 1,
+      'Contracted Claws': 0.6571024694600063,
       'Aberrant Sprout': 0.5887867647058823,
       'Prismatic Liver': 0.5146875
     },
@@ -120,8 +120,8 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   spawnRarity: {
     normal: 53.38983050847458,
-    magic: 40,
+    magic: 32.507605388961316,
     rare: 11.864406779661017,
-    boss: 10
+    boss: 19.420127894704166
   }
 }
