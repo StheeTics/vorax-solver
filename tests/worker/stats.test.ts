@@ -74,6 +74,11 @@ describe('the dashboard routes', () => {
     expect(ok.status).toBe(200)
     expect((await ok.json()).totals.games).toBe(1)
   })
+  it('the page’s script is valid JavaScript (one stray quote would leave it stuck at the password box)', async () => {
+    const { DASHBOARD_HTML } = await import('../../worker/src/dashboard')
+    const script = DASHBOARD_HTML.split('<script>')[1].split('</script>')[0]
+    expect(() => new Function(script)).not.toThrow()
+  })
   it('the page itself holds no data: it asks for the password', async () => {
     const res = await handle(new Request('https://w.dev/dashboard'), env, store)
     expect(res.headers.get('content-type')).toMatch(/text\/html/)
