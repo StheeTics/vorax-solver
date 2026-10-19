@@ -50,7 +50,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Targeted Xeno-Hormone': 1.538,
     'Potion Kit (Large)': 0.878,
     'Potion Kit (Small)': 0.878,
-    'Rare Potion Kit (Small)': 0.878
+    'Rare Potion Kit (Small)': 1.6109949489091089
   },
   boxOffer: {
     'Probiotic Enzyme Solution': 1,
@@ -93,10 +93,10 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Incubation Sac': 0.33,
       'Hyperplastic Frontal Lobe': 0.33,
       'Hypertrophic Pituitary': 0.6890211397058824,
-      'Adherent Metatarsals': 0.5,
+      'Adherent Metatarsals': 0.25,
       'Contracted Claws': 0.6571024694600063,
-      'Aberrant Sprout': 0.5887867647058823,
-      'Prismatic Liver': 0.5146875
+      'Aberrant Sprout': 0.37972027699968885,
+      'Prismatic Liver': 0.300611885958087
     },
     advanced: {
       'Clustered Eggs': 1,

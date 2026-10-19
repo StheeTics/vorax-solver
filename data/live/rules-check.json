@@ -1,6 +1,6 @@
 {
-  "checked": 49,
-  "reproduced": 38,
+  "checked": 58,
+  "reproduced": 42,
   "missed": [
     {
       "run": "0807d9e9-2837-4ffc-9d2a-1c25516b72f8",
@@ -191,6 +191,96 @@
         "Black Goat Gut Suture"
       ],
       "best": "Slough Solution → tank 2",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "97e3113a-36d5-404b-b1c0-a9ef75d5331b",
+      "seq": 12,
+      "round": 5,
+      "hand": [
+        "Brain Fog Tincture",
+        "Twin Hormone - Bone Sentry",
+        "Vivigenic Powder"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Black Goat Gut Suture",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Twin Hormone - Bone Sentry → tank 6",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "97e3113a-36d5-404b-b1c0-a9ef75d5331b",
+      "seq": 14,
+      "round": 6,
+      "hand": [
+        "Green Bile Solution",
+        "Plague Quarter Peat Poultice",
+        "Potent Xenopurge Powder"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Black Goat Gut Suture",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Green Bile Solution → tank 6",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "97e3113a-36d5-404b-b1c0-a9ef75d5331b",
+      "seq": 15,
+      "round": 7,
+      "hand": [
+        "Probiotic Enzyme Solution",
+        "Vivigenic Powder",
+        "Fresh Spinal Powder"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Black Goat Gut Suture",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Fresh Spinal Powder",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "97e3113a-36d5-404b-b1c0-a9ef75d5331b",
+      "seq": 16,
+      "round": 8,
+      "hand": [
+        "Fresh Spinal Powder",
+        "Twin Hormone - Bone Sentry",
+        "Spinal Solution - Agito"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Black Goat Gut Suture",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Fresh Spinal Powder",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "97e3113a-36d5-404b-b1c0-a9ef75d5331b",
+      "seq": 18,
+      "round": 9,
+      "hand": [
+        "Digestive Enzyme Solution",
+        "Brain Fog Tincture",
+        "Hollow Spinal Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Black Goat Gut Suture",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Hollow Spinal Solution → tank 1",
       "gap": 1,
       "reproduced": false
     }
