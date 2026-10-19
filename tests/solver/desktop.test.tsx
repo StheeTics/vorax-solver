@@ -87,8 +87,15 @@ describe('the overlay card', () => {
     expect(overlayAsk(1, {}, {})).toBe('Which instrument did you take? The Solver couldn’t tell.')
     expect(overlayAsk(0, { instrument1: { sure: false } }, {})).toBe('An instrument may be misread: check it in the Solver.')
     expect(overlayAsk(0, { instrument1: { sure: false } }, { instrument1: 'Canine Teeth File' })).toBeNull()
-    // only instruments: an unsure tank number is the Solver window's to show
-    expect(overlayAsk(0, { 'tank0.activity': { sure: false }, instrument0: { sure: true } }, {})).toBeNull()
+    expect(overlayAsk(0, { 'tank0.rarity': { sure: false }, instrument0: { sure: true } }, {})).toBeNull()
+  })
+
+  it('warns over the game when a tank’s numbers weren’t read: the advice may be off', () => {
+    expect(overlayAsk(0, { 'tank1.activity': { sure: false } }, {})).toBe('Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them in the Solver.')
+    expect(overlayAsk(0, { 'tank1.activity': { sure: false } }, { 'tank1.activity': '300' })).toBeNull()
+    // the instrument question comes first: it waits for an answer; then the tanks, which change the advice most
+    expect(overlayAsk(1, { 'tank1.activity': { sure: false } }, {})).toBe('Which instrument did you take? The Solver couldn’t tell.')
+    expect(overlayAsk(0, { 'tank1.activity': { sure: false }, instrument0: { sure: false } }, {})).toMatch(/^Tank 2/)
   })
 
   it('says it is working before the first answer', () => {

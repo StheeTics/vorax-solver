@@ -7,6 +7,7 @@ import { loadShelleyLevel, saveShelleyLevel } from '@/ui/settingsStore'
 import { AdvicePanel } from './advice/AdvicePanel'
 import { useAdvice } from './advice/useAdvice'
 import { desktopBridge, overlayAsk, useOverlay } from './desktop/bridge'
+import { unreadTanks } from './advice/unread'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -207,7 +208,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </div>
       )}
 
-      <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} />
+      <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} unread={unreadTanks(fields, corrections)} />
       {pickAsks.map(a => (
         <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} learn={!linked} />
       ))}

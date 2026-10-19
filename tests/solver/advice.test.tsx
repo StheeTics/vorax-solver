@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import type { advise, Advice, ScreenState } from '@/strategy/advisor'
 import { runAdvice } from '@/solver/advice/runAdvice'
 import { AdvicePanel } from '@/solver/advice/AdvicePanel'
+import { unreadTanks, unreadNote } from '@/solver/advice/unread'
 import { emptyState } from '@/solver/types'
 
 const hand = ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture']
@@ -167,4 +168,27 @@ it('opens with where you are: the round, what you’re choosing, and the refresh
   expect(head.textContent).toMatch(/Round 4/)
   expect(head.textContent).toMatch(/choose a potion/)
   expect(head.textContent).toMatch(/2 refreshes left/)
+})
+
+describe('tanks whose numbers weren’t read for sure', () => {
+  it('are the tanks with an unsure Activity or Quantity the player didn’t correct, counted from 1', () => {
+    const fields = { 'tank1.activity': { sure: false }, 'tank1.quantity': { sure: false }, 'tank3.quantity': { sure: false }, 'tank0.rarity': { sure: false }, 'tank4.activity': { sure: true } }
+    expect(unreadTanks(fields, {})).toEqual([2, 4])
+    expect(unreadTanks(fields, { 'tank3.quantity': '36' })).toEqual([2])
+    expect(unreadTanks(fields, { 'tank1.activity': '5' })).toEqual([2, 4])
+    expect(unreadTanks({}, {})).toEqual([])
+  })
+  it('say so in words', () => {
+    expect(unreadNote([2])).toBe('Tank 2’s numbers weren’t read for sure, so this advice may be off.')
+    expect(unreadNote([2, 4])).toBe('Tanks 2 and 4’s numbers weren’t read for sure, so this advice may be off.')
+    expect(unreadNote([1, 2, 4])).toBe('Tanks 1, 2 and 4’s numbers weren’t read for sure, so this advice may be off.')
+  })
+  it('the advice warns it may be off, and asks for the numbers', () => {
+    render(<AdvicePanel advice={advice({ index: 0, targets: [], value: 5 })} updating={false} state={state} unread={[2]} />)
+    expect(screen.getByRole('note').textContent).toBe('Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them on the board.')
+  })
+  it('no warning when every number was read', () => {
+    render(<AdvicePanel advice={advice({ index: 0, targets: [], value: 5 })} updating={false} state={state} unread={[]} />)
+    expect(screen.queryByRole('note')).toBeNull()
+  })
 })

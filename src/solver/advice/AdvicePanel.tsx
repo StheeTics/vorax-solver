@@ -2,6 +2,7 @@ import type { Advice, ScreenState } from '@/strategy/advisor'
 import styles from './AdvicePanel.module.css'
 import { PickHand } from './PickHand'
 import { describe, predicted } from './describe'
+import { unreadNote } from './unread'
 
 interface Props {
   advice: Advice | null
@@ -11,6 +12,8 @@ interface Props {
   state: ScreenState
   /** instruments whose panel icon the reader knows (built in or learned in this browser) */
   iconsKnown?: string[]
+  /** tanks (from 1) whose numbers weren't read for sure: the advice may be off until they're checked */
+  unread?: number[]
 }
 
 /** The game's refresh die: bone white with red pips. */
@@ -25,7 +28,7 @@ const Die = () => (
 
 const refreshesLeft = (s: ScreenState) => (s.phase === 'instrument' ? s.instrumentRefreshes : s.potionRefreshes) ?? 0
 
-export function AdvicePanel({ advice, updating, state, iconsKnown }: Props) {
+export function AdvicePanel({ advice, updating, state, iconsKnown, unread = [] }: Props) {
   // until every panel icon is known, an offered instrument whose icon hasn't been seen says picking it teaches the Solver
   const unseen = state.phase === 'instrument' && iconsKnown ? state.hand.filter(n => n && !iconsKnown.includes(n)) : []
   if (state.phase === 'protocol')
@@ -55,6 +58,7 @@ export function AdvicePanel({ advice, updating, state, iconsKnown }: Props) {
       {unseen.length > 0 && <p className={styles.teach}>{unseen.join(' and ')}: icon{unseen.length === 1 ? '' : 's'} not seen yet. Picking {unseen.length === 1 ? 'it' : 'one'} teaches the Solver.</p>}
       {advice.unknown.length > 0 && <p className={styles.unknown}>Not recognised: {advice.unknown.join(', ')}</p>}
       {advice.note && <p className={styles.note}>{advice.note}</p>}
+      {unread.length > 0 && <p className={styles.unknown} role="note">{unreadNote(unread)} Check them on the board.</p>}
     </section>
   )
 }

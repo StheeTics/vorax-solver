@@ -5,6 +5,7 @@
 import { useEffect } from 'react'
 import type { FileLike } from '../live/logFollower'
 import type { FieldKey, FieldRead } from '../types'
+import { unreadNote, unreadTanks } from '../advice/unread'
 import type { Shown } from '../advice/useAdvice'
 import { describe, predicted } from '../advice/describe'
 
@@ -33,9 +34,12 @@ export interface OverlayCard {
   ask: string | null
 }
 
-/** The question for the card: an instrument the Solver couldn't tell (it asks which), or one read unsure. */
+/** The question for the card: an instrument the Solver couldn't tell (it waits for the answer), tanks whose
+ *  numbers weren't read (they change the advice most), or an instrument read unsure. */
 export function overlayAsk(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>): string | null {
   if (pending > 0) return 'Which instrument did you take? The Solver couldn’t tell.'
+  const tanks = unreadTanks(fields, corrections)
+  if (tanks.length) return `${unreadNote(tanks)} Check them in the Solver.`
   const unsure = Object.entries(fields).some(([k, f]) => /^instrument\d$/.test(k) && !f.sure && !(k in corrections))
   return unsure ? 'An instrument may be misread: check it in the Solver.' : null
 }
