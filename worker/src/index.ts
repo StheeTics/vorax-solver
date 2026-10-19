@@ -5,6 +5,7 @@ import names from './names.json'
 import { validate, validateIcon } from './validate'
 import { summarize, type StatRow } from './stats'
 import { DASHBOARD_HTML } from './dashboard'
+import { onSchedule } from './schedule'
 
 export interface Store {
   /** stores rows with new uids; returns how many were new */
@@ -23,6 +24,8 @@ export interface Env {
   EXPORT_TOKEN: string
   /** the analytics page's password (wrangler secret put DASHBOARD_TOKEN) */
   DASHBOARD_TOKEN?: string
+  /** starts the repo's workflows on schedule (src/schedule.ts) */
+  GITHUB_DISPATCH_TOKEN?: string
   IP_SALT: string
   LIMIT: { limit(o: { key: string }): Promise<{ success: boolean }> }
   DB?: D1Like
@@ -167,4 +170,5 @@ export function d1Store(db: D1Like): Store {
 
 export default {
   fetch: (req: Request, env: Env) => handle(req, env, d1Store(env.DB!)),
+  scheduled: (event: { cron: string }, env: Env, ctx: { waitUntil(p: Promise<unknown>): void }) => ctx.waitUntil(onSchedule(event.cron, env)),
 }
