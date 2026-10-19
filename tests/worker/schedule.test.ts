@@ -25,3 +25,37 @@ describe('the collector starts the repo’s loops on time (GitHub’s own schedu
     expect(calls).toHaveLength(0)
   })
 })
+
+describe('Run now, from the dashboard', () => {
+  const env = { EXPORT_TOKEN: 'x', IP_SALT: 's', DASHBOARD_TOKEN: 'pw', GITHUB_DISPATCH_TOKEN: 'tok', LIMIT: { limit: async () => ({ success: true }) } }
+  const run = (file: string, pw = 'pw') => new Request(`https://w.dev/v1/run/${file}`, { method: 'POST', headers: { authorization: `Bearer ${pw}` } })
+
+  it('starts a loop’s workflow, with the dashboard password', async () => {
+    const { handle } = await import('../../worker/src/index')
+    const calls: string[] = []
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => (calls.push(String(url)), new Response(null, { status: 204 })))
+    try {
+      const res = await handle(run('live-data.yml'), env, {} as never)
+      expect(res.status).toBe(200)
+      expect(calls).toEqual(['https://api.github.com/repos/tidewarden/tli-vorax-simulator/actions/workflows/live-data.yml/dispatches'])
+    } finally {
+      fetcher.mockRestore()
+    }
+  })
+  it('refuses without the password, and any workflow that isn’t a loop (a release needs its tag)', async () => {
+    const { handle } = await import('../../worker/src/index')
+    expect((await handle(run('live-data.yml', 'nope'), env, {} as never)).status).toBe(401)
+    expect((await handle(run('desktop.yml'), env, {} as never)).status).toBe(404)
+  })
+  it('says why when GitHub refuses (a missing or wrong token)', async () => {
+    const { handle } = await import('../../worker/src/index')
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('Bad credentials', { status: 401 }))
+    try {
+      const res = await handle(run('issue-fixer.yml'), env, {} as never)
+      expect(res.status).toBe(502)
+      expect((await res.json()).error).toMatch(/401.*Bad credentials/)
+    } finally {
+      fetcher.mockRestore()
+    }
+  })
+})

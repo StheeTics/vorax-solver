@@ -89,3 +89,23 @@ it('pullIcons saves shared icons beside the boards, keeping the boards’ place 
     process.chdir(cwd)
   }
 })
+
+it('learns only from what was read for sure: a hand with an unsure card, or an unsure tank, doesn’t count', () => {
+  const rows = [
+    base({ seq: 0, run: 'a', round: 1, hand: ['Xeno-Hormone', 'Mutagenic Powder', 'Green Bile Solution'], unsure: ['tank0.activity'],
+      tanks: [{ archetype: 'pest', rarity: 'magic', activity: 1, quantity: 1 }, { archetype: 'agito', rarity: 'rare', activity: 5, quantity: 24 }, null, null, null, null] }),
+    base({ seq: 1, run: 'a', round: 2, hand: ['Xeno-Hormone', 'Purest Holy Water', 'Green Bile Solution'], unsure: ['hand1'] }),
+    base({ seq: 0, run: 'b', round: 1, unsure: ['tank1.rarity'],
+      tanks: [{ archetype: 'pest', rarity: 'normal', activity: 5, quantity: 24 }, { archetype: 'pest', rarity: 'boss', activity: 5, quantity: 24 }, null, null, null, null] }),
+  ]
+  const r = computeRates(rows)
+  // the unsure Activity doesn't spoil the hand; the hand with an unsure card is left out
+  expect(r.potionOffer['Xeno-Hormone'].count).toBe(1)
+  expect(r.potionOffer['Xeno-Hormone'].n).toBe(3)
+  // starting tanks: both of run a (only its numbers were unsure), run b's first but not its unsure second
+  expect(r.spawnRarity.magic.count).toBe(1)
+  expect(r.spawnRarity.rare.count).toBe(1)
+  expect(r.spawnRarity.normal.count).toBe(1)
+  expect(r.spawnRarity.boss.count).toBe(0)
+  expect(r.spawnRarity.normal.n).toBe(3)
+})

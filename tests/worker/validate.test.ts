@@ -13,6 +13,13 @@ it('keeps a well-formed snapshot field by field', () => {
   expect(validate(good, names)).toEqual(good)
 })
 
+it('keeps the fields the Solver wasn’t sure of; boards from before had none', () => {
+  expect(validate({ ...good, unsure: ['tank0.activity', 'hand1', 'instrument3', 'phase'] }, names)).toEqual({ ...good, unsure: ['tank0.activity', 'hand1', 'instrument3', 'phase'] })
+  expect(validate(good, names)).not.toHaveProperty('unsure')
+  expect(validate({ ...good, unsure: ['<script>'] }, names)).toBeNull()
+  expect(validate({ ...good, unsure: 'hand0' }, names)).toBeNull()
+})
+
 it('drops extra keys', () => {
   expect(validate({ ...good, ip: '1.2.3.4', name: 'me' }, names)).toEqual(good)
 })

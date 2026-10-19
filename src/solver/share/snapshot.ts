@@ -24,6 +24,9 @@ export interface Snapshot {
   instruments: string[]
   shelley: number
   corrected: FieldKey[]
+  /** fields the reader wasn't sure of and the player didn't correct: the odds learn only from the rest
+   *  (boards shared before had none, being all sure) */
+  unsure?: FieldKey[]
   advice?: SharedAdvice
 }
 
@@ -34,10 +37,15 @@ export function sharedAdvice(shown: Shown | null): SharedAdvice | undefined {
   return { move: best === 'refresh' ? 'Refresh' : describe(best, shown.board, true), activity: end ? Math.round(end.activity) : null, reached: end ? end.reached : null }
 }
 
-/** Only boards the reader was sure of, or the player corrected, from a real screen. */
-export function shareable(r: Reading, source: Source, corrected: FieldKey[]): boolean {
-  if (source === 'demo' || r.problems.some(p => p.kind === 'notFound' || p.kind === 'unknownArt')) return false
-  return Object.entries(r.fields).every(([k, f]) => f.sure || corrected.includes(k))
+/** Every board read from the game, sure or not (each card seen counts toward the odds), never a Manual one
+ *  or a screen that isn't the game. */
+export const shareable = (r: Reading, source: Source): boolean => source !== 'demo' && !r.problems.some(p => p.kind === 'notFound')
+
+/** The fields the reader wasn't sure of, the player didn't correct, or (cards) didn't recognise. */
+export function unsureFields(r: Reading, corrected: FieldKey[]): FieldKey[] {
+  const out = Object.entries(r.fields).filter(([k, f]) => !f.sure && !corrected.includes(k)).map(([k]) => k)
+  for (const p of r.problems) if (p.kind === 'unknownArt' && !out.includes(p.field) && !corrected.includes(p.field)) out.push(p.field)
+  return out
 }
 
 /** The game's last board (the round-13 Surgical Protocol): its total is the final score, and no board follows
@@ -46,7 +54,7 @@ export const isFinalBoard = (r: Reading) => r.state.phase === 'protocol' && r.st
 
 export const startsRun = (r: Reading, trigger: string) => trigger === 'screen' || (r.state.phase === 'instrument' && r.state.round === 1)
 
-export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; advice?: SharedAdvice }): Snapshot {
+export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; unsure: FieldKey[]; advice?: SharedAdvice }): Snapshot {
   const s = r.state
   return {
     uid: crypto.randomUUID(),
@@ -63,6 +71,7 @@ export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: str
     instruments: [...s.instruments],
     shelley: ctx.shelley,
     corrected: [...ctx.corrected],
+    unsure: [...ctx.unsure],
     ...(ctx.advice ? { advice: ctx.advice } : {}),
   }
 }

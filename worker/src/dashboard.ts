@@ -91,6 +91,9 @@ export const DASHBOARD_HTML = `<!doctype html>
   input:focus { outline: 2px solid color-mix(in srgb, var(--accent) 50%, transparent); outline-offset: 1px; }
   button { padding: 9px 16px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font: 600 14px inherit; cursor: pointer; }
   .err { width: 100%; color: var(--bad); font-size: 13px; }
+  button.run { padding: 4px 12px; border: 1px solid var(--border); border-radius: 8px; background: transparent; color: var(--accent); font: 500 13px inherit; cursor: pointer; white-space: nowrap; }
+  button.run:hover:not(:disabled) { border-color: var(--accent); }
+  button.run:disabled { color: var(--muted); cursor: default; }
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -225,8 +228,9 @@ const LOOPS = [
   { file: 'daily-check.yml', name: 'Daily check (simulation)', every: 24 },
   { file: 'issue-fixer.yml', name: 'Issue fixer', every: 1 },
   { file: 'deploy.yml', name: 'Website deploy', every: null },
-  { file: 'desktop.yml', name: 'Windows app release', every: null },
+  { file: 'desktop.yml', name: 'Windows app release', every: null, noRun: true },
 ]
+let password = ''
 const ago = t => {
   const m = Math.round((Date.now() - new Date(t)) / 60000)
   return m < 60 ? m + ' min ago' : m < 48 * 60 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' days ago'
@@ -245,15 +249,38 @@ async function health() {
       else if (last.conclusion !== 'success') state = pill('bad', 'Failing')
       else if (l.every && Date.now() - new Date(last.created_at) > l.every * 2.5 * 3600000) state = pill('warn', 'Late')
       const lastCell = last ? '<a href="' + esc(last.html_url) + '" target="_blank" rel="noopener">' + ago(last.created_at) + '</a> <span class="sub">· ' + esc(last.status === 'completed' ? last.conclusion : last.status) + '</span>' : '<span class="sub">–</span>'
-      return [l.name, { html: state }, { html: lastCell }, good ? ago(good.created_at) : '–', every]
+      return [l.name, { html: state }, { html: lastCell }, good ? ago(good.created_at) : '–', every, runButton(l)]
     } catch (e) {
-      return [l.name, { html: pill('idle', 'Unknown') }, { html: '<span class="sub">GitHub didn’t answer (60 looks an hour without signing in)</span>' }, '', every]
+      return [l.name, { html: pill('idle', 'Unknown') }, { html: '<span class="sub">GitHub didn’t answer (60 looks an hour without signing in)</span>' }, '', every, runButton(l)]
     }
   }))
-  $('health').innerHTML = table(['Loop', 'Status', 'Last run', 'Last success', 'Runs'], rows)
+  $('health').innerHTML = table(['Loop', 'Status', 'Last run', 'Last success', 'Runs', ''], rows)
 }
+const runButton = l => ({ html: l.noRun ? '<span class="sub">needs a version tag</span>' : '<button type="button" class="run" data-run="' + l.file + '">Run now</button>' })
+// Run now: the collector asks GitHub to start the workflow; the table refreshes once GitHub lists it
+document.addEventListener('click', async e => {
+  const b = e.target.closest && e.target.closest('button[data-run]')
+  if (!b) return
+  b.disabled = true
+  b.textContent = 'Starting…'
+  try {
+    const r = await fetch('/v1/run/' + b.dataset.run, { method: 'POST', headers: { authorization: 'Bearer ' + password } })
+    const body = await r.json().catch(() => ({}))
+    if (!r.ok) throw new Error(body.error || ('The collector answered ' + r.status))
+    b.textContent = 'Started'
+    setTimeout(() => void health(), 6000)
+  } catch (err) {
+    b.textContent = 'Failed'
+    b.title = err.message
+    const note = document.createElement('div')
+    note.className = 'err'
+    note.textContent = err.message
+    b.after(note)
+  }
+})
 
 async function load(pw) {
+  password = pw
   const r = await fetch('/v1/stats', { headers: { authorization: 'Bearer ' + pw } })
   if (r.status === 401) throw new Error('Wrong password.')
   if (!r.ok) throw new Error('The collector answered ' + r.status + '.')
@@ -267,6 +294,7 @@ async function load(pw) {
     ['Reached 950k', f.games ? pct(f.reached / f.games) : '–', 'of finished games'],
     ['In Vorax Overlay', pct(s.totals.games ? appGames / s.totals.games : 0), 'of games'],
     ['Corrected by hand', pct(s.corrected), 'of boards'],
+    ['Read unsure', pct(s.unsure), 'of boards'],
   ].map(([label, value, note]) => '<div class="kpi"><span>' + esc(label) + '</span><b>' + esc(value) + '</b><small>' + esc(note) + '</small></div>').join('')
   $('updated').textContent = 'Updated ' + s.generated.replace('T', ' ').slice(0, 16) + ' UTC'
   $('updated').hidden = false

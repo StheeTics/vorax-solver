@@ -1,4 +1,4 @@
-import { shareable, startsRun, toSnapshot, type Snapshot } from '@/solver/share/snapshot'
+import { shareable, startsRun, toSnapshot, unsureFields, type Snapshot } from '@/solver/share/snapshot'
 import { createQueue } from '@/solver/share/queue'
 import { appTag, sendingAllowed } from '@/solver/share/endpoint'
 import { loadShare, saveShare } from '@/solver/share/shareStore'
@@ -10,16 +10,27 @@ const reading: Reading = {
   problems: [],
   frame: { width: 3440, height: 1440, trigger: 'board' },
 }
-const ctx = { run: 'r1', seq: 2, app: 'abc', source: 'live' as const, trigger: 'board', shelley: 6, corrected: [] }
+const ctx = { run: 'r1', seq: 2, app: 'abc', source: 'live' as const, trigger: 'board', shelley: 6, corrected: [], unsure: [] }
 
 describe('what is shared', () => {
-  it('never Manual boards, never unsure ones, and corrected ones count as sure', () => {
-    expect(shareable(reading, 'demo', [])).toBe(false)
-    expect(shareable(reading, 'live', [])).toBe(true)
-    const unsure = { ...reading, fields: { ...reading.fields, hand0: { sure: false } } }
-    expect(shareable(unsure, 'live', [])).toBe(false)
-    expect(shareable(unsure, 'live', ['hand0'])).toBe(true)
-    expect(shareable({ ...reading, problems: [{ kind: 'notFound' }] }, 'live', [])).toBe(false)
+  it('every board read from the game, unsure fields and all; never Manual boards or screens that aren’t the game', () => {
+    expect(shareable(reading, 'demo')).toBe(false)
+    expect(shareable(reading, 'live')).toBe(true)
+    expect(shareable({ ...reading, fields: { ...reading.fields, hand0: { sure: false } } }, 'live')).toBe(true)
+    expect(shareable({ ...reading, problems: [{ kind: 'unknownArt', field: 'hand1', crop: { x: 0, y: 0, w: 1, h: 1 } }] }, 'live')).toBe(true)
+    expect(shareable({ ...reading, problems: [{ kind: 'notFound' }] }, 'live')).toBe(false)
+  })
+
+  it('the fields shared as unsure: those the reader wasn’t sure of and the player didn’t correct, and cards it didn’t recognise', () => {
+    const unsure = { ...reading, fields: { ...reading.fields, hand0: { sure: false }, 'tank0.activity': { sure: false } } }
+    expect(unsureFields(unsure, [])).toEqual(['hand0', 'tank0.activity'])
+    expect(unsureFields(unsure, ['hand0'])).toEqual(['tank0.activity'])
+    expect(unsureFields(reading, [])).toEqual([])
+    expect(unsureFields({ ...reading, problems: [{ kind: 'unknownArt', field: 'hand1', crop: { x: 0, y: 0, w: 1, h: 1 } }] }, [])).toEqual(['hand1'])
+  })
+
+  it('a snapshot names its unsure fields', () => {
+    expect(toSnapshot(reading, { ...ctx, unsure: ['hand0'] }).unsure).toEqual(['hand0'])
   })
 
   it('the round-13 Surgical Protocol is a game’s final board: shared at once, so every finished game has its final score', async () => {
@@ -37,7 +48,7 @@ describe('what is shared', () => {
 
   it('a snapshot copies the board and carries no time and nothing about the player', () => {
     const s = toSnapshot(reading, ctx)
-    expect(s).toMatchObject({ run: 'r1', seq: 2, app: 'abc', source: 'live', trigger: 'board', round: 3, phase: 'potion', refreshes: 2, hand: ['Xeno-Hormone'], instruments: ['Hypertrophic Pituitary'], shelley: 6, corrected: [] })
+    expect(s).toMatchObject({ run: 'r1', seq: 2, app: 'abc', source: 'live', trigger: 'board', round: 3, phase: 'potion', refreshes: 2, hand: ['Xeno-Hormone'], instruments: ['Hypertrophic Pituitary'], shelley: 6, corrected: [], unsure: [] })
     expect(s.tanks[0]).toEqual({ archetype: 'pest', rarity: 'magic', activity: 5, quantity: 24 })
     expect(s.uid).toMatch(/^[0-9a-f-]{20,}$/)
     for (const k of ['time', 'at', 'date', 'frame', 'width']) expect(s).not.toHaveProperty(k)

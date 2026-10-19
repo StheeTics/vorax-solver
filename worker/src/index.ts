@@ -5,7 +5,7 @@ import names from './names.json'
 import { validate, validateIcon } from './validate'
 import { summarize, type StatRow } from './stats'
 import { DASHBOARD_HTML } from './dashboard'
-import { onSchedule } from './schedule'
+import { dispatch, onSchedule, RUNNABLE } from './schedule'
 
 export interface Store {
   /** stores rows with new uids; returns how many were new */
@@ -121,6 +121,14 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
   // The private analytics page and its numbers (counts only; see stats.ts).
   if (url.pathname === '/dashboard' && req.method === 'GET') {
     return new Response(DASHBOARD_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } })
+  }
+  // Run now, on the dashboard: starts one of the repo's loops (with the dashboard password)
+  const run = /^\/v1\/run\/([\w.-]+)$/.exec(url.pathname)
+  if (run && req.method === 'POST') {
+    if (!env.DASHBOARD_TOKEN || req.headers.get('authorization') !== `Bearer ${env.DASHBOARD_TOKEN}`) return json({ error: 'password' }, 401)
+    if (!RUNNABLE.has(run[1])) return json({ error: 'not a loop' }, 404)
+    const why = await dispatch(run[1], env.GITHUB_DISPATCH_TOKEN)
+    return why ? json({ error: why }, 502) : json({ started: run[1] })
   }
   if (url.pathname === '/v1/stats' && req.method === 'GET') {
     if (!env.DASHBOARD_TOKEN || req.headers.get('authorization') !== `Bearer ${env.DASHBOARD_TOKEN}`) return json({ error: 'password' }, 401)

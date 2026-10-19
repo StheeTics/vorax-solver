@@ -11,7 +11,7 @@ import type { GameState, Monster } from '@/engine/types'
 
 const SEEDS = 200
 
-interface Board extends ScreenState { run: string; seq: number; round: number; refreshes?: number }
+interface Board extends ScreenState { run: string; seq: number; round: number; refreshes?: number; unsure?: string[] }
 
 /** 0 when two tanks match exactly; 1 a different monster; 0.5 the same monster with other numbers. */
 function tankGap(a: Monster | null, b: Monster | null): number {
@@ -57,6 +57,8 @@ export function pairs(boards: Board[]): [Board, Board][] {
     for (let i = 0; i + 1 < list.length; i++) {
       const [a, b] = [list[i], list[i + 1]]
       if (a.phase !== 'potion' || a.hand.length !== 3) continue
+      // a misread would look like a card effect the simulator gets wrong: only boards read for sure
+      if (a.unsure?.length || b.unsure?.length) continue
       if ((b.phase === 'potion' && b.round === a.round + 1) || (b.phase === 'instrument' && b.round === a.round)) out.push([a, b])
     }
   }

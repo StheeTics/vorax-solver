@@ -3,7 +3,7 @@ import type { FieldKey, Reading, Source } from '../types'
 import { appTag, ENDPOINT, sendingAllowed } from './endpoint'
 import { createQueue } from './queue'
 import { loadShare } from './shareStore'
-import { isFinalBoard, shareable, startsRun, toSnapshot, type SharedAdvice, type Snapshot } from './snapshot'
+import { isFinalBoard, shareable, startsRun, toSnapshot, unsureFields, type SharedAdvice, type Snapshot } from './snapshot'
 
 const BUILD = typeof __BUILD__ === 'string' ? __BUILD__ : 'dev'
 
@@ -18,7 +18,7 @@ async function post(batch: Snapshot[]): Promise<boolean> {
 
 /**
  * Shares each board read from a real screen, once the next one arrives (or the page closes), so the
- * player's corrections go with it.
+ * player's corrections go with it, and what's still unsure is marked.
  */
 /** advice: what the Solver advised for the board on screen, shared with it */
 export function useShare(reading: Reading | null, source: Source, shelley: number, corrections: Record<FieldKey, string>, advice?: SharedAdvice) {
@@ -31,10 +31,10 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
   const release = () => {
     const h = held.current
     held.current = null
-    if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source, h.corrected) || h.source === 'demo') return
+    if (!h || !queue.current || !loadShare() || !shareable(h.reading, h.source)) return
     const trigger = h.reading.frame?.trigger ?? 'screenshot'
     if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
-    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, advice: h.advice }))
+    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, unsure: unsureFields(h.reading, h.corrected), advice: h.advice }))
   }
 
   useEffect(() => {

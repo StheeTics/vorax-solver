@@ -4,6 +4,26 @@ import { handle, type Store } from '../../worker/src/index'
 const board = (run: string, round: number, extra: Record<string, unknown> = {}) => JSON.stringify({ run, seq: 0, app: '9832893', source: 'live', trigger: 'board', round, phase: 'potion', refreshes: 3, shelley: 6, corrected: [], tanks: [], hand: [], instruments: [], ...extra })
 const row = (received: string, client: string, body: string): StatRow => ({ received, client, body })
 
+describe('boards shared with unsure fields', () => {
+  const t = { archetype: 'pest', rarity: 'magic', activity: 500, quantity: 1000 }
+  const rows = [
+    row('2026-10-19T09:00:00Z', 'a', board('g1', 13, { phase: 'protocol', tanks: [t, null, null, null, null, null] })),
+    row('2026-10-19T09:00:00Z', 'b', board('g2', 13, { phase: 'protocol', tanks: [t, t, null, null, null, null], unsure: ['tank1.quantity'] })),
+    row('2026-10-19T09:00:00Z', 'c', board('g3', 4, { unsure: ['hand0'] })),
+  ]
+  const s = summarize(rows, new Date('2026-10-19T12:00:00Z'))
+  it('count as games played', () => {
+    expect(s.totals.games).toBe(3)
+  })
+  it('the share of boards with something the reader wasn’t sure of', () => {
+    expect(s.unsure).toBeCloseTo(2 / 3)
+  })
+  it('a final board with an unsure number isn’t counted as a finished game’s score', () => {
+    expect(s.finished.finals).toEqual([500_000])
+    expect(s.days[0].finished).toBe(1)
+  })
+})
+
 describe('the dashboard summary', () => {
   const rows = [
     row('2026-10-18T10:00:00Z', 'a', board('g1', 1)),

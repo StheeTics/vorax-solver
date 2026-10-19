@@ -9,7 +9,7 @@ const SOURCES = ['live', 'screenshot']
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 /** The engine's cap on Activity and Quantity (src/ui/sandboxValidate.ts) */
 const MAX_STAT = 1_000_000
-const FIELD = /^(round|phase|refreshes|tank[0-5]\.(empty|archetype|rarity|activity|quantity)|hand[0-4]|instrument[0-2])$/
+const FIELD = /^(round|phase|refreshes|tank[0-5]\.(empty|archetype|rarity|activity|quantity)|hand[0-4]|instrument[0-3])$/
 
 const int = (v: unknown, lo: number, hi: number): v is number => Number.isInteger(v) && (v as number) >= lo && (v as number) <= hi
 const str = (v: unknown, re: RegExp): v is string => typeof v === 'string' && re.test(v)
@@ -36,10 +36,13 @@ export function validate(raw: unknown, names: Names) {
   if (!Array.isArray(s.hand) || s.hand.length > (s.phase === 'potion' ? 5 : 3) || !s.hand.every(n => pool.includes(n as string))) return null
   if (!Array.isArray(s.instruments) || s.instruments.length > 3 || !s.instruments.every(n => names.instruments.includes(n as string))) return null
   if (!Array.isArray(s.corrected) || s.corrected.length > 40 || !s.corrected.every(k => str(k, FIELD))) return null
+  // the fields the Solver wasn't sure of: boards from before it sent unsure ones had none
+  if (s.unsure !== undefined && (!Array.isArray(s.unsure) || s.unsure.length > 40 || !s.unsure.every(k => str(k, FIELD)))) return null
   return {
     uid: s.uid, run: s.run, seq: s.seq, app: s.app, source: s.source as string, trigger: s.trigger,
     round: s.round, phase: s.phase as string, refreshes: s.refreshes, shelley: s.shelley, corrected: s.corrected as string[],
     tanks, hand: s.hand as string[], instruments: s.instruments as string[],
+    ...(s.unsure !== undefined ? { unsure: s.unsure as string[] } : {}),
     ...adviceOf(s.advice),
   }
 }

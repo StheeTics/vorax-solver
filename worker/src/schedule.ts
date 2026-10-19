@@ -12,17 +12,26 @@ export const SCHEDULE: Record<string, string[]> = {
   '45 6 * * *': ['daily-check.yml'],
 }
 
+/** The workflows the dashboard's Run now may start (not the app release: that needs its version tag). */
+export const RUNNABLE = new Set(['live-data.yml', 'issue-fixer.yml', 'daily-check.yml', 'strengths.yml', 'deploy.yml'])
+
 type Fetch = (url: string, init: RequestInit) => Promise<Response>
 
+/** Asks GitHub to start a workflow on main; null when it did, else why not. */
+export async function dispatch(file: string, token: string | undefined, fetcher: Fetch = fetch): Promise<string | null> {
+  if (!token) return 'no GITHUB_DISPATCH_TOKEN'
+  const res = await fetcher(`https://api.github.com/repos/${REPO}/actions/workflows/${file}/dispatches`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${token}`, accept: 'application/vnd.github+json', 'x-github-api-version': '2022-11-28', 'user-agent': 'vorax-live' },
+    body: JSON.stringify({ ref: 'main' }),
+  })
+  return res.ok ? null : `GitHub answered ${res.status}: ${(await res.text()).slice(0, 200)}`
+}
+
 export async function onSchedule(cron: string, env: { GITHUB_DISPATCH_TOKEN?: string }, fetcher: Fetch = fetch): Promise<void> {
-  const token = env.GITHUB_DISPATCH_TOKEN
-  if (!token) return
+  if (!env.GITHUB_DISPATCH_TOKEN) return
   for (const file of SCHEDULE[cron] ?? []) {
-    const res = await fetcher(`https://api.github.com/repos/${REPO}/actions/workflows/${file}/dispatches`, {
-      method: 'POST',
-      headers: { authorization: `Bearer ${token}`, accept: 'application/vnd.github+json', 'x-github-api-version': '2022-11-28', 'user-agent': 'vorax-live' },
-      body: JSON.stringify({ ref: 'main' }),
-    })
-    if (!res.ok) console.log(`starting ${file} failed: ${res.status} ${await res.text()}`)
+    const why = await dispatch(file, env.GITHUB_DISPATCH_TOKEN, fetcher)
+    if (why) console.log(`starting ${file} failed: ${why}`)
   }
 }

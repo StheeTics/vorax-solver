@@ -4,7 +4,7 @@
 export interface StatRow { received: string; client: string; body: string }
 
 interface Tank { activity: number; quantity: number }
-interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
+interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
 
 /** The advice's goal (src/strategy/bot.ts TARGET): with the endgame battle bonus it reaches rainbow. */
 const TARGET = 950_000
@@ -20,6 +20,8 @@ export interface Stats {
   rounds: Record<number, number>
   /** the share of boards a player corrected */
   corrected: number
+  /** the share of boards shared with something the reader wasn't sure of (and the player didn't correct) */
+  unsure: number
   /** games per site version */
   versions: Record<string, number>
   /** score: the final score when the game finished, else the total on its last shared board */
@@ -36,6 +38,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
   const games = new Map<string, { start: string; day: string; boards: number; round: number; app: boolean; version: string; instruments: string[]; final: number | null; predictions: number[]; last: number; score: number }>()
   const days = new Map<string, { boards: number; games: Set<string>; players: Set<string> }>()
   let corrected = 0
+  let unsure = 0
   for (const r of rows) {
     let b: Board
     try {
@@ -50,6 +53,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     d.players.add(r.client)
     days.set(day, d)
     if (b.corrected?.length) corrected++
+    if (b.unsure?.length) unsure++
     const app = /-overlay$/.test(b.app)
     const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [], last: -1, score: 0 }
     g.boards++
@@ -60,7 +64,8 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     }
     g.round = Math.max(g.round, b.round)
     if (b.instruments?.length) g.instruments = b.instruments
-    if (b.round === 13 && b.phase === 'protocol') g.final = total(b)
+    // a final score with an unsure number isn't one
+    if (b.round === 13 && b.phase === 'protocol' && !b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.final = total(b)
     if (typeof b.advice?.reached === 'number') g.predictions.push(b.advice.reached)
     games.set(b.run, g)
   }
@@ -97,6 +102,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     }),
     rounds,
     corrected: rows.length ? corrected / rows.length : 0,
+    unsure: rows.length ? unsure / rows.length : 0,
     versions,
     recent: list.sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, instruments: g.instruments, score: g.final ?? g.score, finished: g.final !== null })),
   }

@@ -41,10 +41,14 @@ export interface Rates {
   spawnArchetype: Record<string, Rate>
 }
 
+/** Whether every field named was read for sure (boards from before unsure fields were shared were all sure). */
+const sure = (r: Snapshot, test: (field: string) => boolean) => !(r.unsure ?? []).some(test)
+
 export function computeRates(rows: Snapshot[]): Rates {
-  // an offer read twice (a re-read after a correction) counts once
+  // an offer read twice (a re-read after a correction) counts once; only hands read for sure, with the
+  // phase and round that say which pool they came from
   const seen = new Set<string>()
-  const offers = rows.filter(r => {
+  const offers = rows.filter(r => sure(r, f => /^(hand\d|phase|round)$/.test(f))).filter(r => {
     const key = `${r.run}|${r.phase}|${r.round}|${r.refreshes}|${r.hand.join(',')}`
     if (seen.has(key)) return false
     seen.add(key)
@@ -64,7 +68,7 @@ export function computeRates(rows: Snapshot[]): Rates {
   const share = (w: Record<string, number>) => (name: string) => (w[name] ?? 1) / sum(w)
   const instruments = offers.filter(r => r.phase === 'instrument')
   const firsts = rows.filter(r => r.seq === 0)
-  const tanks = firsts.flatMap(r => r.tanks.filter(t => t !== null))
+  const tanks = firsts.flatMap(r => r.tanks.filter((t, i): t is NonNullable<typeof t> => t !== null && sure(r, f => /^tank(\d)\.(empty|rarity|archetype)$/.exec(f)?.[1] === String(i))))
   const spawnTotal = RARITIES.reduce((s, r) => s + SPAWN_WEIGHTS[r], 0)
 
   return {
