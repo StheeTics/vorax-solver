@@ -12,7 +12,7 @@ import { unreadTanks } from './advice/unread'
 import { dependsOn } from './advice/depends'
 import { useAlternatives } from './advice/useAlternatives'
 import { screenTrouble, type Trouble } from './live/troubles'
-import { cropTo, gameArea } from './live/windowCrop'
+import { cropTo, windowedGame } from './live/windowCrop'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -120,9 +120,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const onFrame = async (captured: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep) => {
     setReadingBusy(true)
     try {
-      // a windowed game's capture holds its title bar and borders: the game alone is read
-      const win = await desktopBridge()?.gameWindow?.().catch(() => null)
-      const area = win ? gameArea(captured, win) : null
+      // a windowed game's capture holds its title bar and borders, found in the picture: the game alone is read
+      const area = windowedGame(captured)
       const cut = area ? cropTo(captured, area) : null
       const img = cut ? (typeof ImageData === 'undefined' ? (cut as unknown as ImageData) : new ImageData(cut.data, cut.width, cut.height)) : captured
       setWindowed(!!area)
