@@ -25,7 +25,7 @@ it('there is only Live: no Screenshot or Manual mode to choose', () => {
 it('says the advice was updated and what it gained', () => {
   render(<SolverApp />)
   const note = screen.getByRole('note', { name: 'Solver updated' })
-  expect(note.textContent).toBe('Updated Oct 20: smarter, faster advice. In simulated games, it now reaches 950,000 about 10% more often.')
+  expect(note.textContent).toBe('Updated Oct 21: a smarter Solver. In simulated games, it now reaches 950,000 about 20% more often than before Oct 20.')
   expect(screen.queryByRole('note', { name: 'Work in progress' })).toBeNull()
 })
 

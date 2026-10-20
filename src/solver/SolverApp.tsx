@@ -243,7 +243,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </section>
       )}
       <aside className={styles.news} role="note" aria-label="Solver updated">
-        <strong>Updated Oct 20: smarter, faster advice.</strong> In simulated games, it now reaches 950,000 about 10% more often.
+        <strong>Updated Oct 21: a smarter Solver.</strong> In simulated games, it now reaches 950,000 about 20% more often than before Oct 20.
       </aside>
 
       {linked ? (
