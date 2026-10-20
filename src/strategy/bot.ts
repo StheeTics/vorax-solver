@@ -177,25 +177,39 @@ export const priorPicker: InstrumentPicker = s => priorPick(s)
  */
 export type Goal = 'target' | 'mean'
 
-/** offers/refresh: mean goal value per option; reached/refreshReached: the share of its playouts that reached TARGET */
-export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts): { offers: number[]; refresh: number | null; reached: number[]; refreshReached: number | null } {
+/** Totals over some of an option's futures: the goal value summed, how many reached TARGET, and how many were played.
+ *  Futures are numbered and seeded by their number, so totals over slices of them (one per CPU core) add up to the
+ *  totals over all of them. */
+export interface Tally { goal: number; reached: number; n: number }
+
+/** An instrument offer's answer: the card at a hand index, or a refresh. */
+export type InstrumentChoice = number | 'refresh'
+
+/** Futures `from` to `to` (excluded) of each instrument choice, played to the end of the run. */
+export function instrumentFutures(s: GameState, seed: number, choices: InstrumentChoice[], rollout: Chooser, goal: Goal, from: number, to: number): Tally[] {
   const slim = { ...s, log: [] }
   const picker = goal === 'target' ? refreshingPriorPicker : priorPicker
   const value = goal === 'target' ? (x: GameState) => goalScore(ultimateActivity(x)) : ultimateActivity
-  const score = (first: (x: GameState) => GameState, n = playouts) => {
-    let sum = 0, reached = 0
-    for (let k = 0; k < n; k++) {
+  return choices.map(c => {
+    const t: Tally = { goal: 0, reached: 0, n: 0 }
+    for (let k = from; k < to; k++) {
       const sk = mix(seed, 7000 + k)
-      const end = finish(first(reseed(slim, sk)), sk, rollout, picker)
-      sum += value(end)
-      if (ultimateActivity(end) >= TARGET) reached++
+      const x = reseed(slim, sk)
+      const end = finish(c === 'refresh' ? play(x, { type: 'refresh' }) : play(x, { type: 'selectCard', index: c }, { type: 'confirm' }), sk, rollout, picker)
+      t.goal += value(end)
+      if (ultimateActivity(end) >= TARGET) t.reached++
+      t.n++
     }
-    return { mean: sum / n, reached: reached / n }
-  }
-  const each = slim.hand.map((_, i) => score(x => play(x, { type: 'selectCard', index: i }, { type: 'confirm' })))
+    return t
+  })
+}
+
+/** offers/refresh: mean goal value per option; reached/refreshReached: the share of its playouts that reached TARGET */
+export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts): { offers: number[]; refresh: number | null; reached: number[]; refreshReached: number | null } {
+  const each = instrumentFutures(s, seed, s.hand.map((_, i) => i), rollout, goal, 0, playouts)
   // a refresh's value rests on which offers come next, so it may be given more futures than an offered instrument
-  const r = canRefresh(slim) ? score(x => play(x, { type: 'refresh' }), refreshPlayouts) : null
-  return { offers: each.map(e => e.mean), refresh: r && r.mean, reached: each.map(e => e.reached), refreshReached: r && r.reached }
+  const r = canRefresh(s) ? instrumentFutures(s, seed, ['refresh'], rollout, goal, 0, refreshPlayouts)[0] : null
+  return { offers: each.map(e => e.goal / e.n), refresh: r && r.goal / r.n, reached: each.map(e => e.reached / e.n), refreshReached: r && r.reached / r.n }
 }
 
 export const boardPicker = (playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts): InstrumentPicker => (s, seed) => {
@@ -230,23 +244,42 @@ export interface Ahead { o: Action[]; now: number; goal: number; reached: number
  * best target this round, so a card that only pays off later still gets looked at), then the next best
  * options up to `top`, and a reroll while rerolls are left. Best average score counted up to TARGET first.
  */
-export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
+/** The options lookAhead plays to the end, with this round's expected score (`v`): each card on its best target
+ *  this round, the next best options up to `top`, and a reroll while rerolls are left. */
+export function shortlist(s: GameState, seed: number, la: LookAhead): { o: Action[]; v: number }[] {
   const slim = { ...s, log: [] }
   const quick = { samples: 8, horizon: 0 }
   const now = options(slim).map(o => ({ o, v: expected(slim, o, quick, seed) })).sort((a, b) => b.v - a.v)
   const cardOf = (o: Action[]) => (o[0] as { index: number }).index
-  const shortlist = now.filter((c, i) => now.findIndex(d => cardOf(d.o) === cardOf(c.o)) === i)
-  for (const c of now) if (shortlist.length < la.top && !shortlist.includes(c)) shortlist.push(c)
-  if (slim.openBox === null && canRefresh(slim)) shortlist.push({ o: [{ type: 'refresh' }], v: ultimateActivity(slim) })
+  const list = now.filter((c, i) => now.findIndex(d => cardOf(d.o) === cardOf(c.o)) === i)
+  for (const c of now) if (list.length < la.top && !list.includes(c)) list.push(c)
+  if (slim.openBox === null && canRefresh(slim)) list.push({ o: [{ type: 'refresh' }], v: ultimateActivity(slim) })
+  return list
+}
+
+/** Futures `from` to `to` (excluded) of each potion option, played to the end of the run. */
+export function potionFutures(s: GameState, seed: number, la: LookAhead, opts: Action[][], from: number, to: number): Tally[] {
+  const slim = { ...s, log: [] }
   const inner = evChooser({ samples: la.innerSamples ?? 2, horizon: 0, steer: la.steer })
-  const runs = shortlist.map(c => ({ c, n: 0, goal: 0, reached: 0 }))
-  const playMore = (r: (typeof runs)[number], n: number) => {
-    for (let k = r.n; k < r.n + n; k++) {
+  return opts.map(o => {
+    const t: Tally = { goal: 0, reached: 0, n: 0 }
+    for (let k = from; k < to; k++) {
       const sk = mix(seed, 9000 + k)
-      const ua = ultimateActivity(finish(play(reseed(slim, sk), ...r.c.o), sk, inner, priorPicker))
-      r.goal += goalScore(ua)
-      if (ua >= TARGET) r.reached++
+      const ua = ultimateActivity(finish(play(reseed(slim, sk), ...o), sk, inner, priorPicker))
+      t.goal += goalScore(ua)
+      if (ua >= TARGET) t.reached++
+      t.n++
     }
+    return t
+  })
+}
+
+export function lookAhead(s: GameState, seed: number, la: LookAhead): Ahead[] {
+  const runs = shortlist(s, seed, la).map(c => ({ c, n: 0, goal: 0, reached: 0 }))
+  const playMore = (r: (typeof runs)[number], n: number) => {
+    const [t] = potionFutures(s, seed, la, [r.c.o], r.n, r.n + n)
+    r.goal += t.goal
+    r.reached += t.reached
     r.n += n
   }
   const mean = (r: (typeof runs)[number]) => r.goal / r.n

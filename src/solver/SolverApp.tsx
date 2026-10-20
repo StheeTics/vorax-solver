@@ -150,7 +150,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         if (t.settled.length) setPickAsks(list => list.filter(a => !t.settled.includes(a.question.slot)))
         if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++askId, question: ask, count: t.instruments.length, frame: img, keep }])
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
-        r = { ...raw, state: { ...raw.state, instruments: t.instruments }, fields: { ...fields, ...t.fields } }
+        r = { ...raw, state: { ...raw.state, instruments: t.instruments, instrumentRounds: t.rounds }, fields: { ...fields, ...t.fields } }
       }
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null

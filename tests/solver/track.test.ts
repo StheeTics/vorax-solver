@@ -205,3 +205,24 @@ describe('a starting item: something in the panel before any instrument is picke
     expect(next.tracker.start).toBe(0)
   })
 })
+
+describe('the round each instrument was picked in (for the instruments that fire every few rounds)', () => {
+  const second = ['Lady of the Plague Quarter', 'Sinew Garrote', 'Pig Iron Bone Saw']
+  const start = () => trackInstruments(newTracker(), reading({ phase: 'instrument', round: 1, hand: offer, panel: [] }), 'screen').tracker
+  it('the first pick is round 1; a later one is the round of the board it shows up on', () => {
+    let t = trackInstruments(start(), reading({ round: 1, panel: [[['Contracted Claws', 0.99]]] }), 'board').tracker
+    t = trackInstruments(t, reading({ phase: 'instrument', round: 3, hand: second, panel: [[['Contracted Claws', 0.99]]] }), 'board').tracker
+    const r = trackInstruments(t, reading({ round: 4, panel: [[['Contracted Claws', 0.99]], [['Lady of the Plague Quarter', 0.99]]] }), 'board')
+    expect(r.rounds).toEqual([1, 4])
+  })
+  it('a pick that shows up beside the next offer: that screen shows the round just played, so it is the next one', () => {
+    let t = trackInstruments(start(), reading({ round: 1, panel: [[['Contracted Claws', 0.99]]] }), 'board').tracker
+    t = trackInstruments(t, reading({ phase: 'instrument', round: 3, hand: second, panel: [[['Contracted Claws', 0.99]]] }), 'board').tracker
+    const r = trackInstruments(t, reading({ phase: 'instrument', round: 5, hand: offer, panel: [[['Contracted Claws', 0.99]], [['Lady of the Plague Quarter', 0.99]]] }), 'board')
+    expect(r.rounds).toEqual([1, 6])
+  })
+  it('instruments read as they are (a game joined mid-way): rounds not known', () => {
+    const r = trackInstruments(newTracker(), reading({ round: 6, panel: [[['Contracted Claws', 0.99]], [['Lady of the Plague Quarter', 0.99]]] }), 'board')
+    expect(r.rounds).toEqual([0, 0])
+  })
+})

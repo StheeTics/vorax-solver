@@ -1,44 +1,38 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Advice, ScreenState } from '@/strategy/advisor'
 import { runAdvice } from './runAdvice'
+import { adviseOn } from './adviseOn'
+import { futuresPool } from './pool'
 
 const DEBOUNCE_MS = 150
 
 export interface Shown { board: ScreenState; advice: Advice }
 
 /**
- * Advice for a board, from a Web Worker so the look-ahead never freezes the page. The last advice stays up,
- * with the board it was worked out for, until the new board's arrives (`updating` meanwhile), so the panel
- * never blanks between rounds; a board with no cards on offer asks for nothing and leaves it up.
+ * Advice for a board, its futures played over the CPU cores (futuresPool) so the look-ahead never freezes the page
+ * and comes sooner. The last advice stays up, with the board it was worked out for, until the new board's arrives
+ * (`updating` meanwhile), so the panel never blanks between rounds; a board with no cards on offer asks for nothing
+ * and leaves it up. A newer board drops the older one's futures not yet started.
  */
 export function useAdvice(state: ScreenState): { shown: Shown | null; updating: boolean } {
   const [shown, setShown] = useState<Shown | null>(null)
   const [wanted, setWanted] = useState<ScreenState | null>(null)
-  const worker = useRef<Worker | null>(null)
   const latest = useRef(0)
-  const asked = useRef(new Map<number, ScreenState>())
-
-  useEffect(() => {
-    if (typeof Worker === 'undefined') return
-    const w = new Worker(new URL('./adviceWorker.ts', import.meta.url), { type: 'module' })
-    w.onmessage = (e: MessageEvent<{ id: number; advice: Advice }>) => {
-      const board = asked.current.get(e.data.id)
-      if (board && e.data.id === latest.current) setShown({ board, advice: e.data.advice })
-      if (board) console.info(`[timing] advice in ${e.data.advice.ms} ms`)
-    }
-    worker.current = w
-    return () => w.terminate()
-  }, [])
 
   useEffect(() => {
     if (state.hand.length === 0) return
     const id = ++latest.current
     const t = setTimeout(() => {
       setWanted(state)
-      asked.current.clear()
-      asked.current.set(id, state)
-      if (worker.current) worker.current.postMessage({ id, state })
-      else runAdvice(state, a => id === latest.current && setShown({ board: state, advice: a }))
+      const show = (a: Advice | null) => {
+        if (!a || id !== latest.current) return
+        setShown({ board: state, advice: a })
+        console.info(`[timing] advice in ${a.ms} ms`)
+      }
+      const pool = futuresPool()
+      if (!pool) return runAdvice(state, show)
+      pool.clear('board')
+      adviseOn(state, pool, 'board').then(show, e => console.error('advice failed', e))
     }, DEBOUNCE_MS)
     return () => clearTimeout(t)
   }, [state])

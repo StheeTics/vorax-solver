@@ -1,11 +1,11 @@
 // Live advice for the Solver: given what is on screen, rank the choices by expected payoff.
 import { XENOPANACEA, isXenopanacea } from '@/data/xenopanacea'
-import { POTIONS } from '@/data/potions'
+import { POTIONS, potion } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
-import { cardChanges, createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
+import { canRefresh, cardChanges, createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
 import type { Action, Archetype, Card, GameState, Monster, Rarity } from '@/engine/types'
 import { settingsForShelley } from '@/data/shelley'
-import { evChooser, expected, lookAhead, options, rankInstruments } from './bot'
+import { evChooser, expected, instrumentFutures, options, potionFutures, shortlist, type InstrumentChoice, type LookAhead, type Tally } from './bot'
 
 export interface ScreenMonster { archetype: Archetype; rarity: Rarity; activity: number; quantity: number }
 export interface ScreenState {
@@ -15,6 +15,8 @@ export interface ScreenState {
   hand: string[]
   /** names of equipped instruments */
   instruments: string[]
+  /** the round each instrument was picked in (as the engine counts: the round its potions are played in); round 1 when absent or 0 */
+  instrumentRounds?: number[]
   /** 'potion' while choosing a potion, 'instrument' while choosing an instrument, 'protocol' in rounds 11-13 */
   phase: 'potion' | 'instrument' | 'protocol'
   round?: number
@@ -31,6 +33,12 @@ export interface Ranked {
   end?: { activity: number; reached: number }
   /** the card changes nothing on this board (it only adds a monster, and the tanks are full) */
   noEffect?: true
+}
+
+/** Whether the card at `index` is a Potion Kit (it opens a hand of potions). */
+const isKit = (s: GameState, index: number) => {
+  const c = s.hand[index]
+  return c?.kind === 'potion' && typeof potion(c.id)?.targeting === 'object'
 }
 
 /** How close a do-nothing move's value must be for a move that does something to go first instead. */
@@ -67,6 +75,9 @@ const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '')
 const potionIds = new Map(POTIONS.map(p => [norm(p.name), p.id]))
 const instrumentIds = new Map(INSTRUMENTS.map(i => [norm(i.name), i.id]))
 
+/** The screen place of each card the game rebuilt from the screen holds (unknown names are left out of its hand). */
+const places = (x: ScreenState) => x.hand.flatMap((n, i) => ((x.phase === 'potion' ? potionIds : instrumentIds).has(norm(n)) ? [i] : []))
+
 /** Every card and instrument name the reader should know about. */
 export function names() {
   return { potions: [...POTIONS.map(p => p.name), ...XENOPANACEA], instruments: INSTRUMENTS.map(i => i.name), basics: INSTRUMENTS.filter(i => i.pool === 'basic').map(i => i.name) }
@@ -74,31 +85,41 @@ export function names() {
 
 export function toState(x: ScreenState, unknown: string[]): GameState {
   const lookup = (m: Map<string, number>, n: string) => { const id = m.get(norm(n)); if (id === undefined) unknown.push(n); return id }
-  const equipped = x.instruments.map(n => lookup(instrumentIds, n)).filter((id): id is number => id !== undefined)
+  const equipped = x.instruments.flatMap((n, i) => { const id = lookup(instrumentIds, n); return id === undefined ? [] : [{ id, acquiredRound: x.instrumentRounds?.[i] || 1 }] })
   const settings = x.shelley === undefined ? DEFAULT_SETTINGS : settingsForShelley(x.shelley)
   const s = createGame(settings, { tanks: null, instruments: [], startRound: 1, thresholdsUsed: { t8000: false, t28000: false }, forcedHand: [] }, 1)
   const ids = x.hand.map(n => lookup(x.phase === 'potion' ? potionIds : instrumentIds, n))
   const hand: Card[] = ids.filter((id): id is number => id !== undefined).map(id => ({ kind: x.phase === 'potion' ? 'potion' : 'instrument', id }))
   const round = x.round ?? 1
+  const had = equipped.length + (x.phase === 'instrument' ? 1 : 0)
   return {
     ...s,
     tanks: x.tanks.map(t => (t ? ({ ...t } as Monster) : null)),
-    instruments: equipped.map(id => ({ id, acquiredRound: 1 })),
+    instruments: equipped,
     round,
     phase: x.phase === 'potion' ? 'potionSelect' : 'instrumentSelect',
     hand,
     potionRefreshes: x.potionRefreshes ?? 0,
     instrumentRefreshes: x.instrumentRefreshes ?? 0,
-    // past thresholds only matter for whether more instruments are coming; infer from what's equipped
-    thresholds: { t8000: equipped.length >= 2, t28000: equipped.length >= 3 },
+    // past thresholds only matter for whether more instruments are coming: from what's equipped, and an
+    // instrument offer on screen past the first is the reward of the next threshold
+    thresholds: { t8000: had >= 2, t28000: had >= 3 },
     log: [],
   }
 }
 
-/** Potion look-ahead: each card on offer, the next best options up to 4, and a reroll, each played to the end of the run 32 times;
- *  the rounds inside steer toward what the instruments need (steer 0.3: 50% reached 950k in 240 games against 47% without, within luck). (Judged by
- *  rainbow points, it reached 1,120,000 in 22.9% of 240 simulated games against 13.8% for this round's score alone.) */
-export const LOOK_AHEAD = { top: 4, playouts: 32, steer: 0.3 }
+/** Potion look-ahead: each card on offer, the next best options up to 4, and a reroll, each played to the end of the run 64 times;
+ *  the rounds inside steer toward what the instruments need (steer 0.3: 50% reached 950k in 240 games against 47% without, within luck).
+ *  64 futures rather than 32, with instruments judged up to 950k (INSTRUMENT_FUTURES): 63.9% of 360 simulated games reached 950k
+ *  against 58.6%. */
+export const LOOK_AHEAD: LookAhead = { top: 4, playouts: 64, steer: 0.3 }
+
+/** Futures per instrument choice; each judged by its final score counted up to 950k, its own instrument offers
+ *  rerolled when weak (32 rather than 64, so the answer comes sooner). */
+export const INSTRUMENT_FUTURES = 32
+
+/** How the rounds inside an instrument choice's futures are played. */
+const INSTRUMENT_ROLLOUT = { samples: 4, horizon: 0 }
 
 /** A few rounds of look-ahead, only to order options that score the same this round. */
 const TIE_BREAK = { samples: 32, horizon: 4 }
@@ -116,47 +137,100 @@ function breakTies(s: GameState, ranking: Ranked[], seed: number): Ranked[] {
   return [...tied.sort((a, b) => ahead.get(b)! - ahead.get(a)!), ...ranking.slice(tied.length)]
 }
 
-/**
- * Rank the current choices. `samples`: fresh outcomes per potion option; `playouts`: games per instrument option.
- * `plan`: judge potions by how the run ends (lookAhead, ~0.3-1 s) instead of this round's score (~10 ms).
- */
-export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false): Advice {
+/** The futures a board's advice needs, as plain data, so slices of them can be played on other CPU cores. */
+export type Work =
+  | { kind: 'potion'; s: GameState; seed: number; la: LookAhead; opts: { o: Action[]; v: number }[]; futures: number }
+  | { kind: 'instrument'; s: GameState; seed: number; choices: InstrumentChoice[]; futures: number }
+
+/** A board's advice before its futures are played: the futures to play, or the advice already (no futures needed). */
+export type Prepared = { advice: Advice } | { work: Work; x: ScreenState; unknown: string[]; t0: number }
+
+const SEED = 0x5eed
+
+/** The advice that needs no futures (a protocol, a Xenopanacea), or the futures to play for it. */
+export function prepare(x: ScreenState): Prepared {
   const t0 = Date.now(); const unknown: string[] = []
   // Surgical Protocols change the endgame battle, not Ultimate Activity
-  if (x.phase === 'protocol') return { best: null, ranking: [], board: 0, plan: false, final: true, ms: 0, unknown }
+  if (x.phase === 'protocol') return { advice: { best: null, ranking: [], board: 0, plan: false, final: true, ms: 0, unknown } }
   // a Xenopanacea is always taken: its effect isn't simulated, and it's worth more than anything beside it
   const xeno = x.phase === 'potion' ? x.hand.findIndex(isXenopanacea) : -1
   if (xeno >= 0) {
     const pick = { index: xeno, targets: [], value: 0 }
-    return { best: pick, ranking: [pick], board: ultimateActivity(toState({ ...x, hand: [] }, [])), plan: false, final: true, ms: Date.now() - t0, unknown, note: 'A Xenopanacea: always take it when it’s offered.' }
+    return { advice: { best: pick, ranking: [pick], board: ultimateActivity(toState({ ...x, hand: [] }, [])), plan: false, final: true, ms: Date.now() - t0, unknown, note: 'A Xenopanacea: always take it when it’s offered.' } }
   }
-  const s = toState(x, unknown)
-  const seed = 0x5eed
+  const s = { ...toState(x, unknown), log: [] }
+  const work: Work = s.phase === 'potionSelect'
+    ? { kind: 'potion', s, seed: SEED, la: LOOK_AHEAD, opts: shortlist(s, SEED, LOOK_AHEAD), futures: LOOK_AHEAD.playouts }
+    : { kind: 'instrument', s, seed: SEED, choices: [...s.hand.map((_, i) => i), ...(canRefresh(s) ? ['refresh' as const] : [])], futures: INSTRUMENT_FUTURES }
+  return { work, x, unknown, t0 }
+}
+
+/** Futures `from` to `to` (excluded) of every option; slices add up to the whole (Tally). */
+export function playWork(w: Work, from: number, to: number): Tally[] {
+  return w.kind === 'potion'
+    ? potionFutures(w.s, w.seed, w.la, w.opts.map(c => c.o), from, to)
+    : instrumentFutures(w.s, w.seed, w.choices, evChooser(INSTRUMENT_ROLLOUT), 'target', from, to)
+}
+
+/** Adds up slices of futures, option by option. */
+export const addTallies = (parts: Tally[][]): Tally[] =>
+  parts[0].map((_, i) => parts.reduce((t, p) => ({ goal: t.goal + p[i].goal, reached: t.reached + p[i].reached, n: t.n + p[i].n }), { goal: 0, reached: 0, n: 0 }))
+
+/** The advice from the futures played (every option's totals). */
+export function conclude(p: Exclude<Prepared, { advice: Advice }>, tallies: Tally[]): Advice {
+  const { work: w, x } = p
+  const s = w.s
   let ranking: Ranked[]
   let best: Advice['best']
   let refreshEnd: Advice['refreshEnd']
-  if (s.phase === 'potionSelect') {
-    const toRanked = (o: Action[], value: number): Ranked => ({
-      index: (o[0] as { index: number }).index,
-      targets: o.flatMap(a => (a.type === 'toggleTarget' ? [a.tank] : [])),
-      value,
-    })
-    if (plan) {
-      const ahead = lookAhead(s, seed, LOOK_AHEAD)
-      const reroll = ahead.find(a => a.o[0].type === 'refresh')
-      if (reroll) refreshEnd = { activity: reroll.goal, reached: reroll.reached }
-      ranking = markNoEffect(s, ahead.filter(a => a !== reroll).map(a => ({ ...toRanked(a.o, Math.round(a.goal)), end: { activity: a.goal, reached: a.reached } })))
-      best = ahead[0] === reroll ? 'refresh' : ranking[0]
-    } else {
-      ranking = markNoEffect(s, breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, seed)))).sort((a, b) => b.value - a.value), seed))
-      best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
-    }
+  if (w.kind === 'potion') {
+    const ahead = w.opts.map((c, i) => ({ o: c.o, goal: tallies[i].goal / tallies[i].n, reached: tallies[i].reached / tallies[i].n })).sort((a, b) => b.goal - a.goal)
+    const reroll = ahead.find(a => a.o[0].type === 'refresh')
+    if (reroll) refreshEnd = { activity: reroll.goal, reached: reroll.reached }
+    ranking = markNoEffect(s, ahead.filter(a => a !== reroll).map(a => ({ ...toRanked(a.o, Math.round(a.goal)), end: { activity: a.goal, reached: a.reached } })))
+    best = ahead[0] === reroll ? 'refresh' : ranking[0]
+    // a Potion Kit on offer is taken before a refresh (a player's rule: the look-ahead rated refreshes above
+    // kits on 7 of 12 live boards where it was offered)
+    if (best === 'refresh') best = ranking.find(r => isKit(s, r.index)) ?? best
   } else {
-    // judged by the average final score: the goal rule ('target') isn't proven better for instruments yet
-    const { offers, refresh } = rankInstruments(s, seed, playouts, evChooser({ samples: 4, horizon: 0 }), 'mean')
-    ranking = offers.map((v, index) => ({ index, targets: [], value: Math.round(v) })).sort((a, b) => b.value - a.value)
-    best = refresh !== null && refresh > ranking[0].value ? 'refresh' : ranking[0]
+    const mean = (t: Tally) => t.goal / t.n
+    ranking = w.choices.flatMap((c, i) => (c === 'refresh' ? [] : [{ index: c, targets: [], value: Math.round(mean(tallies[i])), end: { activity: mean(tallies[i]), reached: tallies[i].reached / tallies[i].n } }])).sort((a, b) => b.value - a.value)
+    const r = w.choices.indexOf('refresh')
+    if (r >= 0) refreshEnd = { activity: mean(tallies[r]), reached: tallies[r].reached / tallies[r].n }
+    best = refreshEnd && refreshEnd.activity > ranking[0].value ? 'refresh' : ranking[0]
   }
-  plan = plan && s.phase === 'potionSelect'
-  return { best, ranking, board: ultimateActivity(s), plan, final: plan || s.phase !== 'potionSelect', ms: Date.now() - t0, unknown, refreshEnd }
+  return onScreen(x, { best, ranking, board: ultimateActivity(s), plan: w.kind === 'potion', final: true, ms: Date.now() - p.t0, unknown: p.unknown, refreshEnd })
+}
+
+const toRanked = (o: Action[], value: number): Ranked => ({
+  index: (o[0] as { index: number }).index,
+  targets: o.flatMap(a => (a.type === 'toggleTarget' ? [a.tank] : [])),
+  value,
+})
+
+/** The engine's hand leaves unknown cards out: each choice gets its place on screen. */
+function onScreen(x: ScreenState, a: Advice): Advice {
+  const at = places(x)
+  const place = (r: Ranked): Ranked => ({ ...r, index: at[r.index] })
+  return { ...a, ranking: a.ranking.map(place), best: a.best && a.best !== 'refresh' ? place(a.best) : a.best }
+}
+
+/**
+ * Rank the current choices on this thread. `samples`: fresh outcomes per potion option, when not planning.
+ * `plan`: judge potions by how the run ends (look-ahead) instead of this round's score (~10 ms). Instruments are
+ * always judged by how the run ends. adviseOn (the Solver's) plays the same futures over several CPU cores.
+ */
+export function advise(x: ScreenState, samples = 16, plan = false): Advice {
+  if (x.phase !== 'potion' || plan) {
+    const p = prepare(x)
+    return 'advice' in p ? p.advice : conclude(p, playWork(p.work, 0, p.work.futures))
+  }
+  const t0 = Date.now(); const unknown: string[] = []
+  const xeno = x.hand.findIndex(isXenopanacea)
+  if (xeno >= 0) return (prepare(x) as { advice: Advice }).advice
+  const s = toState(x, unknown)
+  const ranking = markNoEffect(s, breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, SEED)))).sort((a, b) => b.value - a.value), SEED))
+  let best: Advice['best'] = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
+  if (best === 'refresh') best = ranking.find(r => isKit(s, r.index)) ?? best
+  return onScreen(x, { best, ranking, board: ultimateActivity(s), plan: false, final: false, ms: Date.now() - t0, unknown })
 }

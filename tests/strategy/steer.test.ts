@@ -22,6 +22,15 @@ describe('how far the board is toward what the instruments need (0 to 1)', () =>
     expect(buildProgress(board(['Hypertrophic Pituitary'], [m('agito', 'magic')]))).toBe(0.5)
     expect(buildProgress(board(['Hypertrophic Pituitary'], [m('agito', 'rare')]))).toBe(1)
   })
+  it('Chrysalis Specimen wants 6 groups of Pests (its bonus grows with every Pest)', () => {
+    expect(buildProgress(board(['Chrysalis Specimen'], [m('pest'), m('boneSentry')]))).toBeCloseTo(1 / 6)
+    expect(buildProgress(board(['Chrysalis Specimen'], [m('pest'), m('pest'), m('pest')]))).toBe(0.5)
+    expect(buildProgress(board(['Chrysalis Specimen'], Array.from({ length: 6 }, () => m('pest'))))).toBe(1)
+  })
+  it('Egg-Burdened Butterfly needs 2 groups of Pests', () => {
+    expect(buildProgress(board(['Egg-Burdened Butterfly'], [m('pest'), m('agito')]))).toBe(0.5)
+    expect(buildProgress(board(['Egg-Burdened Butterfly'], [m('pest'), m('pest')]))).toBe(1)
+  })
   it('instruments without a condition, or none, ask for nothing', () => {
     expect(buildProgress(board(['Contracted Claws'], [m('pest')]))).toBe(1)
     expect(buildProgress(board([], [m('pest')]))).toBe(1)

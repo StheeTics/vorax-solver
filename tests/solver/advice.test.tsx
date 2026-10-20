@@ -21,7 +21,7 @@ it('runAdvice gives potions only the look-ahead answer, no quick answer first', 
   const emit = vi.fn()
   runAdvice(state, emit, fake)
   expect(emit).toHaveBeenCalledTimes(1)
-  expect(fake.mock.calls[0][3]).toBe(true)
+  expect(fake.mock.calls[0][2]).toBe(true)
 })
 
 it('no list of choices: the move sits between the tanks and the cards, where the eye goes', () => {

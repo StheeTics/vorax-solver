@@ -14,6 +14,8 @@ export interface InstrumentTracker {
   /** icons in the panel before the first pick: a starting item (it shapes the starting tanks, and isn't an
    *  instrument) sits in the oldest slot, so the picks are the rest; at most 3 */
   start: number
+  /** the round each owned instrument was picked in, as the engine counts it (0: not known); in pick order */
+  rounds?: number[]
 }
 
 /** Looks after the pick's first picture before the player is asked: that picture can catch the new icon
@@ -21,7 +23,7 @@ export interface InstrumentTracker {
  *  (SolverApp RELOOK_MS) and asks only if that one isn't clear either. */
 const ASK_AFTER = 1
 
-export const newTracker = (): InstrumentTracker => ({ owned: [], offer: null, unsure: [], start: 0 })
+export const newTracker = (): InstrumentTracker => ({ owned: [], offer: null, unsure: [], start: 0, rounds: [] })
 
 /** The player says which instrument a pick was: it's known from then on. */
 export function confirmPick(t: InstrumentTracker, slot: number, name: string): InstrumentTracker {
@@ -40,13 +42,14 @@ export function trackInstruments(
   t: InstrumentTracker,
   r: Reading,
   trigger?: string,
-): { tracker: InstrumentTracker; instruments: string[]; fields: Record<string, FieldRead>; ask?: PickQuestion; settled: number[] } {
+): { tracker: InstrumentTracker; instruments: string[]; rounds: number[]; fields: Record<string, FieldRead>; ask?: PickQuestion; settled: number[] } {
   const s = r.state
   const start = trigger === 'screen' || (s.phase === 'instrument' && s.round === 1 && s.instruments.length === 0)
   let owned = start ? [] : [...t.owned]
   // a pick comes from the offer before this picture; this picture's offer is for the next pick
   let offer = start ? null : t.offer
   let unsure = start ? [] : (t.unsure ?? [])
+  let rounds = start ? [] : [...(t.rounds ?? [])]
   // an owned instrument is sure unless it's a pick the player hasn't confirmed
   const known = (n: string, i: number): FieldRead => (unsure.some(q => q.slot === i) ? { sure: false, guess: n } : { sure: true, guess: n })
   const nextOffer = s.phase === 'instrument' && s.hand.length ? [...s.hand] : null
@@ -100,6 +103,9 @@ export function trackInstruments(
     const unpictured = offer.filter(n => !ranks[count - 1]?.some(([k]) => k === n))
     if (score < SURE && unpictured.length) [name, score] = [unpictured[0], 0]
     owned = [...owned, name]
+    // the first pick opens round 1; a later one shows up on the round's potion board, or beside the next offer,
+    // whose screen still shows the round just played
+    rounds = [...rounds.slice(0, count - 1), count === 1 ? 1 : s.round === undefined ? 0 : s.phase === 'instrument' ? s.round + 1 : s.round]
     owned.forEach((n, i) => (fields[`instrument${i}`] = known(n, i)))
     const sure = score >= SURE && score - (pick[1]?.[1] ?? 0) >= GAP
     fields[`instrument${count - 1}`] = { sure, guess: name, score, second: pick[1]?.[1] }
@@ -111,8 +117,10 @@ export function trackInstruments(
   } else {
     // out of step (joined mid-game, or a missed picture): take the panel as read
     owned = [...panel]
+    rounds = owned.map(() => 0)
     unsure = unsure.filter(q => q.slot < owned.length)
     owned.forEach((n, i) => (fields[`instrument${i}`] = r.fields[`instrument${i + startItems}`] ?? { sure: false, guess: n }))
   }
-  return { tracker: { owned, offer: nextOffer ?? offer, unsure, start: startItems }, instruments: owned, fields, settled, ...(ask ? { ask } : {}) }
+  rounds = owned.map((_, i) => rounds[i] ?? 0)
+  return { tracker: { owned, offer: nextOffer ?? offer, unsure, start: startItems, rounds }, instruments: owned, rounds, fields, settled, ...(ask ? { ask } : {}) }
 }

@@ -12,7 +12,9 @@ const rare = (r: Rarity) => r === 'rare' || r === 'boss'
 
 /** The instruments whose effect waits on the board (their card text), by name. */
 const NEEDS: Record<string, (g: Groups) => number> = {
+  'Chrysalis Specimen': atLeast(6, of('pest')),
   'Incubation Sac': atLeast(2, of('pest')),
+  'Egg-Burdened Butterfly': atLeast(2, of('pest')),
   'Clustered Eggs': atLeast(3, of('pest')),
   'Hyperplastic Frontal Lobe': atLeast(2, of('agito')),
   'Hypertrophic Pituitary': g => (g.some(m => m.archetype === 'agito' && rare(m.rarity)) ? 1 : g.some(of('agito')) ? 0.5 : 0),
