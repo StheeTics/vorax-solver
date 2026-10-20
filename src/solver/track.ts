@@ -11,6 +11,9 @@ export interface InstrumentTracker {
   /** picks it wasn't sure of, until a later board shows them clearly or the player says; `looks`: boards seen
    *  since the pick */
   unsure: (PickQuestion & { looks: number })[]
+  /** icons in the panel before the first pick: a starting item (it shapes the starting tanks, and isn't an
+   *  instrument) sits in the oldest slot, so the picks are the rest; at most 3 */
+  start: number
 }
 
 /** Looks after the pick's first picture before the player is asked: that picture can catch the new icon
@@ -18,7 +21,7 @@ export interface InstrumentTracker {
  *  (SolverApp RELOOK_MS) and asks only if that one isn't clear either. */
 const ASK_AFTER = 1
 
-export const newTracker = (): InstrumentTracker => ({ owned: [], offer: null, unsure: [] })
+export const newTracker = (): InstrumentTracker => ({ owned: [], offer: null, unsure: [], start: 0 })
 
 /** The player says which instrument a pick was: it's known from then on. */
 export function confirmPick(t: InstrumentTracker, slot: number, name: string): InstrumentTracker {
@@ -49,11 +52,24 @@ export function trackInstruments(
   const nextOffer = s.phase === 'instrument' && s.hand.length ? [...s.hand] : null
   if (!offer && start) offer = nextOffer
 
-  // Before the first pick nothing is owned, but on 16:9 the panel shows a flask: while the first offer is up
-  // (round 1, nothing owned) the panel is taken as empty. Later offers can show a new pick beside them.
+  // Before the first pick nothing is owned, so whatever the panel shows while the first offer is up (round 1)
+  // isn't a pick: a starting item, which stays in the oldest slot, or on 16:9 a flask, which the first pick
+  // replaces. Later offers can show a new pick beside them.
   const beforeFirstPick = s.phase === 'instrument' && s.round === 1 && owned.length === 0
-  const count = beforeFirstPick ? 0 : s.instruments.length
-  const ranks = r.instrumentRanks ?? []
+  let startItems = start ? 0 : (t.start ?? 0)
+  if (beforeFirstPick) startItems = s.instruments.length
+  // the first pick didn't add an icon: what was there was the flask, now the pick
+  else if (owned.length === 0 && startItems > 0 && offer && s.instruments.length === startItems) startItems = 0
+  let panel = s.instruments.slice(startItems)
+  let ranks = (r.instrumentRanks ?? []).slice(startItems)
+  // three picks at most: a fourth icon (a game joined late) is a starting item
+  if (panel.length > 3) {
+    const extra = panel.length - 3
+    startItems += extra
+    panel = panel.slice(extra)
+    ranks = ranks.slice(extra)
+  }
+  const count = beforeFirstPick ? 0 : panel.length
   const fields: Record<string, FieldRead> = {}
   let ask: PickQuestion | undefined
   // an unsure pick looked at again: the first picture can catch the icon sliding in; on a later board, a clear
@@ -94,9 +110,9 @@ export function trackInstruments(
     offer = null
   } else {
     // out of step (joined mid-game, or a missed picture): take the panel as read
-    owned = [...s.instruments]
+    owned = [...panel]
     unsure = unsure.filter(q => q.slot < owned.length)
-    owned.forEach((n, i) => (fields[`instrument${i}`] = r.fields[`instrument${i}`] ?? { sure: false, guess: n }))
+    owned.forEach((n, i) => (fields[`instrument${i}`] = r.fields[`instrument${i + startItems}`] ?? { sure: false, guess: n }))
   }
-  return { tracker: { owned, offer: nextOffer ?? offer, unsure }, instruments: owned, fields, settled, ...(ask ? { ask } : {}) }
+  return { tracker: { owned, offer: nextOffer ?? offer, unsure, start: startItems }, instruments: owned, fields, settled, ...(ask ? { ask } : {}) }
 }

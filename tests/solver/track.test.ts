@@ -181,3 +181,27 @@ describe('a pick the Solver wasn’t sure of stays unsure until the player says'
     expect(r.tracker.unsure).toEqual([])
   })
 })
+
+describe('a starting item: something in the panel before any instrument is picked (it shapes the starting tanks)', () => {
+  const offer1 = ['Incubation Sac', 'Hyperplastic Frontal Lobe', 'Chrysalis Specimen']
+  // as seen 2026-10-19: the starting item read as Eyelid Speculum, and every pick after it was one slot off
+  const start = () => trackInstruments(newTracker(), reading({ phase: 'instrument', round: 1, hand: offer1, panel: [[['Eyelid Speculum', 0.41]]] }), 'board')
+  it('isn’t an instrument', () => {
+    expect(start().instruments).toEqual([])
+    expect(start().tracker.start).toBe(1)
+  })
+  it('the picks after it are read from their own slots, beside it', () => {
+    const after = trackInstruments(start().tracker, reading({ panel: [[['Eyelid Speculum', 0.41]], [['Incubation Sac', 0.96], ['Chrysalis Specimen', 0.3]]] }), 'board')
+    expect(after.instruments).toEqual(['Incubation Sac'])
+    expect(after.fields.instrument0).toMatchObject({ sure: true, guess: 'Incubation Sac' })
+    expect(after.fields).not.toHaveProperty('instrument1')
+  })
+  it('a game joined later with four icons: the oldest is a starting item (three picks at most)', () => {
+    const r = trackInstruments(newTracker(), reading({ round: 9, panel: [[['Eyelid Speculum', 0.41]], [['Incubation Sac', 0.96]], [['Pig Iron Bone Saw', 0.95]], [['Rawhide Restraint', 0.97]]] }), 'board')
+    expect(r.instruments).toEqual(['Incubation Sac', 'Pig Iron Bone Saw', 'Rawhide Restraint'])
+  })
+  it('a new game forgets it', () => {
+    const next = trackInstruments(start().tracker, reading({ phase: 'instrument', round: 1, hand: offer1, panel: [] }), 'screen')
+    expect(next.tracker.start).toBe(0)
+  })
+})
