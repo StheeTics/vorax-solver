@@ -1,6 +1,6 @@
 import { act, render, screen, within } from '@testing-library/react'
 import { SolverApp } from '@/solver/SolverApp'
-import { HOME_URL } from '@/ui/links'
+import { HOME_URL, SUPPORT_URL } from '@/ui/links'
 
 it('has a home link, the privacy panel and the attribution', () => {
   render(<SolverApp />)
@@ -29,6 +29,13 @@ it('says the advice was updated and what it gained', () => {
   expect(screen.queryByRole('note', { name: 'Work in progress' })).toBeNull()
 })
 
+
+it('has a quiet Buy me a coffee link that opens in a new tab', () => {
+  render(<SolverApp />)
+  const link = screen.getByRole('link', { name: /Buy me a coffee/ })
+  expect(link.getAttribute('href')).toBe(SUPPORT_URL)
+  expect(link.getAttribute('target')).toBe('_blank')
+})
 
 it('puts the advice first and the board to correct below it', () => {
   render(<SolverApp />)

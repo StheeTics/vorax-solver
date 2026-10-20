@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ScreenState } from '@/strategy/advisor'
 import { Attribution } from '@/ui/Attribution'
 import { Footnote } from '@/ui/Footnote'
-import { DOWNLOAD_URL, HOME_URL, SOLVER_URL } from '@/ui/links'
+import { DOWNLOAD_URL, HOME_URL, SOLVER_URL, SUPPORT_URL } from '@/ui/links'
 import { loadShelleyLevel, saveShelleyLevel, shelleyChosen } from '@/ui/settingsStore'
 import { ShelleyPicker } from '@/ui/ShelleyPicker'
 import { AdvicePanel } from './advice/AdvicePanel'
@@ -302,6 +302,10 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       </div>
 
       <Footnote className={styles.footnote} />
+      <a className={styles.support} href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
+        <span className={styles.supportCup} aria-hidden="true">☕</span>
+        <span>Buy me a coffee</span>
+      </a>
     </main>
   )
 }
