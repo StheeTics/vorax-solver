@@ -460,8 +460,9 @@ function makeOverlay() {
   return win;
 }
 
-// Buy me a coffee, offered on the card only on the app's first run (until the player closes it).
-let supportOffer = !settings.seenSupport;
+// Buy me a coffee, offered on the card each time the app starts, until the player hides it (the Solver page
+// reloading for a site update doesn't bring it back: it's kept here, not in the page).
+let supportOffer = true;
 
 // Shown while the game runs, whatever is in front. With hideBehind (tray menu, off at first), only while the
 // game itself is in front.
@@ -492,11 +493,6 @@ function updateOverlay() {
   if (want === overlayShown) return;
   overlayShown = want;
   if (want) {
-    // the card's coffee offer counts as seen the first time the card is up; it stays for the rest of that run
-    if (supportOffer && !settings.seenSupport) {
-      settings.seenSupport = true;
-      saveSettings();
-    }
     win.showInactive();
     win.setAlwaysOnTop(true, 'screen-saver');
   } else win.hide();
@@ -758,13 +754,8 @@ app.whenReady().then(async () => {
   app.setAppUserModelId('io.github.tidewarden.vorax-overlay');
   note(`Vorax Overlay ${app.getVersion()} starting; site ${SITE}`);
   permissions();
-  // testing against a dev server: --fresh starts as a first run, its page with nothing saved (the live site's
-  // storage is kept)
-  if (arg('site') && process.argv.includes('--fresh')) {
-    await session.defaultSession.clearStorageData({ origin: SITE_URL.origin, storages: ['localstorage'] });
-    settings.seenSupport = false;
-    supportOffer = true;
-  }
+  // testing against a dev server: --fresh starts its page with nothing saved (the live site's storage is kept)
+  if (arg('site') && process.argv.includes('--fresh')) await session.defaultSession.clearStorageData({ origin: SITE_URL.origin, storages: ['localstorage'] });
   makeSolver();
   makeOverlay();
   tray = new Tray(nativeImage.createFromPath(ICON).resize({ width: 16, height: 16 }));
