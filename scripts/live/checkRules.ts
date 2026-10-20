@@ -57,8 +57,10 @@ export function pairs(boards: Board[]): [Board, Board][] {
     for (let i = 0; i + 1 < list.length; i++) {
       const [a, b] = [list[i], list[i + 1]]
       if (a.phase !== 'potion' || a.hand.length !== 3) continue
-      // a misread would look like a card effect the simulator gets wrong: only boards read for sure
-      if (a.unsure?.length || b.unsure?.length || a.unreadable || b.unreadable) continue
+      // a misread would look like a card effect the simulator gets wrong: only boards whose tanks and cards were
+      // read for sure (an unsure phase, round or refresh count doesn't change the replay)
+      const misread = (x: Board) => x.unreadable || (x.unsure ?? []).some(f => /^(tank|hand|instrument)/.test(f))
+      if (misread(a) || misread(b)) continue
       if ((b.phase === 'potion' && b.round === a.round + 1) || (b.phase === 'instrument' && b.round === a.round)) out.push([a, b])
     }
   }

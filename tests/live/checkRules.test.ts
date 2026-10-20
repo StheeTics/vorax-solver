@@ -9,7 +9,7 @@ it('pairs a potion board with the next round’s', () => {
   expect(pairs([board(0, 2), board(1, 3)])).toHaveLength(1)
 })
 
-it('leaves out a pair with anything unsure on either board: a misread would look like a wrong card effect', () => {
+it("leaves out a pair with a tank, card or instrument unsure on either board: a misread would look like a wrong card effect", () => {
   expect(pairs([board(0, 2, ['tank0.activity']), board(1, 3)])).toHaveLength(0)
   expect(pairs([board(0, 2), board(1, 3, ['hand2'])])).toHaveLength(0)
   expect(pairs([board(0, 2, []), board(1, 3, [])])).toHaveLength(1)
@@ -17,4 +17,9 @@ it('leaves out a pair with anything unsure on either board: a misread would look
 
 it('leaves out a board flagged unreadable', () => {
   expect(pairs([{ ...board(0, 2), unreadable: true }, board(1, 3)])).toHaveLength(0)
+})
+
+it('keeps a pair whose only unsure reads are the phase, round or refresh count: they don’t change the replay', () => {
+  expect(pairs([board(0, 2, ['phase', 'round', 'refreshes']), board(1, 3, ['phase'])])).toHaveLength(1)
+  expect(pairs([board(0, 2, ['instrument1']), board(1, 3)])).toHaveLength(0)
 })
