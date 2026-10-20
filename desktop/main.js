@@ -34,6 +34,7 @@ const STEAM_APP = '1974050'; // Torchlight: Infinite on Steam
 const HOTKEYS = { overlay: 'Control+Alt+V', solver: 'Control+Alt+S', snap: 'Control+Alt+X' };
 const ICON = path.join(__dirname, 'build', 'icon.png');
 const OVERLAY_WIDTH = 360; // Tartarus Overlay's, so the two cards look alike side by side
+const SUPPORT_URL = 'https://buymeacoffee.com/tidewarden';
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
@@ -444,6 +445,7 @@ function makeOverlay() {
   win.webContents.on('did-finish-load', () => {
     send('overlay', 'folded', settings.folded);
     send('overlay', 'update', updateState());
+    send('overlay', 'support', supportOffer);
     if (lastCard) send('overlay', 'card', lastCard);
   });
   win.on('moved', () => {
@@ -457,6 +459,9 @@ function makeOverlay() {
   placeOverlay();
   return win;
 }
+
+// Buy me a coffee, offered on the card only on the app's first run (until the player closes it).
+let supportOffer = !settings.seenSupport;
 
 // Shown while the game runs, whatever is in front. With hideBehind (tray menu, off at first), only while the
 // game itself is in front.
@@ -487,6 +492,11 @@ function updateOverlay() {
   if (want === overlayShown) return;
   overlayShown = want;
   if (want) {
+    // the card's coffee offer counts as seen the first time the card is up; it stays for the rest of that run
+    if (supportOffer && !settings.seenSupport) {
+      settings.seenSupport = true;
+      saveSettings();
+    }
     win.showInactive();
     win.setAlwaysOnTop(true, 'screen-saver');
   } else win.hide();
@@ -564,8 +574,15 @@ ipcMain.on('overlay:answer', (e) => fromOverlay(e) && showSolver());
 // the instrument question answered on the card: the page checks it's one of the offer
 ipcMain.on('overlay:choose', (e, name) => fromOverlay(e) && typeof name === 'string' && name.length <= 80 && send('solver', 'choose', name));
 ipcMain.on('overlay:snap', (e) => fromOverlay(e) && game.running && send('solver', 'snap'));
+ipcMain.on('overlay:force', (e) => fromOverlay(e) && send('solver', 'force'));
 ipcMain.on('overlay:reload', (e) => fromOverlay(e) && reloadSolver('the player asked'));
 ipcMain.on('overlay:restart', (e) => fromOverlay(e) && updateNow());
+ipcMain.on('overlay:support', (e, open) => {
+  if (!fromOverlay(e)) return;
+  supportOffer = false;
+  send('overlay', 'support', false);
+  if (open) shell.openExternal(SUPPORT_URL);
+});
 
 // ---------- Updates ----------
 
@@ -741,6 +758,13 @@ app.whenReady().then(async () => {
   app.setAppUserModelId('io.github.tidewarden.vorax-overlay');
   note(`Vorax Overlay ${app.getVersion()} starting; site ${SITE}`);
   permissions();
+  // testing against a dev server: --fresh starts as a first run, its page with nothing saved (the live site's
+  // storage is kept)
+  if (arg('site') && process.argv.includes('--fresh')) {
+    await session.defaultSession.clearStorageData({ origin: SITE_URL.origin, storages: ['localstorage'] });
+    settings.seenSupport = false;
+    supportOffer = true;
+  }
   makeSolver();
   makeOverlay();
   tray = new Tray(nativeImage.createFromPath(ICON).resize({ width: 16, height: 16 }));

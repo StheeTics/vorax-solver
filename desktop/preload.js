@@ -16,5 +16,6 @@ if (/\/solver\.html$/.test(location.pathname)) {
     gameWindow: () => ipcRenderer.invoke('game:window'),
     showSolver: () => ipcRenderer.send('solver:show'),
     onChoose: (cb) => ipcRenderer.on('choose', (e, name) => cb(name)),
+    onForce: (cb) => ipcRenderer.on('force', () => cb()),
   });
 }

@@ -16,6 +16,10 @@ function cleanCard(card) {
     asks: Array.isArray(card.asks) ? card.asks.filter((a) => typeof a === 'string' && a).slice(0, 4).map((a) => text(a, 300)) : [],
     // the open instrument question's offer, answered with a click on the card
     choices: Array.isArray(card.choices) ? card.choices.filter((a) => typeof a === 'string' && a).slice(0, 3).map((a) => text(a, 80)) : [],
+    // the Solver is paused (the move says what to fix): the card offers to show the advice anyway
+    paused: !!card.paused,
+    // advice shown anyway, though it can't be trusted
+    warning: text(card.warning, 200),
   };
 }
 
