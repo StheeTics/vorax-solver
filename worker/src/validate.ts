@@ -40,6 +40,8 @@ export function validate(raw: unknown, names: Names) {
   if (s.unsure !== undefined && (!Array.isArray(s.unsure) || s.unsure.length > 40 || !s.unsure.every(k => str(k, FIELD)))) return null
   return {
     uid: s.uid, run: s.run, seq: s.seq, app: s.app, source: s.source as string, trigger: s.trigger,
+    // the random number a Solver makes once per browser or app, to count players: kept only as a well-formed one
+    ...(str(s.install, UUID) ? { install: s.install } : {}),
     round: s.round, phase: s.phase as string, refreshes: s.refreshes, shelley: s.shelley, corrected: s.corrected as string[],
     tanks, hand: s.hand as string[], instruments: s.instruments as string[],
     ...(s.unsure !== undefined ? { unsure: s.unsure as string[] } : {}),

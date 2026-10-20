@@ -6,8 +6,13 @@ describe('the collector starts the repo’s loops on time (GitHub’s own schedu
   const fetch = vi.fn(async (url: string, init: RequestInit) => (calls.push({ url, init }), new Response(null, { status: 204 })))
   beforeEach(() => (calls.length = 0))
 
-  it('the odds job every hour, the issue fixer every hour, the daily check once a day', () => {
-    expect(SCHEDULE).toEqual({ '3 * * * *': ['live-data.yml'], '33 * * * *': ['issue-fixer.yml'], '45 6 * * *': ['daily-check.yml'] })
+  it('the odds job every hour, the issue fixer every hour, the daily check and the smarter player once a day', () => {
+    expect(SCHEDULE).toEqual({ '3 * * * *': ['live-data.yml'], '33 * * * *': ['issue-fixer.yml'], '45 6 * * *': ['daily-check.yml'], '10 8 * * *': ['smarter-player.yml'] })
+  })
+  it('every cron the schedule uses is one Cloudflare fires (wrangler.jsonc)', async () => {
+    const { readFileSync } = await import('node:fs')
+    const crons = JSON.parse(readFileSync('worker/wrangler.jsonc', 'utf8').replace(/^\s*\/\/.*$/gm, '')).triggers.crons
+    expect([...crons].sort()).toEqual(Object.keys(SCHEDULE).sort())
   })
 
   it('asks GitHub to start each workflow due, on main, with the dispatch token', async () => {

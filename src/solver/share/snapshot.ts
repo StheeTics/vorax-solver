@@ -1,5 +1,5 @@
 // What the Solver shares for the odds study: one board it read, with no picture, no time and nothing
-// about the player. Boards of one game share a run id, in seq order.
+// about the player but a random install number (to count players). Boards of one game share a run id, in seq order.
 import type { ScreenMonster } from '@/strategy/advisor'
 import type { FieldKey, Reading, ReadDebug, Source } from '../types'
 import type { Environment } from './setup'
@@ -12,6 +12,8 @@ export interface SharedAdvice { move: string; activity: number | null; reached: 
 
 export interface Snapshot {
   uid: string
+  /** this browser's or app's random install number (shareStore installId), to count players */
+  install?: string
   run: string
   seq: number
   app: string
@@ -78,10 +80,11 @@ export const isFinalBoard = (r: Reading) => r.state.phase === 'protocol' && r.st
 
 export const startsRun = (r: Reading, trigger: string) => trigger === 'screen' || (r.state.phase === 'instrument' && r.state.round === 1)
 
-export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; unsure: FieldKey[]; advice?: SharedAdvice; debug?: SharedDebug }): Snapshot {
+export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; unsure: FieldKey[]; advice?: SharedAdvice; debug?: SharedDebug; install?: string }): Snapshot {
   const s = r.state
   return {
     uid: crypto.randomUUID(),
+    ...(ctx.install ? { install: ctx.install } : {}),
     run: ctx.run,
     seq: ctx.seq,
     app: ctx.app,

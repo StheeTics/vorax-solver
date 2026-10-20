@@ -231,6 +231,7 @@ const LOOPS = [
   { file: 'live-data.yml', name: 'Odds from live data', every: 1 },
   { file: 'strengths.yml', name: 'Instrument strengths', every: null },
   { file: 'daily-check.yml', name: 'Daily check (simulation)', every: 24 },
+  { file: 'smarter-player.yml', name: 'Smarter player (nightly learning)', every: 24 },
   { file: 'issue-fixer.yml', name: 'Issue fixer', every: 1 },
   { file: 'deploy.yml', name: 'Website deploy', every: null },
   { file: 'desktop.yml', name: 'Windows app release', every: null, noRun: true },
@@ -295,6 +296,7 @@ async function load(pw) {
   $('tiles').innerHTML = [
     ['Games shared', num(s.totals.games), s.totals.boards + ' boards read'],
     ['Players today', num(s.totals.playersToday), 'different devices'],
+    ['Players ever', s.totals.countedSince ? num(s.totals.playersEver) : '–', (s.totals.countedSince ? 'since ' + s.totals.countedSince + ' · ' : '') + num(s.totals.playerDays) + ' player-days in all'],
     ['Average final score', f.games ? k(f.average) : '–', f.games + ' finished game' + (f.games === 1 ? '' : 's')],
     ['Reached 950k', f.games ? pct(f.reached / f.games) : '–', 'of finished games'],
     ['In Vorax Overlay', pct(s.totals.games ? appGames / s.totals.games : 0), 'of games'],

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { FieldKey, Reading, Source } from '../types'
 import { appTag, ENDPOINT, sendingAllowed } from './endpoint'
 import { createQueue } from './queue'
-import { loadShare } from './shareStore'
+import { installId, loadShare } from './shareStore'
 import { debugOf, isFinalBoard, shareable, startsRun, toSnapshot, unsureFields, type GameWindow, type SharedAdvice, type Snapshot } from './snapshot'
 import { environment } from './setup'
 import { desktopBridge } from '../desktop/bridge'
@@ -45,7 +45,7 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
     if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
     const unsure = unsureFields(h.reading, h.corrected)
     const debug = debugOf(h.reading, unsure, environment(), win.current)
-    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, unsure, advice: h.advice, debug }))
+    queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, unsure, advice: h.advice, debug, install: installId() }))
   }
 
   useEffect(() => {

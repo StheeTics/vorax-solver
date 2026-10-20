@@ -10,10 +10,11 @@ export const SCHEDULE: Record<string, string[]> = {
   '3 * * * *': ['live-data.yml'],
   '33 * * * *': ['issue-fixer.yml'],
   '45 6 * * *': ['daily-check.yml'],
+  '10 8 * * *': ['smarter-player.yml'],
 }
 
 /** The workflows the dashboard's Run now may start (not the app release: that needs its version tag). */
-export const RUNNABLE = new Set(['live-data.yml', 'issue-fixer.yml', 'daily-check.yml', 'strengths.yml', 'deploy.yml'])
+export const RUNNABLE = new Set(['live-data.yml', 'issue-fixer.yml', 'daily-check.yml', 'smarter-player.yml', 'strengths.yml', 'deploy.yml'])
 
 type Fetch = (url: string, init: RequestInit) => Promise<Response>
 

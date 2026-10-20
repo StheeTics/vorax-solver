@@ -4,7 +4,7 @@
 export interface StatRow { received: string; client: string; body: string }
 
 interface Tank { activity: number; quantity: number }
-interface Board { run: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
+interface Board { run: string; install?: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
 
 interface Debug { frame: [number, number]; hdr: boolean; browser: string; window?: { outer: [number, number]; client: [number, number] } }
 
@@ -28,7 +28,9 @@ const total = (b: Board) => (b.tanks ?? []).reduce((s, t) => s + (t ? t.activity
 
 export interface Stats {
   generated: string
-  totals: { boards: number; games: number; playersToday: number }
+  /** playersEver: different installs (a random number per browser or app) since countedSince, the first day one came;
+   *  playerDays: every day's players (different devices that day) added up, which counts a player once per day played */
+  totals: { boards: number; games: number; playersToday: number; playersEver: number; countedSince: string | null; playerDays: number }
   /** per day: boards, games, players (different devices that day), games played on the website / in the app,
    *  and the games finished that day with their average final score (null when none finished) */
   days: { day: string; boards: number; games: number; players: number; website: number; app: number; finished: number; averageFinal: number | null }[]
@@ -58,6 +60,8 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
   const days = new Map<string, { boards: number; games: Set<string>; players: Set<string> }>()
   let corrected = 0
   let unsure = 0
+  const installs = new Set<string>()
+  let countedSince: string | null = null
   const setups = new Map<string, { by: string; group: string; boards: number; unsure: number; numbers: number }>()
   for (const r of rows) {
     let b: Board
@@ -72,6 +76,10 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     d.games.add(b.run)
     d.players.add(r.client)
     days.set(day, d)
+    if (b.install) {
+      installs.add(b.install)
+      if (!countedSince || day < countedSince) countedSince = day
+    }
     if (b.corrected?.length) corrected++
     if (b.unsure?.length) unsure++
     if (b.debug?.frame) for (const [by, group] of setupOf(b.debug)) {
@@ -120,7 +128,10 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     generated: now.toISOString(),
     finished: { games: finished.length, reached: finished.filter(g => g.final! >= TARGET).length, finals: finished.map(g => g.final!), average: finished.length ? Math.round(finished.reduce((s, g) => s + g.final!, 0) / finished.length) : 0 },
     calibration: [...bands.entries()].sort(([a], [b]) => a - b).map(([k, b]) => ({ band: `${k * 20}–${k * 20 + 20}%`, predicted: Math.round((100 * b.sum) / b.games) / 100, games: b.games, reached: b.reached })),
-    totals: { boards: rows.length, games: list.length, playersToday: days.get(today)?.players.size ?? 0 },
+    totals: {
+      boards: rows.length, games: list.length, playersToday: days.get(today)?.players.size ?? 0,
+      playersEver: installs.size, countedSince, playerDays: [...days.values()].reduce((n, d) => n + d.players.size, 0),
+    },
     days: [...days.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([day, d]) => {
       const played = list.filter(g => g.day === day)
       const done = played.filter(g => g.final !== null)

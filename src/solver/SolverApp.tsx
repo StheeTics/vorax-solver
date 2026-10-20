@@ -226,7 +226,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             <li>Sees only the one window you share, and only when the log shows a move or you press Snap now.</li>
             <li>Pictures stay in this browser and are gone when you close the tab.</li>
             <li>Never clicks or types for you.</li>
-            <li>Shares the boards it reads (tanks, cards offered, instruments, round), with no picture, no account and nothing about you. Turn it off with the switch beside Board state.</li>
+            <li>Shares the boards it reads (tanks, cards offered, instruments, round), with no picture, no account and nothing about you: only a random install number, to count players. Turn it off with the switch beside Board state.</li>
             <li>With each board, to find out why some setups misread: the picture’s size, your screen’s scaling, whether it’s HDR, your browser and its version, how the numbers read, and in the app whether the game is windowed. No picture, no name, nothing that lasts from one day to the next.</li>
             <li>When you say which instrument you picked, shares that name and the icon's small grey pattern, never a screenshot.</li>
           </ul>

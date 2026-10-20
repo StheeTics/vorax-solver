@@ -95,3 +95,9 @@ describe('the debug part: kept field by field, dropped whole (board kept) when a
     expect(validate({ ...good, debug: { ...debug, ...change } }, names)).toEqual(good)
   })
 })
+
+it('keeps the random install number players are counted by; a malformed one is dropped, the board kept', () => {
+  const install = '7d444840-9dc0-41d2-8f2b-0e7c1b8f3a11'
+  expect(validate({ ...good, install }, names)).toEqual({ ...good, install })
+  expect(validate({ ...good, install: 'me@example.com' }, names)).toEqual(good)
+})

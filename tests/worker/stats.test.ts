@@ -106,7 +106,9 @@ describe('the dashboard routes', () => {
     expect(html).toMatch(/password/i)
     expect(html).not.toMatch(/open-sesame/)
     // the automated loops' health, from GitHub's public run list
-    for (const f of ['live-data.yml', 'strengths.yml', 'daily-check.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
+    for (const f of ['live-data.yml', 'strengths.yml', 'daily-check.yml', 'smarter-player.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
+    // players counted across days, beside today's
+    expect(html).toContain('Players ever')
   })
 })
 
@@ -143,5 +145,24 @@ describe('problems by setup: which screens, windows, HDR or browsers misread', (
   })
   it('boards from before the setup was shared aren’t counted', () => {
     expect(p.filter(x => x.by === 'screen').reduce((s, x) => s + x.boards, 0)).toBe(4)
+  })
+})
+
+describe('players ever', () => {
+  const i1 = '11111111-1111-4111-8111-111111111111', i2 = '22222222-2222-4222-8222-222222222222'
+  const rows = [
+    // boards from before the install number: counted only as player-days
+    row('2026-10-18T10:00:00Z', 'a', board('g1', 1)),
+    row('2026-10-19T09:00:00Z', 'b', board('g2', 1, { install: i1 })),
+    row('2026-10-20T09:00:00Z', 'c', board('g3', 1, { install: i1 })),
+    row('2026-10-20T10:00:00Z', 'd', board('g4', 1, { install: i2 })),
+  ]
+  const s = summarize(rows, new Date('2026-10-20T12:00:00Z'))
+  it('the same install on two days is one player', () => {
+    expect(s.totals.playersEver).toBe(2)
+    expect(s.totals.countedSince).toBe('2026-10-19')
+  })
+  it('player-days: every day’s players added up, for the days before installs were counted', () => {
+    expect(s.totals.playerDays).toBe(4)
   })
 })

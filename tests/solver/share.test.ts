@@ -1,7 +1,7 @@
 import { shareable, startsRun, toSnapshot, unsureFields, type Snapshot } from '@/solver/share/snapshot'
 import { createQueue } from '@/solver/share/queue'
 import { appTag, sendingAllowed } from '@/solver/share/endpoint'
-import { loadShare, saveShare } from '@/solver/share/shareStore'
+import { loadShare, saveShare, installId } from '@/solver/share/shareStore'
 import { emptyState, type Reading } from '@/solver/types'
 
 const reading: Reading = {
@@ -206,5 +206,19 @@ describe('the setup and what the reader saw, shared to find out why a setup misr
   it('a snapshot carries it', () => {
     const debug = { frame: [1920, 1080] as [number, number], dpr: 1, hdr: false, browser: 'Edge 131', off: 0, corrected: false, tanks: [], scores: {} }
     expect(toSnapshot(reading, { ...ctx, debug }).debug).toEqual(debug)
+  })
+})
+
+describe('the install number, to count players without knowing who they are', () => {
+  beforeEach(() => localStorage.clear())
+  it('is random, made once, and the same on every board after', () => {
+    const a = installId()
+    expect(a).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/)
+    expect(installId()).toBe(a)
+  })
+  it('a snapshot carries it, and nothing else about the player', () => {
+    const s = toSnapshot(reading, { ...ctx, install: '0f8fad5b-d9cb-469f-a165-70867728950e' })
+    expect(s.install).toBe('0f8fad5b-d9cb-469f-a165-70867728950e')
+    for (const k of ['time', 'at', 'date', 'ip', 'name', 'account']) expect(s).not.toHaveProperty(k)
   })
 })
