@@ -34,7 +34,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Vivigenic Powder': 1.6415359154651594,
     'Potent Xenopurge Powder': 1,
     'Xenopurge Powder': 1,
-    'Pure Leech Solution': 0.5,
+    'Pure Leech Solution': 0.9270249224306107,
     'Bewitching Tincture': 1,
     'Mutagenic Powder': 1,
     'Viscous Bile Solution': 1,
@@ -89,14 +89,14 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.18559048315927548,
-      'Incubation Sac': 0.1706769621911194,
-      'Hyperplastic Frontal Lobe': 0.1259363992866512,
-      'Hypertrophic Pituitary': 0.23861633549049702,
-      'Adherent Metatarsals': 0.15410638333761267,
-      'Contracted Claws': 0.23310296739777267,
+      'Chrysalis Specimen': 0.15844282128517032,
+      'Incubation Sac': 0.1377313413786121,
+      'Hyperplastic Frontal Lobe': 0.10252182553746314,
+      'Hypertrophic Pituitary': 0.19468791112164716,
+      'Adherent Metatarsals': 0.11701986147205387,
+      'Contracted Claws': 0.17190528322443313,
       'Aberrant Sprout': 0.21044635143953558,
-      'Prismatic Liver': 0.12614984117997108
+      'Prismatic Liver': 0.09734395556082358
     },
     advanced: {
       'Clustered Eggs': 1,
