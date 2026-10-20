@@ -1,6 +1,6 @@
 {
-  "checked": 63,
-  "reproduced": 44,
+  "checked": 79,
+  "reproduced": 48,
   "missed": [
     {
       "run": "0807d9e9-2837-4ffc-9d2a-1c25516b72f8",
@@ -33,7 +33,7 @@
         "Vermicular Spinal Cord"
       ],
       "best": "Xeno-Hormone → tank 5 → tank 6",
-      "gap": 1,
+      "gap": 0.5,
       "reproduced": false
     },
     {
@@ -333,6 +333,206 @@
         "Pig Iron Bone Saw"
       ],
       "best": "Xeno-Hormone → tank 1",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "76c6d915-a476-40af-9ffd-714a16192695",
+      "seq": 5,
+      "round": 2,
+      "hand": [
+        "Xenopurge Powder",
+        "Osteogenic Powder",
+        "Slender-Limb Powder - Pest"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Slender-Limb Powder - Pest",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "76c6d915-a476-40af-9ffd-714a16192695",
+      "seq": 6,
+      "round": 3,
+      "hand": [
+        "Hollow Spinal Solution",
+        "Viviparous Hormone",
+        "Brain Fog Tincture"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Viviparous Hormone",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "76c6d915-a476-40af-9ffd-714a16192695",
+      "seq": 9,
+      "round": 4,
+      "hand": [
+        "Bewitching Tincture",
+        "Xenopurge Powder",
+        "Rare Potion Kit (Small)"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Xenopurge Powder → tank 1",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "76c6d915-a476-40af-9ffd-714a16192695",
+      "seq": 10,
+      "round": 5,
+      "hand": [
+        "Bewitching Tincture",
+        "Potent Xenopurge Powder",
+        "Pure Leech Solution"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Potent Xenopurge Powder → tank 1",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "76c6d915-a476-40af-9ffd-714a16192695",
+      "seq": 11,
+      "round": 6,
+      "hand": [
+        "Green Bile Solution",
+        "Osteogenic Powder",
+        "Compound Leech Solution"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Green Bile Solution → tank 4",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "76c6d915-a476-40af-9ffd-714a16192695",
+      "seq": 16,
+      "round": 8,
+      "hand": [
+        "Petrified Spinal Solution",
+        "Hollow Spinal Solution",
+        "Bewitching Tincture"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Petrified Spinal Solution → tank 5",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "6b57436a-6694-4171-a97b-c64d4afaecd2",
+      "seq": 1,
+      "round": 1,
+      "hand": [
+        "Vivigenic Powder",
+        "Anesthetic Tincture - Aemberon",
+        "Xeno-Hormone"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Aberrant Sprout"
+      ],
+      "best": "Xeno-Hormone → tank 1 → tank 3",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "2d67c449-5717-472f-9e37-2365182fe81c",
+      "seq": 3,
+      "round": 2,
+      "hand": [
+        "Bewitching Tincture",
+        "Slender-Limb Powder - Pest",
+        "Spinal Solution - Aemberon"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Bewitching Tincture → tank 1",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "3e9c2f35-9a5d-4e30-8aad-5c204a541e55",
+      "seq": 4,
+      "round": 6,
+      "hand": [
+        "Viscous Bile Solution",
+        "Slender-Limb Powder - Pest",
+        "Potion Kit (Large)"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Chrysalis Specimen",
+        "Fouled Scraper"
+      ],
+      "best": "Viscous Bile Solution → tank 2",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "3e9c2f35-9a5d-4e30-8aad-5c204a541e55",
+      "seq": 7,
+      "round": 8,
+      "hand": [
+        "Slender-Limb Powder - Pest",
+        "Bewitching Tincture",
+        "Spinal Solution - Agito"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Chrysalis Specimen",
+        "Fouled Scraper"
+      ],
+      "best": "Bewitching Tincture → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "3e9c2f35-9a5d-4e30-8aad-5c204a541e55",
+      "seq": 8,
+      "round": 9,
+      "hand": [
+        "Bewitching Tincture",
+        "Slough Solution",
+        "Spinal Solution - Agito"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Chrysalis Specimen",
+        "Fouled Scraper"
+      ],
+      "best": "Slough Solution → tank 1 → tank 2",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "f720e536-a367-49d8-b772-aa2a3676eb32",
+      "seq": 1,
+      "round": 1,
+      "hand": [
+        "Brain Fog Tincture",
+        "Slender-Limb Powder - Pest",
+        "Pure Leech Solution"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Slender-Limb Powder - Pest",
       "gap": 1,
       "reproduced": false
     }

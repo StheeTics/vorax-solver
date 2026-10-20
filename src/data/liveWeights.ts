@@ -27,11 +27,11 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Brain Fog Tincture': 1,
     'Osteogenic Powder': 2,
     'Gray Matter Spinal Solution': 1,
-    'Hollow Spinal Solution': 1,
+    'Hollow Spinal Solution': 1.7279325425949048,
     'Green Bile Solution': 1,
     'Compound Leech Solution': 1,
     'Digestive Enzyme Solution': 1,
-    'Vivigenic Powder': 1,
+    'Vivigenic Powder': 1.6415359154651594,
     'Potent Xenopurge Powder': 1,
     'Xenopurge Powder': 1,
     'Pure Leech Solution': 0.5,
@@ -47,7 +47,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Anesthetic Tincture - Aemberon': 1.538,
     'Spinal Solution - Aemberon': 1.538,
     'Xeno-Hormone': 1.538,
-    'Targeted Xeno-Hormone': 1.538,
+    'Targeted Xeno-Hormone': 0.7775696441677071,
     'Potion Kit (Large)': 0.878,
     'Potion Kit (Small)': 0.878,
     'Rare Potion Kit (Small)': 1.6109949489091089
@@ -90,9 +90,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
   instrumentOffer: {
     basic: {
       'Chrysalis Specimen': 0.33,
-      'Incubation Sac': 0.33,
-      'Hyperplastic Frontal Lobe': 0.33,
-      'Hypertrophic Pituitary': 0.41978548075484845,
+      'Incubation Sac': 0.2552349718668658,
+      'Hyperplastic Frontal Lobe': 0.19809281398622416,
+      'Hypertrophic Pituitary': 0.2819013122111652,
       'Adherent Metatarsals': 0.25,
       'Contracted Claws': 0.33014537268615235,
       'Aberrant Sprout': 0.2556705735965299,
@@ -121,7 +121,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
   spawnRarity: {
     normal: 53.38983050847458,
     magic: 26.606534381036962,
-    rare: 11.864406779661017,
+    rare: 15.880341364813079,
     boss: 19.420127894704166
   }
 }
