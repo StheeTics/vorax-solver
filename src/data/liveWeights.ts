@@ -21,7 +21,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Osteolytic Ointment': 0.878,
     'Cleansing Ointment': 0.878,
     'Fresh Spinal Powder': 0.878,
-    'Petrified Spinal Solution': 1.6953731847348865,
+    'Petrified Spinal Solution': 0.9227298472841119,
     'Viviparous Hormone': 1,
     'Eggshell Powder': 1,
     'Brain Fog Tincture': 1,
@@ -46,7 +46,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Twin Hormone - Bone Sentry': 1.538,
     'Anesthetic Tincture - Aemberon': 1.538,
     'Spinal Solution - Aemberon': 1.538,
-    'Xeno-Hormone': 1.538,
+    'Xeno-Hormone': 2.2003557896774977,
     'Targeted Xeno-Hormone': 0.7775696441677071,
     'Potion Kit (Large)': 0.878,
     'Potion Kit (Small)': 0.878,
@@ -89,18 +89,18 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.15844282128517032,
-      'Incubation Sac': 0.1377313413786121,
-      'Hyperplastic Frontal Lobe': 0.10252182553746314,
-      'Hypertrophic Pituitary': 0.19468791112164716,
-      'Adherent Metatarsals': 0.11701986147205387,
-      'Contracted Claws': 0.17190528322443313,
-      'Aberrant Sprout': 0.21044635143953558,
+      'Chrysalis Specimen': 0.13120819718391608,
+      'Incubation Sac': 0.10096880798918542,
+      'Hyperplastic Frontal Lobe': 0.08508031536144559,
+      'Hypertrophic Pituitary': 0.1619601183988964,
+      'Adherent Metatarsals': 0.10045627596893576,
+      'Contracted Claws': 0.14812175385215526,
+      'Aberrant Sprout': 0.16503531052039444,
       'Prismatic Liver': 0.09734395556082358
     },
     advanced: {
       'Clustered Eggs': 1,
-      'Sloughed Cortex': 1,
+      'Sloughed Cortex': 1.131050605060506,
       'Sinew Garrote': 1,
       'Vermicular Spinal Cord': 1,
       'Rawhide Restraint': 1,
@@ -119,9 +119,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
     }
   },
   spawnRarity: {
-    normal: 46.12995975306535,
-    magic: 26.606534381036962,
-    rare: 15.880341364813079,
+    normal: 43.98493535769686,
+    magic: 28.425974506855187,
+    rare: 17.26303751545767,
     boss: 20.96270306486954
   }
 }
