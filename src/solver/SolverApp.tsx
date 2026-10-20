@@ -6,6 +6,8 @@ import { DOWNLOAD_URL, HOME_URL, SOLVER_URL, SUPPORT_URL } from '@/ui/links'
 import { loadShelleyLevel, saveShelleyLevel, shelleyChosen } from '@/ui/settingsStore'
 import { ShelleyPicker } from '@/ui/ShelleyPicker'
 import { AdvicePanel } from './advice/AdvicePanel'
+import { PausedPanel, UnreliableNote } from './advice/PausedPanel'
+import { pausesOf, stillPaused, type Pause } from './advice/paused'
 import { useAdvice } from './advice/useAdvice'
 import { desktopBridge, overlayAsks, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
@@ -109,7 +111,18 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [windowed, setWindowed] = useState(false)
   const screen = linked ? null : screenTrouble({ filled: (reading?.state.tanks ?? []).filter(Boolean).length, unread: unreadTanks(fields, corrections).length, notGame, windowed })
   const troubles = [trouble, screen].filter((t): t is Trouble => !!t)
-  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles), undefined, depends, pickAsks[0]?.question.offer ?? [])
+  // advice on a board it can't trust is paused, until fixed or the player asks for it anyway (for those
+  // reasons only, until the page reloads: a new one pauses it again)
+  const pauses = linked ? [] : pausesOf(troubles, askShelley)
+  const [forced, setForced] = useState<Pause[]>([])
+  const paused = stillPaused(pauses, forced)
+  const unreliable = pauses.filter(p => forced.includes(p))
+  const force = useRef(() => {})
+  force.current = () => setForced(f => [...new Set([...f, ...paused])])
+  useEffect(() => {
+    desktopBridge()?.onForce?.(() => force.current())
+  }, [])
+  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable })
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -192,7 +205,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       await answerPick(a.id, name)
     })()
   }
-  useEffect(() => desktopBridge()?.onChoose?.(name => fromCard.current(name)), [])
+  useEffect(() => {
+    desktopBridge()?.onChoose?.(name => fromCard.current(name))
+  }, [])
 
   const edit = (next: ScreenState, field: FieldKey) => {
     setState(next)
@@ -280,7 +295,14 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </div>
       )}
 
-      <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} unread={unreadTanks(fields, corrections)} depends={depends} />
+      {paused.length > 0 ? (
+        <PausedPanel pauses={paused} onForce={() => force.current()} />
+      ) : (
+        <>
+          {unreliable.length > 0 && <UnreliableNote pauses={unreliable} onPause={() => setForced([])} />}
+          <AdvicePanel advice={shown?.advice ?? null} updating={updating} state={shown?.board ?? state} iconsKnown={reading?.iconsKnown} unread={unreadTanks(fields, corrections)} depends={depends} />
+        </>
+      )}
       {pickAsks.map(a => (
         <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} learn={!linked} />
       ))}
@@ -302,10 +324,13 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       </div>
 
       <Footnote className={styles.footnote} />
-      <a className={styles.support} href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
-        <span className={styles.supportCup} aria-hidden="true">☕</span>
-        <span>Buy me a coffee</span>
-      </a>
+      {/* the app offers it on the card over the game instead, each time it starts */}
+      {!desktopBridge() && (
+        <a className={styles.support} href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
+          <span className={styles.supportCup} aria-hidden="true">☕</span>
+          <span>Buy me a coffee</span>
+        </a>
+      )}
     </main>
   )
 }

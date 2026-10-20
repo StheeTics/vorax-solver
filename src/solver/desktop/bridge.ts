@@ -11,6 +11,7 @@ import { unreadNote, unreadTanks } from '../advice/unread'
 import { TROUBLES, type Trouble } from '../live/troubles'
 import type { Shown } from '../advice/useAdvice'
 import { describe, predicted } from '../advice/describe'
+import { PAUSES, type Pause } from '../advice/paused'
 
 export interface DesktopBridge {
   /** the log's size in bytes, or null while the app hasn't found it */
@@ -23,6 +24,8 @@ export interface DesktopBridge {
   showAdvice(card: OverlayCard): void
   /** an instrument the player chose on the card, answering "Which instrument did you take?" (apps from 0.1.8 on) */
   onChoose?(cb: (name: string) => void): void
+  /** the card's "Show advice anyway", while the Solver is paused (apps from 0.1.9 on) */
+  onForce?(cb: () => void): void
   /** brings the app's hidden Solver window up, to ask the player something (apps from 0.1.5 on) */
   showSolver?(): void
   /** the game window's outer size, the picture's, and the display scaling (apps from 0.1.4 on) */
@@ -44,6 +47,16 @@ export interface OverlayCard {
   ask: string | null
   /** the open instrument question's offer: answered with a click on the card (apps from 0.1.8 on) */
   choices: string[]
+  /** the Solver is paused (`move` says what to fix): the card offers "Show advice anyway" (apps from 0.1.9 on) */
+  paused: boolean
+  /** advice shown anyway though it can't be trusted: said in red over the move (apps from 0.1.9 on) */
+  warning: string
+}
+
+/** What pauses the Solver, and what was overridden: `paused` first; `forced` makes the advice unreliable. */
+export interface Gate {
+  paused: Pause[]
+  forced: Pause[]
 }
 
 /** Everything the card should say, most pressing first: what stops the Solver following or reading the game,
@@ -80,9 +93,16 @@ export function bridgeLog(bridge: DesktopBridge): FileLike {
 
 const OTHERS = 2
 
-export function overlayCard(shown: Shown | null, updating: boolean, asks: string[] = [], depends: Depends[] | null = null, choices: string[] = []): OverlayCard {
+export function overlayCard(shown: Shown | null, updating: boolean, asks: string[] = [], depends: Depends[] | null = null, choices: string[] = [], gate: Gate = { paused: [], forced: [] }): OverlayCard {
   const ask = asks.length ? `${asks[0]}${asks.length > 1 ? ` (and ${asks.length - 1} more in the Solver)` : ''}` : null
-  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, asks, ask, choices }
+  const warning = gate.forced.length ? `Unreliable: ${gate.forced.map(p => PAUSES[p].action.toLowerCase()).join(', ')}.` : ''
+  const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, asks, ask, choices, paused: false, warning }
+  // paused: what to fix, in place of the move; Show me opens the Solver, which says how
+  if (gate.paused.length) {
+    const [first, ...rest] = gate.paused
+    const fix = 'Fix it in the Solver.'
+    return { ...card, asks: [fix], ask: fix, warning: '', paused: true, move: PAUSES[first].action, detail: PAUSES[first].why, others: rest.map(p => PAUSES[p].action) }
+  }
   // an unconfirmed pick changes the best move: each instrument's, not one move on a guess
   if (shown && depends) return { ...card, move: 'Depends on which instrument you took', others: depends.map(d => `With ${d.name}: ${d.move}`) }
   if (!shown) return { ...card, move: updating ? 'Working out the best move…' : 'Waiting for the cards…' }
@@ -101,10 +121,13 @@ export function overlayCard(shown: Shown | null, updating: boolean, asks: string
 }
 
 /** Keeps the overlay card in step with the advice on the page. */
-export function useOverlay(shown: Shown | null, updating: boolean, asks: string[] = [], bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null, choices: string[] = []): void {
+export function useOverlay(shown: Shown | null, updating: boolean, asks: string[] = [], bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null, choices: string[] = [], gate?: Gate): void {
   const key = asks.join('\n')
   const offer = choices.join('\n')
+  const paused = gate?.paused.join(',') ?? ''
+  const forced = gate?.forced.join(',') ?? ''
   useEffect(() => {
-    bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends, offer ? offer.split('\n') : []))
-  }, [shown, updating, key, bridge, depends, offer])
+    const split = (k: string) => (k ? (k.split(',') as Pause[]) : [])
+    bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends, offer ? offer.split('\n') : [], { paused: split(paused), forced: split(forced) }))
+  }, [shown, updating, key, bridge, depends, offer, paused, forced])
 }

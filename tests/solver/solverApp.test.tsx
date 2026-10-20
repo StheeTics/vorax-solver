@@ -30,11 +30,25 @@ it('says the advice was updated and what it gained', () => {
 })
 
 
-it('has a quiet Buy me a coffee link that opens in a new tab', () => {
-  render(<SolverApp />)
-  const link = screen.getByRole('link', { name: /Buy me a coffee/ })
-  expect(link.getAttribute('href')).toBe(SUPPORT_URL)
-  expect(link.getAttribute('target')).toBe('_blank')
+describe('the Buy me a coffee button', () => {
+  const coffee = () => screen.queryByRole('link', { name: /Buy me a coffee/ })
+
+  it('is a link that opens in a new tab', () => {
+    render(<SolverApp />)
+    expect(coffee()?.getAttribute('href')).toBe(SUPPORT_URL)
+    expect(coffee()?.getAttribute('target')).toBe('_blank')
+  })
+
+  it('is not on the app’s Solver page: the app offers it on the card', () => {
+    const w = window as unknown as { VoraxDesktop?: unknown }
+    w.VoraxDesktop = { logSize: async () => null, readLog: async () => new ArrayBuffer(0), onGame: () => {}, onSnap: () => {}, showAdvice: () => {} }
+    try {
+      render(<SolverApp />)
+      expect(coffee()).toBeNull()
+    } finally {
+      delete w.VoraxDesktop
+    }
+  })
 })
 
 it('puts the advice first and the board to correct below it', () => {
