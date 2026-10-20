@@ -6,6 +6,7 @@ import type { ScanData } from './data'
 import type { Layout } from './layout'
 import { signature, type Img } from './pixels'
 import learned from './learnedIcons.json'
+import { iconSimilarity } from './iconMatch'
 
 // An empty slot is dark glass: under 0.2% of its pixels are bright, against at least 2% for any icon, at
 // every screen size measured. Matching empty slots against pictures of empty slots didn't carry over to
@@ -25,14 +26,14 @@ export function holdsAnIcon(img: Img, r: Rect): boolean {
   return n / (r.w * r.h) >= FILLED_MIN
 }
 
-// right icons score 0.83 or more (a slot's background shifts the pattern a little); wrong ones about 0.6 or less
-const ICON_MIN = 0.8
-const ICON_GAP = 0.03
+// compared lined up (iconMatch): pictures of one instrument score 0.97 typically, another instrument's under 0.80 in
+// 99 cases of 100, so sure among all of them takes a clear lead; the tracker, choosing among the 3 offered, needs less
+const ICON_MIN = 0.85
+const ICON_GAP = 0.08
 
 /** An icon as a zero-mean, unit-length 24x24 grey pattern. */
 export const iconPattern = (img: Img, r: Rect) => signature(img, r, 24, 24)
 
-const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0)
 
 /** The permanent item at the oldest end of some players' panels (a teal ewer): not an instrument, skipped. */
 export const STARTING_ITEM = '(starting item)'
@@ -57,7 +58,8 @@ export function readInstruments(img: Img, l: Layout, data: ScanData, local: Reco
   for (const r of l.instrumentIcon) {
     if (!holdsAnIcon(img, r)) break
     const p = iconPattern(img, r)
-    const ranked = Object.entries(icons).filter(([n]) => n !== 'none').map(([n, vs]) => [n, Math.max(...vs.map(v => dot(v, p)))] as [string, number]).sort((a, b) => b[1] - a[1])
+    const lined = new Map<string, number[]>()
+    const ranked = Object.entries(icons).filter(([n]) => n !== 'none').map(([n, vs]) => [n, Math.max(...vs.map(v => iconSimilarity(v, p, lined)))] as [string, number]).sort((a, b) => b[1] - a[1])
     if (ranked[0][0] === STARTING_ITEM) continue
     fromRight.push(ranked[0][0])
     ranksFromRight.push(ranked.filter(([n]) => n !== STARTING_ITEM))

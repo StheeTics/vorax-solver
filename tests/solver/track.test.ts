@@ -172,7 +172,7 @@ describe('a pick the Solver wasn’t sure of stays unsure until the player says'
     // clear, but not one of the offer
     expect(trackInstruments(first.tracker, reading({ round: 3, panel: [[['Aberrant Sprout', 0.97]]] }), 'board').tracker.unsure).toHaveLength(1)
     // one of the offer, but not clear enough
-    expect(trackInstruments(first.tracker, reading({ round: 3, panel: [[['Chrysalis Specimen', 0.8]]] }), 'board').tracker.unsure).toHaveLength(1)
+    expect(trackInstruments(first.tracker, reading({ round: 3, panel: [[['Chrysalis Specimen', 0.6]]] }), 'board').tracker.unsure).toHaveLength(1)
   })
   it('a sure pick isn’t kept as unsure', () => {
     let t = newTracker()

@@ -6,23 +6,29 @@
 //    that don't look like another instrument. A single answer used to go in, and a wrong one did harm: it was
 //    the only picture of Chrysalis Specimen, the reader took a real one for another instrument, and the advice
 //    followed (2026-10-19).
+//  - Compared lined up, as the reader compares them: a crop can land a few pixels off.
 // Run by scripts/live/learnIcons.ts (the hourly live-data workflow).
+
+import { iconSimilarity } from '../../src/solver/scan/iconMatch'
 
 export interface TaughtIcon { uid: string; name: string; pattern: number[] }
 
 /** as close as two pictures of one icon come (the reader calls an icon sure at 0.8) */
 const MATCH = 0.8
-/** an answer this close to another instrument's icon is more likely a wrong click */
-const LIKE_OTHER = 0.6
+/** an answer this close to another instrument's icon is more likely a wrong click (lined up, 99% of different
+ *  instruments' pictures score under 0.80) */
+const LIKE_OTHER = 0.8
 /** at most this many learned patterns per instrument */
 const KEEP = 8
 const NOT_INSTRUMENTS = new Set(['none', '(starting item)'])
 
-const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * (b[i] ?? 0), 0)
-const best = (p: number[], vs: number[][] = []) => Math.max(-1, ...vs.map(v => dot(v, p)))
+// compared as the reader compares them: lined up, as a panel crop can land a few pixels off
+const like = (a: number[], b: number[]) => iconSimilarity(a, b)
+const best = (p: number[], vs: number[][] = []) => Math.max(-1, ...vs.map(v => like(v, p)))
 
 /** The taught icons confirmed for each instrument, given the reader's built-in icons. */
-export function acceptIcons(taught: TaughtIcon[], builtIn: Record<string, number[][]>): Record<string, number[][]> {
+/** `confirmed`: answers the owner checked by eye (data/live/iconsConfirmed.json), which count without a second answer. */
+export function acceptIcons(taught: TaughtIcon[], builtIn: Record<string, number[][]>, confirmed: Set<string> = new Set()): Record<string, number[][]> {
   const seen = new Set<string>()
   const byName = new Map<string, TaughtIcon[]>()
   for (const t of taught) {
@@ -36,7 +42,7 @@ export function acceptIcons(taught: TaughtIcon[], builtIn: Record<string, number
     for (const t of list) {
       const other = Math.max(-1, ...Object.entries(builtIn).filter(([n]) => n !== name && !NOT_INSTRUMENTS.has(n)).map(([, vs]) => best(t.pattern, vs)))
       const known = builtIn[name]?.length
-      const agreed = list.some(o => o.uid !== t.uid && dot(o.pattern, t.pattern) >= MATCH)
+      const agreed = confirmed.has(t.uid) || list.some(o => o.uid !== t.uid && like(o.pattern, t.pattern) >= MATCH)
       const ok = known ? best(t.pattern, builtIn[name]) >= MATCH && best(t.pattern, builtIn[name]) > other : agreed && other < LIKE_OTHER
       if (ok) accepted.push({ p: t.pattern })
     }

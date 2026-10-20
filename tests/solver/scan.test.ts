@@ -134,6 +134,10 @@ describe.skipIf(!local)('a 1440p frame shrunk to 1080p', () => {
 
 describe.skipIf(!existsSync('training/g5-011-board.png'))('a panel icon named in the browser', () => {
   it('is recognised on the next boards', async () => {
+    // a reader that has never seen it: not in the built-in data, nor in the icons players taught
+    const learnedIcons = (await import('@/solver/scan/learnedIcons.json')).default as Record<string, number[][]>
+    vi.resetModules()
+    vi.doMock('@/solver/scan/learnedIcons.json', () => ({ default: Object.fromEntries(Object.entries(learnedIcons).filter(([n]) => n !== 'Egg-Burdened Butterfly')) }))
     const { layout } = await import('@/solver/scan/layout')
     const { iconPattern, readInstruments } = await import('@/solver/scan/instruments')
     const learnedFrom = decodePng(readFileSync('training/g5-011-board.png'))
@@ -145,6 +149,8 @@ describe.skipIf(!existsSync('training/g5-011-board.png'))('a panel icon named in
     const without = { ...data, instrumentIcons: icons }
     expect(readInstruments(later, layout(later), without).names).not.toContain('Egg-Burdened Butterfly')
     expect(readInstruments(later, layout(later), without, learned).names).toEqual(['Contracted Claws', 'Egg-Burdened Butterfly'])
+    vi.doUnmock('@/solver/scan/learnedIcons.json')
+    vi.resetModules()
   })
 })
 

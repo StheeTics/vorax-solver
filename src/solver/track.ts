@@ -32,8 +32,10 @@ export function confirmPick(t: InstrumentTracker, slot: number, name: string): I
   return { ...t, owned, unsure: (t.unsure ?? []).filter(q => q.slot !== slot) }
 }
 
-const SURE = 0.9
-const GAP = 0.01
+// choosing among the 3 offered, icons compared lined up: on the 151 icons players named, each offered beside 2 others
+// of its pool, this asks 13% of the time against 87% for 0.9 compared in place, and picks wrong 0.4% of the time
+const SURE = 0.7
+const GAP = 0.1
 
 /** A pick the Solver can't place: the offer it came from, and which instrument (in pick order) it is. */
 export interface PickQuestion { offer: string[]; slot: number }
