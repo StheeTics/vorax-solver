@@ -154,6 +154,23 @@ function refresh(run: Run) {
   clearSelection(s)
 }
 
+/**
+ * Whether playing the card at `index` on `targets` changes the board by itself, before the round ends: a card
+ * that only adds a monster does nothing when the tanks are full (unless an instrument rewards the overflow).
+ * Its effect is applied to a copy, with its reactive instruments; true for a Potion Kit, which opens a hand.
+ */
+export function cardChanges(state: GameState, index: number, targets: number[]): boolean {
+  const card = state.hand[index]
+  if (!card || card.kind !== 'potion') return true
+  const def = potion(card.id)
+  if (typeof def.targeting === 'object' || !def.effect) return typeof def.targeting === 'object'
+  const s = structuredClone(state)
+  const run: Run = { s, rng: createRng(s.rngState), log: [] }
+  const before = JSON.stringify(s.tanks)
+  def.effect(context(run), targets)
+  return JSON.stringify(s.tanks) !== before
+}
+
 export function dispatch(state: GameState, action: Action): { state: GameState; log: LogEntry[] } {
   const s = structuredClone(state)
   const run: Run = { s, rng: createRng(s.rngState), log: [] }

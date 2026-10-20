@@ -4,7 +4,8 @@ import type { Ranked, ScreenState } from '@/strategy/advisor'
 export function describe(r: Ranked, state: ScreenState, place = false): string {
   const name = `${state.hand[r.index] ?? `Card ${r.index + 1}`}${place ? ` (card ${r.index + 1})` : ''}`
   if (state.phase === 'instrument') return `Take ${name}`
-  return r.targets.length ? `Play ${name} → tank ${r.targets.map(t => t + 1).join(', ')}` : `Play ${name}`
+  const move = r.targets.length ? `Play ${name} → tank ${r.targets.map(t => t + 1).join(', ')}` : `Play ${name}`
+  return r.noEffect ? `${move}: does nothing, the tanks are full` : move
 }
 
 /** A look-ahead prediction in words: "900,000 · 40% rainbow". */

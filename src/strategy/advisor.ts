@@ -2,7 +2,7 @@
 import { XENOPANACEA, isXenopanacea } from '@/data/xenopanacea'
 import { POTIONS } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
-import { createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
+import { cardChanges, createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
 import type { Action, Archetype, Card, GameState, Monster, Rarity } from '@/engine/types'
 import { settingsForShelley } from '@/data/shelley'
 import { evChooser, expected, lookAhead, options, rankInstruments } from './bot'
@@ -24,7 +24,27 @@ export interface ScreenState {
   shelley?: number
 }
 /** end: with look-ahead, the predicted end of the run (average final Ultimate Activity counted up to 950,000; share reaching 950,000, which counts as rainbow) */
-export interface Ranked { index: number; targets: number[]; value: number; end?: { activity: number; reached: number } }
+export interface Ranked {
+  index: number
+  targets: number[]
+  value: number
+  end?: { activity: number; reached: number }
+  /** the card changes nothing on this board (it only adds a monster, and the tanks are full) */
+  noEffect?: true
+}
+
+/** How close a do-nothing move's value must be for a move that does something to go first instead. */
+const NO_EFFECT_MARGIN = 0.01
+
+/** Marks the moves that change nothing, and puts a move that does something first when it's about as good: a
+ *  card that adds to a full board came out tied for best and was advised as if it did something. */
+export function markNoEffect(s: GameState, ranking: Ranked[]): Ranked[] {
+  const marked = ranking.map(r => (cardChanges(s, r.index, r.targets) ? r : { ...r, noEffect: true as const }))
+  const top = marked[0]
+  if (!top?.noEffect) return marked
+  const real = marked.find(r => !r.noEffect && r.value >= top.value * (1 - NO_EFFECT_MARGIN))
+  return real ? [real, ...marked.filter(r => r !== real)] : marked
+}
 export interface Advice {
   /** best card (hand index) and the tanks to target, a refresh, or null when the choice doesn't change the score */
   best: Ranked | 'refresh' | null
@@ -125,10 +145,10 @@ export function advise(x: ScreenState, samples = 16, playouts = 16, plan = false
       const ahead = lookAhead(s, seed, LOOK_AHEAD)
       const reroll = ahead.find(a => a.o[0].type === 'refresh')
       if (reroll) refreshEnd = { activity: reroll.goal, reached: reroll.reached }
-      ranking = ahead.filter(a => a !== reroll).map(a => ({ ...toRanked(a.o, Math.round(a.goal)), end: { activity: a.goal, reached: a.reached } }))
+      ranking = markNoEffect(s, ahead.filter(a => a !== reroll).map(a => ({ ...toRanked(a.o, Math.round(a.goal)), end: { activity: a.goal, reached: a.reached } })))
       best = ahead[0] === reroll ? 'refresh' : ranking[0]
     } else {
-      ranking = breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, seed)))).sort((a, b) => b.value - a.value), seed)
+      ranking = markNoEffect(s, breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, seed)))).sort((a, b) => b.value - a.value), seed))
       best = ranking[0] && !(ranking[0].value <= ultimateActivity(s) && s.potionRefreshes > 0) ? ranking[0] : 'refresh'
     }
   } else {
