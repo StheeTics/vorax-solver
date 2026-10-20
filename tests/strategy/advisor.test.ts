@@ -1,4 +1,4 @@
-import { advise, names, toState, type ScreenState } from '@/strategy/advisor'
+import { advise, INSTRUMENT_FUTURES, LOOK_AHEAD, names, toState, type ScreenState } from '@/strategy/advisor'
 import { DEFAULT_SETTINGS } from '@/engine/game'
 import { settingsForShelley } from '@/data/shelley'
 
@@ -138,4 +138,9 @@ it('instrument choices are judged by the final score counted up to 950,000, like
   const big = { archetype: 'agito' as const, rarity: 'boss' as const, activity: 2000, quantity: 600 }
   const a = advise({ ...board, tanks: Array.from({ length: 6 }, () => ({ ...big })), phase: 'instrument', hand: ['Clustered Eggs', 'Sinew Garrote', 'Pig Iron Bone Saw'], instruments: ['Incubation Sac'], round: 9, instrumentRefreshes: 0 })
   expect(a.ranking.map(r => r.value)).toEqual([950_000, 950_000, 950_000])
+})
+
+it('the advice’s futures are played by the smarter player (the board value), with 64 futures for potions and instruments', () => {
+  expect(LOOK_AHEAD).toMatchObject({ playouts: 64, value: true })
+  expect(INSTRUMENT_FUTURES).toBe(64)
 })

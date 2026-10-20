@@ -5,12 +5,16 @@ import type { Pool } from './pool'
  *  took ~570 ms at 4 against ~900 at 1, and 3.9 s on one core). */
 const SLICES_PER_WORKER = 4
 
+/** Futures per option for a PC with this many CPU threads: 64 from 8 threads up, 32 below, so a slow PC isn't kept waiting. */
+export const futuresFor = (threads: number) => (threads >= 8 ? 64 : 32)
+
 /**
  * A board's advice with its futures played over the pool's workers, in small slices: the same advice as
- * advise() on one thread, sooner. Null when its slices were dropped (`tag` cleared: a newer board came).
+ * advise() on one thread when the pool is big enough for the full futures, sooner. Null when its slices were dropped (`tag` cleared: a newer board came).
  */
 export async function adviseOn(x: ScreenState, pool: Pick<Pool, 'size' | 'run'>, tag?: string): Promise<Advice | null> {
-  const p = prepare(x)
+  // the pool has a worker per thread but one (poolSize)
+  const p = prepare(x, futuresFor(pool.size + 1))
   if ('advice' in p) return p.advice
   const n = p.work.futures, k = Math.min(pool.size * SLICES_PER_WORKER, n)
   const parts = await Promise.all(Array.from({ length: k }, (_, i) => pool.run({ work: p.work, from: Math.floor((i * n) / k), to: Math.floor(((i + 1) * n) / k) }, tag)))

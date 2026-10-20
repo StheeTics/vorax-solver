@@ -111,15 +111,16 @@ export function toState(x: ScreenState, unknown: string[]): GameState {
 /** Potion look-ahead: each card on offer, the next best options up to 4, and a reroll, each played to the end of the run 64 times;
  *  the rounds inside steer toward what the instruments need (steer 0.3: 50% reached 950k in 240 games against 47% without, within luck).
  *  64 futures rather than 32, with instruments judged up to 950k (INSTRUMENT_FUTURES): 63.9% of 360 simulated games reached 950k
- *  against 58.6%. */
-export const LOOK_AHEAD: LookAhead = { top: 4, playouts: 64, steer: 0.3 }
+ *  against 58.6%. The rounds and instrument offers inside are played by the smarter player (value: the board value,
+ *  src/strategy/value.ts), which replaces the steer. */
+export const LOOK_AHEAD: LookAhead = { top: 4, playouts: 64, steer: 0.3, value: true }
 
-/** Futures per instrument choice; each judged by its final score counted up to 950k, its own instrument offers
- *  rerolled when weak (32 rather than 64, so the answer comes sooner). */
-export const INSTRUMENT_FUTURES = 32
+/** Futures per instrument choice, each judged by its final score counted up to 950k (64 rather than 32: 152 of 240
+ *  simulated games reached 950k against 143; spread over the CPU cores it still answers in about a second). */
+export const INSTRUMENT_FUTURES = 64
 
-/** How the rounds inside an instrument choice's futures are played. */
-const INSTRUMENT_ROLLOUT = { samples: 4, horizon: 0 }
+/** How the rounds inside an instrument choice's futures are played: by the smarter player (the board value). */
+const INSTRUMENT_ROLLOUT = { samples: 4, horizon: 0, value: true }
 
 /** A few rounds of look-ahead, only to order options that score the same this round. */
 const TIE_BREAK = { samples: 32, horizon: 4 }
@@ -147,8 +148,9 @@ export type Prepared = { advice: Advice } | { work: Work; x: ScreenState; unknow
 
 const SEED = 0x5eed
 
-/** The advice that needs no futures (a protocol, a Xenopanacea), or the futures to play for it. */
-export function prepare(x: ScreenState): Prepared {
+/** The advice that needs no futures (a protocol, a Xenopanacea), or the futures to play for it: `futures` per option
+ *  (default LOOK_AHEAD's for potions, INSTRUMENT_FUTURES for instruments). */
+export function prepare(x: ScreenState, futures?: number): Prepared {
   const t0 = Date.now(); const unknown: string[] = []
   // Surgical Protocols change the endgame battle, not Ultimate Activity
   if (x.phase === 'protocol') return { advice: { best: null, ranking: [], board: 0, plan: false, final: true, ms: 0, unknown } }
@@ -160,8 +162,8 @@ export function prepare(x: ScreenState): Prepared {
   }
   const s = { ...toState(x, unknown), log: [] }
   const work: Work = s.phase === 'potionSelect'
-    ? { kind: 'potion', s, seed: SEED, la: LOOK_AHEAD, opts: shortlist(s, SEED, LOOK_AHEAD), futures: LOOK_AHEAD.playouts }
-    : { kind: 'instrument', s, seed: SEED, choices: [...s.hand.map((_, i) => i), ...(canRefresh(s) ? ['refresh' as const] : [])], futures: INSTRUMENT_FUTURES }
+    ? { kind: 'potion', s, seed: SEED, la: { ...LOOK_AHEAD, playouts: futures ?? LOOK_AHEAD.playouts }, opts: shortlist(s, SEED, LOOK_AHEAD), futures: futures ?? LOOK_AHEAD.playouts }
+    : { kind: 'instrument', s, seed: SEED, choices: [...s.hand.map((_, i) => i), ...(canRefresh(s) ? ['refresh' as const] : [])], futures: futures ?? INSTRUMENT_FUTURES }
   return { work, x, unknown, t0 }
 }
 
@@ -169,7 +171,7 @@ export function prepare(x: ScreenState): Prepared {
 export function playWork(w: Work, from: number, to: number): Tally[] {
   return w.kind === 'potion'
     ? potionFutures(w.s, w.seed, w.la, w.opts.map(c => c.o), from, to)
-    : instrumentFutures(w.s, w.seed, w.choices, evChooser(INSTRUMENT_ROLLOUT), 'target', from, to)
+    : instrumentFutures(w.s, w.seed, w.choices, evChooser(INSTRUMENT_ROLLOUT), 'target', from, to, true)
 }
 
 /** Adds up slices of futures, option by option. */

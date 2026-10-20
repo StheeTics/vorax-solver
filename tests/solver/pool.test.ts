@@ -1,5 +1,5 @@
 import { advise, playWork, type ScreenState } from '@/strategy/advisor'
-import { adviseOn } from '@/solver/advice/adviseOn'
+import { adviseOn, futuresFor } from '@/solver/advice/adviseOn'
 import { createPool, type WorkerLike } from '@/solver/advice/pool'
 
 const M = (archetype: 'pest' | 'agito' | 'boneSentry', rarity: 'normal' | 'magic' | 'rare', activity: number, quantity: number) => ({ archetype, rarity, activity, quantity })
@@ -11,11 +11,11 @@ const here = (size: number) => ({ size, run: async (job: { work: Parameters<type
 const noTime = (a: { ms: number } | null) => a && { ...a, ms: 0 }
 
 describe('advice over several CPU cores', () => {
-  it('a potion board: the same advice as on one', async () => {
-    expect(noTime(await adviseOn(potionBoard, here(5)))).toEqual(noTime(advise(potionBoard, 16, true)))
+  it('a potion board: the same advice as on one (16 threads: the full 64 futures)', async () => {
+    expect(noTime(await adviseOn(potionBoard, here(15)))).toEqual(noTime(advise(potionBoard, 16, true)))
   }, 60_000)
-  it('an instrument board: the same advice as on one', async () => {
-    expect(noTime(await adviseOn(instrumentBoard, here(7)))).toEqual(noTime(advise(instrumentBoard)))
+  it('an instrument board: the same advice as on one (16 threads: the full 64 futures)', async () => {
+    expect(noTime(await adviseOn(instrumentBoard, here(15)))).toEqual(noTime(advise(instrumentBoard)))
   }, 60_000)
 })
 
@@ -50,4 +50,17 @@ describe('the worker pool', () => {
     expect(await old[1]).toBeNull()
     expect(spawned[0].got).toHaveLength(0)
   })
+})
+
+describe('futures scaled to the CPU', () => {
+  it('64 from 8 threads up, 32 below', () => {
+    expect([2, 4, 7, 8, 12, 16, 32].map(futuresFor)).toEqual([32, 32, 32, 64, 64, 64, 64])
+  })
+  it('a PC with fewer threads plays fewer futures per option, so the wait stays about the same', async () => {
+    const played = { potion: 0, instrument: 0 }
+    const counting = (size: number) => ({ ...here(size), run: async (job: { work: Parameters<typeof playWork>[0]; from: number; to: number }) => { played[job.work.kind] += job.to - job.from; return playWork(job.work, job.from, job.to) } })
+    await adviseOn(potionBoard, counting(3))
+    await adviseOn(instrumentBoard, counting(3))
+    expect(played).toEqual({ potion: 32, instrument: 32 })
+  }, 60_000)
 })

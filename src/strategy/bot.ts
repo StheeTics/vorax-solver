@@ -5,6 +5,7 @@ import { createGame, dispatch, ultimateActivity, needsTargets, canRefresh, DEFAU
 import type { GameState, Action, SandboxSetup } from '@/engine/types'
 import { BASIC_POOL, INSTRUMENTS } from '@/data/instruments'
 import { buildProgress } from './steer'
+import { boardValue } from './value'
 import STRENGTH from '@/data/instrumentStrength.json'
 
 export const play = (s: GameState, ...a: Action[]) => a.reduce((x, y) => dispatch(x, y).state, s)
@@ -28,7 +29,7 @@ export function options(s: GameState): Action[][] {
 }
 
 const reseed = (s: GameState, seed: number): GameState => ({ ...s, rngState: seed >>> 0 })
-const mix = (a: number, b: number) => (Math.imul(a ^ (b + 0x9e3779b9), 0x85ebca6b) ^ (a >>> 13)) >>> 0
+export const mix = (a: number, b: number) => (Math.imul(a ^ (b + 0x9e3779b9), 0x85ebca6b) ^ (a >>> 13)) >>> 0
 
 export interface Policy {
   /** fresh random outcomes averaged per option */
@@ -42,9 +43,14 @@ export interface Policy {
    * Used for the rounds inside the advice's futures, so they build toward the instruments' conditions.
    */
   steer?: number
+  /**
+   * Judge boards by the board value (the final score games from them tend to reach) instead of their score: the
+   * player inside the futures then plays toward what pays off later. Overrides steer.
+   */
+  value?: boolean
 }
 
-const worth = (s: GameState, steer = 0) => ultimateActivity(s) * (steer ? 1 + steer * buildProgress(s) : 1)
+const worth = (s: GameState, steer = 0, value = false) => (value ? boardValue(s) : ultimateActivity(s) * (steer ? 1 + steer * buildProgress(s) : 1))
 
 /** Score of a state after resolving any open box the best way (by expectation, recursively). */
 function settle(s: GameState, p: Policy, seed: number, depth: number): number {
@@ -53,7 +59,7 @@ function settle(s: GameState, p: Policy, seed: number, depth: number): number {
     for (const o of options(s)) best = Math.max(best, expected(s, o, p, seed, depth + 1))
     return best
   }
-  return rollout(s, p.horizon, seed, p.rollSamples ?? 1, p.steer)
+  return rollout(s, p.horizon, seed, p.rollSamples ?? 1, p.steer, p.value)
 }
 
 /** Open a box (if any) and take its first card; only used inside rollouts. */
@@ -63,19 +69,19 @@ const resolveBox = (n: GameState) => (n.phase === 'potionSelect' && n.openBox !=
  * Lookahead: play `rounds` more rounds. Each round's card is the one with the best mean over
  * `samples` fresh outcomes (common seeds across options); the round then plays out on one more fresh outcome.
  */
-function rollout(s: GameState, rounds: number, seed: number, samples: number, steer = 0): number {
+function rollout(s: GameState, rounds: number, seed: number, samples: number, steer = 0, value = false): number {
   for (let r = 0; r < rounds && s.phase !== 'gameOver'; r++) {
     if (s.phase === 'roundEnd') { s = play(s, { type: 'confirm' }); continue }
     if (s.phase === 'instrumentSelect') { s = play(s, { type: 'selectCard', index: priorPick(s) }, { type: 'confirm' }); continue }
     let best = options(s)[0], bv = -1
     for (const o of options(s)) {
       let v = 0
-      for (let k = 0; k < samples; k++) v += worth(resolveBox(play(reseed(s, mix(seed, r * 977 + k)), ...o)), steer)
+      for (let k = 0; k < samples; k++) v += worth(resolveBox(play(reseed(s, mix(seed, r * 977 + k)), ...o)), steer, value)
       if (v > bv) { bv = v; best = o }
     }
     s = resolveBox(play(reseed(s, mix(seed, r * 977 + 500)), ...best))
   }
-  return worth(s, steer)
+  return worth(s, steer, value)
 }
 
 /** Mean payoff of playing option `o`, over p.samples fresh outcomes (common seeds across options). */
@@ -101,6 +107,9 @@ export function choose(s: GameState, p: Policy, seed: number) {
     const v = expected(slim, o, p, seed)
     if (v > bv) { bv = v; best = o }
   }
+  // judged by the board value, the hand is weak (refresh it while refreshes last) when the best card leads to a
+  // board worth less than this one, whose value is what an average hand brings
+  if (p.value) return { best, value: bv, stay: boardValue(slim) }
   return { best, value: p.steer ? bv - worth(slim, p.steer) + ultimateActivity(slim) : bv }
 }
 
@@ -117,7 +126,8 @@ export interface Plan { label: string; basic: number; adv: number[] }
 /** basics in general strength order, used when the wanted basic never shows */
 export const BASIC_FALLBACK = [2, 6, 4, 7, 1, 3, 8, 5]
 
-export type Chooser = (s: GameState, seed: number) => { best: Action[]; value: number }
+/** `stay`: what `value` must beat for the hand to be played rather than refreshed (default: the board's score). */
+export type Chooser = (s: GameState, seed: number) => { best: Action[]; value: number; stay?: number }
 export const evChooser = (p: Policy): Chooser => (s, seed) => choose(s, p, seed)
 export const peekChooser: Chooser = s => choosePeek(s)
 
@@ -165,6 +175,14 @@ export const planPicker = (plan: Plan): InstrumentPicker => s => {
 }
 export const priorPicker: InstrumentPicker = s => priorPick(s)
 
+/** Inside playouts, by the board value: the offered instrument whose board is worth most, or a refresh while refreshes
+ *  last when none beats the board before the pick (what an average offer brings). */
+export const valuePicker: InstrumentPicker = s => {
+  const vals = s.hand.map((_, i) => boardValue(play(s, { type: 'selectCard', index: i }, { type: 'confirm' })))
+  const best = vals.indexOf(Math.max(...vals))
+  return canRefresh(s) && vals[best] < boardValue(s) ? 'refresh' : best
+}
+
 /**
  * Board-aware: each offered instrument (and a refresh) is played out to the end of the game
  * `playouts` times from the current board; the best average final score wins.
@@ -186,9 +204,10 @@ export interface Tally { goal: number; reached: number; n: number }
 export type InstrumentChoice = number | 'refresh'
 
 /** Futures `from` to `to` (excluded) of each instrument choice, played to the end of the run. */
-export function instrumentFutures(s: GameState, seed: number, choices: InstrumentChoice[], rollout: Chooser, goal: Goal, from: number, to: number): Tally[] {
+/** `smart`: later instrument offers inside the futures are answered by the board value (valuePicker). */
+export function instrumentFutures(s: GameState, seed: number, choices: InstrumentChoice[], rollout: Chooser, goal: Goal, from: number, to: number, smart = false): Tally[] {
   const slim = { ...s, log: [] }
-  const picker = goal === 'target' ? refreshingPriorPicker : priorPicker
+  const picker = smart ? valuePicker : goal === 'target' ? refreshingPriorPicker : priorPicker
   const value = goal === 'target' ? (x: GameState) => goalScore(ultimateActivity(x)) : ultimateActivity
   return choices.map(c => {
     const t: Tally = { goal: 0, reached: 0, n: 0 }
@@ -205,15 +224,15 @@ export function instrumentFutures(s: GameState, seed: number, choices: Instrumen
 }
 
 /** offers/refresh: mean goal value per option; reached/refreshReached: the share of its playouts that reached TARGET */
-export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts): { offers: number[]; refresh: number | null; reached: number[]; refreshReached: number | null } {
-  const each = instrumentFutures(s, seed, s.hand.map((_, i) => i), rollout, goal, 0, playouts)
+export function rankInstruments(s: GameState, seed: number, playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts, smart = false): { offers: number[]; refresh: number | null; reached: number[]; refreshReached: number | null } {
+  const each = instrumentFutures(s, seed, s.hand.map((_, i) => i), rollout, goal, 0, playouts, smart)
   // a refresh's value rests on which offers come next, so it may be given more futures than an offered instrument
-  const r = canRefresh(s) ? instrumentFutures(s, seed, ['refresh'], rollout, goal, 0, refreshPlayouts)[0] : null
+  const r = canRefresh(s) ? instrumentFutures(s, seed, ['refresh'], rollout, goal, 0, refreshPlayouts, smart)[0] : null
   return { offers: each.map(e => e.goal / e.n), refresh: r && r.goal / r.n, reached: each.map(e => e.reached / e.n), refreshReached: r && r.reached / r.n }
 }
 
-export const boardPicker = (playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts): InstrumentPicker => (s, seed) => {
-  const { offers, refresh } = rankInstruments(s, seed, playouts, rollout, goal, refreshPlayouts)
+export const boardPicker = (playouts: number, rollout: Chooser, goal: Goal = 'target', refreshPlayouts = playouts, smart = false): InstrumentPicker => (s, seed) => {
+  const { offers, refresh } = rankInstruments(s, seed, playouts, rollout, goal, refreshPlayouts, smart)
   const best = offers.indexOf(Math.max(...offers))
   return refresh !== null && refresh > offers[best] ? 'refresh' : best
 }
@@ -227,6 +246,8 @@ export interface LookAhead {
   steer?: number
   /** outcomes averaged per option in each round inside the futures (default 2) */
   innerSamples?: number
+  /** the rounds and instrument offers inside the futures are judged by the board value (Policy.value) */
+  value?: boolean
   /**
    * Successive halving, for about the same number of futures: 8 for every option, the better half (at
    * least 2) 16 more, the best 2 another 32, so close calls get the most futures.
@@ -260,12 +281,12 @@ export function shortlist(s: GameState, seed: number, la: LookAhead): { o: Actio
 /** Futures `from` to `to` (excluded) of each potion option, played to the end of the run. */
 export function potionFutures(s: GameState, seed: number, la: LookAhead, opts: Action[][], from: number, to: number): Tally[] {
   const slim = { ...s, log: [] }
-  const inner = evChooser({ samples: la.innerSamples ?? 2, horizon: 0, steer: la.steer })
+  const inner = evChooser({ samples: la.innerSamples ?? 2, horizon: 0, steer: la.steer, value: la.value })
   return opts.map(o => {
     const t: Tally = { goal: 0, reached: 0, n: 0 }
     for (let k = from; k < to; k++) {
       const sk = mix(seed, 9000 + k)
-      const ua = ultimateActivity(finish(play(reseed(slim, sk), ...o), sk, inner, priorPicker))
+      const ua = ultimateActivity(finish(play(reseed(slim, sk), ...o), sk, inner, la.value ? valuePicker : priorPicker))
       t.goal += goalScore(ua)
       if (ua >= TARGET) t.reached++
       t.n++
@@ -314,9 +335,9 @@ export function finish(s: GameState, seed: number, chooser: Chooser, picker: Ins
       s = pick === 'refresh' ? play(s, { type: 'refresh' }) : play(s, { type: 'selectCard', index: pick }, { type: 'confirm' })
       continue
     }
-    const { best, value } = chooser(s, mix(seed, g))
+    const { best, value, stay } = chooser(s, mix(seed, g))
     // refresh a potion hand only when nothing in it is expected to beat the current board
-    if (s.openBox === null && value <= ultimateActivity(s) && canRefresh(s)) { s = play(s, { type: 'refresh' }); continue }
+    if (s.openBox === null && value <= (stay ?? ultimateActivity(s)) && canRefresh(s)) { s = play(s, { type: 'refresh' }); continue }
     s = play(s, ...best)
   }
   return s
