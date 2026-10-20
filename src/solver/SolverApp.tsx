@@ -234,6 +234,12 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       <header className={styles.head}>
         <a className={`ghost-button ${styles.home}`} href={HOME_URL}>‹ Home</a>
         <h1 className={styles.title}>Vorax Solver</h1>
+        {/* the app offers it on the card over the game instead, each time it starts */}
+        {!desktopBridge() && (
+          <a className={styles.support} href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
+            <span aria-hidden="true">☕</span> Buy me a coffee
+          </a>
+        )}
         <details className={styles.about}>
           <summary>What can this see?</summary>
           <ul>
@@ -324,13 +330,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       </div>
 
       <Footnote className={styles.footnote} />
-      {/* the app offers it on the card over the game instead, each time it starts */}
-      {!desktopBridge() && (
-        <a className={styles.support} href={SUPPORT_URL} target="_blank" rel="noopener noreferrer">
-          <span className={styles.supportCup} aria-hidden="true">☕</span>
-          <span>Buy me a coffee</span>
-        </a>
-      )}
     </main>
   )
 }

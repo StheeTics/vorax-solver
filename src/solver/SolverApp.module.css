@@ -221,43 +221,25 @@
   color: var(--gold-hi);
 }
 
+/* in the header, top right */
 .support {
-  position: fixed;
-  z-index: 900;
-  right: 16px;
-  bottom: 16px;
+  order: 1;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
-  width: 88px;
-  height: 88px;
-  box-sizing: border-box;
-  padding: 8px;
-  border: 1px solid var(--gold-lo);
-  border-radius: 14px;
-  background: var(--bg-2);
-  color: var(--gold);
-  font-size: 12.5px;
+  gap: 6px;
+  padding: 6px 14px;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--gold) 12%, transparent);
+  color: var(--gold-hi);
+  font-size: 14px;
   font-weight: 600;
-  line-height: 1.2;
-  text-align: center;
   text-decoration: none;
-  box-shadow: 0 4px 16px rgb(0 0 0 / 0.4);
-  opacity: 0.9;
-  transition: opacity 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
-}
-
-.supportCup {
-  font-size: 28px;
-  line-height: 1;
+  white-space: nowrap;
 }
 
 .support:hover,
 .support:focus-visible {
-  opacity: 1;
-  color: var(--gold-hi);
-  border-color: var(--gold);
-  transform: translateY(-2px);
+  background: var(--gold);
+  color: var(--bg-0);
 }
