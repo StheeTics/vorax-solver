@@ -15,7 +15,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
   updated: '2026-10-20',
   supremeChance: 0.013,
   potionOffer: {
-    'Probiotic Enzyme Solution': 0.878,
+    'Probiotic Enzyme Solution': 1.3997486597499431,
     'Slough Solution': 0.878,
     'Leptomeningeal Solution': 0.878,
     'Osteolytic Ointment': 0.878,
@@ -89,13 +89,13 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.22761819169429567,
-      'Incubation Sac': 0.2552349718668658,
-      'Hyperplastic Frontal Lobe': 0.19809281398622416,
-      'Hypertrophic Pituitary': 0.2819013122111652,
-      'Adherent Metatarsals': 0.19196714962169514,
+      'Chrysalis Specimen': 0.18559048315927548,
+      'Incubation Sac': 0.1706769621911194,
+      'Hyperplastic Frontal Lobe': 0.1259363992866512,
+      'Hypertrophic Pituitary': 0.23861633549049702,
+      'Adherent Metatarsals': 0.15410638333761267,
       'Contracted Claws': 0.23310296739777267,
-      'Aberrant Sprout': 0.2556705735965299,
+      'Aberrant Sprout': 0.21044635143953558,
       'Prismatic Liver': 0.12614984117997108
     },
     advanced: {
@@ -119,9 +119,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
     }
   },
   spawnRarity: {
-    normal: 53.38983050847458,
+    normal: 46.12995975306535,
     magic: 26.606534381036962,
     rare: 15.880341364813079,
-    boss: 16.26474538496316
+    boss: 20.96270306486954
   }
 }

@@ -1,6 +1,6 @@
 {
-  "checked": 450,
-  "reproduced": 262,
+  "checked": 661,
+  "reproduced": 378,
   "missed": [
     {
       "run": "0807d9e9-2837-4ffc-9d2a-1c25516b72f8",
@@ -33,7 +33,7 @@
         "Vermicular Spinal Cord"
       ],
       "best": "Xeno-Hormone → tank 5 → tank 6",
-      "gap": 1,
+      "gap": 0.5,
       "reproduced": false
     },
     {
@@ -1126,7 +1126,7 @@
         "Hypertrophic Pituitary"
       ],
       "best": "Fresh Spinal Powder",
-      "gap": 2.5,
+      "gap": 2,
       "reproduced": false
     },
     {
@@ -1319,7 +1319,7 @@
         "Canine Teeth File"
       ],
       "best": "Xeno-Hormone → tank 3",
-      "gap": 2,
+      "gap": 2.5,
       "reproduced": false
     },
     {
@@ -1703,7 +1703,7 @@
         "Incubation Sac"
       ],
       "best": "Xeno-Hormone → tank 3 → tank 5",
-      "gap": 0.5,
+      "gap": 1,
       "reproduced": false
     },
     {
@@ -1755,8 +1755,8 @@
         "Rawhide Restraint",
         "Lady of the Plague Quarter"
       ],
-      "best": "Xeno-Hormone → tank 1 → tank 6",
-      "gap": 3,
+      "best": "Spinal Solution - Agito",
+      "gap": 3.5,
       "reproduced": false
     },
     {
@@ -1806,6 +1806,24 @@
         "Contracted Claws"
       ],
       "best": "Fresh Spinal Powder",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "7eb7bca2-fe71-4d03-a15d-779f4a83b3fa",
+      "seq": 7,
+      "round": 3,
+      "hand": [
+        "Xeno-Hormone",
+        "Hollow Spinal Solution",
+        "Xenopurge Powder"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Fouled Scraper",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Xeno-Hormone → tank 1",
       "gap": 0.5,
       "reproduced": false
     },
@@ -1907,8 +1925,8 @@
         "Aberrant Sprout",
         "Aberrant Sprout"
       ],
-      "best": "Xeno-Hormone → tank 1",
-      "gap": 2,
+      "best": "Xeno-Hormone → tank 1 → tank 3",
+      "gap": 1,
       "reproduced": false
     },
     {
@@ -2427,8 +2445,8 @@
         "Incubation Sac",
         "Black Goat Gut Suture"
       ],
-      "best": "Xeno-Hormone → tank 4 → tank 5",
-      "gap": 1,
+      "best": "Xeno-Hormone → tank 1",
+      "gap": 1.5,
       "reproduced": false
     },
     {
@@ -2446,7 +2464,7 @@
         "Tanned Leather Restraint"
       ],
       "best": "Xeno-Hormone → tank 4",
-      "gap": 3,
+      "gap": 3.5,
       "reproduced": false
     },
     {
@@ -2622,7 +2640,7 @@
         "Aberrant Sprout"
       ],
       "best": "Fresh Spinal Powder",
-      "gap": 2.5,
+      "gap": 2,
       "reproduced": false
     },
     {
@@ -2986,7 +3004,25 @@
         "Beak of the Twice-Born"
       ],
       "best": "Gray Matter Spinal Solution",
-      "gap": 1,
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "869c5c0d-64d5-428c-9728-3f77b59404c4",
+      "seq": 17,
+      "round": 8,
+      "hand": [
+        "Digestive Enzyme Solution",
+        "Spinal Solution - Agito",
+        "Slough Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Beak of the Twice-Born",
+        "Vermicular Spinal Cord"
+      ],
+      "best": "Slough Solution → tank 1 → tank 4",
+      "gap": 0.5,
       "reproduced": false
     },
     {
@@ -3210,7 +3246,7 @@
         "Aberrant Sprout"
       ],
       "best": "Compound Revitalizing Pill",
-      "gap": 2,
+      "gap": 1,
       "reproduced": false
     },
     {
@@ -3247,6 +3283,1637 @@
       ],
       "best": "Xeno-Hormone → tank 5",
       "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "aec5bdd1-3be6-4f08-af66-42599dfa8cd3",
+      "seq": 2,
+      "round": 2,
+      "hand": [
+        "Potion Kit (Small)",
+        "Twin Hormone - Pest",
+        "Digestive Enzyme Solution"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Twin Hormone - Pest → tank 2",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "2f144fbe-c2cb-47aa-88fb-1fdbb4fb437a",
+      "seq": 1,
+      "round": 6,
+      "hand": [
+        "Compound Leech Solution",
+        "Digestive Enzyme Solution",
+        "Osteogenic Powder"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Nettle Toggle",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Osteogenic Powder",
+      "gap": 4,
+      "reproduced": false
+    },
+    {
+      "run": "6afe1d0b-1fb8-4677-877c-c5d248557ac8",
+      "seq": 7,
+      "round": 4,
+      "hand": [
+        "Compound Leech Solution",
+        "Slender-Limb Powder - Pest",
+        "Insect Attractant"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Canine Teeth File"
+      ],
+      "best": "Insect Attractant",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "186c42b5-1ea8-46e4-bf59-4e17194d9af3",
+      "seq": 1,
+      "round": 2,
+      "hand": [
+        "Brain Fog Tincture",
+        "Xeno-Hormone",
+        "Anesthetic Tincture - Agito"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex"
+      ],
+      "best": "Xeno-Hormone → tank 2",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "186c42b5-1ea8-46e4-bf59-4e17194d9af3",
+      "seq": 4,
+      "round": 4,
+      "hand": [
+        "Xeno-Hormone",
+        "Digestive Enzyme Solution",
+        "Osteolytic Ointment"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Xeno-Hormone → tank 1",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "186c42b5-1ea8-46e4-bf59-4e17194d9af3",
+      "seq": 5,
+      "round": 5,
+      "hand": [
+        "Green Bile Solution",
+        "Eggshell Powder",
+        "Vivigenic Powder"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Green Bile Solution → tank 1 → tank 6",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "186c42b5-1ea8-46e4-bf59-4e17194d9af3",
+      "seq": 6,
+      "round": 6,
+      "hand": [
+        "Xeno-Hormone",
+        "Spinal Solution - Aemberon",
+        "Brain Fog Tincture"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Brain Fog Tincture",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "186c42b5-1ea8-46e4-bf59-4e17194d9af3",
+      "seq": 12,
+      "round": 9,
+      "hand": [
+        "Green Bile Solution",
+        "Osteogenic Powder",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Green Bile Solution → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "c6e73095-9c66-4f1c-b081-7c9d76637971",
+      "seq": 3,
+      "round": 3,
+      "hand": [
+        "Xenopanacea: Osteotrophy",
+        "Xenopanacea: Brood",
+        "Osteolytic Ointment"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Xenopanacea: Osteotrophy",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "c6e73095-9c66-4f1c-b081-7c9d76637971",
+      "seq": 8,
+      "round": 5,
+      "hand": [
+        "Xenopanacea: Osteotrophy",
+        "Xenopanacea: Brood",
+        "Xeno-Hormone"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Pig Iron Bone Saw",
+        "Canine Teeth File"
+      ],
+      "best": "Xenopanacea: Osteotrophy → tank 1 → tank 2",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "c6e73095-9c66-4f1c-b081-7c9d76637971",
+      "seq": 9,
+      "round": 6,
+      "hand": [
+        "Xenopanacea: Osteotrophy",
+        "Xenopanacea: Brood",
+        "Osteolytic Ointment"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Pig Iron Bone Saw",
+        "Canine Teeth File"
+      ],
+      "best": "Xenopanacea: Osteotrophy",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "c6e73095-9c66-4f1c-b081-7c9d76637971",
+      "seq": 10,
+      "round": 7,
+      "hand": [
+        "Xenopanacea: Osteotrophy",
+        "Xenopanacea: Brood",
+        "Viscous Bile Solution"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Pig Iron Bone Saw",
+        "Canine Teeth File"
+      ],
+      "best": "Xenopanacea: Osteotrophy → tank 1",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "36e9f543-5b9b-4b30-aced-d0ecbfa7cfd8",
+      "seq": 12,
+      "round": 5,
+      "hand": [
+        "Green Bile Solution",
+        "Vivigenic Powder",
+        "Fresh Spinal Powder"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Tanned Leather Restraint",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Fresh Spinal Powder",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "fb921341-7832-48c9-9813-8d7fee280ebc",
+      "seq": 1,
+      "round": 1,
+      "hand": [
+        "Bewitching Tincture",
+        "Anesthetic Tincture - Aemberon",
+        "Targeted Xeno-Hormone"
+      ],
+      "instruments": [
+        "Incubation Sac"
+      ],
+      "best": "Targeted Xeno-Hormone → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "fb921341-7832-48c9-9813-8d7fee280ebc",
+      "seq": 11,
+      "round": 5,
+      "hand": [
+        "Viviparous Hormone",
+        "Osteogenic Powder",
+        "Probiotic Enzyme Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Pig Iron Bone Saw",
+        "Beak of the Twice-Born"
+      ],
+      "best": "Viviparous Hormone",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "a108ecb8-7fb6-480d-93ba-947b42de3742",
+      "seq": 2,
+      "round": 2,
+      "hand": [
+        "Vivigenic Powder",
+        "Fresh Spinal Powder",
+        "Compound Leech Solution"
+      ],
+      "instruments": [
+        "Contracted Claws"
+      ],
+      "best": "Fresh Spinal Powder",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "a108ecb8-7fb6-480d-93ba-947b42de3742",
+      "seq": 14,
+      "round": 7,
+      "hand": [
+        "Slender-Limb Powder - Bone Sentry",
+        "Slough Solution",
+        "Hollow Spinal Solution"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Vermicular Spinal Cord",
+        "Sloughed Cortex"
+      ],
+      "best": "Slough Solution → tank 1 → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "3f4df2c5-e795-4831-87aa-24141c459be5",
+      "seq": 3,
+      "round": 3,
+      "hand": [
+        "Potion Kit (Small)",
+        "Anesthetic Tincture - Aemberon",
+        "Petrified Spinal Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Aberrant Sprout"
+      ],
+      "best": "Anesthetic Tincture - Aemberon → tank 3",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "3f4df2c5-e795-4831-87aa-24141c459be5",
+      "seq": 9,
+      "round": 5,
+      "hand": [
+        "Bewitching Tincture",
+        "Slough Solution",
+        "Viscous Bile Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Aberrant Sprout",
+        "Nettle Toggle"
+      ],
+      "best": "Viscous Bile Solution → tank 4",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "3f4df2c5-e795-4831-87aa-24141c459be5",
+      "seq": 14,
+      "round": 9,
+      "hand": [
+        "Compound Leech Solution",
+        "Eggshell Powder",
+        "Hollow Spinal Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Aberrant Sprout",
+        "Nettle Toggle"
+      ],
+      "best": "Hollow Spinal Solution → tank 1",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "8ab416df-acf4-4a47-8a07-8b2b4ca1475e",
+      "seq": 3,
+      "round": 1,
+      "hand": [
+        "Fresh Spinal Powder",
+        "Anesthetic Tincture - Agito",
+        "Compound Leech Solution"
+      ],
+      "instruments": [
+        "Contracted Claws"
+      ],
+      "best": "Fresh Spinal Powder",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "8ab416df-acf4-4a47-8a07-8b2b4ca1475e",
+      "seq": 8,
+      "round": 4,
+      "hand": [
+        "Slender-Limb Powder - Pest",
+        "Anesthetic Tincture - Aemberon",
+        "Twin Hormone - Pest"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex"
+      ],
+      "best": "Twin Hormone - Pest → tank 4",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "8ab416df-acf4-4a47-8a07-8b2b4ca1475e",
+      "seq": 12,
+      "round": 7,
+      "hand": [
+        "Xeno-Hormone",
+        "Cleansing Ointment",
+        "Eggshell Powder"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex",
+        "Pig Iron Bone Saw"
+      ],
+      "best": "Xeno-Hormone → tank 4",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "4f593dbd-007f-43a4-ad90-939fb8909d77",
+      "seq": 4,
+      "round": 3,
+      "hand": [
+        "Digestive Enzyme Solution",
+        "Fresh Spinal Powder",
+        "Potion Kit (Small)"
+      ],
+      "instruments": [
+        "Aberrant Sprout"
+      ],
+      "best": "Fresh Spinal Powder",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "2165aad3-2809-40d8-8468-c4dc382dc954",
+      "seq": 11,
+      "round": 6,
+      "hand": [
+        "Osteolytic Ointment",
+        "Xeno-Hormone",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Canine Teeth File",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Xeno-Hormone → tank 1",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "2165aad3-2809-40d8-8468-c4dc382dc954",
+      "seq": 12,
+      "round": 7,
+      "hand": [
+        "Gray Matter Spinal Solution",
+        "Fresh Spinal Powder",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Canine Teeth File",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Gray Matter Spinal Solution",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "2165aad3-2809-40d8-8468-c4dc382dc954",
+      "seq": 14,
+      "round": 9,
+      "hand": [
+        "Slender-Limb Powder - Bone Sentry",
+        "Mutagenic Powder",
+        "Eggshell Powder"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Canine Teeth File",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Eggshell Powder",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "7deafb53-5fbe-4111-b368-07d1959cfce3",
+      "seq": 7,
+      "round": 4,
+      "hand": [
+        "Spinal Solution - Aemberon",
+        "Probiotic Enzyme Solution",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Tanned Leather Restraint",
+        "Beak of the Twice-Born"
+      ],
+      "best": "Anesthetic Tincture - Aemberon → tank 3",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "7deafb53-5fbe-4111-b368-07d1959cfce3",
+      "seq": 8,
+      "round": 5,
+      "hand": [
+        "Potion Kit (Small)",
+        "Potion Kit (Large)",
+        "Twin Hormone - Bone Sentry"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Tanned Leather Restraint",
+        "Beak of the Twice-Born"
+      ],
+      "best": "Twin Hormone - Bone Sentry → tank 1",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "7deafb53-5fbe-4111-b368-07d1959cfce3",
+      "seq": 10,
+      "round": 6,
+      "hand": [
+        "Petrified Spinal Solution",
+        "Cleansing Ointment",
+        "Bewitching Tincture"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Tanned Leather Restraint",
+        "Beak of the Twice-Born"
+      ],
+      "best": "Bewitching Tincture → tank 6",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "7deafb53-5fbe-4111-b368-07d1959cfce3",
+      "seq": 11,
+      "round": 7,
+      "hand": [
+        "Vivigenic Powder",
+        "Twin Hormone - Pest",
+        "Slough Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Tanned Leather Restraint",
+        "Beak of the Twice-Born"
+      ],
+      "best": "Slough Solution → tank 1 → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "7deafb53-5fbe-4111-b368-07d1959cfce3",
+      "seq": 12,
+      "round": 8,
+      "hand": [
+        "Cleansing Ointment",
+        "Pure Leech Solution",
+        "Bewitching Tincture"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Tanned Leather Restraint",
+        "Beak of the Twice-Born"
+      ],
+      "best": "Bewitching Tincture → tank 1",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "7deafb53-5fbe-4111-b368-07d1959cfce3",
+      "seq": 13,
+      "round": 9,
+      "hand": [
+        "Anesthetic Tincture - Aemberon",
+        "Spinal Solution - Aemberon",
+        "Osteogenic Powder"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Tanned Leather Restraint",
+        "Beak of the Twice-Born"
+      ],
+      "best": "Spinal Solution - Aemberon",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "b044ba7d-4e1b-4d38-9466-e72354f881f9",
+      "seq": 16,
+      "round": 7,
+      "hand": [
+        "Viviparous Hormone",
+        "Potent Xenopurge Powder",
+        "Twin Hormone - Bone Sentry"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Clustered Eggs",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Viviparous Hormone",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "dbc0ad98-5909-485b-b393-d066376ca7c7",
+      "seq": 5,
+      "round": 4,
+      "hand": [
+        "Anesthetic Tincture - Aemberon",
+        "Xeno-Hormone",
+        "Twin Hormone - Bone Sentry"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Xeno-Hormone → tank 2",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "b5d02198-df0a-4881-8399-317d45ed85eb",
+      "seq": 1,
+      "round": 1,
+      "hand": [
+        "Viscous Bile Solution",
+        "Petrified Spinal Solution",
+        "Fresh Spinal Powder"
+      ],
+      "instruments": [
+        "Incubation Sac"
+      ],
+      "best": "Petrified Spinal Solution → tank 1",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "b5d02198-df0a-4881-8399-317d45ed85eb",
+      "seq": 6,
+      "round": 3,
+      "hand": [
+        "Slender-Limb Powder - Pest",
+        "Mutagenic Powder",
+        "Cleansing Ointment"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Mutagenic Powder → tank 1 → tank 2",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "b5d02198-df0a-4881-8399-317d45ed85eb",
+      "seq": 7,
+      "round": 4,
+      "hand": [
+        "Spinal Solution - Aemberon",
+        "Slender-Limb Powder - Pest",
+        "Twin Hormone - Pest"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Spinal Solution - Aemberon",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "b5d02198-df0a-4881-8399-317d45ed85eb",
+      "seq": 13,
+      "round": 7,
+      "hand": [
+        "Spinal Solution - Aemberon",
+        "Slender-Limb Powder - Pest",
+        "Osteogenic Powder"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Lady of the Plague Quarter",
+        "Sinew Garrote"
+      ],
+      "best": "Spinal Solution - Aemberon",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "b5d02198-df0a-4881-8399-317d45ed85eb",
+      "seq": 14,
+      "round": 8,
+      "hand": [
+        "Spinal Solution - Agito",
+        "Slender-Limb Powder - Bone Sentry",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Lady of the Plague Quarter",
+        "Sinew Garrote"
+      ],
+      "best": "Spinal Solution - Agito",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "b5d02198-df0a-4881-8399-317d45ed85eb",
+      "seq": 16,
+      "round": 9,
+      "hand": [
+        "Viscous Bile Solution",
+        "Pure Leech Solution",
+        "Leptomeningeal Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Lady of the Plague Quarter",
+        "Sinew Garrote"
+      ],
+      "best": "Viscous Bile Solution → tank 1",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "b5d02198-df0a-4881-8399-317d45ed85eb",
+      "seq": 33,
+      "round": 7,
+      "hand": [
+        "Green Bile Solution",
+        "Brain Fog Tincture",
+        "Gray Matter Spinal Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Nettle Toggle"
+      ],
+      "best": "Green Bile Solution → tank 1",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "0fc48f6e-d7c8-4957-9a14-1450c9f27194",
+      "seq": 4,
+      "round": 2,
+      "hand": [
+        "Pure Leech Solution",
+        "Digestive Enzyme Solution",
+        "Hollow Spinal Solution"
+      ],
+      "instruments": [
+        "Adherent Metatarsals",
+        "Aberrant Sprout"
+      ],
+      "best": "Digestive Enzyme Solution → tank 6",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "ced5210b-c394-40a3-9505-de06a4da1539",
+      "seq": 7,
+      "round": 4,
+      "hand": [
+        "Slender-Limb Powder - Pest",
+        "Osteogenic Powder",
+        "Spinal Solution - Aemberon"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sinew Garrote",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Slender-Limb Powder - Pest",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "ced5210b-c394-40a3-9505-de06a4da1539",
+      "seq": 8,
+      "round": 5,
+      "hand": [
+        "Xeno-Hormone",
+        "Osteogenic Powder",
+        "Anesthetic Tincture - Agito"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sinew Garrote",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Xeno-Hormone → tank 2",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "a20a3878-7f99-48be-ad28-646fd8667490",
+      "seq": 5,
+      "round": 3,
+      "hand": [
+        "Probiotic Enzyme Solution",
+        "Xenopurge Powder",
+        "Viviparous Hormone"
+      ],
+      "instruments": [
+        "Chrysalis Specimen"
+      ],
+      "best": "Viviparous Hormone",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "50be2dc4-b0cd-4cb3-8104-ce763d96b4f6",
+      "seq": 13,
+      "round": 5,
+      "hand": [
+        "Gray Matter Spinal Solution",
+        "Mutagenic Powder",
+        "Viviparous Hormone"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Prismatic Liver",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Gray Matter Spinal Solution",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "50be2dc4-b0cd-4cb3-8104-ce763d96b4f6",
+      "seq": 14,
+      "round": 6,
+      "hand": [
+        "Anesthetic Tincture - Aemberon",
+        "Twin Hormone - Bone Sentry",
+        "Bewitching Tincture"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Prismatic Liver",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Bewitching Tincture → tank 4",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "50be2dc4-b0cd-4cb3-8104-ce763d96b4f6",
+      "seq": 15,
+      "round": 7,
+      "hand": [
+        "Twin Hormone - Bone Sentry",
+        "Potent Xenopurge Powder",
+        "Green Bile Solution"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Prismatic Liver",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Green Bile Solution → tank 1 → tank 4",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "50be2dc4-b0cd-4cb3-8104-ce763d96b4f6",
+      "seq": 16,
+      "round": 8,
+      "hand": [
+        "Slender-Limb Powder - Bone Sentry",
+        "Spinal Solution - Agito",
+        "Targeted Xeno-Hormone"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Prismatic Liver",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Spinal Solution - Agito",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "50be2dc4-b0cd-4cb3-8104-ce763d96b4f6",
+      "seq": 17,
+      "round": 9,
+      "hand": [
+        "Hollow Spinal Solution",
+        "Slender-Limb Powder - Pest",
+        "Compound Leech Solution"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe",
+        "Prismatic Liver",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Hollow Spinal Solution → tank 3",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "50be2dc4-b0cd-4cb3-8104-ce763d96b4f6",
+      "seq": 36,
+      "round": 7,
+      "hand": [
+        "Spinal Solution - Aemberon",
+        "Targeted Xeno-Hormone",
+        "Xeno-Hormone"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Vermicular Spinal Cord",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Targeted Xeno-Hormone → tank 3",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "50be2dc4-b0cd-4cb3-8104-ce763d96b4f6",
+      "seq": 38,
+      "round": 9,
+      "hand": [
+        "Mutagenic Powder",
+        "Gray Matter Spinal Solution",
+        "Brain Fog Tincture"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Vermicular Spinal Cord",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Mutagenic Powder → tank 3",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "5b9ced29-16f0-44d6-9514-097fb348f7f0",
+      "seq": 14,
+      "round": 7,
+      "hand": [
+        "Targeted Xeno-Hormone",
+        "Green Bile Solution",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Canine Teeth File",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Green Bile Solution → tank 3",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "5b9ced29-16f0-44d6-9514-097fb348f7f0",
+      "seq": 15,
+      "round": 8,
+      "hand": [
+        "Digestive Enzyme Solution",
+        "Slough Solution",
+        "Viscous Bile Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Canine Teeth File",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Viscous Bile Solution → tank 4",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "ae2c631a-e543-44db-bcc2-06ff4c6a14ef",
+      "seq": 4,
+      "round": 2,
+      "hand": [
+        "Osteolytic Ointment",
+        "Vivigenic Powder",
+        "Xenopurge Powder"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Pig Iron Bone Saw"
+      ],
+      "best": "Osteolytic Ointment",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "ae2c631a-e543-44db-bcc2-06ff4c6a14ef",
+      "seq": 8,
+      "round": 4,
+      "hand": [
+        "Hollow Spinal Solution",
+        "Slender-Limb Powder - Bone Sentry",
+        "Xeno-Hormone"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Pig Iron Bone Saw",
+        "Canine Teeth File"
+      ],
+      "best": "Hollow Spinal Solution → tank 2",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "ae2c631a-e543-44db-bcc2-06ff4c6a14ef",
+      "seq": 12,
+      "round": 8,
+      "hand": [
+        "Twin Hormone - Pest",
+        "Hollow Spinal Solution",
+        "Xenopurge Powder"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Pig Iron Bone Saw",
+        "Canine Teeth File"
+      ],
+      "best": "Twin Hormone - Pest → tank 1",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "ae2c631a-e543-44db-bcc2-06ff4c6a14ef",
+      "seq": 13,
+      "round": 9,
+      "hand": [
+        "Xenopurge Powder",
+        "Insect Attractant",
+        "Vivigenic Powder"
+      ],
+      "instruments": [
+        "Chrysalis Specimen",
+        "Pig Iron Bone Saw",
+        "Canine Teeth File"
+      ],
+      "best": "Insect Attractant",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "74cd9649-7ac2-4740-a15d-d43f3e52da49",
+      "seq": 1,
+      "round": 1,
+      "hand": [
+        "Twin Hormone - Pest",
+        "Mutagenic Powder",
+        "Targeted Xeno-Hormone"
+      ],
+      "instruments": [
+        "Contracted Claws"
+      ],
+      "best": "Twin Hormone - Pest → tank 1",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "74cd9649-7ac2-4740-a15d-d43f3e52da49",
+      "seq": 9,
+      "round": 7,
+      "hand": [
+        "Anesthetic Tincture - Agito",
+        "Green Bile Solution",
+        "Gray Matter Spinal Solution"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Black Goat Gut Suture",
+        "Pig Iron Bone Saw"
+      ],
+      "best": "Anesthetic Tincture - Agito → tank 6",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "101e4f3b-466e-4ba6-9b43-70bece457ac6",
+      "seq": 5,
+      "round": 5,
+      "hand": [
+        "Spinal Solution - Aemberon",
+        "Xeno-Hormone",
+        "Potion Kit (Large)"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Sloughed Cortex",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Xeno-Hormone → tank 5",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "101e4f3b-466e-4ba6-9b43-70bece457ac6",
+      "seq": 6,
+      "round": 6,
+      "hand": [
+        "Eggshell Powder",
+        "Viviparous Hormone",
+        "Leptomeningeal Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Sloughed Cortex",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Eggshell Powder",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "101e4f3b-466e-4ba6-9b43-70bece457ac6",
+      "seq": 10,
+      "round": 8,
+      "hand": [
+        "Twin Hormone - Pest",
+        "Bewitching Tincture",
+        "Hollow Spinal Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Sloughed Cortex",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Twin Hormone - Pest → tank 1",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "b5b42f51-38d0-4f72-bc53-6709520b5d67",
+      "seq": 10,
+      "round": 5,
+      "hand": [
+        "Anesthetic Tincture - Aemberon",
+        "Spinal Solution - Agito",
+        "Probiotic Enzyme Solution"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Beak of the Twice-Born",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Anesthetic Tincture - Aemberon → tank 2",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "b5b42f51-38d0-4f72-bc53-6709520b5d67",
+      "seq": 13,
+      "round": 7,
+      "hand": [
+        "Green Bile Solution",
+        "Slender-Limb Powder - Bone Sentry",
+        "Spinal Solution - Aemberon"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Beak of the Twice-Born",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Slender-Limb Powder - Bone Sentry",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "b5b42f51-38d0-4f72-bc53-6709520b5d67",
+      "seq": 14,
+      "round": 8,
+      "hand": [
+        "Mutagenic Powder",
+        "Compound Leech Solution",
+        "Potent Xenopurge Powder"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Beak of the Twice-Born",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Mutagenic Powder → tank 2 → tank 4",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "b5b42f51-38d0-4f72-bc53-6709520b5d67",
+      "seq": 15,
+      "round": 9,
+      "hand": [
+        "Spinal Solution - Aemberon",
+        "Anesthetic Tincture - Agito",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Beak of the Twice-Born",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Anesthetic Tincture - Agito → tank 4",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "517b85b6-ec75-46f7-abe1-bdfcca1f04b4",
+      "seq": 7,
+      "round": 4,
+      "hand": [
+        "Gray Matter Spinal Solution",
+        "Osteogenic Powder",
+        "Potent Xenopurge Powder"
+      ],
+      "instruments": [
+        "Hyperplastic Frontal Lobe"
+      ],
+      "best": "Gray Matter Spinal Solution",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "2a29eefd-ae9a-4b6b-8b28-d615b55f3d86",
+      "seq": 10,
+      "round": 4,
+      "hand": [
+        "Slough Solution",
+        "Cleansing Ointment",
+        "Xenopurge Powder"
+      ],
+      "instruments": [
+        "Pig Iron Bone Saw"
+      ],
+      "best": "Cleansing Ointment → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "2a29eefd-ae9a-4b6b-8b28-d615b55f3d86",
+      "seq": 11,
+      "round": 5,
+      "hand": [
+        "Xenopurge Powder",
+        "Leptomeningeal Solution",
+        "Compound Leech Solution"
+      ],
+      "instruments": [
+        "Pig Iron Bone Saw"
+      ],
+      "best": "Compound Leech Solution → tank 1",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "2a29eefd-ae9a-4b6b-8b28-d615b55f3d86",
+      "seq": 12,
+      "round": 6,
+      "hand": [
+        "Eggshell Powder",
+        "Twin Hormone - Pest",
+        "Bewitching Tincture"
+      ],
+      "instruments": [
+        "Pig Iron Bone Saw"
+      ],
+      "best": "Bewitching Tincture → tank 1",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "2a29eefd-ae9a-4b6b-8b28-d615b55f3d86",
+      "seq": 16,
+      "round": 7,
+      "hand": [
+        "Probiotic Enzyme Solution",
+        "Insect Attractant",
+        "Slough Solution"
+      ],
+      "instruments": [
+        "Pig Iron Bone Saw",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Insect Attractant",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "2a29eefd-ae9a-4b6b-8b28-d615b55f3d86",
+      "seq": 17,
+      "round": 8,
+      "hand": [
+        "Digestive Enzyme Solution",
+        "Targeted Xeno-Hormone",
+        "Twin Hormone - Pest"
+      ],
+      "instruments": [
+        "Pig Iron Bone Saw",
+        "Tanned Leather Restraint"
+      ],
+      "best": "Digestive Enzyme Solution → tank 1",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "27d32823-7b50-413f-b551-67a01557b03f",
+      "seq": 3,
+      "round": 2,
+      "hand": [
+        "Anesthetic Tincture - Agito",
+        "Osteogenic Powder",
+        "Xeno-Hormone"
+      ],
+      "instruments": [
+        "Aberrant Sprout"
+      ],
+      "best": "Xeno-Hormone → tank 3",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "27d32823-7b50-413f-b551-67a01557b03f",
+      "seq": 17,
+      "round": 9,
+      "hand": [
+        "Green Bile Solution",
+        "Spinal Solution - Aemberon",
+        "Hollow Spinal Solution"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Nettle Toggle",
+        "Aberrant Stinger"
+      ],
+      "best": "Green Bile Solution → tank 2",
+      "gap": 5,
+      "reproduced": false
+    },
+    {
+      "run": "e73e65f5-1934-44e0-9be8-d1414af6f3c2",
+      "seq": 10,
+      "round": 5,
+      "hand": [
+        "Anesthetic Tincture - Agito",
+        "Osteogenic Powder",
+        "Slender-Limb Powder - Pest"
+      ],
+      "instruments": [
+        "Adherent Metatarsals",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Osteogenic Powder",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "20872f42-cafa-4a33-881a-c27e274ea0bb",
+      "seq": 4,
+      "round": 2,
+      "hand": [
+        "Twin Hormone - Bone Sentry",
+        "Green Bile Solution",
+        "Viviparous Hormone"
+      ],
+      "instruments": [
+        "Sinew Garrote",
+        "Canine Teeth File",
+        "Incubation Sac"
+      ],
+      "best": "Viviparous Hormone",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "20872f42-cafa-4a33-881a-c27e274ea0bb",
+      "seq": 6,
+      "round": 3,
+      "hand": [
+        "Potent Xenopurge Powder",
+        "Anesthetic Tincture - Agito",
+        "Potion Kit (Large)"
+      ],
+      "instruments": [
+        "Sinew Garrote",
+        "Canine Teeth File",
+        "Incubation Sac"
+      ],
+      "best": "Anesthetic Tincture - Agito → tank 1",
+      "gap": 3,
+      "reproduced": false
+    },
+    {
+      "run": "20872f42-cafa-4a33-881a-c27e274ea0bb",
+      "seq": 8,
+      "round": 4,
+      "hand": [
+        "Osteogenic Powder",
+        "Vivigenic Powder",
+        "Spinal Solution - Aemberon"
+      ],
+      "instruments": [
+        "Sinew Garrote",
+        "Canine Teeth File",
+        "Incubation Sac"
+      ],
+      "best": "Vivigenic Powder",
+      "gap": 4,
+      "reproduced": false
+    },
+    {
+      "run": "20872f42-cafa-4a33-881a-c27e274ea0bb",
+      "seq": 12,
+      "round": 7,
+      "hand": [
+        "Viscous Bile Solution",
+        "Hollow Spinal Solution",
+        "Viviparous Hormone"
+      ],
+      "instruments": [
+        "Sinew Garrote",
+        "Canine Teeth File",
+        "Incubation Sac"
+      ],
+      "best": "Viscous Bile Solution → tank 3",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "20872f42-cafa-4a33-881a-c27e274ea0bb",
+      "seq": 13,
+      "round": 8,
+      "hand": [
+        "Xeno-Hormone",
+        "Twin Hormone - Bone Sentry",
+        "Osteogenic Powder"
+      ],
+      "instruments": [
+        "Sinew Garrote",
+        "Canine Teeth File",
+        "Incubation Sac"
+      ],
+      "best": "Xeno-Hormone → tank 1 → tank 6",
+      "gap": 3.5,
+      "reproduced": false
+    },
+    {
+      "run": "20872f42-cafa-4a33-881a-c27e274ea0bb",
+      "seq": 14,
+      "round": 9,
+      "hand": [
+        "Twin Hormone - Pest",
+        "Slough Solution",
+        "Spinal Solution - Aemberon"
+      ],
+      "instruments": [
+        "Sinew Garrote",
+        "Canine Teeth File",
+        "Incubation Sac"
+      ],
+      "best": "Slough Solution → tank 1 → tank 5",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "056e6719-fc32-4e76-899d-7a23a6fb7933",
+      "seq": 5,
+      "round": 5,
+      "hand": [
+        "Viviparous Hormone",
+        "Targeted Xeno-Hormone",
+        "Vivigenic Powder"
+      ],
+      "instruments": [
+        "Vermicular Spinal Cord",
+        "Vermicular Spinal Cord",
+        "Black Goat Gut Suture"
+      ],
+      "best": "Viviparous Hormone",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "c3a27a05-5a04-4d6d-a3e2-76f05e623732",
+      "seq": 12,
+      "round": 6,
+      "hand": [
+        "Bewitching Tincture",
+        "Compound Leech Solution",
+        "Xeno-Hormone"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Vermicular Spinal Cord",
+        "Nettle Toggle"
+      ],
+      "best": "Xeno-Hormone → tank 2",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "c3a27a05-5a04-4d6d-a3e2-76f05e623732",
+      "seq": 15,
+      "round": 8,
+      "hand": [
+        "Petrified Spinal Solution",
+        "Green Bile Solution",
+        "Targeted Xeno-Hormone"
+      ],
+      "instruments": [
+        "Aberrant Sprout",
+        "Vermicular Spinal Cord",
+        "Nettle Toggle"
+      ],
+      "best": "Targeted Xeno-Hormone → tank 5",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "8c761b0f-a864-4720-a9f8-d064a94d58fe",
+      "seq": 8,
+      "round": 6,
+      "hand": [
+        "Slender-Limb Powder - Bone Sentry",
+        "Green Bile Solution",
+        "Potion Kit (Large)"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex"
+      ],
+      "best": "Green Bile Solution → tank 1 → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "8c761b0f-a864-4720-a9f8-d064a94d58fe",
+      "seq": 10,
+      "round": 7,
+      "hand": [
+        "Anesthetic Tincture - Agito",
+        "Xeno-Hormone",
+        "Osteogenic Powder"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex",
+        "Fouled Scraper"
+      ],
+      "best": "Xeno-Hormone → tank 3 → tank 4",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "8c761b0f-a864-4720-a9f8-d064a94d58fe",
+      "seq": 12,
+      "round": 9,
+      "hand": [
+        "Viscous Bile Solution",
+        "Xenopurge Powder",
+        "Twin Hormone - Pest"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sloughed Cortex",
+        "Fouled Scraper"
+      ],
+      "best": "Viscous Bile Solution → tank 2",
+      "gap": 0.5,
+      "reproduced": false
+    },
+    {
+      "run": "c4c6ab39-426a-4dd9-bc5a-37c2f852f573",
+      "seq": 12,
+      "round": 5,
+      "hand": [
+        "Eggshell Powder",
+        "Gray Matter Spinal Solution",
+        "Slough Solution"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Two-Inch Skull Nail",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Slough Solution → tank 1 → tank 5",
+      "gap": 1.5,
+      "reproduced": false
+    },
+    {
+      "run": "c4c6ab39-426a-4dd9-bc5a-37c2f852f573",
+      "seq": 13,
+      "round": 6,
+      "hand": [
+        "Xeno-Hormone",
+        "Gray Matter Spinal Solution",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Two-Inch Skull Nail",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Xeno-Hormone → tank 4",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "c4c6ab39-426a-4dd9-bc5a-37c2f852f573",
+      "seq": 18,
+      "round": 9,
+      "hand": [
+        "Compound Leech Solution",
+        "Brain Fog Tincture",
+        "Slender-Limb Powder - Bone Sentry"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Two-Inch Skull Nail",
+        "Lady of the Plague Quarter"
+      ],
+      "best": "Slender-Limb Powder - Bone Sentry",
+      "gap": 2,
+      "reproduced": false
+    },
+    {
+      "run": "1d29d4e9-bfcc-4568-8ef2-4bb7b3153d4f",
+      "seq": 14,
+      "round": 7,
+      "hand": [
+        "Hollow Spinal Solution",
+        "Bewitching Tincture",
+        "Petrified Spinal Solution"
+      ],
+      "instruments": [
+        "Contracted Claws",
+        "Sinew Garrote",
+        "Fouled Scraper"
+      ],
+      "best": "Hollow Spinal Solution → tank 3",
+      "gap": 0.5,
       "reproduced": false
     }
   ]
