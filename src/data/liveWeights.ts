@@ -34,7 +34,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Vivigenic Powder': 1,
     'Potent Xenopurge Powder': 1,
     'Xenopurge Powder': 1,
-    'Pure Leech Solution': 1,
+    'Pure Leech Solution': 0.5,
     'Bewitching Tincture': 1,
     'Mutagenic Powder': 1,
     'Viscous Bile Solution': 1,
@@ -94,9 +94,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Hyperplastic Frontal Lobe': 0.33,
       'Hypertrophic Pituitary': 0.41978548075484845,
       'Adherent Metatarsals': 0.25,
-      'Contracted Claws': 0.4722586658492045,
+      'Contracted Claws': 0.33014537268615235,
       'Aberrant Sprout': 0.2556705735965299,
-      'Prismatic Liver': 0.300611885958087
+      'Prismatic Liver': 0.18865449867780135
     },
     advanced: {
       'Clustered Eggs': 1,
