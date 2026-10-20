@@ -12,7 +12,7 @@ export interface LiveWeights {
 }
 
 export const LIVE_WEIGHTS: LiveWeights = {
-  updated: '2026-10-19',
+  updated: '2026-10-20',
   supremeChance: 0.013,
   potionOffer: {
     'Probiotic Enzyme Solution': 0.878,
@@ -95,7 +95,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Hypertrophic Pituitary': 0.41978548075484845,
       'Adherent Metatarsals': 0.25,
       'Contracted Claws': 0.4722586658492045,
-      'Aberrant Sprout': 0.37972027699968885,
+      'Aberrant Sprout': 0.2556705735965299,
       'Prismatic Liver': 0.300611885958087
     },
     advanced: {
@@ -120,7 +120,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   spawnRarity: {
     normal: 53.38983050847458,
-    magic: 32.507605388961316,
+    magic: 26.606534381036962,
     rare: 11.864406779661017,
     boss: 19.420127894704166
   }

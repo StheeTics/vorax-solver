@@ -1,6 +1,6 @@
 {
-  "checked": 58,
-  "reproduced": 42,
+  "checked": 63,
+  "reproduced": 44,
   "missed": [
     {
       "run": "0807d9e9-2837-4ffc-9d2a-1c25516b72f8",
@@ -281,6 +281,58 @@
         "Lady of the Plague Quarter"
       ],
       "best": "Hollow Spinal Solution → tank 1",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "bc01cb0d-0ddc-414a-ab60-2348a1f9d937",
+      "seq": 2,
+      "round": 1,
+      "hand": [
+        "Twin Hormone - Bone Sentry",
+        "Targeted Xeno-Hormone",
+        "Twin Hormone - Pest"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Incubation Sac"
+      ],
+      "best": "Twin Hormone - Pest → tank 2",
+      "gap": 2.5,
+      "reproduced": false
+    },
+    {
+      "run": "5e735bed-09a2-449c-a12b-7751091c5751",
+      "seq": 3,
+      "round": 3,
+      "hand": [
+        "Xeno-Hormone",
+        "Potent Xenopurge Powder",
+        "Rare Potion Kit (Small)"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Incubation Sac"
+      ],
+      "best": "Xeno-Hormone → tank 1",
+      "gap": 1,
+      "reproduced": false
+    },
+    {
+      "run": "5e735bed-09a2-449c-a12b-7751091c5751",
+      "seq": 7,
+      "round": 5,
+      "hand": [
+        "Hollow Spinal Solution",
+        "Xeno-Hormone",
+        "Anesthetic Tincture - Aemberon"
+      ],
+      "instruments": [
+        "Incubation Sac",
+        "Incubation Sac",
+        "Pig Iron Bone Saw"
+      ],
+      "best": "Xeno-Hormone → tank 1",
       "gap": 1,
       "reproduced": false
     }
