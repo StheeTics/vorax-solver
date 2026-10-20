@@ -89,17 +89,17 @@
   outline: none;
 }
 
-.wip {
+.news {
   margin: -4px 0 0;
   padding-left: 10px;
-  border-left: 3px solid var(--keyword);
+  border-left: 3px solid var(--good);
   color: var(--text-dim);
   font-size: 13.5px;
   line-height: 1.45;
 }
 
-.wip strong {
-  color: var(--keyword);
+.news strong {
+  color: var(--good);
 }
 
 .unknownCard {

@@ -22,13 +22,11 @@ it('there is only Live: no Screenshot or Manual mode to choose', () => {
   expect(screen.queryByText('Screenshot')).toBeNull()
 })
 
-it('says plainly that it is a work in progress that playing helps improve', () => {
+it('says the advice was updated and what it gained', () => {
   render(<SolverApp />)
-  const note = screen.getByRole('note', { name: 'Work in progress' })
-  expect(note.textContent).toMatch(/work in progress/i)
-  expect(note.textContent).toMatch(/odds/i)
-  expect(note.textContent).toMatch(/instruments/i)
-  expect(note.textContent).toMatch(/improve/i)
+  const note = screen.getByRole('note', { name: 'Solver updated' })
+  expect(note.textContent).toBe('Updated Oct 20: smarter, faster advice. In simulated games, it now reaches 950,000 about 10% more often.')
+  expect(screen.queryByRole('note', { name: 'Work in progress' })).toBeNull()
 })
 
 

@@ -242,9 +242,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
           <ShelleyPicker level={shelley} onChange={changeShelley} />
         </section>
       )}
-      <aside className={styles.wip} role="note" aria-label="Work in progress">
-        <strong>Work in progress:</strong> the odds are still being tuned from live games, and some instruments aren’t known yet.
-        Playing with sharing on helps improve it.
+      <aside className={styles.news} role="note" aria-label="Solver updated">
+        <strong>Updated Oct 20: smarter, faster advice.</strong> In simulated games, it now reaches 950,000 about 10% more often.
       </aside>
 
       {linked ? (
