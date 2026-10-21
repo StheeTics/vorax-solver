@@ -46,6 +46,8 @@ export interface Reading {
   handPending?: true
   /** with handPending: how many cards the hand holds (5 from a Potion Kit) */
   handSize?: 3 | 5
+  /** the game's interface scale it was read at, when not 1 (see layout.ts) */
+  ui?: number
   debug?: ReadDebug
 }
 

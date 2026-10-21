@@ -2,7 +2,7 @@
 import type { ScreenState } from '@/strategy/advisor'
 import { emptyState, type FieldRead, type Problem, type Reading } from '../types'
 import type { ScanData } from './data'
-import { layout } from './layout'
+import { layout, UI_SCALES } from './layout'
 import { gray, type ArtFeature, type Img } from './pixels'
 import { readText } from './digits'
 import { readTank } from './tanks'
@@ -17,9 +17,26 @@ export type LocalRefs = Record<string, ArtFeature[]>
 
 /** pictures: false leaves the cards to their printed names, read afterwards (titles.ts): their pictures are
  *  most of the work, and needed only for a name that can't be read. */
-export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, { pictures = true }: { pictures?: boolean } = {}): Reading {
+export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, options: { pictures?: boolean } = {}): Reading {
+  // the interface scale that read last is tried first; when the round can't be read, the others are
+  const first = scanAt(captured, data, local, options, lastUi)
+  // a picture that isn't the board, or a card mid-flight, isn't read better at another scale
+  if (first.fields.round?.sure || first.problems.some(p => p.kind === 'animating' || p.kind === 'notFound')) return first
+  for (const ui of UI_SCALES.filter(u => u !== lastUi)) {
+    const r = scanAt(captured, data, local, options, ui)
+    if (r.fields.round?.sure) {
+      lastUi = ui
+      return r
+    }
+  }
+  return first
+}
+
+let lastUi = 1
+
+function scanAt(captured: Img, data: ScanData, local: LocalRefs, { pictures = true }: { pictures?: boolean }, ui: number): Reading {
   // read with the colours a normal capture has, whatever HDR or gamma this PC captures with
-  const l = layout(captured)
+  const l = layout(captured, ui)
   const colours = normalColours(captured, normal, readAreas(l))
   const img = colours.img
   const g = gray(img)
@@ -62,5 +79,5 @@ export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, { pic
   const instrumentRanks = inst.ranks
 
   for (const [k, f] of Object.entries(fields)) if (!f.sure && /^tank\d\.(activity|quantity)$/.test(k) && !problems.some(p => p.kind === 'unreadable' && p.field === k)) problems.push({ kind: 'unreadable', field: k })
-  return { state, fields, problems, frame, debug: { off: Math.round(colours.off * 1000) / 1000, corrected: colours.corrected, tanks: tanks.map(t => t.debug) }, instrumentRanks, iconsKnown: inst.known, handRanks: hand.ranks, ...(hand.ranks ? {} : { handPending: true as const, handSize: hand.phase === 'protocol' ? 3 : fanSize(img, l) }) }
+  return { state, fields, problems, frame, ...(ui !== 1 ? { ui } : {}), debug: { off: Math.round(colours.off * 1000) / 1000, corrected: colours.corrected, tanks: tanks.map(t => t.debug) }, instrumentRanks, iconsKnown: inst.known, handRanks: hand.ranks, ...(hand.ranks ? {} : { handPending: true as const, handSize: hand.phase === 'protocol' ? 3 : fanSize(img, l) }) }
 }

@@ -189,3 +189,19 @@ it('icons players taught (learnedIcons.json) are read like the built-in ones', a
   for (const [name, vs] of Object.entries(learned)) for (const v of vs) expect(icons[name]).toContainEqual(v)
   expect(icons.Foo).toEqual([[1]])
 })
+
+// issue #12: 2560x1440 with the game's interface at 125% (Windows' display scale or the game's): every panel
+// and card larger, the tanks where they were
+describe('an interface scaled to 125%', () => {
+  const r = scan(decodePng(readFileSync('tests/fixtures/frames/ui-125.png')), data)
+  it('is found, and the round, the phase and the cards read', () => {
+    expect(r.ui).toBe(1.25)
+    expect(r.state.round).toBe(5)
+    expect(r.fields.round.sure).toBe(true)
+    expect(r.state.phase).toBe('potion')
+    expect(r.state.hand).toEqual(['Hollow Spinal Solution', 'Mutagenic Powder', 'Eggshell Powder'])
+  })
+  it('reads the tanks clear of the panels', () => {
+    expect(r.state.tanks.slice(1, 3).map(t => t && [t.activity, t.quantity])).toEqual([[66, 166], [82, 186]])
+  })
+})

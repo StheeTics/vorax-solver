@@ -53,10 +53,10 @@ export function useScan(textReader: () => Promise<ReadText | null> = browserText
   )
 
   const slots = useCallback(
-    (img: ImageData, local: LocalRefs): Pictures =>
+    (img: ImageData, local: LocalRefs, ui?: number): Pictures =>
       async (phase: HandPhase, size: number, which: number[]) => {
-        if (worker.current) return ask<Record<number, PictureRead>>({ kind: 'slots', img, phase, size, slots: which, local })
-        const { fields, problems, ranks } = readSlots(img, layout(img), size, phase, which, await loadData(), local)
+        if (worker.current) return ask<Record<number, PictureRead>>({ kind: 'slots', img, phase, size, slots: which, local, ui })
+        const { fields, problems, ranks } = readSlots(img, layout(img, ui), size, phase, which, await loadData(), local)
         return Object.fromEntries(which.map(j => [j, { ranks: ranks[j], field: fields[`hand${j}`], unknown: problems.some(p => p.kind === 'unknownArt' && p.field === `hand${j}`) }]))
       },
     [ask],
@@ -69,7 +69,7 @@ export function useScan(textReader: () => Promise<ReadText | null> = browserText
       const t0 = Date.now()
       const board = await pixels(img, trigger, local, false)
       const t1 = Date.now()
-      const reading = await readTitles(img, board, readText, slots(img, local))
+      const reading = await readTitles(img, board, readText, slots(img, local, board.ui))
       console.info(`[timing] board pixels ${t1 - t0} ms, card names ${Date.now() - t1} ms (${img.width}x${img.height})`)
       return reading
     },

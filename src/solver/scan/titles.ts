@@ -101,7 +101,7 @@ const PHASES: HandPhase[] = ['potion', 'instrument', 'protocol']
 export async function readTitles(img: Img, reading: Reading, readText: ReadText, pictures?: Pictures): Promise<Reading> {
   const read = reading.handRanks?.length ?? 0
   if ((!read && !reading.handPending) || reading.problems.some(p => p.kind === 'notFound' || p.kind === 'animating')) return reading
-  const l = layout(img)
+  const l = layout(img, reading.ui)
   const header = reading.state.phase
   const phases: HandPhase[] = reading.fields.phase?.sure ? [header] : PHASES
   const titles = async (size: number) => {

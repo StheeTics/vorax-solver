@@ -65,7 +65,7 @@ export const cardFace = (c: CardPos, k: number): Rect => ({ x: c.cx - (CARD_FACE
 export interface Layout {
   width: number
   height: number
-  /** pixels per reference pixel */
+  /** pixels per reference pixel of the interface */
   k: number
   tankCx: number[]
   icon: Rect[]
@@ -85,13 +85,25 @@ export interface Layout {
   instrumentIcon: Rect[]
 }
 
-export function layout(frame: { width: number; height: number }): Layout {
+/** The game's interface scale: Windows' display scale (or the game's own) enlarges every panel, card and label
+ *  from where it's anchored, while the 3D tanks stay put (issue #12: 125% at 2560x1440). */
+export const UI_SCALES = [1, 1.25, 1.5, 1.75, 2]
+/** The tanks' labels grow about their total's row. */
+const LABEL_MID = 542
+
+export function layout(frame: { width: number; height: number }, ui = 1): Layout {
   const { width, height } = frame
-  const k = height / REF_H
+  const s = height / REF_H
+  const k = s * ui
   const cx = width / 2
-  const band = (x: number, y: [number, number] | number[]) => ({ x: x - LABEL_HALF_W * k, y: y[0] * k, w: 2 * LABEL_HALF_W * k, h: (y[1] - y[0]) * k })
+  /** a y from the bottom edge, from the middle, and in a tank's label */
+  const bottom = (y: number) => (REF_H - (REF_H - y) * ui) * s
+  const middle = (y: number) => (REF_H / 2 + (y - REF_H / 2) * ui) * s
+  const label = (y: number) => (LABEL_MID + (y - LABEL_MID) * ui) * s
+  // the labels' text grows, but not the space between tanks: a wider band would take in the next label
+  const band = (x: number, y: [number, number] | number[]) => ({ x: x - LABEL_HALF_W * s, y: label(y[0]), w: 2 * LABEL_HALF_W * s, h: (y[1] - y[0]) * k })
   const scene = tankScene(width / height)
-  const tankCx = scene.x.map(x => cx + x * k)
+  const tankCx = scene.x.map(x => cx + x * s)
   const cardCx = [0, 1, 2].map(j => cx + (CARD_X0 + CARD_PITCH * j) * k)
   const instrumentCx = [0, 1, 2, 3].map(j => width - (INSTRUMENT.right + INSTRUMENT.pitch * j) * k)
   return {
@@ -99,17 +111,17 @@ export function layout(frame: { width: number; height: number }): Layout {
     height,
     k,
     tankCx,
-    icon: tankCx.map(x => ({ x: x - (scene.iconSize / 2) * k, y: (scene.icon - scene.iconSize / 2) * k, w: scene.iconSize * k, h: scene.iconSize * k })),
+    icon: tankCx.map(x => ({ x: x - (scene.iconSize / 2) * k, y: label(scene.icon) - (scene.iconSize / 2) * k, w: scene.iconSize * k, h: scene.iconSize * k })),
     nameBand: tankCx.map(x => band(x, scene.name)),
     totalBand: tankCx.map(x => band(x, scene.total)),
     aqBand: tankCx.map(x => band(x, scene.aq)),
-    cardArt: cardCx.map(x => ({ x: x - (CARD_ART.w / 2) * k, y: CARD_ART.y * k, w: CARD_ART.w * k, h: CARD_ART.h * k })),
-    cardFace: cardCx.map(x => ({ x: x - (CARD_FACE.w / 2) * k, y: CARD_FACE.y * k, w: CARD_FACE.w * k, h: CARD_FACE.h * k })),
-    cards: cardCx.map((x, j) => ({ cx: x + CARD_SHIFT[j].x * k, cy: (CARD_CY + CARD_SHIFT[j].y) * k, angle: CARD_TILT[j] })),
-    hand5: HAND5.x.map((x, j) => ({ cx: cx + x * k, cy: HAND5.y[j] * k, angle: HAND5.tilt[j] })),
-    header: { x: cx + HEADER.x * k, y: HEADER.y * k, w: HEADER.w * k, h: HEADER.h * k },
-    refresh: { x: cx + REFRESH.x * k, y: REFRESH.y * k, w: REFRESH.w * k, h: REFRESH.h * k },
-    round: { x: ROUND.x * k, y: ROUND.y * k, w: ROUND.w * k, h: ROUND.h * k },
+    cardArt: cardCx.map(x => ({ x: x - (CARD_ART.w / 2) * k, y: bottom(CARD_ART.y), w: CARD_ART.w * k, h: CARD_ART.h * k })),
+    cardFace: cardCx.map(x => ({ x: x - (CARD_FACE.w / 2) * k, y: bottom(CARD_FACE.y), w: CARD_FACE.w * k, h: CARD_FACE.h * k })),
+    cards: cardCx.map((x, j) => ({ cx: x + CARD_SHIFT[j].x * k, cy: bottom(CARD_CY + CARD_SHIFT[j].y), angle: CARD_TILT[j] })),
+    hand5: HAND5.x.map((x, j) => ({ cx: cx + x * k, cy: bottom(HAND5.y[j]), angle: HAND5.tilt[j] })),
+    header: { x: cx + HEADER.x * k, y: bottom(HEADER.y), w: HEADER.w * k, h: HEADER.h * k },
+    refresh: { x: cx + REFRESH.x * k, y: bottom(REFRESH.y), w: REFRESH.w * k, h: REFRESH.h * k },
+    round: { x: ROUND.x * k, y: middle(ROUND.y), w: ROUND.w * k, h: ROUND.h * k },
     instrumentIcon: instrumentCx.map(x => ({ x: x - (INSTRUMENT.size / 2) * k, y: (INSTRUMENT.y - INSTRUMENT.size / 2) * k, w: INSTRUMENT.size * k, h: INSTRUMENT.size * k })),
   }
 }

@@ -88,7 +88,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const tracker = useRef(newTracker())
   // picks the tracker can't place wait here for the player's answers, oldest first; a new one never replaces one
   // ?demo=pick opens with the question asked about an instrument whose icon the Solver hasn't seen
-  const [pickAsks, setPickAsks] = useState<{ id: number; question: PickQuestion; count: number; frame: ImageData; keep?: Keep }[]>(() => {
+  const [pickAsks, setPickAsks] = useState<{ id: number; question: PickQuestion; count: number; frame: ImageData; ui?: number; keep?: Keep }[]>(() => {
     const ask = linked && typeof location !== 'undefined' ? demoPick(location.search) : null
     return ask ? [{ id: ++askId, ...ask }] : []
   })
@@ -161,7 +161,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         if (t.tracker.unsure.some(q => q.looks === 0)) setTimeout(() => snapAgain.current?.(), RELOOK_MS)
         // a pick a later board showed clearly needs no answer
         if (t.settled.length) setPickAsks(list => list.filter(a => !t.settled.includes(a.question.slot)))
-        if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++askId, question: ask, count: t.instruments.length, frame: img, keep }])
+        if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++askId, question: ask, count: t.instruments.length, frame: img, ui: raw.ui, keep }])
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
         r = { ...raw, state: { ...raw.state, instruments: t.instruments, instrumentRounds: t.rounds }, fields: { ...fields, ...t.fields } }
       }
@@ -201,7 +201,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     const a = pickAsks[0]
     if (!a || !a.question.offer.includes(name)) return
     void (async () => {
-      if (!linked) await teachPick(a.frame, a.count, a.question, name)
+      if (!linked) await teachPick(a.frame, a.count, a.question, name, a.ui)
       await answerPick(a.id, name)
     })()
   }
@@ -307,7 +307,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         </>
       )}
       {pickAsks.map(a => (
-        <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} learn={!linked} />
+        <WhichPick key={a.id} question={a.question} count={a.count} frame={a.frame} ui={a.ui} onPicked={name => void answerPick(a.id, name)} onSkip={() => setPickAsks(list => list.filter(x => x.id !== a.id))} learn={!linked} />
       ))}
       {unknownCards.length > 0 && (
         <p className={styles.unknownCard} role="status">

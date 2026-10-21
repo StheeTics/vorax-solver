@@ -14,6 +14,8 @@ interface Props {
   /** how many instruments the panel shows (the new one is the right-most) */
   count: number
   frame: ImageData
+  /** the interface scale the frame was read at */
+  ui?: number
   onPicked(name: string): void
   onSkip(): void
   /** false on the demo page: the answer is only shown, not learned or shared */
@@ -22,8 +24,8 @@ interface Props {
 
 /** Learns the new icon as `name`: this browser remembers it, and (with sharing on) it's shared for everyone.
  *  The same whether the player answers here or on the app's card. */
-export async function teachPick(frame: ImageData, count: number, question: PickQuestion, name: string): Promise<void> {
-  const rect = layout(frame).instrumentIcon[count - 1 - question.slot]
+export async function teachPick(frame: ImageData, count: number, question: PickQuestion, name: string, ui?: number): Promise<void> {
+  const rect = layout(frame, ui).instrumentIcon[count - 1 - question.slot]
   if (!rect) return
   const pattern = iconPattern(frame, rect)
   await addLocalRef(`icon:${name}`, pattern as unknown as ArtFeature)
@@ -32,10 +34,10 @@ export async function teachPick(frame: ImageData, count: number, question: PickQ
 
 /** A pick the Solver can't place (an offer with an instrument whose icon it hasn't seen): the player says
  *  which it was, this browser remembers that icon, and (with sharing on) it's shared for the built-in data. */
-export function WhichPick({ question, count, frame, onPicked, onSkip, learn = true }: Props) {
+export function WhichPick({ question, count, frame, ui, onPicked, onSkip, learn = true }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null)
   // the panel fills from the right, newest on the right
-  const rect = layout(frame).instrumentIcon[count - 1 - question.slot]
+  const rect = layout(frame, ui).instrumentIcon[count - 1 - question.slot]
   useEffect(() => {
     const c = canvas.current
     const ctx = c?.getContext('2d')
@@ -47,7 +49,7 @@ export function WhichPick({ question, count, frame, onPicked, onSkip, learn = tr
   }, [frame, rect])
 
   const choose = async (name: string) => {
-    if (learn) await teachPick(frame, count, question, name)
+    if (learn) await teachPick(frame, count, question, name, ui)
     onPicked(name)
   }
 
