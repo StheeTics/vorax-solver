@@ -120,11 +120,29 @@ export function glyphs(img: Img, r: Rect, kind: TextKind): Rect[] {
     const y1 = Math.min(g.y + g.h - 1, rowBottom)
     return y1 > y0 ? { ...g, y: y0, h: y1 - y0 + 1 } : g
   })
-  return splitWide(clipped, x => {
+  const split = splitWide(clipped, x => {
     let n = 0
     for (let y = top; y <= bottom; y++) n += on[y * w + x - x0]
     return n
   })
+  return kind === 'label' ? onTheLine(split, typicalH, rowBottom) : split
+}
+
+/**
+ * A tank label's glyphs without bright bits around it: a candle under the tank flickers into the band as a
+ * glyph or two, lower than the text and a gap away (1x36 read as 1x3621, 66x319 as 66x319661). The line
+ * is the longest run of glyphs on the text's bottom row with less than a glyph's height between them.
+ */
+function onTheLine(gs: Rect[], typicalH: number, rowBottom: number): Rect[] {
+  const onRow = rowBottom < 0 ? gs : gs.filter(g => Math.abs(g.y + g.h - 1 - rowBottom) <= Math.max(1, 0.3 * typicalH))
+  const runs: Rect[][] = []
+  for (const g of onRow) {
+    const run = runs[runs.length - 1]
+    const last = run?.[run.length - 1]
+    if (last && g.x - (last.x + last.w) < typicalH) run.push(g)
+    else runs.push([g])
+  }
+  return runs.reduce<Rect[]>((best, run) => (run.length > best.length ? run : best), [])
 }
 
 /** Glyphs much wider than the typical one are touching digits: split them at their thinnest columns. */

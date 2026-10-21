@@ -58,6 +58,12 @@ describe('committed fixtures (masked live frames)', () => {
     expect(r.problems).toEqual([expect.objectContaining({ kind: 'unknownArt', field: 'hand1' })])
     expect(r.fields.hand1.sure).toBe(false)
   })
+
+  it('reads a label over a candle: the flames under it are no digits (66x319 read as 66x319661)', () => {
+    const r = read('candle-1901.png')
+    expect(r.problems).toEqual([])
+    expect(r.state.tanks.map(t => t && [t.activity, t.quantity])).toEqual([[5, 139], [66, 319], [1, 306], [42, 306], [5, 329], [5, 149]])
+  })
 })
 
 
