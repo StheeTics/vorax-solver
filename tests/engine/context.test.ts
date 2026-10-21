@@ -26,10 +26,10 @@ it('mutate random rarity rerolls by weight and keeps stats', () => {
   expect(events[0].type).toBe('mutate')
 })
 
-it('awaken boss → boss gives +120', () => {
+it('awaken boss → boss gives nothing', () => {
   const { c } = ctx(board(m('aemberon', 'boss')))
   c.awaken(0)
-  expect(c.tanks[0]).toMatchObject({ rarity: 'boss', activity: 420 })
+  expect(c.tanks[0]).toMatchObject({ rarity: 'boss', activity: 300 })
 })
 
 it('fuse removes sources, places result leftmost, emits remove,remove,add,fuse', () => {

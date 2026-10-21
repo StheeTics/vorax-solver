@@ -14,7 +14,7 @@ export interface EffectContext {
   remove(tank: number): Monster | null
   /** Keeps Activity and Quantity; 'random' rolls archetype / rarity. */
   mutate(tank: number, a: Archetype | 'random', r: Rarity | 'random'): void
-  /** Defaults: to = next rarity (Boss stays Boss), bonus = AWAKEN_BONUS[to]. Never lowers rarity. */
+  /** Defaults: to = next rarity, bonus = AWAKEN_BONUS[to]. Never lowers rarity; a Boss stays Boss and gains nothing. */
   awaken(tank: number, to?: Rarity, bonus?: number): void
   fuse(sources: number[], a: Archetype, r: Rarity): number
   devour(devourer: number, prey: number): void
@@ -123,9 +123,10 @@ export function createContext(init: ContextInit): EffectContext {
       if (!mon) return
       const from = mon.rarity
       const named = to ?? nextRarity(from)
-      // Awakening never demotes: "awaken into Rare" on a Boss keeps Boss (still gains the bonus).
+      // Awakening never demotes: "awaken into Rare" on a Boss keeps Boss. A Boss gains no Activity either
+      // (seen in game, 2026-10-21).
       const target = RARITIES.indexOf(named) < RARITIES.indexOf(from) ? from : named
-      const gain = bonus ?? AWAKEN_BONUS[target]
+      const gain = from === 'boss' ? 0 : bonus ?? AWAKEN_BONUS[target]
       mon.rarity = target
       mon.activity += gain
       ctx.log(`Tank ${tank + 1} awakened: ${from} → ${target} (+${gain} Activity)`)

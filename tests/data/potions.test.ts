@@ -135,7 +135,7 @@ describe('magic potions', () => {
     const t = board(m('aemberon', 'normal')); run(20, t, [0])
     expect(t[0]).toMatchObject({ rarity: 'magic', activity: 61 })
     const u = board(m('aemberon', 'boss')); run(20, u, [0])
-    expect(u[0]).toMatchObject({ rarity: 'boss', activity: 420 })
+    expect(u[0]).toMatchObject({ rarity: 'boss', activity: 300 })
   })
   it('21 Mutagenic Powder', () => {
     const t = board(m('aemberon', 'normal'), m('pest', 'normal')); run(21, t, [0, 1])
@@ -248,10 +248,10 @@ describe('review fixes', () => {
       expect(t.every(x => x === null)).toBe(true)
     }
   })
-  it('awaken never lowers rarity: Brain Fog on a Boss Agito keeps Boss', () => {
+  it('awaken never lowers rarity: Brain Fog on a Boss Agito keeps Boss, and gains nothing from the awakening', () => {
     const t = board(m('agito', 'boss'))
     run(9, t)
-    expect(t[0]).toMatchObject({ rarity: 'boss', activity: 461 })
+    expect(t[0]).toMatchObject({ rarity: 'boss', activity: 341 })
   })
 })
 

@@ -14,7 +14,7 @@ export const MECHANICS: Record<string, { title: string; text: string }> = {
   },
   awaken: {
     title: 'Awaken',
-    text: 'Raises the group’s rarity one tier (or to the named rarity) and adds Activity: +60 into Magic, +120 into Rare or Boss. A Boss stays Boss and still gains +120. Awakening never lowers rarity.',
+    text: 'Raises the group’s rarity one tier (or to the named rarity) and adds Activity: +60 into Magic, +120 into Rare or Boss. A Boss stays Boss and gains nothing. Awakening never lowers rarity.',
   },
   fuse: {
     title: 'Fuse',
