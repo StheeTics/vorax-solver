@@ -41,12 +41,12 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Slender-Limb Powder - Pest': 1.538,
     'Twin Hormone - Pest': 1.538,
     'Spinal Solution - Agito': 2.0333461518125726,
-    'Anesthetic Tincture - Agito': 1.538,
+    'Anesthetic Tincture - Agito': 1.8156538218377043,
     'Slender-Limb Powder - Bone Sentry': 2.19035853804911,
     'Twin Hormone - Bone Sentry': 2.1481458356384016,
     'Anesthetic Tincture - Aemberon': 1.538,
     'Spinal Solution - Aemberon': 1.538,
-    'Xeno-Hormone': 2.2003557896774977,
+    'Xeno-Hormone': 1.8682814688474927,
     'Targeted Xeno-Hormone': 1.6817148624013758,
     'Potion Kit (Large)': 0.4681530847731749,
     'Potion Kit (Small)': 0.439,
@@ -89,14 +89,14 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.06562743171101033,
-      'Incubation Sac': 0.05045290037282385,
-      'Hyperplastic Frontal Lobe': 0.04494367561946953,
-      'Hypertrophic Pituitary': 0.08447477955143304,
-      'Adherent Metatarsals': 0.052096002492245316,
-      'Contracted Claws': 0.08002873852241024,
-      'Aberrant Sprout': 0.08302498356370822,
-      'Prismatic Liver': 0.04591020627795274
+      'Chrysalis Specimen': 0.05799507107046507,
+      'Incubation Sac': 0.0427447868951721,
+      'Hyperplastic Frontal Lobe': 0.03900553452526854,
+      'Hypertrophic Pituitary': 0.0722922124848022,
+      'Adherent Metatarsals': 0.044797709764923074,
+      'Contracted Claws': 0.06877291613665769,
+      'Aberrant Sprout': 0.07097247635424801,
+      'Prismatic Liver': 0.03915217187310789
     },
     advanced: {
       'Clustered Eggs': 1.0923380349730878,
