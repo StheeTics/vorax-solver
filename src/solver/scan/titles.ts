@@ -4,7 +4,7 @@
 import { POTIONS } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
 import { PROTOCOLS } from '@/data/protocols'
-import { XENOPANACEA } from '@/data/xenopanacea'
+import { ALWAYS_TAKE } from '@/data/xenopanacea'
 import type { FieldRead, Problem, Reading } from '../types'
 import type { HandPhase } from './data'
 import { handAt } from './cards'
@@ -19,7 +19,7 @@ const MIN_Q = 6
 const GAP = 3
 
 const NAMES: Record<HandPhase, readonly string[]> = {
-  potion: [...POTIONS.map(p => p.name), ...XENOPANACEA],
+  potion: [...POTIONS.map(p => p.name), ...ALWAYS_TAKE],
   instrument: INSTRUMENTS.map(i => i.name),
   protocol: PROTOCOLS,
 }
@@ -110,11 +110,11 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
     return phases
       .map(phase => {
         const slots = texts.map(t => ranked(phase, t))
-        return { phase, size, slots, fit: slots.reduce((s, r) => s + Math.max(0, r[0][1]), 0) }
+        return { phase, size, slots, texts, fit: slots.reduce((s, r) => s + Math.max(0, r[0][1]), 0) }
       })
       .reduce((a, b) => (b.fit > a.fit ? b : a))
   }
-  const { phase, size, slots } = await titles(read || reading.handSize || 3)
+  const { phase, size, slots, texts } = await titles(read || reading.handSize || 3)
   const pos = handAt(l, size)
 
   // the cards the names don't settle, by their pictures: the reading's own when it has them for this hand
@@ -153,7 +153,7 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
   })
   const problems: Problem[] = [
     ...reading.problems.filter(p => p.kind !== 'unknownArt'),
-    ...unknown.map(j => ({ kind: 'unknownArt' as const, field: `hand${j}`, crop: cardFace(pos[j], l.k), ...(size === 5 ? { hand: 5 as const } : {}) })),
+    ...unknown.map(j => ({ kind: 'unknownArt' as const, field: `hand${j}`, crop: cardFace(pos[j], l.k), ...(size === 5 ? { hand: 5 as const } : {}), ...(texts[j]?.trim() ? { text: texts[j].trim() } : {}) })),
   ]
   if (phase !== header) fields.phase = { sure: unknown.length === 0, guess: phase }
 

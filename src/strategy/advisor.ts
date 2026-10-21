@@ -1,5 +1,5 @@
 // Live advice for the Solver: given what is on screen, rank the choices by expected payoff.
-import { XENOPANACEA, isXenopanacea } from '@/data/xenopanacea'
+import { ALWAYS_TAKE, isAlwaysTake, isXenopanacea } from '@/data/xenopanacea'
 import { POTIONS, potion } from '@/data/potions'
 import { INSTRUMENTS } from '@/data/instruments'
 import { canRefresh, cardChanges, createGame, DEFAULT_SETTINGS, ultimateActivity } from '@/engine/game'
@@ -80,7 +80,7 @@ const places = (x: ScreenState) => x.hand.flatMap((n, i) => ((x.phase === 'potio
 
 /** Every card and instrument name the reader should know about. */
 export function names() {
-  return { potions: [...POTIONS.map(p => p.name), ...XENOPANACEA], instruments: INSTRUMENTS.map(i => i.name), basics: INSTRUMENTS.filter(i => i.pool === 'basic').map(i => i.name) }
+  return { potions: [...POTIONS.map(p => p.name), ...ALWAYS_TAKE], instruments: INSTRUMENTS.map(i => i.name), basics: INSTRUMENTS.filter(i => i.pool === 'basic').map(i => i.name) }
 }
 
 export function toState(x: ScreenState, unknown: string[]): GameState {
@@ -154,11 +154,13 @@ export function prepare(x: ScreenState, futures?: number): Prepared {
   const t0 = Date.now(); const unknown: string[] = []
   // Surgical Protocols change the endgame battle, not Ultimate Activity
   if (x.phase === 'protocol') return { advice: { best: null, ranking: [], board: 0, plan: false, final: true, ms: 0, unknown } }
-  // a Xenopanacea is always taken: its effect isn't simulated, and it's worth more than anything beside it
-  const xeno = x.phase === 'potion' ? x.hand.findIndex(isXenopanacea) : -1
+  // a ULT the simulator can't play out (a Xenopanacea, a Holy Water rite) is always taken: it's worth more than
+  // anything beside it
+  const xeno = x.phase === 'potion' ? x.hand.findIndex(isAlwaysTake) : -1
   if (xeno >= 0) {
     const pick = { index: xeno, targets: [], value: 0 }
-    return { advice: { best: pick, ranking: [pick], board: ultimateActivity(toState({ ...x, hand: [] }, [])), plan: false, final: true, ms: Date.now() - t0, unknown, note: 'A Xenopanacea: always take it when it’s offered.' } }
+    const note = isXenopanacea(x.hand[xeno]) ? 'A Xenopanacea: always take it when it’s offered.' : `${x.hand[xeno]}: always take it when it’s offered.`
+    return { advice: { best: pick, ranking: [pick], board: ultimateActivity(toState({ ...x, hand: [] }, [])), plan: false, final: true, ms: Date.now() - t0, unknown, note } }
   }
   const s = { ...toState(x, unknown), log: [] }
   const work: Work = s.phase === 'potionSelect'
@@ -228,7 +230,7 @@ export function advise(x: ScreenState, samples = 16, plan = false): Advice {
     return 'advice' in p ? p.advice : conclude(p, playWork(p.work, 0, p.work.futures))
   }
   const t0 = Date.now(); const unknown: string[] = []
-  const xeno = x.hand.findIndex(isXenopanacea)
+  const xeno = x.hand.findIndex(isAlwaysTake)
   if (xeno >= 0) return (prepare(x) as { advice: Advice }).advice
   const s = toState(x, unknown)
   const ranking = markNoEffect(s, breakTies(s, options(s).map(o => toRanked(o, Math.round(expected(s, o, { samples, horizon: 0 }, SEED)))).sort((a, b) => b.value - a.value), SEED))

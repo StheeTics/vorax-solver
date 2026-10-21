@@ -89,3 +89,13 @@ describe('the Xenopanacea family (Supreme potions that print only flavour text)'
     expect(r.state.hand).toEqual(['Xenopanacea', 'Green Bile Solution', 'Slough Solution'])
   })
 })
+
+describe('the Holy Water rites (Supreme potions whose effect is another card later, issue #13)', () => {
+  const best = (text: string) => ['First Rite Holy Water: Confession', 'Ritual Holy Water: Flagellation', 'Purest Holy Water'].map(n => [n, nameFit(n, text).q] as const).sort((a, b) => b[1] - a[1])[0][0]
+  it('are read by name, even cut short, and never as Purest Holy Water (a different card, simulated)', () => {
+    expect(best('First Rite Holy Water: Confession\nThe throat is not only for')).toBe('First Rite Holy Water: Confession')
+    expect(best('First Rite Holy Wat')).toBe('First Rite Holy Water: Confession')
+    expect(best('Ritual Holy Water: Flagelation | It')).toBe('Ritual Holy Water: Flagellation')
+    expect(best('Purest Holy Water\nAwaken all')).toBe('Purest Holy Water')
+  })
+})

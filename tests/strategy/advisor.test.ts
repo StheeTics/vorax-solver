@@ -87,6 +87,21 @@ it('with look-ahead, a reroll is weighed like the cards and its prediction is gi
   expect(a.ranking.every(r => r.end)).toBe(true)
 })
 
+describe('a Holy Water rite on offer (issue #13)', () => {
+  it('is always the advice, like a Xenopanacea: its effect is a card the simulator doesn\'t know', () => {
+    const a = advise({ ...board, phase: 'potion', hand: ['Mutagenic Powder', 'Bewitching Tincture', 'First Rite Holy Water: Confession'] }, 2)
+    expect(a.best).toEqual(expect.objectContaining({ index: 2 }))
+    expect(a.note).toMatch(/First Rite Holy Water: Confession: always take it/)
+    expect(a.unknown).toEqual([])
+    expect(names().potions).toEqual(expect.arrayContaining(['First Rite Holy Water: Confession', 'Ritual Holy Water: Flagellation']))
+  })
+  it('but Purest Holy Water is simulated, and weighed like any card', async () => {
+    const { isAlwaysTake } = await import('@/data/xenopanacea')
+    expect(isAlwaysTake('Purest Holy Water')).toBe(false)
+    expect(isAlwaysTake('Ritual Holy Water: Flagellation')).toBe(true)
+  })
+})
+
 describe('a Potion Kit on offer is always taken before a refresh', () => {
   // live game 936e23ff (2026-10-19), round 3: the look-ahead rated a refresh (600k) above the kit (515k)
   const board: ScreenState = {
