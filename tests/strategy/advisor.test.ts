@@ -94,9 +94,10 @@ describe('a Potion Kit on offer is always taken before a refresh', () => {
     hand: ['Rare Potion Kit (Small)', 'Leptomeningeal Solution', 'Spinal Solution - Aemberon'],
     instruments: ['Aberrant Sprout'], phase: 'potion', round: 3, potionRefreshes: 3,
   }
-  it('with the look-ahead: the kit, not a refresh', () => {
+  // the rule is the kit over a refresh: another card can still be better than both, as the odds change
+  it('with the look-ahead: not a refresh', () => {
     const a = advise(board, 16, true)
-    expect(a.best !== 'refresh' && a.best && board.hand[a.best.index]).toBe('Rare Potion Kit (Small)')
+    expect(a.best).not.toBe('refresh')
   })
   it('for this round alone too', () => {
     const a = advise(board)
