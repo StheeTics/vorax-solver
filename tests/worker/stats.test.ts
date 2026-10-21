@@ -106,7 +106,7 @@ describe('the dashboard routes', () => {
     expect(html).toMatch(/password/i)
     expect(html).not.toMatch(/open-sesame/)
     // the automated loops' health, from GitHub's public run list
-    for (const f of ['live-data.yml', 'strengths.yml', 'daily-check.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
+    for (const f of ['live-data.yml', 'strengths.yml', 'daily-check.yml', 'smarter-player.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
     // players counted across days, beside today's
     expect(html).toContain('Players ever')
   })

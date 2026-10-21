@@ -26,20 +26,35 @@ describe('the gate a new board value must pass to be proposed', () => {
   })
 })
 
-describe('the smarter-player loop (scripts/sim/smarter.sh, run on the owner\'s PC)', () => {
-  const t = readFileSync('scripts/sim/smarter.sh', 'utf8')
+describe('the smarter-player workflow', () => {
+  const t = readFileSync('.github/workflows/smarter-player.yml', 'utf8')
+  it('runs nightly, and only when the odds changed after the board value was trained (or by hand)', () => {
+    expect(t).toMatch(/cron: '\d+ \d+ \* \* \*'/)
+    expect(t).toContain('workflow_dispatch')
+    expect(t).toContain('src/data/liveWeights.ts')
+    expect(t).toContain('src/data/boardValue.json')
+  })
   it('trains with the board value as shipped, fits, then gates the challenger against it', () => {
     expect(t).toContain('VALUE_MODEL=src/data/boardValue.json SEED0')
-    const order = ['scripts/sim/valueData.ts', 'scripts/sim/valueFit.ts', 'VALUE_MODEL=$out/challenger.json', 'scripts/sim/gate.ts', 'gh pr create']
+    const order = ['scripts/sim/valueData.ts', 'scripts/sim/valueFit.ts', 'VALUE_MODEL=challenger.json', 'scripts/sim/gate.ts', 'gh pr create']
     let at = -1
     for (const s of order) { const i = t.indexOf(s, at + 1); expect(i, s).toBeGreaterThan(at); at = i }
   })
-  it('works on a copy of origin/main, at the lowest priority', () => {
-    expect(t).toContain('git worktree add -q --detach "$work" origin/main')
-    expect(t).toContain('nice -n 19')
-  })
-  it('only proposes: a smarter-player/ branch and a pull request, never main', () => {
+  it('only record and publish can write: record adds to the history file alone, publish only proposes (a smarter-player/ branch and a pull request)', () => {
+    expect(t).toMatch(/^permissions:\s*\{\}/m)
+    expect(t.match(/contents: write/g)).toHaveLength(2)
+    expect(t).toContain('git add data/sim/smarter-history.jsonl')
     expect(t).toContain('refs/heads/smarter-player/')
     expect(t).not.toMatch(/git push[^\n]*\bmain\b/)
+  })
+})
+
+describe('the smarter player\'s history (scripts/sim/smarterHistory.ts)', async () => {
+  const { summary } = await import('../../scripts/sim/smarterHistory')
+  it('keeps the 240 fixed games apart from the new ones, so runs compare with each other', () => {
+    const fixed = games([reach, miss], 1_000_000), fresh = games([reach, reach], 2_000_000)
+    const s = summary([...fixed, ...fresh], [...games([reach, reach], 1_000_000), ...fresh])
+    expect(s.all).toMatchObject({ games: 4, shipped: { reached: 3 }, challenger: { reached: 4 } })
+    expect(s.fixed).toMatchObject({ games: 2, shipped: { reached: 1 }, challenger: { reached: 2 }, gained: 1, lost: 0 })
   })
 })
