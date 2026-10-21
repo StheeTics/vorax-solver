@@ -47,9 +47,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Anesthetic Tincture - Aemberon': 1.538,
     'Spinal Solution - Aemberon': 1.538,
     'Xeno-Hormone': 2.2003557896774977,
-    'Targeted Xeno-Hormone': 0.7775696441677071,
-    'Potion Kit (Large)': 0.878,
-    'Potion Kit (Small)': 0.878,
+    'Targeted Xeno-Hormone': 1.2171980204102548,
+    'Potion Kit (Large)': 0.4681530847731749,
+    'Potion Kit (Small)': 0.439,
     'Rare Potion Kit (Small)': 0.8986086309945066
   },
   boxOffer: {
@@ -89,14 +89,14 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.11234786820887727,
-      'Incubation Sac': 0.08673488271048037,
-      'Hyperplastic Frontal Lobe': 0.06985359681380969,
-      'Hypertrophic Pituitary': 0.13941613697422853,
-      'Adherent Metatarsals': 0.08411537282996251,
-      'Contracted Claws': 0.1283559841453753,
-      'Aberrant Sprout': 0.13534134382675628,
-      'Prismatic Liver': 0.0742194466146728
+      'Chrysalis Specimen': 0.09463625480335085,
+      'Incubation Sac': 0.07135444268772012,
+      'Hyperplastic Frontal Lobe': 0.06122254297073267,
+      'Hypertrophic Pituitary': 0.11533119890613373,
+      'Adherent Metatarsals': 0.07178558735652808,
+      'Contracted Claws': 0.10670830552997418,
+      'Aberrant Sprout': 0.11339104789649783,
+      'Prismatic Liver': 0.06467170032119647
     },
     advanced: {
       'Clustered Eggs': 1,
