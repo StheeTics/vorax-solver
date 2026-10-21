@@ -93,6 +93,10 @@ describe('digits that don’t fit the total are corrected from it', () => {
     // "112320" read as "1123201"
     expect(reconcile(alts([['1'], ['1'], ['2'], ['3'], ['2'], ['0'], ['1']]), alts([['4'], ['1'], ['6'], ['x'], ['2'], ['7'], ['0']]))).toEqual({ total: '112320', aq: '416x270' })
   })
+  it('drops two stray glyphs at the end of a line (a cursor over the label) when the rest fits', () => {
+    // "1 x 36" read as "1x3621"
+    expect(reconcile(alts([['3'], ['6']]), alts([['1'], ['x'], ['3'], ['6'], ['2'], ['1']]))).toEqual({ total: '36', aq: '1x36' })
+  })
   it('gives up when nothing fits, or when two readings fit equally well', () => {
     expect(reconcile(alts([['9'], ['9']]), alts([['2'], ['x'], ['3']]))).toBeNull()
     // 3x4 and 2x6 both make 12, each using one second choice

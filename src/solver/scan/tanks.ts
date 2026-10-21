@@ -55,6 +55,9 @@ type Alts = string[][]
 /** Most readings tried when working out which of a line's candidate characters make the numbers fit. */
 const MAX_COMBOS = 200_000
 
+/** Most stray glyphs dropped from one end of a line: a cursor over the label read as "21" (1x36 as 1x3621). */
+const MAX_STRAY = 2
+
 /** All readings of a line from its candidates, with how far down each glyph's list it went. */
 function readings(alts: Alts): { text: string; rank: number }[] {
   if (alts.reduce((n, a) => n * a.length, 1) > MAX_COMBOS) return []
@@ -88,10 +91,14 @@ export function reconcile(total: Alts, aq: Alts): { total: string; aq: string } 
     const text = best(totalFits)
     return text === null ? null : { total: text, aq: aqText }
   }
-  // a sliver of the heart can pass as one more glyph at either end of a line: dropped if the rest then fits
-  const ends = (s: string) => (s.length > 1 ? [s.slice(1), s.slice(0, -1)] : [])
-  const trimmed = [...ends(aqText).filter(t => stats(totalText, t).fits).map(t => ({ total: totalText, aq: t })), ...ends(totalText).filter(t => stats(t, aqText).fits).map(t => ({ total: t, aq: aqText }))]
-  if (trimmed.length === 1) return trimmed[0]
+  // a sliver of the heart, or a cursor over the label, can pass as a glyph or two more at either end of a
+  // line: dropped if the rest then fits, the fewest first
+  for (let n = 1; n <= MAX_STRAY; n++) {
+    const ends = (s: string) => (s.length > n ? [s.slice(n), s.slice(0, -n)] : [])
+    const trimmed = [...ends(aqText).filter(t => stats(totalText, t).fits).map(t => ({ total: totalText, aq: t })), ...ends(totalText).filter(t => stats(t, aqText).fits).map(t => ({ total: t, aq: aqText }))]
+    if (trimmed.length === 1) return trimmed[0]
+    if (trimmed.length > 1) return null
+  }
   // a digit squeezed against the heart can be misread beyond its candidates: with the total and one number
   // read, the other is their quotient, taken only if it has as many digits and differs in just one
   const [a, q] = aqText.split('x')
