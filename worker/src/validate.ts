@@ -119,3 +119,21 @@ export function validateIcon(raw: unknown, names: Names) {
   if (length < 0.95 || length > 1.05) return null
   return { uid: s.uid, name: s.name, pattern: (p as number[]).map(v => Math.round(v * 1000) / 1000) }
 }
+
+/** A small JPEG of a card's face, the card alone (never the screen): a few kilobytes. */
+const PICTURE = /^data:image\/jpeg;base64,[A-Za-z0-9+/]+={0,2}$/
+const PICTURE_MAX = 40_000
+
+/** A card the Solver couldn't name ("not recognised"), so it can be added for everyone: what its printed title
+ *  read as, which pick it was in, and a small picture of the card. */
+export function validateCard(raw: unknown) {
+  if (!raw || typeof raw !== 'object') return null
+  const s = raw as Record<string, unknown>
+  if (!str(s.uid, UUID) || !PHASES.includes(s.phase as string) || typeof s.text !== 'string') return null
+  // the title as read: plain text, kept short
+  const text = s.text.replace(/[^\S\n]+/g, ' ').replace(/[^\p{L}\p{N}\p{P}\p{Zs}\n+×]/gu, '').trim().slice(0, 400)
+  const picture = typeof s.picture === 'string' && s.picture.length <= PICTURE_MAX && PICTURE.test(s.picture) ? s.picture : null
+  if (!text && !picture) return null
+  return { uid: s.uid, phase: s.phase as string, text, ...(picture ? { picture } : {}) }
+}
+

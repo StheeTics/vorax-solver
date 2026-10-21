@@ -3,7 +3,7 @@
 // sets these):
 //   LIVE_DATA_URL=https://… LIVE_DATA_TOKEN=… npx vite-node scripts/live/pull.ts
 import { existsSync } from 'node:fs'
-import { allRows, pull, pullIcons } from './collect'
+import { allRows, pull, pullCards, pullIcons } from './collect'
 import { writeRates } from './rates'
 
 const url = process.env.LIVE_DATA_URL
@@ -21,3 +21,5 @@ if (added > 0 || !existsSync('data/live/rates.json')) {
   const r = writeRates(allRows())
   console.log(`${added} new boards; ${r.boards} boards in ${r.runs} games so far`)
 } else console.log('0 new boards')
+const cards = await pullCards(url, token)
+if (cards) console.log(`${cards} cards the Solver couldn't name, in data/live/cards.jsonl`)

@@ -2,7 +2,7 @@
 // the repo's scheduled workflow pulls them with the export token. No addresses are stored: the daily
 // quota is counted against a salted hash that changes every day.
 import names from './names.json'
-import { validate, validateIcon } from './validate'
+import { validate, validateCard, validateIcon } from './validate'
 import { summarize, type StatRow } from './stats'
 import { DASHBOARD_HTML } from './dashboard'
 import { dispatch, onSchedule, RUNNABLE } from './schedule'
@@ -16,6 +16,9 @@ export interface Store {
   /** stores an icon with a new uid; returns 1 if it was new */
   insertIcon(row: { uid: string; client: string; body: string }): Promise<number>
   exportIcons(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
+  /** stores a card the Solver couldn't name, with a new uid; returns 1 if it was new */
+  insertCard(row: { uid: string; client: string; body: string }): Promise<number>
+  exportCards(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
   /** every board with when it came and its daily player code, for the dashboard's counts */
   stats(): Promise<StatRow[]>
 }
@@ -104,6 +107,36 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     return json({ stored }, 200, cors)
   }
 
+  // a card the Solver couldn't name: one at a time, so its picture never weighs down a batch of boards
+  if (url.pathname === '/v1/cards' && req.method === 'POST') {
+    const ip = req.headers.get('cf-connecting-ip') ?? 'unknown'
+    const day = new Date().toISOString().slice(0, 10)
+    const client = (await sha256(`${env.IP_SALT}|${day}|${ip}`)).slice(0, 24)
+    if (!(await env.LIMIT.limit({ key: client })).success) return json({ error: 'slow down' }, 429, cors)
+    const text = await req.text()
+    if (text.length > MAX_BYTES) return json({ error: 'too large' }, 413, cors)
+    let raw: unknown
+    try {
+      raw = JSON.parse(text)
+    } catch {
+      return json({ error: 'not JSON' }, 400, cors)
+    }
+    const card = validateCard(raw)
+    if (!card) return json({ error: 'not a card' }, 400, cors)
+    // a card counts as one board towards the daily limit
+    if ((await store.used(client, day)) + 1 > DAILY) return json({ error: 'daily limit' }, 429, cors)
+    const stored = await store.insertCard({ uid: card.uid as string, client, body: JSON.stringify(card) })
+    await store.addUsed(client, day, stored)
+    return json({ stored }, 200, cors)
+  }
+
+  if (url.pathname === '/v1/cards/export' && req.method === 'GET') {
+    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    const after = Math.max(0, Number(url.searchParams.get('after')) || 0)
+    const rows = await store.exportCards(after, EXPORT_MAX)
+    return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
+  }
+
   if (url.pathname === '/v1/icons/export' && req.method === 'GET') {
     if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const after = Math.max(0, Number(url.searchParams.get('after')) || 0)
@@ -167,6 +200,14 @@ export function d1Store(db: D1Like): Store {
     },
     async exportIcons(after, limit) {
       const { results } = await db.prepare('SELECT id, uid, received, body FROM icons WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
+      return results
+    },
+    async insertCard(r) {
+      const res = await db.prepare('INSERT OR IGNORE INTO cards (uid, received, client, body) VALUES (?, ?, ?, ?)').bind(r.uid, new Date().toISOString(), r.client, r.body).run()
+      return res.meta.changes
+    },
+    async exportCards(after, limit) {
+      const { results } = await db.prepare('SELECT id, uid, received, body FROM cards WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
       return results
     },
     async stats() {

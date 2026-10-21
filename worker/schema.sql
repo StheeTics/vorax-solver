@@ -27,3 +27,13 @@ CREATE TABLE IF NOT EXISTS icons (
   client TEXT NOT NULL,
   body TEXT NOT NULL
 );
+
+-- One row per card the Solver couldn't name ("not recognised"), so it can be added for everyone: `body` is
+-- {uid, phase, text, picture}, the text its printed title as read, the picture a small JPEG of the card alone.
+CREATE TABLE IF NOT EXISTS cards (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT NOT NULL UNIQUE,
+  received TEXT NOT NULL,
+  client TEXT NOT NULL,
+  body TEXT NOT NULL
+);

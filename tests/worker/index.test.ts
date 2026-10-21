@@ -1,14 +1,24 @@
 // @vitest-environment node
 import { handle, type Store } from '../../worker/src/index'
 
-function memory(): Store & { rows: { id: number; uid: string; client: string; body: string }[]; icons: { id: number; uid: string; client: string; body: string }[]; quota: Map<string, number> } {
+function memory(): Store & { rows: { id: number; uid: string; client: string; body: string }[]; icons: { id: number; uid: string; client: string; body: string }[]; cards: { id: number; uid: string; client: string; body: string }[]; quota: Map<string, number> } {
   const rows: { id: number; uid: string; client: string; body: string }[] = []
   const icons: { id: number; uid: string; client: string; body: string }[] = []
+  const cards: { id: number; uid: string; client: string; body: string }[] = []
   const quota = new Map<string, number>()
   return {
     rows,
     icons,
+    cards,
     quota,
+    async insertCard(r) {
+      if (cards.some(x => x.uid === r.uid)) return 0
+      cards.push({ id: cards.length + 1, ...r })
+      return 1
+    },
+    async exportCards(after, limit) {
+      return cards.filter(r => r.id > after).slice(0, limit)
+    },
     async insertIcon(r) {
       if (icons.some(x => x.uid === r.uid)) return 0
       icons.push({ id: icons.length + 1, ...r })
@@ -148,4 +158,34 @@ it('icons export only with the token', async () => {
   expect((await handle(new Request('https://w.dev/v1/icons/export?after=0'), env, store)).status).toBe(401)
   const res = await handle(new Request('https://w.dev/v1/icons/export?after=0', { headers: { authorization: 'Bearer secret' } }), env, store)
   expect((await res.json()).rows).toHaveLength(1)
+})
+
+const card = (body: unknown) => new Request('https://w.dev/v1/cards', { method: 'POST', body: JSON.stringify(body), headers: { 'cf-connecting-ip': '9.9.9.9' } })
+const jpeg = 'data:image/jpeg;base64,' + 'A'.repeat(4000)
+
+describe('a card the Solver couldn’t name', () => {
+  it('is stored once, with its title as read and a small picture of it', async () => {
+    const store = memory()
+    const body = { uid: uid(11), phase: 'potion', text: 'First Rite Holy Water: Confession\nThe throat is not only for', picture: jpeg }
+    expect((await handle(card(body), env, store)).status).toBe(200)
+    await handle(card(body), env, store)
+    expect(store.cards).toHaveLength(1)
+    expect(JSON.parse(store.cards[0].body)).toEqual(body)
+  })
+  it('keeps nothing else, and refuses anything that isn’t a card picture', async () => {
+    const store = memory()
+    await handle(card({ uid: uid(12), phase: 'potion', text: 'A card', picture: 'data:image/png;base64,AAAA', screen: 'x' }), env, store)
+    expect(JSON.parse(store.cards[0].body)).toEqual({ uid: uid(12), phase: 'potion', text: 'A card' })
+    expect((await handle(card({ uid: uid(13), phase: 'potion', text: '' }), env, store)).status).toBe(400)
+    expect((await handle(card({ uid: uid(14), phase: 'menu', text: 'A card' }), env, store)).status).toBe(400)
+    expect((await handle(card({ uid: uid(15), phase: 'potion', text: 'x'.repeat(2000) }), env, store)).status).toBe(200)
+    expect(JSON.parse(store.cards[1].body).text).toHaveLength(400)
+  })
+  it('is exported with the token only', async () => {
+    const store = memory()
+    await handle(card({ uid: uid(16), phase: 'instrument', text: 'A new instrument' }), env, store)
+    expect((await handle(new Request('https://w.dev/v1/cards/export?after=0'), env, store)).status).toBe(401)
+    const res = await handle(new Request('https://w.dev/v1/cards/export?after=0', { headers: { authorization: 'Bearer secret' } }), env, store)
+    expect((await res.json()).rows).toHaveLength(1)
+  })
 })

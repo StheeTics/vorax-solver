@@ -2,7 +2,9 @@
 # teaches the reader the icons players named (src/solver/scan/learnedIcons.json, scripts/live/mergeIcons.ts),
 # measures the live odds (data/live/rates.json), and applies the odds changes the data supports, within the
 # guards in scripts/live/propose.ts (30+ sightings, outside the 95% range, at most 2x per update). It replays
-# the real moves in the simulator (data/live/rules-check.json), runs the tests and commits. When the odds
+# the real moves in the simulator (data/live/rules-check.json), runs the tests and commits. Cards the Solver
+# couldn't name come in too (data/live/cards.jsonl, a picture of each in data/live/new-cards/): each new one gets a
+# GitHub issue (scripts/live/newCards.ts), so it can be added. When the odds
 # changed, it notes the change in the dashboard's history and starts the strengths workflow, which
 # re-measures the instrument strengths under the new odds and redeploys the site (a push made with the
 # workflow's token starts no other workflow by itself). Or on demand:
@@ -19,6 +21,7 @@ on:
 permissions:
   contents: write
   actions: write
+  issues: write
 
 concurrency:
   group: live-data
@@ -41,6 +44,9 @@ jobs:
           LIVE_DATA_URL: ${{ vars.LIVE_DATA_URL }}
           LIVE_DATA_TOKEN: ${{ secrets.LIVE_DATA_TOKEN }}
         run: npx vite-node scripts/live/pull.ts | tee pull.txt
+
+      - name: List the cards the Solver couldn't name
+        run: npx vite-node scripts/live/newCards.ts | tee cards.txt
 
       - name: Teach the reader the instrument icons players named
         run: npx vite-node scripts/live/learnIcons.ts | tee icons.txt
@@ -84,3 +90,8 @@ jobs:
           git push
           # new odds: re-measure the strengths, which then redeploys the site; new icons alone: redeploy
           if [ -n "$odds" ]; then gh workflow run strengths.yml; elif [ -n "$icons" ]; then gh workflow run deploy.yml; fi
+
+      - name: Open an issue for each new card
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: npx vite-node scripts/live/newCards.ts --issues

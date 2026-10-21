@@ -62,8 +62,11 @@ export interface Gate {
 /** Everything the card should say, most pressing first: what stops the Solver following or reading the game,
  *  the player's Intern Shelley level until it's picked (the advice depends on it), an instrument it couldn't
  *  tell (it waits for the answer), tanks whose numbers weren't read, an instrument read unsure. */
-export function overlayAsks(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>, shelleyUnset = false, troubles: Trouble[] = []): string[] {
+/** unknownCards: the offered cards (1-based) the Solver doesn't know, left out of its advice */
+export function overlayAsks(pending: number, fields: Record<FieldKey, FieldRead>, corrections: Record<FieldKey, string>, shelleyUnset = false, troubles: Trouble[] = [], unknownCards: number[] = []): string[] {
   const out: string[] = []
+  // the advice can't weigh a card it doesn't know: the player should, before following it
+  if (unknownCards.length) out.push(`${unknownCards.map(n => `Card ${n}`).join(' and ')} ${unknownCards.length > 1 ? 'aren’t cards' : 'isn’t a card'} the Solver knows: the advice leaves ${unknownCards.length > 1 ? 'them' : 'it'} out. Weigh ${unknownCards.length > 1 ? 'them' : 'it'} yourself.`)
   // the log's one step fits on the card; the others' several are in the Solver window
   for (const t of troubles) out.push(`${TROUBLES[t].card} ${t === 'logOff' ? TROUBLES.logOff.steps[0] : 'Show me says what to check.'}`)
   if (shelleyUnset) out.push('Which Intern Shelley level do you have? Pick it in the Solver: it sets your instrument refreshes.')

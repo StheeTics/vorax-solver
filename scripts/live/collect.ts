@@ -7,7 +7,8 @@ const RAW = `${DIR}/raw`
 
 interface Row { id: number; uid: string; received: string; body: string }
 
-// Where each export was read up to: { last } for boards, { icons } for named panel icons.
+// Where each export was read up to: { last } for boards, { icons } for named panel icons, { cards } for cards
+// the Solver couldn't name.
 const STATE = `${DIR}/state.json`
 const readState = (): Record<string, number> => (existsSync(STATE) ? JSON.parse(readFileSync(STATE, 'utf8')) : {})
 
@@ -38,6 +39,24 @@ export async function pullIcons(url: string, token: string, fetchFn: typeof fetc
   mkdirSync(DIR, { recursive: true })
   return drain(url, token, '/v1/icons/export', 'icons', fetchFn, r => appendFileSync(`${DIR}/icons.jsonl`, r.body + '\n'))
 }
+
+/** Cards the Solver couldn't name, into data/live/cards.jsonl (without their pictures): the first picture of each
+ *  card is kept as data/live/new-cards/<card>.jpg. scripts/live/newCards.ts lists them and opens an issue for each. */
+export async function pullCards(url: string, token: string, fetchFn: typeof fetch = fetch): Promise<number> {
+  mkdirSync(`${DIR}/new-cards`, { recursive: true })
+  return drain(url, token, '/v1/cards/export', 'cards', fetchFn, r => {
+    const c = JSON.parse(r.body) as { phase: string; text: string; picture?: string }
+    const name = cardName(c.text)
+    const file = `${DIR}/new-cards/${slug(c.phase, name)}.jpg`
+    if (c.picture && !existsSync(file)) writeFileSync(file, Buffer.from(c.picture.slice(c.picture.indexOf(',') + 1), 'base64'))
+    appendFileSync(`${DIR}/cards.jsonl`, JSON.stringify({ received: r.received, phase: c.phase, name, text: c.text }) + '\n')
+  })
+}
+
+/** A card's name: its title's first line as read, without stray marks at either end. */
+export const cardName = (text: string) => text.split('\n')[0].replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N})]+$/gu, '').trim()
+/** A file name for a card: its pick and name, lower case. */
+export const slug = (phase: string, name: string) => `${phase}-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'unnamed'}`
 
 export function allRows(): Snapshot[] {
   if (!existsSync(RAW)) return []

@@ -20,6 +20,7 @@ import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
 import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
+import { cardPicture, shareCard } from './share/card'
 import { useShare } from './share/useShare'
 import { sharedAdvice } from './share/snapshot'
 import { WhichPick, teachPick } from './board/WhichPick'
@@ -122,7 +123,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   useEffect(() => {
     desktopBridge()?.onForce?.(() => force.current())
   }, [])
-  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable })
+  // cards the reader couldn't name on this board: the advice leaves them out, and they're reported so they can be added
+  const unknownCards = reading?.state.phase === 'protocol' ? [] : (reading?.problems ?? []).flatMap(p => (p.kind === 'unknownArt' ? [Number(/\d+/.exec(p.field)?.[0] ?? 0) + 1] : []))
+  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles, unknownCards), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable })
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -165,6 +168,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
         r = { ...raw, state: { ...raw.state, instruments: t.instruments, instrumentRounds: t.rounds }, fields: { ...fields, ...t.fields } }
       }
+      // a card the Solver couldn't name: shared (with sharing on) so it can be added for everyone
+      if (!linked && r.state.phase !== 'protocol') for (const p of r.problems) if (p.kind === 'unknownArt') void shareCard({ phase: r.state.phase, text: p.text ?? '', picture: cardPicture(img, p.crop) })
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null
       setReading(r)
@@ -178,8 +183,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     }
   }
   const recheck = () => frame && void onFrame(frame, reading?.frame?.trigger)
-  // cards the reader couldn't name on this board: they're reported, so they can be added for everyone
-  const unknownCards = reading?.state.phase === 'protocol' ? [] : (reading?.problems ?? []).flatMap(p => (p.kind === 'unknownArt' ? [Number(/\d+/.exec(p.field)?.[0] ?? 0) + 1] : []))
 
   const answerPick = async (id: number, name: string) => {
     const asked = pickAsks.find(a => a.id === id)

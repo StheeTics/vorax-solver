@@ -17,7 +17,8 @@ export type Problem =
   | { kind: 'animating' }
   | { kind: 'unreadable'; field: FieldKey }
   /** hand: 5 when the card was in a Potion Kit's five-card hand */
-  | { kind: 'unknownArt'; field: FieldKey; crop: Rect; hand?: 5 }
+  /** text: the card's printed title as read, when the text reader ran (shared so the card can be added) */
+  | { kind: 'unknownArt'; field: FieldKey; crop: Rect; hand?: 5; text?: string }
   | { kind: 'unknownName'; name: string }
 
 /** What the reader saw, shared with a board to find out why a setup misreads: numbers and short texts only. */

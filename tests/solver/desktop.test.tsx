@@ -109,6 +109,10 @@ describe('the overlay card', () => {
   it('with a screen it can’t read, that is said instead of each tank’s numbers', () => {
     expect(overlayAsks(0, { 'tank1.activity': { sure: false } }, {}, false, ['cantRead'])).toEqual([`${TROUBLES.cantRead.card} Show me says what to check.`])
   })
+  it('says when an offered card isn’t one the Solver knows: the advice leaves it out', () => {
+    expect(overlayAsks(0, {}, {}, false, [], [2])).toEqual(['Card 2 isn’t a card the Solver knows: the advice leaves it out. Weigh it yourself.'])
+    expect(overlayAsks(0, {}, {}, false, [], [1, 3])[0]).toBe('Card 1 and Card 3 aren’t cards the Solver knows: the advice leaves them out. Weigh them yourself.')
+  })
 
   it('the card carries the open instrument question’s choices, to answer right there', () => {
     expect(overlayCard(null, false, ['Which instrument did you take?'], null, ['Clustered Eggs', 'Fouled Scraper', 'Rawhide Restraint']).choices).toEqual(['Clustered Eggs', 'Fouled Scraper', 'Rawhide Restraint'])
