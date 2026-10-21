@@ -20,7 +20,7 @@ import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
 import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
-import { cardPicture, shareCard } from './share/card'
+import { cardPicture, confirmUnknown, shareCard } from './share/card'
 import { useShare } from './share/useShare'
 import { sharedAdvice } from './share/snapshot'
 import { WhichPick, teachPick } from './board/WhichPick'
@@ -98,6 +98,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [trouble, setTrouble] = useState<Trouble | null>(null)
   // a pick it isn't sure of: the advice for each instrument it could be, and whether the best move differs
   const snapAgain = useRef<(() => void) | null>(null)
+  // the unrecognised cards of the last look (confirmUnknown)
+  const unknownSeen = useRef(new Set<string>())
   // a pick still being checked (the next boards look again) counts too, before any question is asked
   const [checking, setChecking] = useState<PickQuestion | null>(null)
   const openPick = pickAsks[0]?.question ?? checking
@@ -168,8 +170,14 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
         r = { ...raw, state: { ...raw.state, instruments: t.instruments, instrumentRounds: t.rounds }, fields: { ...fields, ...t.fields } }
       }
-      // a card the Solver couldn't name: shared (with sharing on) so it can be added for everyone
-      if (!linked && r.state.phase !== 'protocol') for (const p of r.problems) if (p.kind === 'unknownArt') void shareCard({ phase: r.state.phase, text: p.text ?? '', picture: cardPicture(img, p.crop) })
+      // a card the Solver couldn't name: shared (with sharing on) so it can be added for everyone, once a second look
+      // after it landed still can't name it
+      if (!linked && r.state.phase !== 'protocol') {
+        const u = confirmUnknown(unknownSeen.current, r.state.phase, r.state.round, r.problems)
+        unknownSeen.current = u.seen
+        for (const p of u.share) void shareCard({ phase: r.state.phase, text: p.text ?? '', picture: cardPicture(img, p.crop) })
+        if (u.relook) setTimeout(() => snapAgain.current?.(), RELOOK_MS)
+      }
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null
       setReading(r)

@@ -2,7 +2,7 @@
 // (the live-data workflow opens an issue for each new one): its printed title as read, which pick it was, and a
 // small JPEG of the card's face alone, never the screen. Only with sharing on, from the published site, and once
 // per card in this page.
-import type { Rect } from '../types'
+import type { Problem, Rect } from '../types'
 import { ENDPOINT, sendingAllowed } from './endpoint'
 import { loadShare } from './shareStore'
 
@@ -26,6 +26,18 @@ export async function shareCard(card: NewCard, deps: Deps = { on: loadShare(), a
   } catch {
     // not shared: the player can still report it
   }
+}
+
+/**
+ * The unrecognised cards to share: only those unrecognised on the look before too (same pick, round and slot), so a
+ * card caught sliding in, its face cut off, isn't taken for a new one when the next look reads it. `seen`: this look's
+ * unrecognised cards, for the next; `relook`: a card missed for the first time, worth another look once it's landed.
+ */
+export function confirmUnknown(before: Set<string>, phase: string, round: number | undefined, problems: Problem[]) {
+  const unknown = problems.filter((p): p is Extract<Problem, { kind: 'unknownArt' }> => p.kind === 'unknownArt')
+  const key = (p: (typeof unknown)[number]) => `${phase}|${round}|${p.field}`
+  const seen = new Set(unknown.map(key))
+  return { share: unknown.filter(p => before.has(key(p))), seen, relook: unknown.some(p => !before.has(key(p))) }
 }
 
 /** A small JPEG of the card at `crop` in the picture read, or nothing where there's no canvas. */
