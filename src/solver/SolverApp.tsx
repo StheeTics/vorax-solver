@@ -52,6 +52,8 @@ let askId = 0
 /** How long after a pick the Solver looks at the panel again: long enough for the new icon to land at the
  *  game's normal speed (the first picture is taken 0.4 s after the log goes quiet, measured at x4). */
 const RELOOK_MS = 1500
+/** Off while cards cut off mid-slide or under a hover are still shared as new ones (Oct 21). */
+const SHARE_NEW_CARDS = false
 
 
 export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
@@ -172,7 +174,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       }
       // a card the Solver couldn't name: shared (with sharing on) so it can be added for everyone, once a second look
       // after it landed still can't name it
-      if (!linked && r.state.phase !== 'protocol') {
+      if (SHARE_NEW_CARDS && !linked && r.state.phase !== 'protocol') {
         const u = confirmUnknown(unknownSeen.current, r.state.phase, r.state.round, r.problems)
         unknownSeen.current = u.seen
         for (const p of u.share) void shareCard({ phase: r.state.phase, text: p.text ?? '', picture: cardPicture(img, p.crop) })

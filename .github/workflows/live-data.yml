@@ -91,7 +91,9 @@ jobs:
           # new odds: re-measure the strengths, which then redeploys the site; new icons alone: redeploy
           if [ -n "$odds" ]; then gh workflow run strengths.yml; elif [ -n "$icons" ]; then gh workflow run deploy.yml; fi
 
+      # off while cards cut off mid-slide or under a hover are shared as new ones (Oct 21)
       - name: Open an issue for each new card
+        if: false
         env:
           GH_TOKEN: ${{ github.token }}
         run: npx vite-node scripts/live/newCards.ts --issues
