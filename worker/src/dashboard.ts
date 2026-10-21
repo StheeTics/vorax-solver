@@ -231,7 +231,6 @@ const LOOPS = [
   { file: 'live-data.yml', name: 'Odds from live data', every: 1 },
   { file: 'strengths.yml', name: 'Instrument strengths', every: null },
   { file: 'daily-check.yml', name: 'Daily check (simulation)', every: 24 },
-  { file: 'smarter-player.yml', name: 'Smarter player (nightly learning)', every: 24 },
   { file: 'issue-fixer.yml', name: 'Issue fixer', every: 1 },
   { file: 'deploy.yml', name: 'Website deploy', every: null },
   { file: 'desktop.yml', name: 'Windows app release', every: null, noRun: true },

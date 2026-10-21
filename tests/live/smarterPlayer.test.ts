@@ -26,23 +26,19 @@ describe('the gate a new board value must pass to be proposed', () => {
   })
 })
 
-describe('the smarter-player workflow', () => {
-  const t = readFileSync('.github/workflows/smarter-player.yml', 'utf8')
-  it('runs nightly, and only when the odds changed after the board value was trained (or by hand)', () => {
-    expect(t).toMatch(/cron: '\d+ \d+ \* \* \*'/)
-    expect(t).toContain('workflow_dispatch')
-    expect(t).toContain('src/data/liveWeights.ts')
-    expect(t).toContain('src/data/boardValue.json')
-  })
+describe('the smarter-player loop (scripts/sim/smarter.sh, run on the owner\'s PC)', () => {
+  const t = readFileSync('scripts/sim/smarter.sh', 'utf8')
   it('trains with the board value as shipped, fits, then gates the challenger against it', () => {
     expect(t).toContain('VALUE_MODEL=src/data/boardValue.json SEED0')
-    const order = ['scripts/sim/valueData.ts', 'scripts/sim/valueFit.ts', 'VALUE_MODEL=challenger.json', 'scripts/sim/gate.ts', 'gh pr create']
+    const order = ['scripts/sim/valueData.ts', 'scripts/sim/valueFit.ts', 'VALUE_MODEL=$out/challenger.json', 'scripts/sim/gate.ts', 'gh pr create']
     let at = -1
     for (const s of order) { const i = t.indexOf(s, at + 1); expect(i, s).toBeGreaterThan(at); at = i }
   })
-  it('only the last job can write, and it only proposes: a smarter-player/ branch and a pull request, never main', () => {
-    expect(t).toMatch(/^permissions:\s*\{\}/m)
-    expect(t.match(/contents: write/g)).toHaveLength(1)
+  it('works on a copy of origin/main, at the lowest priority', () => {
+    expect(t).toContain('git worktree add -q --detach "$work" origin/main')
+    expect(t).toContain('nice -n 19')
+  })
+  it('only proposes: a smarter-player/ branch and a pull request, never main', () => {
     expect(t).toContain('refs/heads/smarter-player/')
     expect(t).not.toMatch(/git push[^\n]*\bmain\b/)
   })
