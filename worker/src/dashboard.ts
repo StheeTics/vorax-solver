@@ -1,6 +1,7 @@
 // The private analytics page (/dashboard). It holds no data: it asks for the dashboard password once per
-// browser, then reads /v1/stats with it, the odds history and the card-effect check from the public repo,
-// and the automated loops' runs from GitHub's public API.
+// browser, then reads /v1/stats with it, the simulated results per day from the public repo, and the automated
+// loops' runs from GitHub's public API. The collector keeps more than is shown here (latest games, problems by
+// setup, site versions; data/live/rules-check.json in the repo): /v1/stats still returns it.
 // Design: a neutral palette that follows the system's light or dark mode, one accent colour, red and green
 // kept for status, key numbers first, then health, trends and the detail tables, in a responsive grid.
 export const DASHBOARD_HTML = `<!doctype html>
@@ -49,6 +50,12 @@ export const DASHBOARD_HTML = `<!doctype html>
   .card h2 { margin: 0; font-size: 15px; font-weight: 600; }
   .card > .sub { margin: 2px 0 14px; }
   .scroll { overflow-x: auto; }
+  .card .scroll + h2 { margin-top: 20px; }
+  .lead { margin: 0 0 10px; font-size: 14px; }
+  /* long lists show a page at a time, so no section runs the page long */
+  .pager { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 13px; color: var(--muted); }
+  .pager button { font: inherit; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); color: var(--text); cursor: pointer; }
+  .pager button:disabled { opacity: 0.4; cursor: default; }
 
   table { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
   th { padding: 0 10px 8px; color: var(--muted); font-size: 12px; font-weight: 500; text-align: left; white-space: nowrap; border-bottom: 1px solid var(--border); }
@@ -137,34 +144,17 @@ export const DASHBOARD_HTML = `<!doctype html>
         <div id="real"></div>
       </section>
       <section class="card half">
-        <h2>Odds and advice over time</h2>
-        <p class="sub">Each change, measured on the same 240 simulated games.</p>
+        <h2>Simulated results per day</h2>
+        <p class="sub">The advice as shipped, on the same 240 simulated games each time (the daily check, when the odds change).</p>
         <div class="scroll" id="history"></div>
-      </section>
-      <section class="card">
-        <h2>Card effects in real games</h2>
-        <p class="sub">Real moves replayed in the simulator. One it can't reproduce points at a card effect it gets wrong, or a misread board.</p>
-        <div class="scroll" id="rules"></div>
-      </section>
-      <section class="card">
-        <h2>Latest games</h2>
-        <p class="sub">Score: the final score when the game finished, else the score on its last shared board.</p>
-        <div class="scroll" id="recent"></div>
+        <h2>Smarter player</h2>
+        <p class="sub">Each run trains a challenger and plays it against the current player on 240 games that are the same every run. It ships only if it clearly wins.</p>
+        <div class="scroll" id="smarter"></div>
       </section>
       <section class="card half">
         <h2>How far games got</h2>
-        <p class="sub">Games by the highest round they reached.</p>
+        <p class="sub">Games by the highest round read for sure. Round not read: the reader couldn’t read the round on any of the game’s boards.</p>
         <div id="rounds"></div>
-      </section>
-      <section class="card">
-        <h2>Problems by setup</h2>
-        <p class="sub">Boards read with something unsure, and with a tank’s numbers unsure, by the player’s screen shape, window (the app tells windowed from borderless), HDR and browser. A setup far above the others is where to look.</p>
-        <div class="scroll" id="problems"></div>
-      </section>
-      <section class="card half">
-        <h2>Games per site version</h2>
-        <p class="sub">The website's build each game was played on.</p>
-        <div class="scroll" id="versions"></div>
       </section>
     </div>
   </div>
@@ -172,7 +162,7 @@ export const DASHBOARD_HTML = `<!doctype html>
 <script>
 const KEY = 'vorax.dashboard'
 const HISTORY = 'https://raw.githubusercontent.com/tidewarden/tli-vorax-simulator/main/data/live/history.jsonl'
-const RULES = 'https://raw.githubusercontent.com/tidewarden/tli-vorax-simulator/main/data/live/rules-check.json'
+const SMARTER = 'https://raw.githubusercontent.com/tidewarden/tli-vorax-simulator/main/data/sim/smarter-history.jsonl'
 const $ = id => document.getElementById(id)
 const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
 const pct = x => Math.round(100 * x) + '%'
@@ -181,6 +171,27 @@ const num = v => Math.round(v).toLocaleString('en-US')
 // cells are escaped unless given as { html }
 const cell = c => (c && typeof c === 'object' && 'html' in c ? c.html : esc(c))
 const table = (head, rows, right = []) => '<table><thead><tr>' + head.map((h, i) => '<th' + (right.includes(i) ? ' class="n"' : '') + '>' + esc(h) + '</th>').join('') + '</tr></thead><tbody>' + rows.map(r => '<tr>' + r.map((c, i) => '<td' + (right.includes(i) ? ' class="n"' : '') + '>' + cell(c) + '</td>').join('') + '</tr>').join('') + '</tbody></table>'
+// a long list, a page at a time: the newest rows first
+const PAGE = 10
+const pages = {}
+function paged(id, head, rows, right) {
+  pages[id] = { head, rows, right, at: 0 }
+  drawPage(id)
+}
+function drawPage(id) {
+  const p = pages[id]
+  const n = Math.max(1, Math.ceil(p.rows.length / PAGE))
+  p.at = Math.min(Math.max(0, p.at), n - 1)
+  const button = (step, text, on) => '<button type="button" data-page="' + id + '" data-step="' + step + '"' + (on ? '' : ' disabled') + '>' + text + '</button>'
+  $(id).innerHTML = table(p.head, p.rows.slice(p.at * PAGE, (p.at + 1) * PAGE), p.right)
+    + (n > 1 ? '<div class="pager">' + button(-1, 'Previous', p.at > 0) + '<span>Page ' + (p.at + 1) + ' of ' + n + '</span>' + button(1, 'Next', p.at < n - 1) + '</div>' : '')
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-page]')
+  if (!b) return
+  pages[b.dataset.page].at += Number(b.dataset.step)
+  drawPage(b.dataset.page)
+})
 const pill = (kind, text) => '<span class="pill ' + kind + '">' + esc(text) + '</span>'
 
 // A chart frame: gridlines at a few round values, labels on the left, days along the bottom.
@@ -317,30 +328,32 @@ async function load(pw) {
       : '<p class="sub">Predicted against real appears once boards carry the advice shown (from 2026-10-19) and their games finish.</p>')
   const rounds = Object.entries(s.rounds).sort((a, b) => a[0] - b[0])
   const most = Math.max(1, ...rounds.map(x => x[1]))
-  $('rounds').innerHTML = table(['Round', 'Games', ''], rounds.map(([r, n]) => [r, n, { html: '<div class="hbar"><i style="width:' + Math.round((100 * n) / most) + '%"></i></div>' }]), [1])
-  const score = g => (g.score ? num(g.score) : '–') + (g.finished ? '' : g.score ? ' · round ' + g.round : '')
-  $('recent').innerHTML = table(['Started (UTC)', 'Where', 'Boards', 'Round', 'Score', '', 'Instruments'], s.recent.map(g => [
-    g.start.replace('T', ' ').slice(0, 16), g.app ? 'App' : 'Website', g.boards, g.round, score(g),
-    { html: g.finished ? (g.score >= 950000 ? pill('ok', 'Rainbow') : pill('idle', 'Finished')) : '' },
-    { html: '<span class="sub">' + esc(g.instruments.join(', ')) + '</span>' },
-  ]), [2, 3, 4])
-  $('problems').innerHTML = s.problems && s.problems.length
-    ? table(['Setup', '', 'Boards', 'Something unsure', 'Tank numbers unsure'], s.problems.map(p => [p.by, p.group, num(p.boards), pct(p.unsure), pct(p.numbers)]), [2, 3, 4])
-    : '<p class="sub">No boards with their setup yet: they come from the Solver since this section was added.</p>'
-  $('versions').innerHTML = table(['Version', 'Games'], Object.entries(s.versions).sort((a, b) => b[1] - a[1]), [1])
-  try {
-    const rc = await (await fetch(RULES, { cache: 'no-store' })).json()
-    $('rules').innerHTML = '<div class="stat"><div><span>Moves replayed</span><b>' + rc.checked + '</b></div><div><span>Reproduced exactly</span><b>' + rc.reproduced + ' (' + pct(rc.reproduced / Math.max(1, rc.checked)) + ')</b></div><div><span>Not reproduced</span><b>' + rc.missed.length + '</b></div></div>'
-      + (rc.missed.length ? table(['Round', 'Cards on offer', 'Instruments', 'Closest the simulator got', 'Tanks off'], rc.missed.map(m => [m.round, m.hand.join(', '), { html: '<span class="sub">' + esc(m.instruments.join(', ')) + '</span>' }, m.best, m.gap]), [0, 4]) : '')
-  } catch (e) {
-    $('rules').innerHTML = '<p class="sub">The card-effect check couldn’t be read from the repo.</p>'
-  }
+  paged('rounds', ['Round', 'Games', ''], rounds.map(([r, n]) => [r === '0' ? 'Round not read' : r, n, { html: '<div class="hbar"><i style="width:' + Math.round((100 * n) / most) + '%"></i></div>' }]), [1])
   try {
     const t = await (await fetch(HISTORY, { cache: 'no-store' })).text()
-    const h = t.split('\\n').filter(Boolean).map(l => JSON.parse(l)).reverse()
-    $('history').innerHTML = h.length ? table(['Date', 'Change', 'Reached 950k', 'Average', 'Median'], h.map(e => [e.date, e.change, e.reached === undefined ? '–' : pct(e.reached), e.average ? k(e.average) : '–', e.median ? k(e.median) : '–']), [2, 3, 4]) : '<p class="sub">No history yet.</p>'
+    // only the simulated results: the odds changes stay in the file
+    const h = t.split('\\n').filter(Boolean).map(l => JSON.parse(l)).filter(e => e.reached !== undefined).reverse()
+    if (h.length) paged('history', ['Date', 'What', 'Reached 950k', 'Average', 'Median'], h.map(e => [e.date, e.change, pct(e.reached), e.average ? k(e.average) : '–', e.median ? k(e.median) : '–']), [2, 3, 4])
+    else $('history').innerHTML = '<p class="sub">No simulated results yet.</p>'
   } catch (e) {
-    $('history').innerHTML = '<p class="sub">The history couldn’t be read from the repo.</p>'
+    $('history').innerHTML = '<p class="sub">The simulated results couldn’t be read from the repo.</p>'
+  }
+  try {
+    const t = await (await fetch(SMARTER, { cache: 'no-store' })).text()
+    const h = t.split('\\n').filter(Boolean).map(l => JSON.parse(l)).filter(e => e.fixed).reverse()
+    // reached 950k on the fixed games: "166 (69%)"
+    const hit = (x, n) => x.reached + ' (' + pct(x.reached / n) + ')'
+    const signed = (v, unit) => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v) + unit
+    if (h.length) {
+      const now = h[0]
+      $('smarter').innerHTML = '<p class="lead">The current player reaches 950k in <b>' + hit(now.pass ? now.fixed.challenger : now.fixed.shipped, now.fixed.games) + '</b> of the ' + now.fixed.games + ' fixed games.</p><div id="smarter-runs"></div>'
+      paged('smarter-runs', ['Date', 'Current player', 'Challenger', 'Difference', 'Result'], h.map(e => {
+        const n = e.fixed.games, a = e.fixed.shipped, b = e.fixed.challenger
+        return [e.date, hit(a, n), hit(b, n), signed(b.reached - a.reached, ' games') + ' · avg ' + signed(Math.round((b.average - a.average) / 1000), 'k'), { html: e.pass ? pill('ok', 'Shipped') : pill('idle', 'Kept current') }]
+      }), [1, 2, 3])
+    } else $('smarter').innerHTML = '<p class="sub">No runs yet.</p>'
+  } catch (e) {
+    $('smarter').innerHTML = '<p class="sub">The smarter player’s history couldn’t be read from the repo.</p>'
   }
   $('login').hidden = true
   $('out').hidden = false
