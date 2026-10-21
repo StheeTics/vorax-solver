@@ -78,7 +78,14 @@ export function unsureFields(r: Reading, corrected: FieldKey[]): FieldKey[] {
  *  to send it with, so it's shared at once. */
 export const isFinalBoard = (r: Reading) => r.state.phase === 'protocol' && r.state.round === 13
 
-export const startsRun = (r: Reading, trigger: string) => trigger === 'screen' || (r.state.phase === 'instrument' && r.state.round === 1)
+/** A game's very start: the first instrument offer, nothing taken yet, the round read for sure (an unread round
+ *  falls back to 1, and mustn't start a game). */
+export const atStart = (r: Reading) => r.state.phase === 'instrument' && r.state.round === 1 && !r.state.instruments.length && r.fields.round?.sure !== false
+
+/** A new run: the game screen opening, or arriving at a game's start. While the first offer stays up (rerolled,
+ *  read again, the screen reported again) it's the same run: each of those used to start one, so most "games"
+ *  seemed to stop at round 1. */
+export const startsRun = (r: Reading, trigger: string, wasAtStart = false) => (trigger === 'screen' || atStart(r)) && !(wasAtStart && atStart(r))
 
 export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: string; source: 'live'; trigger: string; shelley: number; corrected: FieldKey[]; unsure: FieldKey[]; advice?: SharedAdvice; debug?: SharedDebug; install?: string }): Snapshot {
   const s = r.state

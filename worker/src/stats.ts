@@ -56,8 +56,8 @@ export interface Stats {
 const RECENT = 25
 
 export function summarize(rows: StatRow[], now = new Date()): Stats {
-  const games = new Map<string, { start: string; day: string; boards: number; round: number; app: boolean; version: string; instruments: string[]; final: number | null; predictions: number[]; last: number; score: number }>()
-  const days = new Map<string, { boards: number; games: Set<string>; players: Set<string> }>()
+  const games = new Map<string, { start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; instruments: string[]; final: number | null; predictions: number[]; last: number; score: number }>()
+  const days = new Map<string, { boards: number; players: Set<string> }>()
   let corrected = 0
   let unsure = 0
   const installs = new Set<string>()
@@ -71,9 +71,8 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
       continue
     }
     const day = r.received.slice(0, 10)
-    const d = days.get(day) ?? { boards: 0, games: new Set<string>(), players: new Set<string>() }
+    const d = days.get(day) ?? { boards: 0, players: new Set<string>() }
     d.boards++
-    d.games.add(b.run)
     d.players.add(r.client)
     days.set(day, d)
     if (b.install) {
@@ -92,7 +91,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
       setups.set(k, g)
     }
     const app = /-overlay$/.test(b.app)
-    const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [], last: -1, score: 0 }
+    const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, read: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [], last: -1, score: 0 }
     g.boards++
     const seq = b.seq ?? g.boards
     if (seq >= g.last) {
@@ -100,18 +99,23 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
       g.score = total(b)
     }
     g.round = Math.max(g.round, b.round)
+    // an unread round falls back to 1: only a round read for sure says how far the game got
+    if (!b.unsure?.includes('round')) g.read = Math.max(g.read, b.round)
     if (b.instruments?.length) g.instruments = b.instruments
     // a final score with an unsure number isn't one
     if (b.round === 13 && b.phase === 'protocol' && !b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.final = total(b)
     if (typeof b.advice?.reached === 'number') g.predictions.push(b.advice.reached)
     games.set(b.run, g)
   }
-  const list = [...games.values()]
+  // a game that never got past its first instrument offer wasn't played: the Solver used to start a new game ID on
+  // every board there (a reroll, a recheck), so most "games" seemed to stop at round 1. Those boards still count.
+  const list = [...games.values()].filter(g => g.round > 1 || g.instruments.length > 0)
   const today = now.toISOString().slice(0, 10)
   const rounds: Record<number, number> = {}
   const versions: Record<string, number> = {}
   for (const g of list) {
-    rounds[g.round] = (rounds[g.round] ?? 0) + 1
+    // 0: the round was never read for sure (a screen the reader struggles with)
+    rounds[g.read] = (rounds[g.read] ?? 0) + 1
     versions[g.version] = (versions[g.version] ?? 0) + 1
   }
   const finished = list.filter(g => g.final !== null)
@@ -136,7 +140,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
       const played = list.filter(g => g.day === day)
       const done = played.filter(g => g.final !== null)
       return {
-        day, boards: d.boards, games: d.games.size, players: d.players.size, website: played.filter(g => !g.app).length, app: played.filter(g => g.app).length,
+        day, boards: d.boards, games: played.length, players: d.players.size, website: played.filter(g => !g.app).length, app: played.filter(g => g.app).length,
         finished: done.length, averageFinal: done.length ? Math.round(done.reduce((s, g) => s + g.final!, 0) / done.length) : null,
       }
     }),

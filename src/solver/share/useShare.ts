@@ -3,7 +3,7 @@ import type { FieldKey, Reading, Source } from '../types'
 import { appTag, ENDPOINT, sendingAllowed } from './endpoint'
 import { createQueue } from './queue'
 import { installId, loadShare } from './shareStore'
-import { debugOf, isFinalBoard, shareable, startsRun, toSnapshot, unsureFields, type GameWindow, type SharedAdvice, type Snapshot } from './snapshot'
+import { atStart, debugOf, isFinalBoard, shareable, startsRun, toSnapshot, unsureFields, type GameWindow, type SharedAdvice, type Snapshot } from './snapshot'
 import { environment } from './setup'
 import { desktopBridge } from '../desktop/bridge'
 
@@ -30,6 +30,8 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
   // in Vorax Overlay, the game window as last measured: asked for with each board, used with the next
   const win = useRef<GameWindow | null>(null)
   const lastNotGame = useRef(false)
+  // the last board shared was at a game's start: the next one there is the same game
+  const lastAtStart = useRef(false)
 
   if (!queue.current && sendingAllowed()) queue.current = createQueue({ send: post })
 
@@ -42,7 +44,8 @@ export function useShare(reading: Reading | null, source: Source, shelley: numbe
     if (notGame && lastNotGame.current) return
     lastNotGame.current = notGame
     const trigger = h.reading.frame?.trigger ?? 'screenshot'
-    if (!run.current.id || startsRun(h.reading, trigger)) run.current = { id: crypto.randomUUID(), seq: 0 }
+    if (!run.current.id || startsRun(h.reading, trigger, lastAtStart.current)) run.current = { id: crypto.randomUUID(), seq: 0 }
+    lastAtStart.current = atStart(h.reading)
     const unsure = unsureFields(h.reading, h.corrected)
     const debug = debugOf(h.reading, unsure, environment(), win.current)
     queue.current.add(toSnapshot(h.reading, { run: run.current.id, seq: run.current.seq++, app: appTag(BUILD), source: 'live', trigger, shelley, corrected: h.corrected, unsure, advice: h.advice, debug, install: installId() }))

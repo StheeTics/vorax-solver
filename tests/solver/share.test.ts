@@ -48,8 +48,18 @@ describe('what is shared', () => {
 
   it('a run starts at the game screen or a round-1 instrument offer', () => {
     expect(startsRun(reading, 'screen')).toBe(true)
-    expect(startsRun({ ...reading, state: { ...reading.state, phase: 'instrument', round: 1 } }, 'board')).toBe(true)
+    expect(startsRun({ ...reading, state: { ...reading.state, phase: 'instrument', round: 1, instruments: [] } }, 'board')).toBe(true)
     expect(startsRun(reading, 'board')).toBe(false)
+  })
+  it('while the first offer stays up (rerolled, read again, the screen reported again) it stays the same run', () => {
+    const first = { ...reading, state: { ...reading.state, phase: 'instrument' as const, round: 1, instruments: [] } }
+    expect(startsRun(first, 'board', true)).toBe(false)
+    expect(startsRun(first, 'manual', true)).toBe(false)
+    expect(startsRun(first, 'screen', true)).toBe(false)
+  })
+  it('an unread round (it falls back to 1) starts no run', () => {
+    const unread = { ...reading, state: { ...reading.state, phase: 'instrument' as const, round: 1, instruments: [] }, fields: { ...reading.fields, round: { sure: false } } }
+    expect(startsRun(unread, 'board')).toBe(false)
   })
 
   it('a snapshot copies the board and carries no time and nothing about the player', () => {

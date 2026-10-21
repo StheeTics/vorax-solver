@@ -24,6 +24,40 @@ describe('boards shared with unsure fields', () => {
   })
 })
 
+describe('games that never got past the first instrument offer', () => {
+  // a reroll and a recheck at the first offer each used to start a new game ID
+  const first = { phase: 'instrument' }
+  const rows = [
+    row('2026-10-19T09:00:00Z', 'a', board('r1', 1, first)),
+    row('2026-10-19T09:01:00Z', 'a', board('r2', 1, first)),
+    row('2026-10-19T09:02:00Z', 'a', board('r3', 1, first)),
+    row('2026-10-19T09:03:00Z', 'a', board('r3', 1, { instruments: ['Incubation Sac'] })),
+    row('2026-10-19T09:30:00Z', 'a', board('r3', 13, { phase: 'protocol', instruments: ['Incubation Sac'] })),
+  ]
+  const s = summarize(rows, new Date('2026-10-19T12:00:00Z'))
+  it('aren’t counted as games, nor as games stopping at round 1', () => {
+    expect(s.totals.games).toBe(1)
+    expect(s.days[0].games).toBe(1)
+    expect(s.rounds).toEqual({ 13: 1 })
+  })
+  it('their boards still count', () => {
+    expect(s.totals.boards).toBe(5)
+  })
+})
+
+describe('how far a game got', () => {
+  it('counts only rounds read for sure: an unread round falls back to 1, so a game with none read is its own row (0)', () => {
+    const rows = [
+      row('2026-10-19T09:00:00Z', 'a', board('g1', 1, { instruments: ['Incubation Sac'], unsure: ['round'] })),
+      row('2026-10-19T09:10:00Z', 'a', board('g1', 1, { instruments: ['Incubation Sac'], unsure: ['round'] })),
+      row('2026-10-19T09:00:00Z', 'b', board('g2', 1, { instruments: ['Incubation Sac'] })),
+      row('2026-10-19T09:10:00Z', 'b', board('g2', 9, { instruments: ['Incubation Sac'] })),
+      row('2026-10-19T09:20:00Z', 'b', board('g2', 1, { instruments: ['Incubation Sac'], unsure: ['round'] })),
+    ]
+    expect(summarize(rows, new Date('2026-10-19T12:00:00Z')).rounds).toEqual({ 0: 1, 9: 1 })
+  })
+})
+
 describe('the dashboard summary', () => {
   const rows = [
     row('2026-10-18T10:00:00Z', 'a', board('g1', 1)),
