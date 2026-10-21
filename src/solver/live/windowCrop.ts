@@ -15,7 +15,8 @@ export function cropTo<T extends { width: number; height: number; data: Uint8Cla
 }
 
 /** The title bar: a band of rows of one colour (Windows' light or dark title), from the top. */
-const TITLE = { min: 16, max: 80, share: 0.8, near: 24 }
+/** inside: a row in the title whatever the edge; edge: the most rows the window's edge spans, blurred */
+const TITLE = { min: 16, max: 80, share: 0.8, near: 24, inside: 5, edge: 4 }
 
 /** The mean colour of a row, and the share of its pixels near it. */
 function rowColour(img: { width: number; data: Uint8ClampedArray }, y: number): { mean: [number, number, number]; even: number } {
@@ -32,27 +33,30 @@ function rowColour(img: { width: number; data: Uint8ClampedArray }, y: number): 
 
 /**
  * The game's picture inside a capture of its window, found from the picture: a title bar (rows of one colour,
- * not the game's near-black) across the top under a 1-pixel border, a 1-pixel border on the sides and bottom.
- * Null for a borderless or fullscreen game. Seen on Windows 11: 30 rows of title under a border row, at 1080
- * and at 1440 (issues #2, #3).
+ * not the game's near-black) across the top under the window's edge, and an edge as thick on the sides and bottom.
+ * Null for a borderless or fullscreen game. Seen on Windows 11: 30 rows of title under a 1-row edge, at 1080 and
+ * 1440 (issues #2, #3). A capture shrunk or stretched to fit (a 4K screen at 150%: issues #5, #7, #10) blurs that
+ * edge over a row or two, so the title is found from inside it, and the edge taken as however many rows it spans.
  */
 export function windowedGame(img: { width: number; height: number; data: Uint8ClampedArray }): Rect | null {
   if (img.height < 200) return null
-  const first = rowColour(img, 1)
+  // a row well inside the title, whatever the edge above it
+  const inside = rowColour(img, TITLE.inside)
   // a title bar isn't black (the game's top edge, a masked test frame, is)
-  if (first.even < TITLE.share || Math.max(...first.mean) < 28) return null
-  let end = 1
-  for (let y = 2; y < TITLE.max; y++) {
-    // a row of title text is less even, but still, on average, the title's colour
-    if (!rowColour(img, y).mean.every((v, c) => Math.abs(v - first.mean[c]) <= 12)) break
-    end = y
-  }
-  if (end < TITLE.min) return null
-  // a window's edge above the title and a border under it, each a line of another colour: a game screen that's
-  // evenly dark at the top (a loading screen) has neither
-  const differs = (y: number) => rowColour(img, y).mean.some((v, c) => Math.abs(v - first.mean[c]) > 8)
-  if (!differs(0) || !differs(end + 1)) return null
-  // the game starts under the title's bottom border row
-  const top = end + 2
-  return { x: 1, y: top, w: img.width - 2, h: img.height - top - 1 }
+  if (inside.even < TITLE.share || Math.max(...inside.mean) < 28) return null
+  const isTitle = (y: number) => rowColour(img, y).mean.every((v, c) => Math.abs(v - inside.mean[c]) <= 12)
+  // the title's first row: the rows above it are the window's edge
+  let start = TITLE.inside
+  while (start > 0 && isTitle(start - 1)) start--
+  // a row of title text is less even, but still, on average, the title's colour
+  let end = TITLE.inside
+  while (end + 1 < TITLE.max && isTitle(end + 1)) end++
+  if (end - start + 1 < TITLE.min) return null
+  // an edge above the title and a border under it, each a line of another colour: a game screen that's evenly
+  // dark at the top (a loading screen) has neither
+  const differs = (y: number) => rowColour(img, y).mean.some((v, c) => Math.abs(v - inside.mean[c]) > 8)
+  if (start === 0 || start > TITLE.edge || !differs(end + 1)) return null
+  // the edge is `start` rows thick, on every side; the game starts under the title's border, as thick
+  const top = end + 1 + start
+  return { x: start, y: top, w: img.width - 2 * start, h: img.height - top - start }
 }
