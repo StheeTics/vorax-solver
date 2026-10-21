@@ -12,7 +12,7 @@ export interface LiveWeights {
 }
 
 export const LIVE_WEIGHTS: LiveWeights = {
-  updated: '2026-10-20',
+  updated: '2026-10-21',
   supremeChance: 0.013,
   potionOffer: {
     'Probiotic Enzyme Solution': 1.3997486597499431,
@@ -32,7 +32,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Compound Leech Solution': 1,
     'Digestive Enzyme Solution': 1,
     'Vivigenic Powder': 1.6415359154651594,
-    'Potent Xenopurge Powder': 1,
+    'Potent Xenopurge Powder': 1.4602390253660733,
     'Xenopurge Powder': 1,
     'Pure Leech Solution': 0.9270249224306107,
     'Bewitching Tincture': 1,
@@ -42,7 +42,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Twin Hormone - Pest': 1.538,
     'Spinal Solution - Agito': 1.538,
     'Anesthetic Tincture - Agito': 1.538,
-    'Slender-Limb Powder - Bone Sentry': 1.538,
+    'Slender-Limb Powder - Bone Sentry': 2.19035853804911,
     'Twin Hormone - Bone Sentry': 1.538,
     'Anesthetic Tincture - Aemberon': 1.538,
     'Spinal Solution - Aemberon': 1.538,
@@ -50,7 +50,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Targeted Xeno-Hormone': 0.7775696441677071,
     'Potion Kit (Large)': 0.878,
     'Potion Kit (Small)': 0.878,
-    'Rare Potion Kit (Small)': 1.6109949489091089
+    'Rare Potion Kit (Small)': 0.8986086309945066
   },
   boxOffer: {
     'Probiotic Enzyme Solution': 1,
@@ -89,14 +89,14 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.13120819718391608,
-      'Incubation Sac': 0.10096880798918542,
-      'Hyperplastic Frontal Lobe': 0.08508031536144559,
-      'Hypertrophic Pituitary': 0.1619601183988964,
-      'Adherent Metatarsals': 0.10045627596893576,
-      'Contracted Claws': 0.14812175385215526,
-      'Aberrant Sprout': 0.16503531052039444,
-      'Prismatic Liver': 0.09734395556082358
+      'Chrysalis Specimen': 0.11234786820887727,
+      'Incubation Sac': 0.08673488271048037,
+      'Hyperplastic Frontal Lobe': 0.06985359681380969,
+      'Hypertrophic Pituitary': 0.13941613697422853,
+      'Adherent Metatarsals': 0.08411537282996251,
+      'Contracted Claws': 0.1283559841453753,
+      'Aberrant Sprout': 0.13534134382675628,
+      'Prismatic Liver': 0.0742194466146728
     },
     advanced: {
       'Clustered Eggs': 1,
@@ -121,7 +121,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
   spawnRarity: {
     normal: 43.98493535769686,
     magic: 28.425974506855187,
-    rare: 17.26303751545767,
-    boss: 20.96270306486954
+    rare: 18.59911442235504,
+    boss: 17.9549177416518
   }
 }
