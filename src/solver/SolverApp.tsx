@@ -263,9 +263,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
           <ShelleyPicker level={shelley} onChange={changeShelley} />
         </section>
       )}
-      <aside className={styles.news} role="note" aria-label="Solver updated">
-        <strong>Updated Oct 21: a smarter Solver.</strong> In simulated games, it now reaches 950,000 about 20% more often than before Oct 20.
-      </aside>
 
       {linked ? (
         <p className={styles.demo} role="note" aria-label="Demo board">
