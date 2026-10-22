@@ -1,5 +1,3 @@
-import { Attribution } from '@/ui/Attribution'
-import { Footnote } from '@/ui/Footnote'
 import { SIMULATOR_URL, SOLVER_URL } from '@/ui/links'
 import styles from './Landing.module.css'
 
@@ -55,11 +53,6 @@ export function Landing() {
           </li>
         </ol>
       </section>
-
-      <footer className={styles.footer}>
-        <Attribution className={styles.credit} />
-        <Footnote className={styles.footnote} />
-      </footer>
     </main>
   )
 }

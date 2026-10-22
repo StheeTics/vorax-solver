@@ -2,12 +2,13 @@ import { act, render, screen, within } from '@testing-library/react'
 import { SolverApp } from '@/solver/SolverApp'
 import { HOME_URL, SUPPORT_URL } from '@/ui/links'
 
-it('has a home link, the privacy panel and the attribution', () => {
+it('has a home link and the privacy panel, with no credit line or fan-made footnote', () => {
   render(<SolverApp />)
   expect(screen.getByRole('link', { name: /home/i }).getAttribute('href')).toBe(HOME_URL)
   expect(screen.getByText('What can this see?')).toBeTruthy()
   expect(screen.getByText('Never clicks or types for you.')).toBeTruthy()
-  expect(screen.getByRole('link', { name: 'Tartarus Simulator' })).toBeTruthy()
+  expect(screen.queryByText(/used with permission/)).toBeNull()
+  expect(screen.queryByText(/Fan-made practice tool/)).toBeNull()
 })
 
 it('where Live can’t run, it says so and points to the Windows app', () => {

@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ScreenState } from '@/strategy/advisor'
-import { Attribution } from '@/ui/Attribution'
-import { Footnote } from '@/ui/Footnote'
 import { DOWNLOAD_URL, HOME_URL, SOLVER_URL, SUPPORT_URL } from '@/ui/links'
 import { loadShelleyLevel, saveShelleyLevel, shelleyChosen } from '@/ui/settingsStore'
 import { ShelleyPicker } from '@/ui/ShelleyPicker'
@@ -270,7 +268,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             <li>With each board, to find out why some setups misread: the picture’s size, your screen’s scaling, whether it’s HDR, your browser and its version, how the numbers read, and in the app whether the game is windowed. No picture, no name, nothing that lasts from one day to the next.</li>
             <li>When you say which instrument you picked, shares that name and the icon's small grey pattern, never a screenshot.</li>
           </ul>
-          <Attribution />
         </details>
       </header>
       {askShelley && (
@@ -344,8 +341,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       <div id="report">
         <ReportBox reading={reading} corrections={corrections} source={source} frame={frame} />
       </div>
-
-      <Footnote className={styles.footnote} />
     </main>
   )
 }

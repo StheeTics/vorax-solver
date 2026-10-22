@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Footnote } from './Footnote'
 import { FullscreenButton } from './FullscreenButton'
 import { ShelleyPicker } from './ShelleyPicker'
 import { GuideLink } from './GuideLink'
@@ -34,7 +33,6 @@ export function MainMenu({ onPlay, onSandbox }: Props) {
       </div>
       <ShelleyPicker level={level} onChange={change} />
       <FullscreenButton className={`ghost-button ${styles.fsButton}`} />
-      <Footnote className={styles.footnote} />
     </div>
   )
 }

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { Landing } from '@/landing/Landing'
 import { MainMenu } from '@/ui/MainMenu'
-import { HOME_URL, TARTARUS_URL } from '@/ui/links'
+import { HOME_URL } from '@/ui/links'
 
 it('landing links to the simulator and to the solver in the browser', () => {
   render(<Landing />)
@@ -22,10 +22,10 @@ it('landing shows the read-only line', () => {
   expect(screen.getByText('Read-only. It looks at your screen and log; it never clicks or types for you.')).toBeTruthy()
 })
 
-it('landing credits Tartarus Simulator', () => {
+it('landing has no credit line or fan-made footnote', () => {
   render(<Landing />)
-  expect(screen.getByRole('link', { name: 'Tartarus Simulator' }).getAttribute('href')).toBe(TARTARUS_URL)
-  expect(screen.getByText(/used with permission/)).toBeTruthy()
+  expect(screen.queryByText(/used with permission/)).toBeNull()
+  expect(screen.queryByText(/Fan-made practice tool/)).toBeNull()
 })
 
 it('main menu links home', () => {

@@ -15,11 +15,6 @@ function expectIssueLink() {
   expect(link.getAttribute('rel')).toContain('noopener')
 }
 
-it('main menu has a Report an issue link', () => {
-  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} />)
-  expectIssueLink()
-})
-
 it('end screen has a Report an issue link', () => {
   const s = createGame(DEFAULT_SETTINGS, undefined, 1)
   render(<EndScreen final={s} sandbox={false} onRestart={() => {}} onReplaySetup={() => {}} onMenu={() => {}} />)
@@ -28,11 +23,11 @@ it('end screen has a Report an issue link', () => {
 
 import { GameScreen } from '@/ui/game/GameScreen'
 
-it('the fan-made footnote with the issue link shows during gameplay', () => {
+it('no fan-made footnote on the main menu or during gameplay', () => {
+  render(<MainMenu onPlay={() => {}} onSandbox={() => {}} />)
   const s = createGame(DEFAULT_SETTINGS, undefined, 1)
   render(<GameScreen initial={s} sandbox={false} onExit={() => {}} onEnd={() => {}} />)
-  expect(screen.getByText(/Fan-made practice tool/)).toBeTruthy()
-  expectIssueLink()
+  expect(screen.queryByText(/Fan-made practice tool/)).toBeNull()
 })
 
 it('sandbox mode is disabled: no Sandbox button on the main menu', () => {
