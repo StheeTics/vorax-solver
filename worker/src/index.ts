@@ -43,8 +43,9 @@ interface D1Like {
 }
 
 const ORIGIN = 'https://tidewarden.github.io'
-/** also the local test server: Vorax Overlay pointed at it plays real games (any other origin gets the site's) */
-const ORIGINS = [ORIGIN, 'http://localhost:5173']
+/** the site's second home while both are served (Cloudflare Pages, deploy.yml), and the local test server:
+ *  Vorax Overlay pointed at it plays real games (any other origin gets the site's) */
+const ORIGINS = [ORIGIN, 'https://voraxlab.pages.dev', 'http://localhost:5173']
 const DAILY = 1500
 const MAX_BATCH = 10
 const MAX_BYTES = 64_000

@@ -1,3 +1,5 @@
+# Builds the site and publishes it to GitHub Pages (https://tidewarden.github.io/tli-vorax-simulator/) and, once
+# its token is set, Cloudflare Pages (https://voraxlab.pages.dev/tli-vorax-simulator/): both are served for now.
 name: Deploy to GitHub Pages
 
 on:
@@ -26,6 +28,24 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
+      # the same build on Cloudflare Pages too (https://voraxlab.pages.dev), at the same path so the site and the
+      # app work there unchanged; skipped until the CLOUDFLARE_API_TOKEN secret is set ("Cloudflare Pages: Edit")
+      - name: Is Cloudflare Pages set up?
+        id: cf
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: echo "on=$([ -n "$TOKEN" ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
+      # a Cloudflare failure never holds up GitHub Pages
+      - name: Publish to Cloudflare Pages
+        if: steps.cf.outputs.on == 'yes'
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          mkdir -p pages-site && cp -r dist pages-site/tli-vorax-simulator
+          printf '/ /tli-vorax-simulator/ 302\n/tli-vorax-simulator /tli-vorax-simulator/ 301\n' > pages-site/_redirects
+          # from a folder of its own: run beside the project, wrangler sets the project up as a Worker instead
+          cd pages-site && npx --yes wrangler@4.152.0 pages deploy . --project-name voraxlab --branch main --commit-dirty=true
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

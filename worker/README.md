@@ -17,7 +17,7 @@ free plan: nothing is billed, and if a daily limit is hit, uploads simply fail u
   boards and players per day counted here. Needs the dashboard password (`DASHBOARD_TOKEN`).
 
 No accounts and no addresses: each address may upload 60 times a minute and 1,500 boards a day, counted
-against a salted hash that changes daily. Only `https://tidewarden.github.io` may post from a browser.
+against a salted hash that changes daily. Only the site (`https://tidewarden.github.io`, and `https://voraxlab.pages.dev`) may post from a browser.
 
 ## Setup (once, about 10 minutes)
 

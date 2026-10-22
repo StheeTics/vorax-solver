@@ -116,9 +116,11 @@ it('CORS also allows the local test server, for games played through a test copy
   expect(res.headers.get('access-control-allow-origin')).toBe('http://localhost:5173')
 })
 
-it('CORS allows only the published site', async () => {
+it('CORS allows only the published site, at either of its homes', async () => {
   const res = await handle(new Request('https://w.dev/v1/snapshots', { method: 'OPTIONS', headers: { origin: 'https://tidewarden.github.io' } }), env, memory())
   expect(res.headers.get('access-control-allow-origin')).toBe('https://tidewarden.github.io')
+  const pages = await handle(new Request('https://w.dev/v1/snapshots', { method: 'OPTIONS', headers: { origin: 'https://voraxlab.pages.dev' } }), env, memory())
+  expect(pages.headers.get('access-control-allow-origin')).toBe('https://voraxlab.pages.dev')
   const other = await handle(new Request('https://w.dev/v1/snapshots', { method: 'OPTIONS', headers: { origin: 'https://evil.example' } }), env, memory())
   expect(other.headers.get('access-control-allow-origin')).toBe('https://tidewarden.github.io')
 })
