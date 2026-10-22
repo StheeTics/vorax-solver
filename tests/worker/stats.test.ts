@@ -1,5 +1,6 @@
 import { summarize, type StatRow } from '../../worker/src/stats'
 import { handle, type Store } from '../../worker/src/index'
+import { emptyStats, withCounts } from '../../worker/src/summary'
 
 const board = (run: string, round: number, extra: Record<string, unknown> = {}) => JSON.stringify({ run, seq: 0, app: '9832893', source: 'live', trigger: 'board', round, phase: 'potion', refreshes: 3, shelley: 6, corrected: [], tanks: [], hand: [], instruments: [], ...extra })
 const row = (received: string, client: string, body: string): StatRow => ({ received, client, body })
@@ -119,7 +120,7 @@ describe('real results', () => {
 })
 
 describe('the dashboard routes', () => {
-  const store = { stats: async () => [row('2026-10-18T10:00:00Z', 'a', board('g1', 2))] } as unknown as Store
+  const store = { summary: async () => summarize([row('2026-10-18T10:00:00Z', '', board('g1', 2))]), dayCounts: async () => [{ day: '2026-10-18', boards: 1, players: 1 }] } as unknown as Store
   const env = { EXPORT_TOKEN: 'x', IP_SALT: 's', DASHBOARD_TOKEN: 'open-sesame', LIMIT: { limit: async () => ({ success: true }) } }
   it('the numbers need the dashboard password', async () => {
     expect((await handle(new Request('https://w.dev/v1/stats'), env, store)).status).toBe(401)
@@ -225,5 +226,33 @@ describe('games and final scores, as they really are', () => {
   it('a final above 10,000,000 is a misread number and isn’t counted', () => {
     const rows = [row('2026-10-18T10:00:00Z', 'a', end('g', [pest(9000, 9000)]))]
     expect(summarize(rows).finished.games).toBe(0)
+  })
+})
+
+describe('the summary with the collector’s counts put in', () => {
+  // the workflow has no daily player codes: its boards and players per day are replaced by the collector's
+  const rows = [
+    row('2026-10-18T10:00:00Z', '', board('g1', 2)),
+    row('2026-10-18T10:05:00Z', '', board('g1', 3)),
+    row('2026-10-19T10:00:00Z', '', board('g2', 2)),
+  ]
+  const now = new Date('2026-10-20T12:00:00Z')
+  const counts = [
+    { day: '2026-10-18', boards: 2, players: 1 },
+    { day: '2026-10-19', boards: 1, players: 1 },
+    // boards since the workflow's last pull
+    { day: '2026-10-20', boards: 5, players: 2 },
+  ]
+  const s = withCounts(summarize(rows, now), counts, now)
+  it('boards and players per day come from the collector, games from the summary', () => {
+    expect(s.days.map(d => [d.day, d.boards, d.players, d.games])).toEqual([['2026-10-18', 2, 1, 1], ['2026-10-19', 1, 1, 1], ['2026-10-20', 5, 2, 0]])
+  })
+  it('the totals by daily player code too', () => {
+    expect(s.totals).toMatchObject({ boards: 8, playersToday: 2, playerDays: 4, games: 2 })
+  })
+  it('before the first summary, the counts alone', () => {
+    const e = withCounts(null, counts, now)
+    expect(e.totals).toMatchObject({ boards: 8, games: 0 })
+    expect(e.finished).toEqual(emptyStats(now).finished)
   })
 })

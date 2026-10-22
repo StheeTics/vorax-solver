@@ -10,6 +10,16 @@ CREATE TABLE IF NOT EXISTS snapshots (
   client TEXT NOT NULL,
   body TEXT NOT NULL
 );
+-- the dashboard's boards and players per day, counted without reading the boards
+CREATE INDEX IF NOT EXISTS snapshots_day_client ON snapshots (received, client);
+
+-- The dashboard's numbers the repo's hourly workflow worked out from the boards (scripts/live/summary.ts):
+-- one row, replaced each time. Counts by the daily player code are added on each request instead.
+CREATE TABLE IF NOT EXISTS summary (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  updated TEXT NOT NULL,
+  body TEXT NOT NULL
+);
 
 -- Boards stored per client per day, for the daily limit.
 CREATE TABLE IF NOT EXISTS quota (

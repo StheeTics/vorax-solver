@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 it('the live-data workflow pulls, applies the odds, tests, then commits, every hour', () => {
   const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
   expect(t).toContain("cron: '17 * * * *'")
-  const order = ['cron:', 'contents: write', 'scripts/live/pull.ts', 'scripts/live/weights.ts', 'npm test', 'git commit']
+  const order = ['cron:', 'contents: write', 'scripts/live/pull.ts', 'scripts/live/summary.ts', 'scripts/live/weights.ts', 'npm test', 'git commit']
   let at = -1
   for (const s of order) {
     const i = t.indexOf(s)

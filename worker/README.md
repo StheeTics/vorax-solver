@@ -11,6 +11,10 @@ free plan: nothing is billed, and if a daily limit is hit, uploads simply fail u
   else is dropped. Retries can't make duplicates.
 - `GET /v1/export?after=ID`: up to 5,000 rows after `ID`, for the repo's scheduled workflow. Needs the
   export token.
+- `PUT /v1/summary`: the dashboard's numbers, worked out by the hourly workflow from every board
+  (`scripts/live/summary.ts`): too much for one request on the free plan. Needs the export token.
+- `GET /dashboard`, `GET /v1/stats`: the private analytics page and its numbers, the stored summary with the
+  boards and players per day counted here. Needs the dashboard password (`DASHBOARD_TOKEN`).
 
 No accounts and no addresses: each address may upload 60 times a minute and 1,500 boards a day, counted
 against a salted hash that changes daily. Only `https://tidewarden.github.io` may post from a browser.

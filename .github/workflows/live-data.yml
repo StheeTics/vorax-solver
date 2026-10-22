@@ -1,4 +1,5 @@
 # Every hour: pulls the boards and named panel icons the Solver shared from the live-data collector (worker/),
+# sends the collector's dashboard its numbers worked out from them,
 # teaches the reader the icons players named (src/solver/scan/learnedIcons.json, scripts/live/mergeIcons.ts),
 # measures the live odds (data/live/rates.json), and applies the odds changes the data supports, within the
 # guards in scripts/live/propose.ts (30+ sightings, outside the 95% range, at most 2x per update). It replays
@@ -43,6 +44,14 @@ jobs:
           LIVE_DATA_URL: ${{ vars.LIVE_DATA_URL }}
           LIVE_DATA_TOKEN: ${{ secrets.LIVE_DATA_TOKEN }}
         run: npx vite-node scripts/live/pull.ts | tee pull.txt
+
+      # the dashboard's numbers: too much work for the collector's free plan per request (worker/src/summary.ts)
+      - name: Send the dashboard its numbers
+        continue-on-error: true
+        env:
+          LIVE_DATA_URL: ${{ vars.LIVE_DATA_URL }}
+          LIVE_DATA_TOKEN: ${{ secrets.LIVE_DATA_TOKEN }}
+        run: npx vite-node scripts/live/summary.ts
 
       - name: List the cards the Solver couldn't name
         run: npx vite-node scripts/live/newCards.ts | tee cards.txt

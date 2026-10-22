@@ -57,7 +57,7 @@ it('pull pages through the export until it runs dry', async () => {
     expect(await pull('https://w.dev', 't', fetchFn as unknown as typeof fetch)).toBe(2)
     expect((fetchFn.mock.calls[0] as unknown[])[0]).toBe('https://w.dev/v1/export?after=0')
     const fs = await import('node:fs')
-    expect(fs.readFileSync('data/live/raw/2026-10-19.jsonl', 'utf8')).toBe('{"x":2}\n')
+    expect(fs.readFileSync('data/live/raw/2026-10-19.jsonl', 'utf8')).toBe('{"received":"2026-10-19T01:00:00Z","x":2}\n')
     expect(JSON.parse(fs.readFileSync('data/live/state.json', 'utf8')).last).toBe(2)
   } finally {
     process.chdir(cwd)

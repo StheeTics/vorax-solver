@@ -1,12 +1,14 @@
 // @vitest-environment node
 import { handle, type Store } from '../../worker/src/index'
 
-function memory(): Store & { rows: { id: number; uid: string; client: string; body: string }[]; icons: { id: number; uid: string; client: string; body: string }[]; cards: { id: number; uid: string; client: string; body: string }[]; quota: Map<string, number> } {
+function memory(): Store & { summaries: string[]; rows: { id: number; uid: string; client: string; body: string }[]; icons: { id: number; uid: string; client: string; body: string }[]; cards: { id: number; uid: string; client: string; body: string }[]; quota: Map<string, number> } {
   const rows: { id: number; uid: string; client: string; body: string }[] = []
   const icons: { id: number; uid: string; client: string; body: string }[] = []
   const cards: { id: number; uid: string; client: string; body: string }[] = []
   const quota = new Map<string, number>()
+  const summaries: string[] = []
   return {
+    summaries,
     rows,
     icons,
     cards,
@@ -45,8 +47,14 @@ function memory(): Store & { rows: { id: number; uid: string; client: string; bo
     async export(after, limit) {
       return rows.filter(r => r.id > after).slice(0, limit)
     },
-    async stats() {
-      return rows.map(r => ({ received: '2026-10-18T00:00:00Z', client: r.client, body: r.body }))
+    async dayCounts() {
+      return rows.length ? [{ day: '2026-10-18', boards: rows.length, players: new Set(rows.map(r => r.client)).size }] : []
+    },
+    async summary() {
+      return summaries.length ? JSON.parse(summaries[summaries.length - 1]) : null
+    },
+    async saveSummary(body) {
+      summaries.push(body)
     },
   }
 }
@@ -187,5 +195,33 @@ describe('a card the Solver couldn’t name', () => {
     expect((await handle(new Request('https://w.dev/v1/cards/export?after=0'), env, store)).status).toBe(401)
     const res = await handle(new Request('https://w.dev/v1/cards/export?after=0', { headers: { authorization: 'Bearer secret' } }), env, store)
     expect((await res.json()).rows).toHaveLength(1)
+  })
+})
+
+describe('the dashboard summary the hourly workflow sends', () => {
+  const stats = { generated: '2026-10-22T13:00:00.000Z', totals: { games: 3 }, days: [], finished: { games: 1 }, recent: [] }
+  const put = (body: string, token = 'secret') => new Request('https://w.dev/v1/summary', { method: 'PUT', body, headers: { authorization: `Bearer ${token}` } })
+  it('needs the export token', async () => {
+    const store = memory()
+    expect((await handle(put(JSON.stringify(stats), 'wrong'), env, store)).status).toBe(401)
+    expect(store.summaries).toHaveLength(0)
+  })
+  it('is stored when it is one', async () => {
+    const store = memory()
+    expect((await handle(put('nope'), env, store)).status).toBe(400)
+    expect((await handle(put('{"totals":{}}'), env, store)).status).toBe(400)
+    const ok = await handle(put(JSON.stringify(stats)), env, store)
+    expect(await ok.json()).toEqual({ saved: stats.generated })
+    expect(store.summaries).toEqual([JSON.stringify(stats)])
+  })
+  it('is served with the collector’s own counts, which need the dashboard password', async () => {
+    const store = memory()
+    const denv = { ...env, DASHBOARD_TOKEN: 'pw' }
+    await handle(put(JSON.stringify(stats)), denv, store)
+    await handle(post([snap(uid(1)), snap(uid(2))]), denv, store)
+    expect((await handle(new Request('https://w.dev/v1/stats', { headers: { authorization: 'Bearer secret' } }), denv, store)).status).toBe(401)
+    const s = await (await handle(new Request('https://w.dev/v1/stats', { headers: { authorization: 'Bearer pw' } }), denv, store)).json()
+    expect(s.totals).toMatchObject({ games: 3, boards: 2, playerDays: 1 })
+    expect(s.days).toEqual([expect.objectContaining({ day: '2026-10-18', boards: 2, players: 1, games: 0 })])
   })
 })

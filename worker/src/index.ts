@@ -3,7 +3,8 @@
 // quota is counted against a salted hash that changes every day.
 import names from './names.json'
 import { validate, validateCard, validateIcon } from './validate'
-import { summarize, type StatRow } from './stats'
+import type { Stats } from './stats'
+import { isStats, withCounts, type DayCount } from './summary'
 import { DASHBOARD_HTML } from './dashboard'
 import { dispatch, onSchedule, RUNNABLE } from './schedule'
 
@@ -19,8 +20,11 @@ export interface Store {
   /** stores a card the Solver couldn't name, with a new uid; returns 1 if it was new */
   insertCard(row: { uid: string; client: string; body: string }): Promise<number>
   exportCards(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
-  /** every board with when it came and its daily player code, for the dashboard's counts */
-  stats(): Promise<StatRow[]>
+  /** boards and different daily player codes per day, for the dashboard's counts */
+  dayCounts(): Promise<DayCount[]>
+  /** the dashboard's numbers the hourly workflow last worked out (summary.ts), or null before the first */
+  summary(): Promise<Stats | null>
+  saveSummary(body: string): Promise<void>
 }
 
 export interface Env {
@@ -45,6 +49,8 @@ const DAILY = 1500
 const MAX_BATCH = 10
 const MAX_BYTES = 64_000
 const EXPORT_MAX = 5000
+/** the workflow's summary is tens of kilobytes */
+const MAX_SUMMARY = 1_000_000
 
 const corsFor = (req: Request) => {
   const origin = req.headers.get('origin') ?? ''
@@ -151,7 +157,23 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
   }
 
-  // The private analytics page and its numbers (counts only; see stats.ts).
+  // The dashboard's numbers from the hourly workflow (scripts/live/summary.ts), with the export token
+  if (url.pathname === '/v1/summary' && req.method === 'PUT') {
+    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    const text = await req.text()
+    if (text.length > MAX_SUMMARY) return json({ error: 'too large' }, 413)
+    let body: unknown
+    try {
+      body = JSON.parse(text)
+    } catch {
+      return json({ error: 'not JSON' }, 400)
+    }
+    if (!isStats(body)) return json({ error: 'not a summary' }, 400)
+    await store.saveSummary(text)
+    return json({ saved: body.generated })
+  }
+
+  // The private analytics page and its numbers (counts only; see stats.ts and summary.ts).
   if (url.pathname === '/dashboard' && req.method === 'GET') {
     return new Response(DASHBOARD_HTML, { headers: { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-robots-tag': 'noindex' } })
   }
@@ -165,7 +187,8 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
   }
   if (url.pathname === '/v1/stats' && req.method === 'GET') {
     if (!env.DASHBOARD_TOKEN || req.headers.get('authorization') !== `Bearer ${env.DASHBOARD_TOKEN}`) return json({ error: 'password' }, 401)
-    return json(summarize(await store.stats()), 200, { 'cache-control': 'no-store' })
+    const [summary, counts] = await Promise.all([store.summary(), store.dayCounts()])
+    return json(withCounts(summary, counts), 200, { 'cache-control': 'no-store' })
   }
 
   return json({ error: 'not found' }, 404)
@@ -210,9 +233,17 @@ export function d1Store(db: D1Like): Store {
       const { results } = await db.prepare('SELECT id, uid, received, body FROM cards WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
       return results
     },
-    async stats() {
-      const { results } = await db.prepare('SELECT received, client, body FROM snapshots ORDER BY id').bind().all<StatRow>()
+    async dayCounts() {
+      // the index on (received, client) answers this without reading the boards themselves
+      const { results } = await db.prepare('SELECT substr(received, 1, 10) AS day, COUNT(*) AS boards, COUNT(DISTINCT client) AS players FROM snapshots GROUP BY day ORDER BY day').bind().all<DayCount>()
       return results
+    },
+    async summary() {
+      const row = await db.prepare('SELECT body FROM summary WHERE id = 1').bind().first<{ body: string }>()
+      return row ? (JSON.parse(row.body) as Stats) : null
+    },
+    async saveSummary(body) {
+      await db.prepare('INSERT INTO summary (id, updated, body) VALUES (1, ?, ?) ON CONFLICT(id) DO UPDATE SET updated = excluded.updated, body = excluded.body').bind(new Date().toISOString(), body).run()
     },
   }
 }
