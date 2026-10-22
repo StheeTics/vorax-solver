@@ -48,6 +48,25 @@ export async function addLocalRef(key: string, f: ArtFeature): Promise<void> {
   }
 }
 
+/** Adds cards named elsewhere (the site's old address), keeping any this browser already has; returns how many. */
+export async function mergeLocalRefs(refs: LocalRefs): Promise<number> {
+  try {
+    const have = await loadLocalRefs()
+    const add = Object.entries(refs).filter(([k, v]) => !(k in have) && Array.isArray(v))
+    if (!add.length) return 0
+    const db = await open()
+    await new Promise<void>(resolve => {
+      const tx = db.transaction(STORE, 'readwrite')
+      for (const [k, v] of add) tx.objectStore(STORE).put(v, k)
+      tx.oncomplete = () => resolve()
+      tx.onerror = () => resolve()
+    })
+    return add.length
+  } catch {
+    return 0
+  }
+}
+
 /** The named cards as a JSON file, for adding them to the built-in data. */
 export async function exportLocalRefs(): Promise<Blob> {
   return new Blob([JSON.stringify(await loadLocalRefs())], { type: 'application/json' })
