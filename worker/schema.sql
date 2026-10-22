@@ -10,8 +10,8 @@ CREATE TABLE IF NOT EXISTS snapshots (
   client TEXT NOT NULL,
   body TEXT NOT NULL
 );
--- the dashboard's boards and players per day, counted without reading the boards
-CREATE INDEX IF NOT EXISTS snapshots_day_client ON snapshots (received, client);
+-- No index for the dashboard's per-day counts: an index costs a row write per board, and the free plan allows
+-- 100,000 writes a day (creating one on Oct 22 used half of that day's and stopped the uploads). Reads are cheap.
 
 -- The dashboard's numbers the repo's hourly workflow worked out from the boards (scripts/live/summary.ts):
 -- one row, replaced each time. Counts by the daily player code are added on each request instead.

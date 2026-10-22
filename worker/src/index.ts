@@ -234,7 +234,7 @@ export function d1Store(db: D1Like): Store {
       return results
     },
     async dayCounts() {
-      // the index on (received, client) answers this without reading the boards themselves
+      // reads every row (no index: see schema.sql); the free plan's 5M reads a day cover many loads
       const { results } = await db.prepare('SELECT substr(received, 1, 10) AS day, COUNT(*) AS boards, COUNT(DISTINCT client) AS players FROM snapshots GROUP BY day ORDER BY day').bind().all<DayCount>()
       return results
     },
