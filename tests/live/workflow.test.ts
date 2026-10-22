@@ -1,9 +1,12 @@
 import { readFileSync } from 'node:fs'
 
-it('the live-data workflow pulls, applies the odds, tests, then commits, every hour', () => {
-  const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
-  expect(t).toContain("cron: '17 * * * *'")
-  const order = ['cron:', 'contents: write', 'scripts/live/pull.ts', 'scripts/live/summary.ts', 'scripts/live/weights.ts', 'npm test', 'git commit']
+// The live data, the daily check and the smarter player run on the PC, in scripts/nightly.sh (since 2026-10-22)
+const nightly = readFileSync('scripts/nightly.sh', 'utf8')
+const job = (name: string) => nightly.slice(nightly.indexOf(`job_${name}() {`), nightly.indexOf('\n}\n', nightly.indexOf(`job_${name}() {`)))
+
+it('the live-data job pulls, applies the odds, tests, then commits', () => {
+  const t = job('live')
+  const order = ['scripts/live/pull.ts', 'scripts/live/summary.ts', 'scripts/live/weights.ts', 'npm test', 'push -F']
   let at = -1
   for (const s of order) {
     const i = t.indexOf(s)
@@ -12,19 +15,19 @@ it('the live-data workflow pulls, applies the odds, tests, then commits, every h
   }
 })
 
-it('it does nothing harmful before the collector exists', () => {
-  const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
-  expect(t).toContain('LIVE_DATA_URL')
-  expect(t).toMatch(/if: \$\{\{ vars\.LIVE_DATA_URL != '' \}\}/)
+it('it does nothing harmful without the collector’s address and token', () => {
+  expect(job('live')).toMatch(/\[ -n "\$\{LIVE_DATA_URL:-\}" \] && \[ -n "\$\{LIVE_DATA_TOKEN:-\}" \] \|\| \{[^}]*return 1/)
 })
 
-it('applies the odds changes the data supports (the guards are in propose.ts), and new odds go out with a redeploy', () => {
-  const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
-  expect(t).toContain('npx vite-node scripts/live/weights.ts | tee weights.txt')
+it('applies the odds changes the data supports (the guards are in propose.ts); a push that changes src/ redeploys', () => {
+  const t = job('live')
+  expect(t).toContain('vn scripts/live/weights.ts | tee')
   expect(t).not.toContain('scripts/live/weights.ts --propose')
-  expect(t).toContain('git add data/live src/data/liveWeights.ts')
-  // a push made with the workflow's token starts no other workflow, so the redeploy is started here
-  expect(t).toContain('if [ -n "$odds" ] || [ -n "$icons" ]; then gh workflow run deploy.yml; fi')
+  expect(t).toContain('git add data/live src/data/liveWeights.ts src/solver/scan/learnedIcons.json')
+  // pushed from the PC, so deploy.yml starts by itself; the data alone doesn't redeploy
+  const deploy = readFileSync('.github/workflows/deploy.yml', 'utf8')
+  expect(deploy).toContain("paths-ignore: ['data/**'")
+  expect(deploy).not.toMatch(/'src\/\*\*'/)
 })
 
 it('pulls the named panel icons too', () => {
@@ -36,18 +39,27 @@ it('pull leaves the odds file alone when no new boards came in, so a quiet run c
   expect(t).toMatch(/if \(added > 0 \|\| !existsSync/)
 })
 
-it('teaches the reader the icons players named, every hour, and redeploys when that changed it', () => {
-  const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
+it('teaches the reader the icons players named, before the tests', () => {
+  const t = job('live')
   expect(t.indexOf('scripts/live/learnIcons.ts')).toBeGreaterThan(t.indexOf('scripts/live/pull.ts'))
   expect(t.indexOf('scripts/live/learnIcons.ts')).toBeLessThan(t.indexOf('npm test'))
-  expect(t).toContain('src/solver/scan/learnedIcons.json')
-  expect(t).toContain('gh workflow run deploy.yml')
 })
 
-it('every workflow that commits to main rebases onto it first: another job may have pushed meanwhile', () => {
-  for (const f of ['live-data', 'daily-check']) {
-    const t = readFileSync(`.github/workflows/${f}.yml`, 'utf8')
-    expect(t.indexOf('git pull --rebase'), f).toBeGreaterThan(t.indexOf('git commit'))
-    expect(t.indexOf('git pull --rebase'), f).toBeLessThan(t.indexOf('git push'))
-  }
+it('every push rebases onto main first: something else may have pushed meanwhile', () => {
+  const push = nightly.slice(nightly.indexOf('push() {'), nightly.indexOf('\n}\n', nightly.indexOf('push() {')))
+  expect(push.indexOf('git pull -q --rebase')).toBeGreaterThan(push.indexOf('git commit'))
+  expect(push.indexOf('git pull -q --rebase')).toBeLessThan(push.indexOf('git push'))
+})
+
+it('runs at the lowest priority, 16 at once overnight and 8 with --day, and commits only as tidewarden', () => {
+  expect(nightly).toMatch(/^JOBS=16$/m)
+  expect(nightly).toContain('--day) JOBS=8')
+  expect(nightly).toMatch(/xargs -d '\\n' -n1 -P "\$JOBS"/)
+  for (const line of nightly.split('\n').filter(l => /npx vite-node/.test(l) && !/^\s*#/.test(l))) expect(line, line).toContain('nice -n 19')
+  expect(nightly).toContain('*tidewarden*) ;;')
+})
+
+it('the moved jobs are gone from GitHub Actions, and the collector no longer starts them', () => {
+  const { readdirSync } = require('node:fs') as typeof import('node:fs')
+  expect(readdirSync('.github/workflows').sort()).toEqual(['deploy.yml', 'desktop.yml', 'issue-fixer.yml'])
 })

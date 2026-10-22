@@ -1,5 +1,9 @@
-# Every hour: takes the oldest open issue not yet looked at, and has Claude (on the owner's subscription,
+# Every night: takes the oldest open issue not yet looked at, and has Claude (on the owner's subscription,
 # CLAUDE_CODE_OAUTH_TOKEN) try to fix it. A fix only ever arrives as a pull request for the owner to merge.
+#
+# The code is private (this repo); players report issues on the public repo, tidewarden/tli-vorax-simulator (the
+# site's "Report an issue"). ISSUES_TOKEN is a fine-grained token for that public repo only (Issues: read and
+# write): the issue is read, labelled and answered there, and the fix's pull request is opened here, privately.
 #
 # Issues are public, so their text and images are data, never instructions, and the workflow is built so a
 # malicious issue can't reach anything. Three jobs, each on a fresh runner:
@@ -7,17 +11,17 @@
 #     repo on GitHub (contents: read). Its output is data: the diff and Claude's report.
 #   - check: applies the diff and runs the tests, the only place code from the fix runs. No permissions, no
 #     secrets, no credentials, so nothing it runs can reach a token.
-#   - publish: holds the write token, and runs no code from the repo or the fix: it applies the diff and commits
+#   - publish: holds the write tokens, and runs no code from the repo or the fix: it applies the diff and commits
 #     with git's hooks off, pushes a fix/ branch (never main) and opens the pull request, or comments.
 # A fix is offered only when Claude says it's very sure AND its new test fails on the code as it was AND the
 # whole suite passes with it. Otherwise the issue gets a comment with what Claude found.
-# Started hourly by the clock (Cloudflare) when the app has it; GitHub's own schedule below is a backup.
+# Started nightly by the clock (Cloudflare); GitHub's own schedule below is a backup.
 # Or on demand: gh workflow run issue-fixer.yml, or Run now on the dashboard.
 name: Issue fixer
 
 on:
   schedule:
-    - cron: '47 * * * *'
+    - cron: '47 4 * * *'
   workflow_dispatch:
 
 permissions: {}
@@ -30,6 +34,7 @@ jobs:
   fix:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    # the issues are in the public repo, reached with ISSUES_TOKEN; here, only what claude-code-action had before
     permissions:
       contents: read
       issues: write
@@ -43,15 +48,15 @@ jobs:
       - name: Pick the oldest open issue not looked at yet
         id: pick
         env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.ISSUES_TOKEN }}
+          REPO: ${{ vars.ISSUES_REPO }}
         run: |
           if [ "$HAS_TOKEN" != "true" ]; then echo "No CLAUDE_CODE_OAUTH_TOKEN secret yet: nothing to do."; exit 0; fi
-          gh label create checked-by-claude -R "$REPO" --color ededed --description "The hourly issue fixer has looked at this" 2>/dev/null || true
+          gh label create checked-by-claude -R "$REPO" --color ededed --description "The issue fixer has looked at this" 2>/dev/null || true
           n=$(gh issue list -R "$REPO" --state open --limit 100 --json number,labels -q '[.[] | select(all(.labels[]; .name != "checked-by-claude"))] | sort_by(.number) | .[0].number // empty')
           if [ -z "$n" ]; then echo "No new issues."; exit 0; fi
           echo "number=$n" >> "$GITHUB_OUTPUT"
-          # marked first: a crash or a hostile issue isn't retried every hour
+          # marked first: a crash or a hostile issue isn't retried every night
           gh issue edit "$n" -R "$REPO" --add-label checked-by-claude
 
       - uses: actions/checkout@v4
@@ -62,8 +67,8 @@ jobs:
       - name: Save the issue's text and images as plain files
         if: steps.pick.outputs.number
         env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.ISSUES_TOKEN }}
+          REPO: ${{ vars.ISSUES_REPO }}
           N: ${{ steps.pick.outputs.number }}
         run: |
           mkdir -p .issue
@@ -129,16 +134,16 @@ jobs:
         run: |
           [ -f "$OUT" ] && jq -r '.[] | select(.type == "result") | (.result // .subtype)' "$OUT" | head -c 600 || echo "No output file."
 
-      - name: If Claude couldn't get going, leave the issue to be tried again next hour
+      - name: If Claude couldn't get going, leave the issue to be tried again next night
         if: steps.pick.outputs.number && steps.claude.outcome == 'failure'
         env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.ISSUES_TOKEN }}
+          REPO: ${{ vars.ISSUES_REPO }}
           N: ${{ steps.pick.outputs.number }}
           OUT: ${{ steps.claude.outputs.execution_file }}
         run: |
           # Retried only when Claude never got going (no result, or a sign-in problem). One that ran and stopped
-          # (out of turns, say) keeps its label: an issue built to exhaust Claude isn't retried every hour.
+          # (out of turns, say) keeps its label: an issue built to exhaust Claude isn't retried every night.
           last=$([ -f "$OUT" ] && jq -r '[.[] | select(.type == "result") | (.result // .subtype // "")] | last // empty' "$OUT" 2>/dev/null)
           if [ -z "$last" ] || echo "$last" | grep -qiE 'auth|credential|login|401|403|token|overloaded|rate.?limit'; then
             gh issue edit "$N" -R "$REPO" --remove-label checked-by-claude
@@ -217,10 +222,9 @@ jobs:
     if: always() && needs.fix.result == 'success' && needs.fix.outputs.number && needs.fix.outputs.claude == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # holds the write token, so it runs no code from the repo or the fix
+    # holds the write tokens, so it runs no code from the repo or the fix
     permissions:
       contents: write
-      issues: write
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
@@ -234,7 +238,9 @@ jobs:
       - name: Open a pull request, or comment with what was found
         env:
           GH_TOKEN: ${{ github.token }}
+          ISSUES_TOKEN: ${{ secrets.ISSUES_TOKEN }}
           REPO: ${{ github.repository }}
+          ISSUES_REPO: ${{ vars.ISSUES_REPO }}
           N: ${{ needs.fix.outputs.number }}
           VERDICT: ${{ needs.check.outputs.verdict }}
           OK: ${{ needs.check.outputs.ok }}
@@ -249,15 +255,16 @@ jobs:
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
             git apply --index "$FIX/fix.patch"
             git commit --no-verify -q -F - <<MSG
-          Fix #$N (found by the hourly issue fixer)
+          Fix $ISSUES_REPO#$N (found by the nightly issue fixer)
 
           $summary
           MSG
             git push -q "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "HEAD:refs/heads/$branch"
-            url=$(gh pr create -R "$REPO" --head "$branch" --title "Fix #$N" --body "$(printf 'Found by the hourly issue fixer, for #%s. Review before merging.\n\n%s\n\nIts new test failed on the code as it was, and the whole suite passes with the fix.' "$N" "$summary")")
-            gh issue comment "$N" -R "$REPO" --body "$(printf 'Thanks for the report. A fix is waiting for review: %s\n\n%s' "$url" "$summary")"
+            gh pr create -R "$REPO" --head "$branch" --title "Fix $ISSUES_REPO#$N" --body "$(printf 'Found by the nightly issue fixer, for https://github.com/%s/issues/%s. Review before merging.\n\n%s\n\nIts new test failed on the code as it was, and the whole suite passes with the fix.' "$ISSUES_REPO" "$N" "$summary")"
+            # the pull request is in the private repo: the public comment doesn't link it
+            GH_TOKEN=$ISSUES_TOKEN gh issue comment "$N" -R "$ISSUES_REPO" --body "$(printf 'Thanks for the report. A fix is waiting for review.\n\n%s' "$summary")"
           else
             note="I couldn't fix this with enough certainty, so a person will look at it."
             [ "$VERDICT" = "fix" ] && note="I tried a fix, but it didn't pass its checks, so a person will look at it."
-            gh issue comment "$N" -R "$REPO" --body "$(printf 'Thanks for the report. %s\n\nWhat I found: %s' "$note" "$summary")"
+            GH_TOKEN=$ISSUES_TOKEN gh issue comment "$N" -R "$ISSUES_REPO" --body "$(printf 'Thanks for the report. %s\n\nWhat I found: %s' "$note" "$summary")"
           fi

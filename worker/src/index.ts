@@ -1,12 +1,12 @@
 // The live-data collector: a Cloudflare Worker with a D1 database. The Solver posts the boards it read;
-// the repo's scheduled workflow pulls them with the export token. No addresses are stored: the daily
+// the nightly jobs (scripts/nightly.sh) pull them with the export token. No addresses are stored: the daily
 // quota is counted against a salted hash that changes every day.
 import names from './names.json'
 import { validate, validateCard, validateIcon } from './validate'
 import type { Stats } from './stats'
 import { isStats, withCounts, type DayCount } from './summary'
 import { DASHBOARD_HTML } from './dashboard'
-import { dispatch, onSchedule, RUNNABLE } from './schedule'
+import { dispatch, FILES, LISTED, onSchedule, repoFile, repoRuns, RUNNABLE } from './schedule'
 
 export interface Store {
   /** stores rows with new uids; returns how many were new */
@@ -22,7 +22,7 @@ export interface Store {
   exportCards(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
   /** boards and different daily player codes per day, for the dashboard's counts */
   dayCounts(): Promise<DayCount[]>
-  /** the dashboard's numbers the hourly workflow last worked out (summary.ts), or null before the first */
+  /** the dashboard's numbers the nightly jobs last worked out (summary.ts), or null before the first */
   summary(): Promise<Stats | null>
   saveSummary(body: string): Promise<void>
 }
@@ -31,7 +31,7 @@ export interface Env {
   EXPORT_TOKEN: string
   /** the analytics page's password (wrangler secret put DASHBOARD_TOKEN) */
   DASHBOARD_TOKEN?: string
-  /** starts the repo's workflows on schedule (src/schedule.ts) */
+  /** starts the repo's workflows on schedule, and reads the private repo for the dashboard (src/schedule.ts) */
   GITHUB_DISPATCH_TOKEN?: string
   IP_SALT: string
   LIMIT: { limit(o: { key: string }): Promise<{ success: boolean }> }
@@ -158,7 +158,7 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
   }
 
-  // The dashboard's numbers from the hourly workflow (scripts/live/summary.ts), with the export token
+  // The dashboard's numbers from the nightly jobs (scripts/live/summary.ts), with the export token
   if (url.pathname === '/v1/summary' && req.method === 'PUT') {
     if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const text = await req.text()
@@ -185,6 +185,18 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     if (!RUNNABLE.has(run[1])) return json({ error: 'not a loop' }, 404)
     const why = await dispatch(run[1], env.GITHUB_DISPATCH_TOKEN)
     return why ? json({ error: why }, 502) : json({ started: run[1] })
+  }
+  // The dashboard's reads of the private repo (with the dashboard password): a few named files, and run lists
+  const file = /^\/v1\/repo\/(\w+)$/.exec(url.pathname)
+  const runs = /^\/v1\/runs\/([\w.-]+)$/.exec(url.pathname)
+  if ((file || runs) && req.method === 'GET') {
+    if (!env.DASHBOARD_TOKEN || req.headers.get('authorization') !== `Bearer ${env.DASHBOARD_TOKEN}`) return json({ error: 'password' }, 401)
+    if (file ? !Object.hasOwn(FILES, file[1]) : !LISTED.has(runs![1])) return json({ error: 'not found' }, 404)
+    const res = file ? await repoFile(file[1], env.GITHUB_DISPATCH_TOKEN) : await repoRuns(runs![1], env.GITHUB_DISPATCH_TOKEN)
+    // a file not there yet reads as empty
+    if (file && res.status === 404) return new Response('', { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store' } })
+    if (!res.ok) return json({ error: `GitHub answered ${res.status}` }, 502)
+    return new Response(res.body, { headers: { 'content-type': file ? 'text/plain; charset=utf-8' : 'application/json', 'cache-control': 'no-store' } })
   }
   if (url.pathname === '/v1/stats' && req.method === 'GET') {
     if (!env.DASHBOARD_TOKEN || req.headers.get('authorization') !== `Bearer ${env.DASHBOARD_TOKEN}`) return json({ error: 'password' }, 401)

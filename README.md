@@ -5,7 +5,7 @@ Fan-made tools for the Surgical Preparation minigame in Torchlight Infinite (SS1
 - **Simulator:** practice runs and a sandbox, with the [Optimal Play](OPTIMAL_PLAY.md) guide.
 - **Solver:** advice for your real game. It reads your screen, from a pasted screenshot or by following your game as you play, and shows the best move. It only reads: it never clicks or types for you.
 
-**Use them:** https://tidewarden.github.io/tli-vorax-simulator/ (the landing page links to both).
+**Use them:** https://voraxlab.pages.dev/tli-vorax-simulator/ (the landing page links to both).
 
 **Strategy:** see [Optimal Play](OPTIMAL_PLAY.md) for which instruments and potions to take, based on simulated games played by bots that never see the dice.
 
@@ -71,7 +71,7 @@ Cards in the 500 ms frames: 100% of 400 at rest and 100% of 233 with a card rais
 The simulator's offer odds started as guesses: every potion equally likely, a flat 1% Supreme chance, instrument offers uniform, starting tanks 30/40/20/10 by rarity. The Solver shares the boards it reads so these can be measured. Only boards read with certainty (or corrected by the player) from a real screen are shared, with no picture, no time and nothing about the player, and sharing has an on/off switch under the advice.
 
 - `worker/`: the collector, a Cloudflare Worker with a D1 database (see `worker/README.md` for setup).
-- `.github/workflows/live-data.yml`: every 15 minutes (GitHub may run it late), pulls new boards into `data/live/raw/` and named instrument icons into `data/live/icons.jsonl`, writes `data/live/rates.json` (live odds with 95% ranges next to the engine's) and the weight changes they suggest to `data/live/proposal.md`, runs the tests and commits. It changes no weights and deploys nothing: while the odds model is still being checked against the live game, the data is reviewed first. A proposed change needs 30+ observations, a 95% range that excludes the current value, and is at most 2x per update.
+- `scripts/nightly.sh`: the nightly jobs, run on the owner's PC after an evening reminder (Actions minutes cost money on a private repo). The live-data job pulls new boards into `data/live/raw/` and named instrument icons into `data/live/icons.jsonl`, writes `data/live/rates.json` (live odds with 95% ranges next to the engine's), applies the odds changes they support (30+ observations, a 95% range that excludes the current value, at most 2x per update), runs the tests and commits. Then the daily check and the smarter player, when the odds changed. Each job's outcome goes in `data/live/nightly.jsonl`, the dashboard's Loops table.
 - By hand: `npx vite-node scripts/live/pull.ts` (with `LIVE_DATA_URL` and `LIVE_DATA_TOKEN`), then `npx vite-node scripts/live/weights.ts` to apply the proposed weights.
 
 ## Requirements

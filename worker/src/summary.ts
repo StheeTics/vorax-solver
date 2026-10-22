@@ -1,5 +1,5 @@
 // The dashboard's numbers as served. Working them out from every board is too much for one request on the
-// free plan (10 ms of CPU), so the repo's hourly workflow does it (scripts/live/summary.ts runs summarize() over
+// free plan (10 ms of CPU), so the nightly jobs do it (scripts/live/summary.ts runs summarize() over
 // data/live/raw) and stores the result here. The counts that need the daily player code are added on each
 // request, from SQL: that code never leaves the collector.
 import type { Stats } from './stats'

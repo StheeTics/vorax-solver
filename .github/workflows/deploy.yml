@@ -1,16 +1,18 @@
-# Builds the site and publishes it to GitHub Pages (https://tidewarden.github.io/tli-vorax-simulator/) and, once
-# its token is set, Cloudflare Pages (https://voraxlab.pages.dev/tli-vorax-simulator/): both are served for now.
-name: Deploy to GitHub Pages
+# Builds the site and publishes it to Cloudflare Pages (https://voraxlab.pages.dev/tli-vorax-simulator/), on a push
+# to main that changes the site (the nightly jobs' data commits don't), or on demand: gh workflow run deploy.yml
+# The old address, https://tidewarden.github.io/tli-vorax-simulator/, is the public repo's GitHub Pages site: the
+# last build it published before the code went private, left as it was. Browsers there are sent on to the new address
+# (src/ui/siteMove.ts); Vorax Overlay before 0.1.10 runs the Solver there until it updates itself.
+name: Deploy
 
 on:
   push:
     branches: [main]
+    paths-ignore: ['data/**', 'docs/**', 'scripts/**', 'worker/**', 'desktop/**', 'training/**', '.github/workflows/issue-fixer.yml', '.github/workflows/desktop.yml']
   workflow_dispatch:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -28,17 +30,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      # the same build on Cloudflare Pages too (https://voraxlab.pages.dev), at the same path so the site and the
-      # app work there unchanged; skipped until the CLOUDFLARE_API_TOKEN secret is set ("Cloudflare Pages: Edit")
-      - name: Is Cloudflare Pages set up?
-        id: cf
-        env:
-          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: echo "on=$([ -n "$TOKEN" ] && echo yes || echo no)" >> "$GITHUB_OUTPUT"
-      # a Cloudflare failure never holds up GitHub Pages
       - name: Publish to Cloudflare Pages
-        if: steps.cf.outputs.on == 'yes'
-        continue-on-error: true
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           # the token can't list accounts, so wrangler is told which one
@@ -48,17 +40,3 @@ jobs:
           printf '/ /tli-vorax-simulator/ 302\n/tli-vorax-simulator /tli-vorax-simulator/ 301\n' > pages-site/_redirects
           # from a folder of its own: run beside the project, wrangler sets the project up as a Worker instead
           cd pages-site && npx --yes wrangler@4.152.0 pages deploy . --project-name voraxlab --branch main --commit-dirty=true
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4

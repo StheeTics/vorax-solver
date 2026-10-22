@@ -124,7 +124,7 @@ export const DASHBOARD_HTML = `<!doctype html>
     <div class="grid">
       <section class="card">
         <h2>Automation health</h2>
-        <p class="sub">The repo's loops, from GitHub's public run list. Late: a scheduled loop hasn't run in 2.5 times its interval.</p>
+        <p class="sub">The repo's loops: on GitHub, and the nightly jobs on the PC. Late: a loop hasn't run in 2.5 times its interval.</p>
         <div class="scroll" id="health"><p class="sub">Reading GitHub…</p></div>
       </section>
       <section class="card half">
@@ -161,8 +161,12 @@ export const DASHBOARD_HTML = `<!doctype html>
 </main>
 <script>
 const KEY = 'vorax.dashboard'
-const HISTORY = 'https://raw.githubusercontent.com/tidewarden/tli-vorax-simulator/main/data/live/history.jsonl'
-const SMARTER = 'https://raw.githubusercontent.com/tidewarden/tli-vorax-simulator/main/data/sim/smarter-history.jsonl'
+// the private repo's files and run lists, through the collector (worker/src/schedule.ts), with the password
+const fromRepo = async name => {
+  const r = await fetch('/v1/repo/' + name, { headers: { authorization: 'Bearer ' + password }, cache: 'no-store' })
+  if (!r.ok) throw new Error(r.status)
+  return (await r.text()).split('\\n').filter(Boolean).map(l => JSON.parse(l))
+}
 const $ = id => document.getElementById(id)
 const esc = v => String(v).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
 const pct = x => Math.round(100 * x) + '%'
@@ -236,13 +240,14 @@ function scoreChart(days) {
   return s + '</svg>'
 }
 
-// The repo's automated loops, from GitHub's public list of workflow runs (no token: the repo is public).
+// The repo's automated loops. On GitHub: its list of workflow runs. On the PC (scripts/nightly.sh, started by hand
+// after the evening reminder): the outcomes it adds to data/live/nightly.jsonl.
 // every: how often it should run, in hours (null: only when something triggers it); late after 2.5x that.
 const LOOPS = [
-  { file: 'live-data.yml', name: 'Odds from live data', every: 1 },
-  { file: 'daily-check.yml', name: 'Daily check (simulation)', every: 24 },
-  { file: 'smarter-player.yml', name: 'Smarter player (nightly learning)', every: 24 },
-  { file: 'issue-fixer.yml', name: 'Issue fixer', every: 1 },
+  { job: 'live-data', name: 'Odds from live data', every: 24 },
+  { job: 'daily-check', name: 'Daily check (simulation)', every: 24 },
+  { job: 'smarter-player', name: 'Smarter player (nightly learning)', every: 24 },
+  { file: 'issue-fixer.yml', name: 'Issue fixer', every: 24 },
   { file: 'deploy.yml', name: 'Website deploy', every: null },
   { file: 'desktop.yml', name: 'Windows app release', every: null, noRun: true },
 ]
@@ -252,10 +257,24 @@ const ago = t => {
   return m < 60 ? m + ' min ago' : m < 48 * 60 ? Math.round(m / 60) + ' h ago' : Math.round(m / 1440) + ' days ago'
 }
 async function health() {
+  const nightly = fromRepo('nightly').catch(() => null)
   const rows = await Promise.all(LOOPS.map(async l => {
-    const every = { html: '<span class="sub">' + (l.every ? 'every ' + (l.every === 1 ? 'hour' : 'day') : 'when needed') + '</span>' }
+    const every = { html: '<span class="sub">' + (l.job ? 'nightly, on the PC' : l.every ? 'every ' + (l.every === 1 ? 'hour' : 'day') : 'when needed') + '</span>' }
+    const late = t => l.every && Date.now() - new Date(t) > l.every * 2.5 * 3600000
+    if (l.job) {
+      const all = await nightly
+      if (!all) return [l.name, { html: pill('idle', 'Unknown') }, { html: '<span class="sub">The repo couldn’t be read</span>' }, '', every, runButton(l)]
+      const runs = all.filter(x => x.job === l.job).reverse()
+      const last = runs[0], good = runs.find(x => x.result !== 'failure')
+      let state = pill('ok', 'Healthy')
+      if (!last) state = pill('idle', 'Not run yet')
+      else if (last.result === 'failure') state = pill('bad', 'Failing')
+      else if (late(last.started)) state = pill('warn', 'Late')
+      const lastCell = last ? ago(last.started) + ' <span class="sub">· ' + esc(last.result) + (last.note ? ': ' + esc(last.note) : '') + ' · ' + last.minutes + ' min</span>' : '<span class="sub">–</span>'
+      return [l.name, { html: state }, { html: lastCell }, good ? ago(good.started) : '–', every, runButton(l)]
+    }
     try {
-      const r = await fetch('https://api.github.com/repos/tidewarden/tli-vorax-simulator/actions/workflows/' + l.file + '/runs?per_page=20', { headers: { accept: 'application/vnd.github+json' } })
+      const r = await fetch('/v1/runs/' + l.file, { headers: { authorization: 'Bearer ' + password }, cache: 'no-store' })
       if (!r.ok) throw new Error(r.status)
       const runs = (await r.json()).workflow_runs
       const last = runs[0], good = runs.find(x => x.conclusion === 'success')
@@ -263,16 +282,16 @@ async function health() {
       if (!last) state = pill('idle', 'Not run yet')
       else if (last.status !== 'completed') state = pill('warn', 'Running')
       else if (last.conclusion !== 'success') state = pill('bad', 'Failing')
-      else if (l.every && Date.now() - new Date(last.created_at) > l.every * 2.5 * 3600000) state = pill('warn', 'Late')
+      else if (late(last.created_at)) state = pill('warn', 'Late')
       const lastCell = last ? '<a href="' + esc(last.html_url) + '" target="_blank" rel="noopener">' + ago(last.created_at) + '</a> <span class="sub">· ' + esc(last.status === 'completed' ? last.conclusion : last.status) + '</span>' : '<span class="sub">–</span>'
       return [l.name, { html: state }, { html: lastCell }, good ? ago(good.created_at) : '–', every, runButton(l)]
     } catch (e) {
-      return [l.name, { html: pill('idle', 'Unknown') }, { html: '<span class="sub">GitHub didn’t answer (60 looks an hour without signing in)</span>' }, '', every, runButton(l)]
+      return [l.name, { html: pill('idle', 'Unknown') }, { html: '<span class="sub">GitHub didn’t answer</span>' }, '', every, runButton(l)]
     }
   }))
   $('health').innerHTML = table(['Loop', 'Status', 'Last run', 'Last success', 'Runs', ''], rows)
 }
-const runButton = l => ({ html: l.noRun ? '<span class="sub">needs a version tag</span>' : '<button type="button" class="run" data-run="' + l.file + '">Run now</button>' })
+const runButton = l => ({ html: l.job ? '<span class="sub">bash scripts/nightly.sh</span>' : l.noRun ? '<span class="sub">needs a version tag</span>' : '<button type="button" class="run" data-run="' + l.file + '">Run now</button>' })
 // Run now: the collector asks GitHub to start the workflow; the table refreshes once GitHub lists it
 document.addEventListener('click', async e => {
   const b = e.target.closest && e.target.closest('button[data-run]')
@@ -328,17 +347,15 @@ async function load(pw) {
   const most = Math.max(1, ...rounds.map(x => x[1]))
   paged('rounds', ['Round', 'Games', ''], rounds.map(([r, n]) => [r === '0' ? 'Round not read' : r, n, { html: '<div class="hbar"><i style="width:' + Math.round((100 * n) / most) + '%"></i></div>' }]), [1])
   try {
-    const t = await (await fetch(HISTORY, { cache: 'no-store' })).text()
     // only the simulated results: the odds changes stay in the file
-    const h = t.split('\\n').filter(Boolean).map(l => JSON.parse(l)).filter(e => e.reached !== undefined).reverse()
+    const h = (await fromRepo('history')).filter(e => e.reached !== undefined).reverse()
     if (h.length) paged('history', ['Date', 'What', 'Reached 840k', 'Average', 'Median'], h.map(e => [e.date, e.change, pct(e.reached), e.average ? k(e.average) : '–', e.median ? k(e.median) : '–']), [2, 3, 4])
     else $('history').innerHTML = '<p class="sub">No simulated results yet.</p>'
   } catch (e) {
     $('history').innerHTML = '<p class="sub">The simulated results couldn’t be read from the repo.</p>'
   }
   try {
-    const t = await (await fetch(SMARTER, { cache: 'no-store' })).text()
-    const h = t.split('\\n').filter(Boolean).map(l => JSON.parse(l)).filter(e => e.fixed).reverse()
+    const h = (await fromRepo('smarter')).filter(e => e.fixed).reverse()
     // reached 840k on the fixed games: "166 (69%)"
     const hit = (x, n) => x.reached + ' (' + pct(x.reached / n) + ')'
     const signed = (v, unit) => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v) + unit

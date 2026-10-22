@@ -26,26 +26,26 @@ describe('the gate a new board value must pass to be proposed', () => {
   })
 })
 
-describe('the smarter-player workflow', () => {
-  const t = readFileSync('.github/workflows/smarter-player.yml', 'utf8')
-  it('runs nightly, and only when the odds changed after the board value was trained (or by hand)', () => {
-    expect(t).toMatch(/cron: '\d+ \d+ \* \* \*'/)
-    expect(t).toContain('workflow_dispatch')
+describe('the smarter player, in the nightly jobs (scripts/nightly.sh)', () => {
+  const all = readFileSync('scripts/nightly.sh', 'utf8')
+  const t = all.slice(all.indexOf('job_smarter() {'), all.indexOf('\n}\n', all.indexOf('job_smarter() {')))
+  it('runs only when the odds changed after the board value was trained (or with --force)', () => {
     expect(t).toContain('src/data/liveWeights.ts')
     expect(t).toContain('src/data/boardValue.json')
+    expect(t).toMatch(/\[ -z "\$FORCE" \] && \[ "\$odds" -le "\$value" \]/)
   })
   it('trains with the board value as shipped, fits, then gates the challenger against it', () => {
     expect(t).toContain('VALUE_MODEL=src/data/boardValue.json SEED0')
-    const order = ['scripts/sim/valueData.ts', 'scripts/sim/valueFit.ts', 'VALUE_MODEL=challenger.json', 'scripts/sim/gate.ts', 'gh pr create']
+    const order = ['scripts/sim/valueData.ts', 'scripts/sim/valueFit.ts', 'VALUE_MODEL=$dir/challenger.json', 'scripts/sim/gate.ts', 'gh pr create']
     let at = -1
     for (const s of order) { const i = t.indexOf(s, at + 1); expect(i, s).toBeGreaterThan(at); at = i }
   })
-  it('only record and publish can write: record adds to the history file alone, publish only proposes (a smarter-player/ branch and a pull request)', () => {
-    expect(t).toMatch(/^permissions:\s*\{\}/m)
-    expect(t.match(/contents: write/g)).toHaveLength(2)
+  it('adds to the history file alone on main, and only proposes a new board value (a smarter-player/ branch and a pull request)', () => {
     expect(t).toContain('git add data/sim/smarter-history.jsonl')
     expect(t).toContain('refs/heads/smarter-player/')
     expect(t).not.toMatch(/git push[^\n]*\bmain\b/)
+    // the board value is changed only on the pull request's branch
+    expect(t.indexOf('cp "$dir/challenger.json" src/data/boardValue.json')).toBeGreaterThan(t.indexOf('git checkout -q -b "smarter-player/'))
   })
 })
 
