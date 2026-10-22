@@ -1,15 +1,18 @@
 # Every hour: takes the oldest open issue not yet looked at, and has Claude (on the owner's subscription,
 # CLAUDE_CODE_OAUTH_TOKEN) try to fix it. A fix only ever arrives as a pull request for the owner to merge.
 #
-# Issues are public, so their text and images are data, never instructions, and the job is built so a
-# malicious issue can't reach anything:
-#   - Claude only reads and edits files in the repo: no shell, no internet, no git (claude_args below).
-#   - Everything that runs code (the tests) runs in later steps, where the subscription token isn't set and
-#     the checkout keeps no credentials; only the last step gets a token, to push a fix/ branch and open the
-#     pull request. Nothing here pushes to main.
-#   - A fix is offered only when Claude says it's very sure AND its new test fails on the code as it was AND
-#     the whole suite passes with the fix. Otherwise the issue gets a comment with what Claude found.
-# Or on demand: gh workflow run issue-fixer.yml
+# Issues are public, so their text and images are data, never instructions, and the workflow is built so a
+# malicious issue can't reach anything. Three jobs, each on a fresh runner:
+#   - fix: Claude only reads and edits files (no shell, no internet, nothing in .git). The job can't change the
+#     repo on GitHub (contents: read). Its output is data: the diff and Claude's report.
+#   - check: applies the diff and runs the tests, the only place code from the fix runs. No permissions, no
+#     secrets, no credentials, so nothing it runs can reach a token.
+#   - publish: holds the write token, and runs no code from the repo or the fix: it applies the diff and commits
+#     with git's hooks off, pushes a fix/ branch (never main) and opens the pull request, or comments.
+# A fix is offered only when Claude says it's very sure AND its new test fails on the code as it was AND the
+# whole suite passes with it. Otherwise the issue gets a comment with what Claude found.
+# Started hourly by the clock (Cloudflare) when the app has it; GitHub's own schedule below is a backup.
+# Or on demand: gh workflow run issue-fixer.yml, or Run now on the dashboard.
 name: Issue fixer
 
 on:
@@ -17,10 +20,7 @@ on:
     - cron: '47 * * * *'
   workflow_dispatch:
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+permissions: {}
 
 concurrency:
   group: issue-fixer
@@ -30,9 +30,15 @@ jobs:
   fix:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    permissions:
+      contents: read
+      issues: write
     env:
       # until the owner adds the subscription token (claude setup-token), the job does nothing
       HAS_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN != '' }}
+    outputs:
+      number: ${{ steps.pick.outputs.number }}
+      claude: ${{ steps.claude.outcome }}
     steps:
       - name: Pick the oldest open issue not looked at yet
         id: pick
@@ -74,6 +80,10 @@ jobs:
           done
           ls -la .issue
 
+      - name: Remember git's settings
+        if: steps.pick.outputs.number
+        run: cp .git/config "$RUNNER_TEMP/git-config"
+
       - name: Claude looks for a fix (files only)
         id: claude
         if: steps.pick.outputs.number
@@ -86,7 +96,7 @@ jobs:
             --model claude-opus-5-5
             --max-turns 80
             --allowedTools Read,Glob,Grep,Edit,Write
-            --disallowedTools Bash,WebFetch,WebSearch,NotebookEdit,Read(./.git/**),Read(.git/**)
+            --disallowedTools Bash,WebFetch,WebSearch,NotebookEdit,Read(./.git/**),Read(.git/**),Edit(./.git/**),Edit(.git/**),Write(./.git/**),Write(.git/**)
           prompt: |
             You are fixing a reported problem in the Vorax simulator and Solver (a fan tool for Torchlight
             Infinite's Surgical Preparation). Read AGENTS.md first and follow it.
@@ -119,38 +129,82 @@ jobs:
         run: |
           [ -f "$OUT" ] && jq -r '.[] | select(.type == "result") | (.result // .subtype)' "$OUT" | head -c 600 || echo "No output file."
 
-      - name: If Claude couldn't run, leave the issue to be tried again next hour
+      - name: If Claude couldn't get going, leave the issue to be tried again next hour
         if: steps.pick.outputs.number && steps.claude.outcome == 'failure'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
           N: ${{ steps.pick.outputs.number }}
+          OUT: ${{ steps.claude.outputs.execution_file }}
         run: |
-          gh issue edit "$N" -R "$REPO" --remove-label checked-by-claude
+          # Retried only when Claude never got going (no result, or a sign-in problem). One that ran and stopped
+          # (out of turns, say) keeps its label: an issue built to exhaust Claude isn't retried every hour.
+          last=$([ -f "$OUT" ] && jq -r '[.[] | select(.type == "result") | (.result // .subtype // "")] | last // empty' "$OUT" 2>/dev/null)
+          if [ -z "$last" ] || echo "$last" | grep -qiE 'auth|credential|login|401|403|token|overloaded|rate.?limit'; then
+            gh issue edit "$N" -R "$REPO" --remove-label checked-by-claude
+          fi
           exit 1
+
+      - name: Package the fix (the diff and Claude's report, as data)
+        if: steps.pick.outputs.number && steps.claude.outcome == 'success'
+        run: |
+          # Claude can't write in .git, and this checks it: changed settings could run code in the git commands below
+          cmp -s .git/config "$RUNNER_TEMP/git-config" || { echo "git's settings changed: refused."; exit 1; }
+          mkdir -p "$RUNNER_TEMP/fix"
+          cp .issue/report.json "$RUNNER_TEMP/fix/report.json" 2>/dev/null || echo '{"verdict": "no-fix", "summary": "Claude didn’t finish a report."}' > "$RUNNER_TEMP/fix/report.json"
+          git -c core.hooksPath=/dev/null -c core.fsmonitor=false add -A -- . ':!.issue'
+          git -c core.hooksPath=/dev/null -c core.fsmonitor=false diff --cached --binary --no-ext-diff --no-textconv > "$RUNNER_TEMP/fix/fix.patch"
+          wc -c "$RUNNER_TEMP/fix/fix.patch"
+
+      - uses: actions/upload-artifact@v4
+        if: steps.pick.outputs.number && steps.claude.outcome == 'success'
+        with:
+          name: fix
+          path: ${{ runner.temp }}/fix/
+          retention-days: 7
+
+  check:
+    needs: fix
+    if: needs.fix.outputs.number && needs.fix.outputs.claude == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # the only job that runs code from the fix: no permissions, no secrets, a runner of its own
+    permissions: {}
+    outputs:
+      verdict: ${{ steps.check.outputs.verdict }}
+      ok: ${{ steps.check.outputs.ok }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/download-artifact@v4
+        with:
+          name: fix
+          path: ${{ runner.temp }}/fix
 
       - name: Check the fix (no tokens here)
         id: check
-        if: steps.pick.outputs.number && steps.claude.outcome == 'success'
-        env:
-          REPO: ${{ github.repository }}
         run: |
           set +e
-          # the code under test may come from a hostile issue: leave it no git credentials to find
-          git config --local --unset-all http.https://github.com/.extraheader 2>/dev/null
-          git config --global --unset-all http.https://github.com/.extraheader 2>/dev/null
-          git config --global --unset-all credential.helper 2>/dev/null
-          rm -f ~/.git-credentials
-          git remote set-url origin "https://github.com/$REPO.git"
-          verdict=$(python3 -c "import json; print(json.load(open('.issue/report.json')).get('verdict',''))" 2>/dev/null)
+          FIX="$RUNNER_TEMP/fix"
+          verdict=$(python3 -c "import json, sys; print(json.load(open(sys.argv[1])).get('verdict', ''))" "$FIX/report.json" 2>/dev/null)
           echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
           [ "$verdict" = "fix" ] || exit 0
-          if git diff --name-only | grep -qE '^(\.github/|package(-lock)?\.json$)'; then echo "ok=no" >> "$GITHUB_OUTPUT"; echo "Touched a protected file."; exit 0; fi
-          tests=$(python3 -c "import json; print(' '.join(json.load(open('.issue/report.json')).get('tests', [])))")
+          [ -s "$FIX/fix.patch" ] || { echo "ok=no" >> "$GITHUB_OUTPUT"; echo "No changes."; exit 0; }
+          paths=$(git apply --numstat "$FIX/fix.patch" | cut -f3)
+          if printf '%s\n' $paths | grep -qE '(^|/)\.github/|(^|/)package(-lock)?\.json$|(^|/)\.git/'; then echo "ok=no" >> "$GITHUB_OUTPUT"; echo "Touched a protected file."; exit 0; fi
+          tests=$(python3 -c "import json, sys; print(' '.join(json.load(open(sys.argv[1])).get('tests', [])))" "$FIX/report.json")
           [ -n "$tests" ] || { echo "ok=no" >> "$GITHUB_OUTPUT"; exit 0; }
+          git apply "$FIX/fix.patch" || { echo "ok=no" >> "$GITHUB_OUTPUT"; exit 0; }
+          # the fix itself: every changed or new file but its tests
+          code=$(printf '%s\n' $paths | grep -vxF -f <(printf '%s\n' $tests))
+          [ -n "$code" ] || { echo "ok=no" >> "$GITHUB_OUTPUT"; echo "The fix changes no code."; exit 0; }
           npm ci --ignore-scripts >/dev/null
           # 1. the new tests must fail on the code as it was
-          git stash push --quiet -- $(git diff --name-only | grep -v '^tests/')
+          git stash push --include-untracked --quiet -- $code
           npx vitest run $tests > before.txt 2>&1; before=$?
           git stash pop --quiet
           # 2. and everything must pass with the fix
@@ -158,28 +212,48 @@ jobs:
           tail -5 before.txt after.txt
           if [ $before -ne 0 ] && [ $after -eq 0 ]; then echo "ok=yes" >> "$GITHUB_OUTPUT"; else echo "ok=no" >> "$GITHUB_OUTPUT"; fi
 
+  publish:
+    needs: [fix, check]
+    if: always() && needs.fix.result == 'success' && needs.fix.outputs.number && needs.fix.outputs.claude == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # holds the write token, so it runs no code from the repo or the fix
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: fix
+          path: ${{ runner.temp }}/fix
+
       - name: Open a pull request, or comment with what was found
-        if: steps.pick.outputs.number && steps.claude.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          N: ${{ steps.pick.outputs.number }}
-          VERDICT: ${{ steps.check.outputs.verdict }}
-          OK: ${{ steps.check.outputs.ok }}
+          N: ${{ needs.fix.outputs.number }}
+          VERDICT: ${{ needs.check.outputs.verdict }}
+          OK: ${{ needs.check.outputs.ok }}
         run: |
-          summary=$(python3 -c "import json; print(json.load(open('.issue/report.json')).get('summary','(no summary)'))" 2>/dev/null || echo "Claude didn't finish a report.")
+          FIX="$RUNNER_TEMP/fix"
+          summary=$(python3 -c "import json, sys; print(json.load(open(sys.argv[1])).get('summary', '(no summary)'))" "$FIX/report.json" 2>/dev/null || echo "Claude didn't finish a report.")
           if [ "$VERDICT" = "fix" ] && [ "$OK" = "yes" ]; then
             branch="fix/issue-$N"
+            git config --local core.hooksPath /dev/null
+            git config --local core.fsmonitor false
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git checkout -b "$branch"
-            git add -A -- . ':!.issue' ':!before.txt' ':!after.txt'
-            git commit -q -F - <<MSG
+            git apply --index "$FIX/fix.patch"
+            git commit --no-verify -q -F - <<MSG
           Fix #$N (found by the hourly issue fixer)
 
           $summary
           MSG
-            git push -q "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "$branch"
+            git push -q "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git" "HEAD:refs/heads/$branch"
             url=$(gh pr create -R "$REPO" --head "$branch" --title "Fix #$N" --body "$(printf 'Found by the hourly issue fixer, for #%s. Review before merging.\n\n%s\n\nIts new test failed on the code as it was, and the whole suite passes with the fix.' "$N" "$summary")")
             gh issue comment "$N" -R "$REPO" --body "$(printf 'Thanks for the report. A fix is waiting for review: %s\n\n%s' "$url" "$summary")"
           else
