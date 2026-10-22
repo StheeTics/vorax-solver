@@ -89,14 +89,14 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.03683620188696326,
-      'Incubation Sac': 0.026429288180704374,
-      'Hyperplastic Frontal Lobe': 0.024628678477861925,
-      'Hypertrophic Pituitary': 0.045778212784129975,
-      'Adherent Metatarsals': 0.02703966435115944,
-      'Contracted Claws': 0.043397745719355216,
-      'Aberrant Sprout': 0.04397760308128753,
-      'Prismatic Liver': 0.024537122052293667
+      'Chrysalis Specimen': 0.031497826309585794,
+      'Incubation Sac': 0.022599103217979533,
+      'Hyperplastic Frontal Lobe': 0.02105944145139663,
+      'Hypertrophic Pituitary': 0.039143943218209354,
+      'Adherent Metatarsals': 0.02312102246088899,
+      'Contracted Claws': 0.03710845817086247,
+      'Aberrant Sprout': 0.037604281451626455,
+      'Prismatic Liver': 0.020981153564960216
     },
     advanced: {
       'Clustered Eggs': 1.0923380349730878,
