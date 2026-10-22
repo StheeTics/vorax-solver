@@ -12,7 +12,7 @@ export interface LiveWeights {
 }
 
 export const LIVE_WEIGHTS: LiveWeights = {
-  updated: '2026-10-21',
+  updated: '2026-10-22',
   supremeChance: 0.007355399531929121,
   potionOffer: {
     'Probiotic Enzyme Solution': 0.9631639666480608,
@@ -24,7 +24,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Petrified Spinal Solution': 0.9227298472841119,
     'Viviparous Hormone': 1,
     'Eggshell Powder': 1,
-    'Brain Fog Tincture': 1,
+    'Brain Fog Tincture': 1.23364685160186,
     'Osteogenic Powder': 1.4768502620014012,
     'Gray Matter Spinal Solution': 1,
     'Hollow Spinal Solution': 1.3606602068520224,
@@ -36,10 +36,10 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Xenopurge Powder': 1.3761559259558511,
     'Pure Leech Solution': 1.1772004036809631,
     'Bewitching Tincture': 1,
-    'Mutagenic Powder': 1.443285483319551,
+    'Mutagenic Powder': 1.174336906813309,
     'Viscous Bile Solution': 1.2689303052664929,
     'Slender-Limb Powder - Pest': 1.538,
-    'Twin Hormone - Pest': 1.538,
+    'Twin Hormone - Pest': 1.8386082884450798,
     'Spinal Solution - Agito': 2.0333461518125726,
     'Anesthetic Tincture - Agito': 1.8156538218377043,
     'Slender-Limb Powder - Bone Sentry': 2.19035853804911,
@@ -89,14 +89,14 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.05799507107046507,
-      'Incubation Sac': 0.0427447868951721,
-      'Hyperplastic Frontal Lobe': 0.03900553452526854,
-      'Hypertrophic Pituitary': 0.0722922124848022,
-      'Adherent Metatarsals': 0.044797709764923074,
-      'Contracted Claws': 0.06877291613665769,
-      'Aberrant Sprout': 0.07097247635424801,
-      'Prismatic Liver': 0.03915217187310789
+      'Chrysalis Specimen': 0.049181514006532284,
+      'Incubation Sac': 0.036420608924659204,
+      'Hyperplastic Frontal Lobe': 0.033517913777280355,
+      'Hypertrophic Pituitary': 0.06276393658294654,
+      'Adherent Metatarsals': 0.037844572581863925,
+      'Contracted Claws': 0.05953263443775121,
+      'Aberrant Sprout': 0.06046368759823123,
+      'Prismatic Liver': 0.03340837811134153
     },
     advanced: {
       'Clustered Eggs': 1.0923380349730878,
@@ -119,9 +119,9 @@ export const LIVE_WEIGHTS: LiveWeights = {
     }
   },
   spawnRarity: {
-    normal: 45.1334653858491,
+    normal: 46.18111156888711,
     magic: 28.425974506855187,
     rare: 18.59911442235504,
-    boss: 17.9549177416518
+    boss: 16.95629455830123
   }
 }
