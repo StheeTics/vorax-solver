@@ -1,5 +1,7 @@
 // What stops the Solver following the game in Vorax Overlay, in words a player can act on: the card over the
 // game says it in a line, the Solver window lists what to check.
+import { unreadTanks } from '../advice/unread'
+import type { Reading } from '../types'
 
 export type Trouble = 'logOff' | 'windowBlocked' | 'noWindow' | 'cantRead' | 'windowed'
 
@@ -46,6 +48,17 @@ export const troubleOf = (err: unknown): Trouble => ((err as Error)?.name === 'N
 /** Whether the screen itself can't be read: most tanks' numbers unreadable (two or more), or three pictures in
  *  a row that aren't the game screen. In the app, a windowed game is named as the cause. */
 export function screenTrouble(s: { filled: number; unread: number; notGame: number; windowed: boolean }): Trouble | null {
-  const bad = (s.filled >= 2 && s.unread >= 2 && s.unread >= s.filled / 2) || s.notGame >= 3
+  const bad = mostUnread(s.filled, s.unread) || s.notGame >= 3
   return bad ? (s.windowed ? 'windowed' : 'cantRead') : null
+}
+
+const mostUnread = (filled: number, unread: number) => filled >= 2 && unread >= 2 && unread >= filled / 2
+
+/** Whether a picture is the game closing after its last pick: the board before it was round 13's protocol
+ *  pick, and this one doesn't read as a board (the end-of-game animation, then the reward screen). It was the
+ *  last snapshot of 241 shared games, and paused the Solver until the next game. A new game's screen is read. */
+export function gameClosing(last: { round?: number; phase: string }, read: Reading, trigger?: string): boolean {
+  if (last.round !== 13 || last.phase !== 'protocol' || trigger === 'screen') return false
+  if (read.problems.some(p => p.kind === 'notFound')) return true
+  return mostUnread(read.state.tanks.filter(Boolean).length, unreadTanks(read.fields, {}).length)
 }

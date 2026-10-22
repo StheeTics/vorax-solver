@@ -134,8 +134,8 @@ export const DASHBOARD_HTML = `<!doctype html>
         <div id="days"></div>
       </section>
       <section class="card half">
-        <h2>Average final score per day</h2>
-        <p class="sub">Games that finished that day (reached the round-13 Surgical Protocol). The dashed line is 900k: rainbow with the battle bonus.</p>
+        <h2>Median final score per day</h2>
+        <p class="sub">Games that finished that day (reached the round-13 Surgical Protocol), with round 13's last instrument effects. The median, so a few huge games don't pull it up. The dashed line is 900k: rainbow with the battle bonus.</p>
         <div id="scores"></div>
       </section>
       <section class="card half">
@@ -220,17 +220,17 @@ function bars(days) {
 }
 
 function scoreChart(days) {
-  const pts = days.filter(d => d.averageFinal !== null)
+  const pts = days.filter(d => d.medianFinal !== null)
   if (!pts.length) return '<p class="sub">No finished games yet. Every game’s final board is shared from 2026-10-19, so this fills in as people play.</p>'
-  const w = 560, h = 200, top = Math.max(1200000, ...pts.map(d => d.averageFinal)) * 1.05
+  const w = 560, h = 200, top = Math.max(1200000, ...pts.map(d => d.medianFinal)) * 1.05
   const x = i => 60 + (pts.length === 1 ? (w - 80) / 2 : (i * (w - 80)) / (pts.length - 1))
   const y = v => h - 24 - (v / top) * (h - 40)
-  let s = '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Average final score per day">' + frame(w, h, top, k)
+  let s = '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Median final score per day">' + frame(w, h, top, k)
   s += '<line class="goal" x1="40" x2="' + w + '" y1="' + y(900000) + '" y2="' + y(900000) + '"/><text class="goal-text" x="' + (w - 4) + '" y="' + (y(900000) - 6) + '" text-anchor="end">900k</text>'
-  if (pts.length > 1) s += '<polyline class="line" points="' + pts.map((d, i) => x(i) + ',' + y(d.averageFinal)).join(' ') + '"/>'
+  if (pts.length > 1) s += '<polyline class="line" points="' + pts.map((d, i) => x(i) + ',' + y(d.medianFinal)).join(' ') + '"/>'
   pts.forEach((d, i) => {
-    s += '<circle class="dot" r="4.5" cx="' + x(i) + '" cy="' + y(d.averageFinal) + '"><title>' + d.day + ': ' + num(d.averageFinal) + ' average over ' + d.finished + ' finished</title></circle>'
-    s += '<text x="' + x(i) + '" y="' + (y(d.averageFinal) - 12) + '" text-anchor="middle">' + k(d.averageFinal) + ' · ' + d.finished + '</text>'
+    s += '<circle class="dot" r="4.5" cx="' + x(i) + '" cy="' + y(d.medianFinal) + '"><title>' + d.day + ': ' + num(d.medianFinal) + ' median of ' + d.finished + ' finished</title></circle>'
+    s += '<text x="' + x(i) + '" y="' + (y(d.medianFinal) - 12) + '" text-anchor="middle">' + k(d.medianFinal) + ' · ' + d.finished + '</text>'
     s += '<text x="' + x(i) + '" y="' + (h - 6) + '" text-anchor="middle">' + d.day.slice(5) + '</text>'
   })
   return s + '</svg>'
@@ -307,7 +307,7 @@ async function load(pw) {
     ['Games shared', num(s.totals.games), s.totals.boards + ' boards read'],
     ['Players today', num(s.totals.playersToday), 'different devices'],
     ['Players ever', s.totals.countedSince ? num(s.totals.playersEver) : '–', (s.totals.countedSince ? 'since ' + s.totals.countedSince + ' · ' : '') + num(s.totals.playerDays) + ' player-days in all'],
-    ['Average final score', f.games ? k(f.average) : '–', f.games + ' finished game' + (f.games === 1 ? '' : 's')],
+    ['Median final score', f.games ? k(f.median) : '–', f.games ? 'average counted to 900k: ' + k(f.capped) + ' · ' + f.games + ' finished' : 'no finished games'],
     ['Reached 900k', f.games ? pct(f.reached / f.games) : '–', 'of finished games'],
     ['In Vorax Overlay', pct(s.totals.games ? appGames / s.totals.games : 0), 'of games'],
     ['Corrected by hand', pct(s.corrected), 'of boards'],
@@ -318,9 +318,8 @@ async function load(pw) {
   void health()
   $('days').innerHTML = bars(s.days)
   $('scores').innerHTML = scoreChart(s.days)
-  const median = f.finals.length ? f.finals.slice().sort((a, b) => a - b)[f.finals.length >> 1] : 0
   $('real').innerHTML = (f.games
-    ? '<div class="stat"><div><span>Finished games</span><b>' + f.games + '</b></div><div><span>Reached 900k</span><b>' + f.reached + ' (' + pct(f.reached / f.games) + ')</b></div><div><span>Average</span><b>' + k(f.average) + '</b></div><div><span>Median</span><b>' + k(median) + '</b></div></div><p class="sub">The simulator expects about half of games to reach 900k.</p>'
+    ? '<div class="stat"><div><span>Finished games</span><b>' + f.games + '</b></div><div><span>Reached 900k</span><b>' + f.reached + ' (' + pct(f.reached / f.games) + ')</b></div><div><span>Median</span><b>' + k(f.median) + '</b></div><div><span>Average counted to 900k</span><b>' + k(f.capped) + '</b></div><div><span>Average, every point</span><b>' + k(f.average) + '</b></div></div><p class="sub">The simulator expects about half of games to reach 900k.</p>'
     : '<p class="sub">No finished games shared yet.</p>')
     + (s.calibration.length
       ? '<div class="scroll">' + table(['Advice predicted', 'On average', 'Boards', 'Those games reached 900k'], s.calibration.map(c => [c.band, pct(c.predicted), c.games, pct(c.reached / c.games)]), [1, 2, 3]) + '</div>'

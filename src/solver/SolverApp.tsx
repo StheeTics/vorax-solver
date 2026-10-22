@@ -13,8 +13,9 @@ import { desktopBridge, overlayAsks, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
 import { dependsOn } from './advice/depends'
 import { useAlternatives } from './advice/useAlternatives'
-import { screenTrouble, type Trouble } from './live/troubles'
+import { gameClosing, screenTrouble, type Trouble } from './live/troubles'
 import { cropTo, windowedGame } from './live/windowCrop'
+import { carriedRound } from './live/round'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
 import { LiveSource } from './live/LiveSource'
@@ -155,6 +156,11 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         keep?.(raw, 'reading')
         return
       }
+      // the game closing after round 13's last pick: the last board and its advice still stand
+      if (gameClosing(state, raw, trigger)) {
+        keep?.(raw, 'reading')
+        return
+      }
       setFrame(img)
       setNotGame(n => (raw.problems.some(p => p.kind === 'notFound') ? n + 1 : 0))
       let r = raw
@@ -171,6 +177,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         if (ask) setPickAsks(list => [...list.filter(a => a.question.slot !== ask.slot), { id: ++askId, question: ask, count: t.instruments.length, frame: img, ui: raw.ui, keep }])
         const fields = Object.fromEntries(Object.entries(raw.fields).filter(([k]) => !k.startsWith('instrument')))
         r = { ...raw, state: { ...raw.state, instruments: t.instruments, instrumentRounds: t.rounds }, fields: { ...fields, ...t.fields } }
+        // a round not read for sure: the one before stands in, not round 1
+        const round = r.fields.round
+        if (round && !round.sure) r = { ...r, state: { ...r.state, round: carriedRound(state, { round: r.state.round ?? 1, phase: r.state.phase, sure: false, guess: round.guess }) } }
       }
       // a card the Solver couldn't name: shared (with sharing on) so it can be added for everyone, once a second look
       // after it landed still can't name it

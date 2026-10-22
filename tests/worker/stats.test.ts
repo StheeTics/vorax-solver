@@ -69,8 +69,8 @@ describe('the dashboard summary', () => {
 
   it('counts boards, games and players (different devices) per day', () => {
     expect(s.days).toEqual([
-      { day: '2026-10-18', boards: 3, games: 2, players: 2, website: 1, app: 1, finished: 0, averageFinal: null },
-      { day: '2026-10-19', boards: 1, games: 1, players: 1, website: 1, app: 0, finished: 0, averageFinal: null },
+      { day: '2026-10-18', boards: 3, games: 2, players: 2, website: 1, app: 1, finished: 0, averageFinal: null, medianFinal: null },
+      { day: '2026-10-19', boards: 1, games: 1, players: 1, website: 1, app: 0, finished: 0, averageFinal: null, medianFinal: null },
     ])
     expect(s.totals).toMatchObject({ boards: 4, games: 3 })
   })
@@ -102,8 +102,8 @@ describe('real results', () => {
   it('the average final score per day, to see games getting better', () => {
     expect(s.days.map(d => [d.day, d.finished, d.averageFinal])).toEqual([['2026-10-18', 2, 625_000]])
   })
-  it('the final score of every finished game, how many reached 900,000, and the average', () => {
-    expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000], average: 625_000 })
+  it('the final score of every finished game, how many reached 900,000, the average, the median and the average counted to 900,000', () => {
+    expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000], average: 625_000, median: 1_000_000, capped: 575_000 })
   })
   it('each recent game shows its score: final when finished, else at its last board', () => {
     const byStart = Object.fromEntries(s.recent.map(g => [g.start, g]))
@@ -198,5 +198,32 @@ describe('players ever', () => {
   })
   it('player-days: every day’s players added up, for the days before installs were counted', () => {
     expect(s.totals.playerDays).toBe(4)
+  })
+})
+
+describe('games and final scores, as they really are', () => {
+  const pest = (activity: number, quantity: number) => ({ archetype: 'pest', rarity: 'magic', activity, quantity })
+  const end = (run: string, tanks: unknown[], extra: Record<string, unknown> = {}) => board(run, 13, { phase: 'protocol', tanks, ...extra })
+  it('a run that holds several games (the Solver left open between them) counts each: a new one starts when the round goes back', () => {
+    const rows = [
+      row('2026-10-18T10:00:00Z', 'a', board('r', 3)),
+      row('2026-10-18T10:10:00Z', 'a', end('r', [pest(1000, 1000)])),
+      row('2026-10-18T10:20:00Z', 'a', board('r', 1, { instruments: ['Incubation Sac'] })),
+      row('2026-10-18T10:30:00Z', 'a', end('r', [pest(500, 500)])),
+      // an unsure round reads as 1: it doesn't start a game
+      row('2026-10-18T10:31:00Z', 'a', board('r', 1, { unsure: ['round'], phase: 'protocol' })),
+    ]
+    const s = summarize(rows, new Date('2026-10-19T00:00:00Z'))
+    expect(s.totals.games).toBe(2)
+    expect(s.finished.finals).toEqual([1_000_000, 250_000])
+  })
+  it('the final score includes round 13’s last instrument effects, which come after its board is read', () => {
+    // Fouled Scraper: +20 Activity to monsters with Quantity above 275, once more at the end of round 13
+    const rows = [row('2026-10-18T10:00:00Z', 'a', end('g', [pest(100, 300), null, null, null, null, null], { instruments: ['Fouled Scraper'] }))]
+    expect(summarize(rows).finished.finals).toEqual([120 * 300])
+  })
+  it('a final above 10,000,000 is a misread number and isn’t counted', () => {
+    const rows = [row('2026-10-18T10:00:00Z', 'a', end('g', [pest(9000, 9000)]))]
+    expect(summarize(rows).finished.games).toBe(0)
   })
 })

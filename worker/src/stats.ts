@@ -1,9 +1,11 @@
 // The dashboard's numbers, worked out from the stored boards. Only counts leave: the daily player code
 // (a salted hash of the address that changes every day) is used to count players per day and never sent.
 
+import { finalScore } from '../../src/engine/final'
+
 export interface StatRow { received: string; client: string; body: string }
 
-interface Tank { activity: number; quantity: number }
+interface Tank { archetype: string; rarity: string; activity: number; quantity: number }
 interface Board { run: string; install?: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
 
 interface Debug { frame: [number, number]; hdr: boolean; browser: string; window?: { outer: [number, number]; client: [number, number] } }
@@ -24,6 +26,8 @@ function setupOf(d: Debug): [string, string][] {
 
 /** The advice's goal (src/strategy/bot.ts TARGET): with the endgame battle bonus it reaches rainbow. */
 const TARGET = 900_000
+/** A final above this is a misread number (real games end below about 3.5M) and isn't counted. */
+const MAX_FINAL = 10_000_000
 const total = (b: Board) => (b.tanks ?? []).reduce((s, t) => s + (t ? t.activity * t.quantity : 0), 0)
 
 export interface Stats {
@@ -33,7 +37,7 @@ export interface Stats {
   totals: { boards: number; games: number; playersToday: number; playersEver: number; countedSince: string | null; playerDays: number }
   /** per day: boards, games, players (different devices that day), games played on the website / in the app,
    *  and the games finished that day with their average final score (null when none finished) */
-  days: { day: string; boards: number; games: number; players: number; website: number; app: number; finished: number; averageFinal: number | null }[]
+  days: { day: string; boards: number; games: number; players: number; website: number; app: number; finished: number; averageFinal: number | null; medianFinal: number | null }[]
   /** games by the highest round they reached */
   rounds: Record<number, number>
   /** the share of boards a player corrected */
@@ -44,8 +48,9 @@ export interface Stats {
   versions: Record<string, number>
   /** score: the final score when the game finished, else the total on its last shared board */
   recent: { start: string; boards: number; round: number; app: boolean; instruments: string[]; score: number; finished: boolean }[]
-  /** games that reached the round-13 Surgical Protocol: its board's total is the final score */
-  finished: { games: number; reached: number; finals: number[]; average: number }
+  /** games that reached the round-13 Surgical Protocol: the final score is its board after round 13's last
+   *  instrument effects (src/engine/final.ts); average counts every point, capped stops counting at 900,000 */
+  finished: { games: number; reached: number; finals: number[]; average: number; median: number; capped: number }
   /** for each setup (screen shape, windowed or not, HDR, browser): boards, and the shares read with something
    *  unsure and with a tank's numbers unsure */
   problems: { by: string; group: string; boards: number; unsure: number; numbers: number }[]
@@ -56,7 +61,10 @@ export interface Stats {
 const RECENT = 25
 
 export function summarize(rows: StatRow[], now = new Date()): Stats {
-  const games = new Map<string, { start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; instruments: string[]; final: number | null; predictions: number[]; last: number; score: number }>()
+  type Game = { start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; instruments: string[]; picked: Map<string, number>; final: number | null; predictions: number[]; last: number; score: number }
+  const games = new Map<string, Game>()
+  // a run (one Solver session) can hold several games: a new one starts when a round read for sure goes back
+  const current = new Map<string, { key: string; n: number; round: number }>()
   const days = new Map<string, { boards: number; players: Set<string> }>()
   let corrected = 0
   let unsure = 0
@@ -91,7 +99,12 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
       setups.set(k, g)
     }
     const app = /-overlay$/.test(b.app)
-    const g = games.get(b.run) ?? { start: r.received, day, boards: 0, round: 0, read: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], final: null, predictions: [], last: -1, score: 0 }
+    const sure = !b.unsure?.includes('round')
+    let at = current.get(b.run) ?? { key: b.run, n: 0, round: 0 }
+    if (sure && b.round < at.round) at = { key: `${b.run}#${at.n + 1}`, n: at.n + 1, round: 0 }
+    if (sure) at.round = Math.max(at.round, b.round)
+    current.set(b.run, at)
+    const g: Game = games.get(at.key) ?? { start: r.received, day, boards: 0, round: 0, read: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], picked: new Map(), final: null, predictions: [], last: -1, score: 0 }
     g.boards++
     const seq = b.seq ?? g.boards
     if (seq >= g.last) {
@@ -102,10 +115,16 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     // an unread round falls back to 1: only a round read for sure says how far the game got
     if (!b.unsure?.includes('round')) g.read = Math.max(g.read, b.round)
     if (b.instruments?.length) g.instruments = b.instruments
+    // the round each instrument was first seen, for the ones that fire every few rounds
+    for (const n of b.instruments ?? []) if (!g.picked.has(n)) g.picked.set(n, sure ? b.round : 1)
     // a final score with an unsure number isn't one
-    if (b.round === 13 && b.phase === 'protocol' && !b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.final = total(b)
+    if (b.round === 13 && b.phase === 'protocol' && b.tanks && !b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) {
+      const ins = b.instruments ?? []
+      const end = finalScore(b.tanks as Parameters<typeof finalScore>[0], ins, ins.map(n => g.picked.get(n) ?? 1))
+      g.final = end <= MAX_FINAL ? end : null
+    }
     if (typeof b.advice?.reached === 'number') g.predictions.push(b.advice.reached)
-    games.set(b.run, g)
+    games.set(at.key, g)
   }
   // a game that never got past its first instrument offer wasn't played: the Solver used to start a new game ID on
   // every board there (a reroll, a recheck), so most "games" seemed to stop at round 1. Those boards still count.
@@ -119,6 +138,8 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     versions[g.version] = (versions[g.version] ?? 0) + 1
   }
   const finished = list.filter(g => g.final !== null)
+  const median = (xs: number[]) => { const a = [...xs].sort((x, y) => x - y); return a.length ? a[a.length >> 1] : 0 }
+  const finals = finished.map(g => g.final!)
   const bands = new Map<number, { sum: number; games: number; reached: number }>()
   for (const g of finished) for (const p of g.predictions) {
     const k = Math.min(4, Math.floor(p * 5))
@@ -130,7 +151,11 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
   }
   return {
     generated: now.toISOString(),
-    finished: { games: finished.length, reached: finished.filter(g => g.final! >= TARGET).length, finals: finished.map(g => g.final!), average: finished.length ? Math.round(finished.reduce((s, g) => s + g.final!, 0) / finished.length) : 0 },
+    finished: {
+      games: finals.length, reached: finals.filter(f => f >= TARGET).length, finals,
+      average: finals.length ? Math.round(finals.reduce((s, f) => s + f, 0) / finals.length) : 0, median: median(finals),
+      capped: finals.length ? Math.round(finals.reduce((s, f) => s + Math.min(f, TARGET), 0) / finals.length) : 0,
+    },
     calibration: [...bands.entries()].sort(([a], [b]) => a - b).map(([k, b]) => ({ band: `${k * 20}–${k * 20 + 20}%`, predicted: Math.round((100 * b.sum) / b.games) / 100, games: b.games, reached: b.reached })),
     totals: {
       boards: rows.length, games: list.length, playersToday: days.get(today)?.players.size ?? 0,
@@ -142,6 +167,7 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
       return {
         day, boards: d.boards, games: played.length, players: d.players.size, website: played.filter(g => !g.app).length, app: played.filter(g => g.app).length,
         finished: done.length, averageFinal: done.length ? Math.round(done.reduce((s, g) => s + g.final!, 0) / done.length) : null,
+        medianFinal: done.length ? median(done.map(g => g.final!)) : null,
       }
     }),
     rounds,

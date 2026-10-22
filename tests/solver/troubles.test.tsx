@@ -2,6 +2,7 @@ import { act, render, screen } from '@testing-library/react'
 import { LiveSource, type LiveDeps } from '@/solver/live/LiveSource'
 import { TROUBLES, troubleOf } from '@/solver/live/troubles'
 import type { DesktopBridge } from '@/solver/desktop/bridge'
+import { emptyState } from '@/solver/types'
 
 it('names why the game window couldn’t be shared, from the error', () => {
   expect(troubleOf(new DOMException('Could not start video source', 'NotReadableError'))).toBe('windowBlocked')
@@ -70,5 +71,29 @@ describe('a screen the Solver can’t read', () => {
     expect(TROUBLES.windowed.card).toMatch(/windowed/)
     expect(TROUBLES.windowed.steps.join(' ')).toMatch(/borderless or fullscreen/)
     expect(TROUBLES.cantRead.card).toMatch(/can’t read your game screen/)
+  })
+})
+
+describe('the game closing after its last pick', () => {
+  const pest = { archetype: 'pest' as const, rarity: 'normal' as const, activity: 1, quantity: 1 }
+  /** a picture with these tanks, the ones listed read unsure */
+  const reading = (tanks: number, unsure: number[], notFound = false) => ({
+    state: { ...emptyState(), tanks: Array.from({ length: 6 }, (_, i) => (i < tanks ? pest : null)) },
+    fields: Object.fromEntries(unsure.flatMap(i => [[`tank${i}.activity`, { sure: false }], [`tank${i}.quantity`, { sure: false }]])),
+    problems: notFound ? [{ kind: 'notFound' as const }] : [],
+  })
+  const last13 = { round: 13, phase: 'protocol' }
+
+  it('is a picture after round 13’s protocol pick that doesn’t read as a board', async () => {
+    const { gameClosing } = await import('@/solver/live/troubles')
+    expect(gameClosing(last13, reading(5, [0, 1, 2, 3, 4]), 'board')).toBe(true)
+    expect(gameClosing(last13, reading(0, [], true), 'board')).toBe(true)
+  })
+  it('isn’t a board that reads, an earlier round, or a new game’s screen', async () => {
+    const { gameClosing } = await import('@/solver/live/troubles')
+    expect(gameClosing(last13, reading(5, [2]), 'board')).toBe(false)
+    expect(gameClosing({ round: 12, phase: 'protocol' }, reading(5, [0, 1, 2, 3, 4]), 'board')).toBe(false)
+    expect(gameClosing({ round: 13, phase: 'potion' }, reading(5, [0, 1, 2, 3, 4]), 'board')).toBe(false)
+    expect(gameClosing(last13, reading(5, [0, 1, 2, 3, 4]), 'screen')).toBe(false)
   })
 })
