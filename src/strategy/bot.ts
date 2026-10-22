@@ -134,11 +134,12 @@ export const evChooser = (p: Policy): Chooser => (s, seed) => choose(s, p, seed)
 export const peekChooser: Chooser = s => choosePeek(s)
 
 /**
- * The score the advice aims for: 900,000 on the board, which the endgame battle bonus takes to rainbow, so
- * it counts as rainbow here (it was 950,000 until Oct 21, 2026, when the user found 900,000 is enough). Playouts are scored by their final Ultimate Activity counted up to it: every
+ * The score the advice aims for: 840,000 on the board, which the endgame battle bonus takes to rainbow, so
+ * it counts as rainbow here (it was 950,000 until Oct 21, 2026, then 900,000 until
+ * Oct 22, when the user found 840,000 is enough). Playouts are scored by their final Ultimate Activity counted up to it: every
  * point below counts, nothing above does, so the advice pushes runs as high as it can without gambling past it.
  */
-export const TARGET = 900_000
+export const TARGET = 840_000
 export const goalScore = (ua: number) => Math.min(ua, TARGET)
 
 /** How an instrument offer is answered: return a hand index, or 'refresh'. */

@@ -1,5 +1,5 @@
 // Training games for the board value (src/strategy/value.ts): every board along the way, with how its game ended
-// (the final score counted up to the target, 900,000, in millions), summed per round as XᵀX, Xᵀy, yᵀy and n for a least-squares
+// (the final score counted up to the target, 840,000, in millions), summed per round as XᵀX, Xᵀy, yᵀy and n for a least-squares
 // fit (valueFit.ts), so the file stays small however many games are played.
 // Usage: vite-node scripts/sim/valueData.ts <games> <out.bin>
 //   SEED0: first game's seed. EPS: share of moves played at random, so boards a better player reaches are seen too

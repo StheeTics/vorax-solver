@@ -91,9 +91,9 @@ describe('real results', () => {
   const tank = (activity: number, quantity: number) => ({ archetype: 'aemberon', rarity: 'boss', activity, quantity })
   const rows = [
     // a finished game: its last board is the round-13 Surgical Protocol, whose total is the final score
-    row('2026-10-18T10:00:00Z', 'a', board('g1', 5, { advice: { move: 'Play X', activity: 900000, reached: 0.6 } })),
+    row('2026-10-18T10:00:00Z', 'a', board('g1', 5, { advice: { move: 'Play X', activity: 840000, reached: 0.6 } })),
     row('2026-10-18T10:10:00Z', 'a', board('g1', 13, { phase: 'protocol', tanks: [tank(1000, 1000), null, null, null, null, null] })),
-    // another, short of 900k
+    // another, short of 840k
     row('2026-10-18T11:00:00Z', 'b', board('g2', 5, { advice: { move: 'Play Y', activity: 400000, reached: 0.1 } })),
     row('2026-10-18T11:10:00Z', 'b', board('g2', 13, { phase: 'protocol', tanks: [tank(500, 500), null, null, null, null, null] })),
     // unfinished
@@ -103,15 +103,15 @@ describe('real results', () => {
   it('the average final score per day, to see games getting better', () => {
     expect(s.days.map(d => [d.day, d.finished, d.averageFinal])).toEqual([['2026-10-18', 2, 625_000]])
   })
-  it('the final score of every finished game, how many reached 900,000, the average, the median and the average counted to 900,000', () => {
-    expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000], average: 625_000, median: 1_000_000, capped: 575_000 })
+  it('the final score of every finished game, how many reached 840,000, the average, the median and the average counted to 840,000', () => {
+    expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000], average: 625_000, median: 1_000_000, capped: 545_000 })
   })
   it('each recent game shows its score: final when finished, else at its last board', () => {
     const byStart = Object.fromEntries(s.recent.map(g => [g.start, g]))
     expect(byStart['2026-10-18T10:00:00Z']).toMatchObject({ score: 1_000_000, finished: true })
     expect(byStart['2026-10-18T12:00:00Z']).toMatchObject({ score: 0, finished: false, round: 4 })
   })
-  it('predicted against real: the advice’s chance of 900,000, in bands, against how those games ended', () => {
+  it('predicted against real: the advice’s chance of 840,000, in bands, against how those games ended', () => {
     expect(s.calibration).toEqual([
       { band: '0–20%', predicted: 0.1, games: 1, reached: 0 },
       { band: '60–80%', predicted: 0.6, games: 1, reached: 1 },

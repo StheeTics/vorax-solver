@@ -2,17 +2,17 @@ import { readFileSync } from 'node:fs'
 import { decide, type Game } from '../../scripts/sim/gate'
 
 const games = (scores: number[], from = 0): Game[] => scores.map((score, i) => ({ seed: from + i, score }))
-const reach = 900_000, miss = 600_000
+const reach = 840_000, miss = 600_000
 
 describe('the gate a new board value must pass to be proposed', () => {
-  it('passes a challenger that gets clearly more games to 900,000 without lowering the average', () => {
+  it('passes a challenger that gets clearly more games to 840,000 without lowering the average', () => {
     const champion = games([...Array(40).fill(miss), ...Array(60).fill(reach)])
     const challenger = games([...Array(30).fill(miss), ...Array(70).fill(reach)])
     const d = decide(champion, challenger)
     expect(d.pass).toBe(true)
     expect(d).toMatchObject({ games: 100, champion: { reached: 60 }, challenger: { reached: 70 }, gained: 10, lost: 0 })
   })
-  it('fails one that reaches 900,000 as often', () => {
+  it('fails one that reaches 840,000 as often', () => {
     const both = games([...Array(40).fill(miss), ...Array(60).fill(reach)])
     expect(decide(both, both).pass).toBe(false)
   })

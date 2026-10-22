@@ -25,7 +25,7 @@ export interface ScreenState {
   /** Intern Shelley level; DEFAULT_SETTINGS when absent */
   shelley?: number
 }
-/** end: with look-ahead, the predicted end of the run (average final Ultimate Activity counted up to the target, 900,000; share reaching it, which counts as rainbow) */
+/** end: with look-ahead, the predicted end of the run (average final Ultimate Activity counted up to the target, 840,000; share reaching it, which counts as rainbow) */
 export interface Ranked {
   index: number
   targets: number[]

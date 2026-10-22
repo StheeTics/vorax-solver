@@ -39,11 +39,11 @@ describe('a board described for the board value', () => {
 })
 
 describe('the board value', () => {
-  it('is the model’s prediction of the final score, counted up to 900,000', () => {
+  it('is the model’s prediction of the final score, counted up to 840,000', () => {
     setBoardValue(only('bias', 0.5))
     expect(boardValue(incubation)).toBe(500_000)
     setBoardValue(only('bias', 2))
-    expect(boardValue(incubation)).toBe(900_000)
+    expect(boardValue(incubation)).toBe(840_000)
   })
   it('is the score itself once the game is over', () => {
     setBoardValue(only('bias', 0.5))
@@ -104,7 +104,7 @@ it('the board value counts only what a board has (the instruments it owns, their
   for (const b of boards) {
     const x = features(b)
     const w = (SHIPPED as ValueModel & { rounds: number[][] }).rounds[b.round - 1]
-    const dot = Math.max(0, Math.min(900_000, w.reduce((t, wi, i) => t + wi * x[i], 0) * 1e6))
+    const dot = Math.max(0, Math.min(840_000, w.reduce((t, wi, i) => t + wi * x[i], 0) * 1e6))
     expect(boardValue(b)).toBeCloseTo(dot, 3)
   }
 })

@@ -1,4 +1,4 @@
-// The board value: what final score (counted up to the advice's target, 900,000) games from a board like this one tend to end at,
+// The board value: what final score (counted up to the advice's target, 840,000) games from a board like this one tend to end at,
 // learned from simulated games (scripts/sim/valueData.ts, valueFit.ts). The player inside the advice's futures
 // picks its cards by it instead of by this round's score, so it plays toward what pays off later.
 import { ARCHETYPES, RARITIES } from '@/data/archetypes'
@@ -8,7 +8,7 @@ import type { GameState, Monster } from '@/engine/types'
 import SHIPPED from '@/data/boardValue.json'
 
 /** The advice's target (bot.ts TARGET): the board value is counted up to it. */
-const TARGET = 900_000
+const TARGET = 840_000
 /** Where the features cap the score: 950,000, the target the shipped model was trained with, kept so it reads boards
  *  as it learned them. */
 const FEATURE_CAP = 950_000
@@ -141,15 +141,15 @@ function treeSum(m: { base: number; trees: Tree[] }, x: number[]): number {
   return v
 }
 
-/** The board value the Solver ships with: version 2 (instrument pairs, trained on version 1's games). In 480 simulated
- *  games, with 64 instrument futures, 322 reached 950,000 against 284 for the advice before it. */
+/** The board value the Solver ships with: fitted Oct 22, 2026 to 110,000 games under that day's odds, scored to the
+ *  840,000 target. On the daily check's 240 games, 157 reached 840,000 against 140 for the one before it (900,000). */
 let model: ValueModel | null = SHIPPED as ValueModel
 /** The model the board value uses (null: none, the board value is the score). */
 export const setBoardValue = (m: ValueModel | null) => void (model = m)
 export const useShippedBoardValue = () => setBoardValue(SHIPPED as ValueModel)
 export const hasBoardValue = () => !!model
 
-/** Predicted final score counted up to 900,000; once the game is over, the score itself (up to 900,000). */
+/** Predicted final score counted up to 840,000; once the game is over, the score itself (up to 840,000). */
 export function boardValue(s: GameState): number {
   if (!model) return ultimateActivity(s)
   if (s.phase === 'gameOver') return Math.min(ultimateActivity(s), TARGET)

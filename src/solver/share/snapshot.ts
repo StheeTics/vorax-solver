@@ -7,7 +7,7 @@ import type { Shown } from '../advice/useAdvice'
 import { describe } from '../advice/describe'
 
 /** The advice shown for a board, so real games can check the predictions: the move in words, and its
- *  predicted end (average counted to 900,000, share of futures reaching it) when the look-ahead gave one. */
+ *  predicted end (average counted to 840,000, share of futures reaching it) when the look-ahead gave one. */
 export interface SharedAdvice { move: string; activity: number | null; reached: number | null }
 
 export interface Snapshot {

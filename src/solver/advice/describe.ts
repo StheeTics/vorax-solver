@@ -8,5 +8,5 @@ export function describe(r: Ranked, state: ScreenState, place = false): string {
   return r.noEffect ? `${move}: does nothing, the tanks are full` : move
 }
 
-/** A look-ahead prediction in words: "900,000 · 40% rainbow". */
+/** A look-ahead prediction in words: "840,000 · 40% rainbow". */
 export const predicted = (end: NonNullable<Ranked['end']>) => `${Math.round(end.activity).toLocaleString()} · ${Math.round(100 * end.reached)}% rainbow`

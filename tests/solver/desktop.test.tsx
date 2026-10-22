@@ -70,10 +70,10 @@ describe('the overlay card', () => {
   const advice = (a: Partial<Advice>): Advice => ({ best: null, ranking: [], board: 0, plan: true, final: true, ms: 1, unknown: [], ...a })
 
   it('shows the move, the predicted end and the next choices', () => {
-    const best = { index: 1, targets: [0], value: 900_000, end: { activity: 900_000, reached: 0.4 } }
+    const best = { index: 1, targets: [0], value: 840_000, end: { activity: 840_000, reached: 0.4 } }
     const card = overlayCard({ board, advice: advice({ best, ranking: [best, { index: 0, targets: [], value: 700_000, end: { activity: 700_000, reached: 0.1 } }] }) }, false)
     expect(card.move).toBe('Play Green Bile Solution (card 2) → tank 1')
-    expect(card.detail).toBe('Ends around 900,000 · 40% rainbow')
+    expect(card.detail).toBe('Ends around 840,000 · 40% rainbow')
     expect(card.others).toEqual(['Play Mutagenic Powder: 700,000 · 10% rainbow'])
     expect(card.round).toBe(4)
     expect(card.updating).toBe(false)

@@ -25,7 +25,7 @@ function setupOf(d: Debug): [string, string][] {
 }
 
 /** The advice's goal (src/strategy/bot.ts TARGET): with the endgame battle bonus it reaches rainbow. */
-const TARGET = 900_000
+const TARGET = 840_000
 /** A final above this is a misread number (real games end below about 3.5M) and isn't counted. */
 const MAX_FINAL = 10_000_000
 const total = (b: Board) => (b.tanks ?? []).reduce((s, t) => s + (t ? t.activity * t.quantity : 0), 0)
@@ -49,12 +49,12 @@ export interface Stats {
   /** score: the final score when the game finished, else the total on its last shared board */
   recent: { start: string; boards: number; round: number; app: boolean; instruments: string[]; score: number; finished: boolean }[]
   /** games that reached the round-13 Surgical Protocol: the final score is its board after round 13's last
-   *  instrument effects (src/engine/final.ts); average counts every point, capped stops counting at 900,000 */
+   *  instrument effects (src/engine/final.ts); average counts every point, capped stops counting at 840,000 */
   finished: { games: number; reached: number; finals: number[]; average: number; median: number; capped: number }
   /** for each setup (screen shape, windowed or not, HDR, browser): boards, and the shares read with something
    *  unsure and with a tank's numbers unsure */
   problems: { by: string; group: string; boards: number; unsure: number; numbers: number }[]
-  /** the advice's predicted chance of 900,000 (in 20% bands) against how those finished games ended */
+  /** the advice's predicted chance of 840,000 (in 20% bands) against how those finished games ended */
   calibration: { band: string; predicted: number; games: number; reached: number }[]
 }
 

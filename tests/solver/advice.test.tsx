@@ -25,7 +25,7 @@ it('runAdvice gives potions only the look-ahead answer, no quick answer first', 
 })
 
 it('no list of choices: the move sits between the tanks and the cards, where the eye goes', () => {
-  const ahead: Advice = { ...advice({ index: 0, targets: [1], value: 950_000, end: { activity: 900_000, reached: 0.4 } }), plan: true }
+  const ahead: Advice = { ...advice({ index: 0, targets: [1], value: 950_000, end: { activity: 840_000, reached: 0.4 } }), plan: true }
   render(<AdvicePanel advice={ahead} updating={false} state={state} />)
   expect(screen.queryByRole('list', { name: 'Choices' })).toBeNull()
   expect(screen.queryByText(/played to the end of the run|Values are/)).toBeNull()
