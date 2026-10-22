@@ -111,11 +111,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     [openPick, board],
   )
   const depends = dependsOn(useAlternatives(options))
-  // a screen it can't read (most tanks unreadable, or pictures that aren't the game): said first, with the cause
-  // when the app sees the game is windowed
+  // a screen it can't read (most tanks unreadable, or pictures that aren't the game): said first
   const [notGame, setNotGame] = useState(0)
-  const [windowed, setWindowed] = useState(false)
-  const screen = linked ? null : screenTrouble({ filled: (reading?.state.tanks ?? []).filter(Boolean).length, unread: unreadTanks(fields, corrections).length, notGame, windowed })
+  const screen = linked ? null : screenTrouble({ filled: (reading?.state.tanks ?? []).filter(Boolean).length, unread: unreadTanks(fields, corrections).length, notGame })
   const troubles = [trouble, screen].filter((t): t is Trouble => !!t)
   // advice on a board it can't trust is paused, until fixed or the player asks for it anyway (for those
   // reasons only, until the page reloads: a new one pauses it again)
@@ -145,7 +143,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       const area = windowedGame(captured)
       const cut = area ? cropTo(captured, area) : null
       const img = cut ? (typeof ImageData === 'undefined' ? (cut as unknown as ImageData) : new ImageData(cut.data, cut.width, cut.height)) : captured
-      setWindowed(!!area)
       const readFrom = Date.now()
       const read$ = await read(img, trigger, refs ?? local)
       const ms = Date.now() - readFrom

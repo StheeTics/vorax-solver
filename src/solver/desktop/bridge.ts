@@ -73,7 +73,7 @@ export function overlayAsks(pending: number, fields: Record<FieldKey, FieldRead>
   if (pending > 0) out.push('Which instrument did you take? The Solver couldn’t tell.')
   // a screen it can't read already says the numbers are off
   const tanks = unreadTanks(fields, corrections)
-  if (tanks.length && !troubles.some(t => t === 'cantRead' || t === 'windowed')) out.push(`${unreadNote(tanks)} Check them in the Solver.`)
+  if (tanks.length && !troubles.includes('cantRead')) out.push(`${unreadNote(tanks)} Check them in the Solver.`)
   if (Object.entries(fields).some(([k, f]) => /^instrument\d$/.test(k) && !f.sure && !(k in corrections))) out.push('An instrument may be misread: check it in the Solver.')
   return out
 }

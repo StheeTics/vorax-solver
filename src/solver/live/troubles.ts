@@ -3,7 +3,7 @@
 import { unreadTanks } from '../advice/unread'
 import type { Reading } from '../types'
 
-export type Trouble = 'logOff' | 'windowBlocked' | 'noWindow' | 'cantRead' | 'windowed'
+export type Trouble = 'logOff' | 'windowBlocked' | 'noWindow' | 'cantRead'
 
 export const TROUBLES: Record<Trouble, { card: string; steps: string[] }> = {
   logOff: {
@@ -26,14 +26,10 @@ export const TROUBLES: Record<Trouble, { card: string; steps: string[] }> = {
   cantRead: {
     card: 'The Solver can’t read your game screen, so its advice is off.',
     steps: [
-      'Play borderless or fullscreen, not windowed.',
+      'Lower the game’s Settings → Screen Scaling.',
       'Keep the game’s interface scale at its default.',
       'If your screen isn’t 16:9 or 21:9 (16:10, 32:9…), say so with Report an issue: it isn’t supported yet.',
     ],
-  },
-  windowed: {
-    card: 'Your game is windowed, and the Solver can’t read it well that way.',
-    steps: ['Set the game to borderless or fullscreen in its display settings.'],
   },
   noWindow: {
     card: 'Vorax Overlay can’t find the game window.',
@@ -46,10 +42,10 @@ export const TROUBLES: Record<Trouble, { card: string; steps: string[] }> = {
 export const troubleOf = (err: unknown): Trouble => ((err as Error)?.name === 'NotAllowedError' ? 'noWindow' : 'windowBlocked')
 
 /** Whether the screen itself can't be read: most tanks' numbers unreadable (two or more), or three pictures in
- *  a row that aren't the game screen. In the app, a windowed game is named as the cause. */
-export function screenTrouble(s: { filled: number; unread: number; notGame: number; windowed: boolean }): Trouble | null {
-  const bad = mostUnread(s.filled, s.unread) || s.notGame >= 3
-  return bad ? (s.windowed ? 'windowed' : 'cantRead') : null
+ *  a row that aren't the game screen. The window mode isn't blamed: windowed games read as well as borderless
+ *  ones since the title bar is cropped (25% of boards with an unsure tank number against 26%, Oct 22). */
+export function screenTrouble(s: { filled: number; unread: number; notGame: number }): Trouble | null {
+  return mostUnread(s.filled, s.unread) || s.notGame >= 3 ? 'cantRead' : null
 }
 
 const mostUnread = (filled: number, unread: number) => filled >= 2 && unread >= 2 && unread >= filled / 2

@@ -7,7 +7,6 @@ import { SolverApp } from '@/solver/SolverApp'
 describe('what pauses the Solver', () => {
   it('the log off, a screen it can’t read, and no Shelley level; not a window it can’t see (no picture, no advice)', () => {
     expect(pausesOf(['logOff', 'cantRead'], true)).toEqual(['logOff', 'cantRead', 'shelley'])
-    expect(pausesOf(['windowed'], false)).toEqual(['windowed'])
     expect(pausesOf(['noWindow', 'windowBlocked'], false)).toEqual([])
   })
 
