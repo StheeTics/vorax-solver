@@ -135,7 +135,7 @@ export const DASHBOARD_HTML = `<!doctype html>
       </section>
       <section class="card half">
         <h2>Average final score per day</h2>
-        <p class="sub">Games that finished that day (reached the round-13 Surgical Protocol). The dashed line is 950k: rainbow with the battle bonus.</p>
+        <p class="sub">Games that finished that day (reached the round-13 Surgical Protocol). The dashed line is 900k: rainbow with the battle bonus.</p>
         <div id="scores"></div>
       </section>
       <section class="card half">
@@ -226,7 +226,7 @@ function scoreChart(days) {
   const x = i => 60 + (pts.length === 1 ? (w - 80) / 2 : (i * (w - 80)) / (pts.length - 1))
   const y = v => h - 24 - (v / top) * (h - 40)
   let s = '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Average final score per day">' + frame(w, h, top, k)
-  s += '<line class="goal" x1="40" x2="' + w + '" y1="' + y(950000) + '" y2="' + y(950000) + '"/><text class="goal-text" x="' + (w - 4) + '" y="' + (y(950000) - 6) + '" text-anchor="end">950k</text>'
+  s += '<line class="goal" x1="40" x2="' + w + '" y1="' + y(900000) + '" y2="' + y(900000) + '"/><text class="goal-text" x="' + (w - 4) + '" y="' + (y(900000) - 6) + '" text-anchor="end">900k</text>'
   if (pts.length > 1) s += '<polyline class="line" points="' + pts.map((d, i) => x(i) + ',' + y(d.averageFinal)).join(' ') + '"/>'
   pts.forEach((d, i) => {
     s += '<circle class="dot" r="4.5" cx="' + x(i) + '" cy="' + y(d.averageFinal) + '"><title>' + d.day + ': ' + num(d.averageFinal) + ' average over ' + d.finished + ' finished</title></circle>'
@@ -240,7 +240,6 @@ function scoreChart(days) {
 // every: how often it should run, in hours (null: only when something triggers it); late after 2.5x that.
 const LOOPS = [
   { file: 'live-data.yml', name: 'Odds from live data', every: 1 },
-  { file: 'strengths.yml', name: 'Instrument strengths', every: null },
   { file: 'daily-check.yml', name: 'Daily check (simulation)', every: 24 },
   { file: 'smarter-player.yml', name: 'Smarter player (nightly learning)', every: 24 },
   { file: 'issue-fixer.yml', name: 'Issue fixer', every: 1 },
@@ -309,7 +308,7 @@ async function load(pw) {
     ['Players today', num(s.totals.playersToday), 'different devices'],
     ['Players ever', s.totals.countedSince ? num(s.totals.playersEver) : '–', (s.totals.countedSince ? 'since ' + s.totals.countedSince + ' · ' : '') + num(s.totals.playerDays) + ' player-days in all'],
     ['Average final score', f.games ? k(f.average) : '–', f.games + ' finished game' + (f.games === 1 ? '' : 's')],
-    ['Reached 950k', f.games ? pct(f.reached / f.games) : '–', 'of finished games'],
+    ['Reached 900k', f.games ? pct(f.reached / f.games) : '–', 'of finished games'],
     ['In Vorax Overlay', pct(s.totals.games ? appGames / s.totals.games : 0), 'of games'],
     ['Corrected by hand', pct(s.corrected), 'of boards'],
     ['Read unsure', pct(s.unsure), 'of boards'],
@@ -321,10 +320,10 @@ async function load(pw) {
   $('scores').innerHTML = scoreChart(s.days)
   const median = f.finals.length ? f.finals.slice().sort((a, b) => a - b)[f.finals.length >> 1] : 0
   $('real').innerHTML = (f.games
-    ? '<div class="stat"><div><span>Finished games</span><b>' + f.games + '</b></div><div><span>Reached 950k</span><b>' + f.reached + ' (' + pct(f.reached / f.games) + ')</b></div><div><span>Average</span><b>' + k(f.average) + '</b></div><div><span>Median</span><b>' + k(median) + '</b></div></div><p class="sub">The simulator expects about half of games to reach 950k.</p>'
+    ? '<div class="stat"><div><span>Finished games</span><b>' + f.games + '</b></div><div><span>Reached 900k</span><b>' + f.reached + ' (' + pct(f.reached / f.games) + ')</b></div><div><span>Average</span><b>' + k(f.average) + '</b></div><div><span>Median</span><b>' + k(median) + '</b></div></div><p class="sub">The simulator expects about half of games to reach 900k.</p>'
     : '<p class="sub">No finished games shared yet.</p>')
     + (s.calibration.length
-      ? '<div class="scroll">' + table(['Advice predicted', 'On average', 'Boards', 'Those games reached 950k'], s.calibration.map(c => [c.band, pct(c.predicted), c.games, pct(c.reached / c.games)]), [1, 2, 3]) + '</div>'
+      ? '<div class="scroll">' + table(['Advice predicted', 'On average', 'Boards', 'Those games reached 900k'], s.calibration.map(c => [c.band, pct(c.predicted), c.games, pct(c.reached / c.games)]), [1, 2, 3]) + '</div>'
       : '<p class="sub">Predicted against real appears once boards carry the advice shown (from 2026-10-19) and their games finish.</p>')
   const rounds = Object.entries(s.rounds).sort((a, b) => a[0] - b[0])
   const most = Math.max(1, ...rounds.map(x => x[1]))
@@ -333,7 +332,7 @@ async function load(pw) {
     const t = await (await fetch(HISTORY, { cache: 'no-store' })).text()
     // only the simulated results: the odds changes stay in the file
     const h = t.split('\\n').filter(Boolean).map(l => JSON.parse(l)).filter(e => e.reached !== undefined).reverse()
-    if (h.length) paged('history', ['Date', 'What', 'Reached 950k', 'Average', 'Median'], h.map(e => [e.date, e.change, pct(e.reached), e.average ? k(e.average) : '–', e.median ? k(e.median) : '–']), [2, 3, 4])
+    if (h.length) paged('history', ['Date', 'What', 'Reached 900k', 'Average', 'Median'], h.map(e => [e.date, e.change, pct(e.reached), e.average ? k(e.average) : '–', e.median ? k(e.median) : '–']), [2, 3, 4])
     else $('history').innerHTML = '<p class="sub">No simulated results yet.</p>'
   } catch (e) {
     $('history').innerHTML = '<p class="sub">The simulated results couldn’t be read from the repo.</p>'
@@ -341,12 +340,12 @@ async function load(pw) {
   try {
     const t = await (await fetch(SMARTER, { cache: 'no-store' })).text()
     const h = t.split('\\n').filter(Boolean).map(l => JSON.parse(l)).filter(e => e.fixed).reverse()
-    // reached 950k on the fixed games: "166 (69%)"
+    // reached 900k on the fixed games: "166 (69%)"
     const hit = (x, n) => x.reached + ' (' + pct(x.reached / n) + ')'
     const signed = (v, unit) => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v) + unit
     if (h.length) {
       const now = h[0]
-      $('smarter').innerHTML = '<p class="lead">The current player reaches 950k in <b>' + hit(now.pass ? now.fixed.challenger : now.fixed.shipped, now.fixed.games) + '</b> of the ' + now.fixed.games + ' fixed games.</p><div id="smarter-runs"></div>'
+      $('smarter').innerHTML = '<p class="lead">The current player reaches 900k in <b>' + hit(now.pass ? now.fixed.challenger : now.fixed.shipped, now.fixed.games) + '</b> of the ' + now.fixed.games + ' fixed games.</p><div id="smarter-runs"></div>'
       paged('smarter-runs', ['Date', 'Current player', 'Challenger', 'Difference', 'Result'], h.map(e => {
         const n = e.fixed.games, a = e.fixed.shipped, b = e.fixed.challenger
         return [e.date, hit(a, n), hit(b, n), signed(b.reached - a.reached, ' games') + ' · avg ' + signed(Math.round((b.average - a.average) / 1000), 'k'), { html: e.pass ? pill('ok', 'Shipped') : pill('idle', 'Kept current') }]

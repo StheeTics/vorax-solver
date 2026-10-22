@@ -23,7 +23,7 @@ function setupOf(d: Debug): [string, string][] {
 }
 
 /** The advice's goal (src/strategy/bot.ts TARGET): with the endgame battle bonus it reaches rainbow. */
-const TARGET = 950_000
+const TARGET = 900_000
 const total = (b: Board) => (b.tanks ?? []).reduce((s, t) => s + (t ? t.activity * t.quantity : 0), 0)
 
 export interface Stats {
@@ -49,7 +49,7 @@ export interface Stats {
   /** for each setup (screen shape, windowed or not, HDR, browser): boards, and the shares read with something
    *  unsure and with a tank's numbers unsure */
   problems: { by: string; group: string; boards: number; unsure: number; numbers: number }[]
-  /** the advice's predicted chance of 950,000 (in 20% bands) against how those finished games ended */
+  /** the advice's predicted chance of 900,000 (in 20% bands) against how those finished games ended */
   calibration: { band: string; predicted: number; games: number; reached: number }[]
 }
 

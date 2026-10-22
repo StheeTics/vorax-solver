@@ -92,7 +92,7 @@ describe('real results', () => {
     // a finished game: its last board is the round-13 Surgical Protocol, whose total is the final score
     row('2026-10-18T10:00:00Z', 'a', board('g1', 5, { advice: { move: 'Play X', activity: 900000, reached: 0.6 } })),
     row('2026-10-18T10:10:00Z', 'a', board('g1', 13, { phase: 'protocol', tanks: [tank(1000, 1000), null, null, null, null, null] })),
-    // another, short of 950k
+    // another, short of 900k
     row('2026-10-18T11:00:00Z', 'b', board('g2', 5, { advice: { move: 'Play Y', activity: 400000, reached: 0.1 } })),
     row('2026-10-18T11:10:00Z', 'b', board('g2', 13, { phase: 'protocol', tanks: [tank(500, 500), null, null, null, null, null] })),
     // unfinished
@@ -102,7 +102,7 @@ describe('real results', () => {
   it('the average final score per day, to see games getting better', () => {
     expect(s.days.map(d => [d.day, d.finished, d.averageFinal])).toEqual([['2026-10-18', 2, 625_000]])
   })
-  it('the final score of every finished game, how many reached 950,000, and the average', () => {
+  it('the final score of every finished game, how many reached 900,000, and the average', () => {
     expect(s.finished).toEqual({ games: 2, reached: 1, finals: [1_000_000, 250_000], average: 625_000 })
   })
   it('each recent game shows its score: final when finished, else at its last board', () => {
@@ -110,7 +110,7 @@ describe('real results', () => {
     expect(byStart['2026-10-18T10:00:00Z']).toMatchObject({ score: 1_000_000, finished: true })
     expect(byStart['2026-10-18T12:00:00Z']).toMatchObject({ score: 0, finished: false, round: 4 })
   })
-  it('predicted against real: the advice’s chance of 950,000, in bands, against how those games ended', () => {
+  it('predicted against real: the advice’s chance of 900,000, in bands, against how those games ended', () => {
     expect(s.calibration).toEqual([
       { band: '0–20%', predicted: 0.1, games: 1, reached: 0 },
       { band: '60–80%', predicted: 0.6, games: 1, reached: 1 },
@@ -140,7 +140,7 @@ describe('the dashboard routes', () => {
     expect(html).toMatch(/password/i)
     expect(html).not.toMatch(/open-sesame/)
     // the automated loops' health, from GitHub's public run list
-    for (const f of ['live-data.yml', 'strengths.yml', 'daily-check.yml', 'smarter-player.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
+    for (const f of ['live-data.yml', 'daily-check.yml', 'smarter-player.yml', 'issue-fixer.yml', 'deploy.yml', 'desktop.yml']) expect(html).toContain(f)
     // players counted across days, beside today's
     expect(html).toContain('Players ever')
   })

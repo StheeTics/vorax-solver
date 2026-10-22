@@ -1,13 +1,13 @@
 // The gate a new board value (the challenger) must pass to be proposed: game by game against the one shipped (the
-// champion), more games reaching 950,000 by a clear margin, and the average counted up to 950,000 not lower.
+// champion), more games reaching 900,000 by a clear margin, and the average counted up to 900,000 not lower.
 // The decision itself, for gate.ts and smarterHistory.ts.
 import { readdirSync, readFileSync } from 'node:fs'
 
 export interface Game { seed: number; score: number }
-const TARGET = 950_000
-/** At least this many more games must reach 950,000 (net), or 1% of the games if that's more. */
+const TARGET = 900_000
+/** At least this many more games must reach 900,000 (net), or 1% of the games if that's more. */
 const MARGIN = 5
-/** The average counted up to 950,000 may be at most this much lower. */
+/** The average counted up to 900,000 may be at most this much lower. */
 const SLACK = 5_000
 
 const cap = (x: number) => Math.min(x, TARGET)

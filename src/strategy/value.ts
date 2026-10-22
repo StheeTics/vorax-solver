@@ -1,4 +1,4 @@
-// The board value: what final score (counted up to 950,000) games from a board like this one tend to end at,
+// The board value: what final score (counted up to the advice's target, 900,000) games from a board like this one tend to end at,
 // learned from simulated games (scripts/sim/valueData.ts, valueFit.ts). The player inside the advice's futures
 // picks its cards by it instead of by this round's score, so it plays toward what pays off later.
 import { ARCHETYPES, RARITIES } from '@/data/archetypes'
@@ -7,7 +7,11 @@ import { ultimateActivity } from '@/engine/game'
 import type { GameState, Monster } from '@/engine/types'
 import SHIPPED from '@/data/boardValue.json'
 
-const TARGET = 950_000
+/** The advice's target (bot.ts TARGET): the board value is counted up to it. */
+const TARGET = 900_000
+/** Where the features cap the score: 950,000, the target the shipped model was trained with, kept so it reads boards
+ *  as it learned them. */
+const FEATURE_CAP = 950_000
 
 /** What each owned instrument is paired with: its effect depends on these. */
 const PAIRED = [...ARCHETYPES, ...RARITIES, 'act>150&qty>150', 'qty>275', 'act>255', 'log score'] as const
@@ -74,7 +78,7 @@ function parts(s: GameState) {
     share(m => m.activity > 150 && m.quantity > 150), share(m => m.quantity > 275), share(m => m.activity > 255),
   ]
   const head = [
-    1, logScore, ua / 1e6, Math.min(ua, TARGET) / 1e6, Math.sqrt(ua) / 1000, +(ua >= TARGET),
+    1, logScore, ua / 1e6, Math.min(ua, FEATURE_CAP) / 1e6, Math.sqrt(ua) / 1000, +(ua >= FEATURE_CAP),
     ms.reduce((t, m) => t + m.activity, 0) / 1000, ms.reduce((t, m) => t + m.quantity, 0) / 3000,
     Math.max(0, ...ms.map(m => m.activity)) / 1000, Math.max(0, ...ms.map(m => m.quantity)) / 3000,
     Math.max(0, ...ms.map(m => m.activity * m.quantity)) / 3e5, ms.length / 6,
@@ -108,7 +112,7 @@ export function treeFeatures(s: GameState): number[] {
   }
   return [
     s.round, +(s.phase === 'instrumentSelect'), +(s.phase === 'roundEnd'), s.potionRefreshes, s.instrumentRefreshes, s.instruments.length, s.pendingPicks,
-    +s.thresholds.t8000, +s.thresholds.t28000, Math.log1p(ua), Math.min(ua, TARGET),
+    +s.thresholds.t8000, +s.thresholds.t28000, Math.log1p(ua), Math.min(ua, FEATURE_CAP),
     ms.reduce((t, m) => t + m.activity, 0), ms.reduce((t, m) => t + m.quantity, 0),
     Math.max(0, ...ms.map(m => m.activity)), Math.max(0, ...ms.map(m => m.quantity)), Math.max(0, ...ms.map(m => m.activity * m.quantity)), ms.length,
     ...ARCHETYPES.map(a => count(m => m.archetype === a)), ...RARITIES.map(r => count(m => m.rarity === r)),
@@ -145,7 +149,7 @@ export const setBoardValue = (m: ValueModel | null) => void (model = m)
 export const useShippedBoardValue = () => setBoardValue(SHIPPED as ValueModel)
 export const hasBoardValue = () => !!model
 
-/** Predicted final score counted up to 950,000; once the game is over, the score itself (up to 950,000). */
+/** Predicted final score counted up to 900,000; once the game is over, the score itself (up to 900,000). */
 export function boardValue(s: GameState): number {
   if (!model) return ultimateActivity(s)
   if (s.phase === 'gameOver') return Math.min(ultimateActivity(s), TARGET)

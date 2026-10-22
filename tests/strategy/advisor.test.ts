@@ -75,7 +75,7 @@ it('with look-ahead, each potion option predicts the end of the run', () => {
   expect(a.plan).toBe(true)
   for (const r of a.ranking) {
     expect(r.end!.activity).toBeGreaterThan(0)
-    expect(r.end!.activity).toBeLessThanOrEqual(950_000)
+    expect(r.end!.activity).toBeLessThanOrEqual(900_000)
     expect(r.end!.reached).toBeGreaterThanOrEqual(0)
     expect(r.end!.reached).toBeLessThanOrEqual(1)
   }
@@ -152,11 +152,11 @@ it('an unreadable card: the advice still names the card by its place on screen',
   expect(named(withUnknown, ['Not A Card', ...hand])).toEqual(named(known, hand))
 })
 
-it('instrument choices are judged by the final score counted up to 950,000, like potions', () => {
-  // a board already far past 950,000: uncapped, every choice would be worth more
+it('instrument choices are judged by the final score counted up to 900,000, like potions', () => {
+  // a board already far past 900,000: uncapped, every choice would be worth more
   const big = { archetype: 'agito' as const, rarity: 'boss' as const, activity: 2000, quantity: 600 }
   const a = advise({ ...board, tanks: Array.from({ length: 6 }, () => ({ ...big })), phase: 'instrument', hand: ['Clustered Eggs', 'Sinew Garrote', 'Pig Iron Bone Saw'], instruments: ['Incubation Sac'], round: 9, instrumentRefreshes: 0 })
-  expect(a.ranking.map(r => r.value)).toEqual([950_000, 950_000, 950_000])
+  expect(a.ranking.map(r => r.value)).toEqual([900_000, 900_000, 900_000])
 })
 
 it('the advice’s futures are played by the smarter player (the board value), with 64 futures for potions and instruments', () => {

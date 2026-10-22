@@ -18,13 +18,13 @@ it('it does nothing harmful before the collector exists', () => {
   expect(t).toMatch(/if: \$\{\{ vars\.LIVE_DATA_URL != '' \}\}/)
 })
 
-it('applies the odds changes the data supports (the guards are in propose.ts), and new odds go out through the strengths workflow', () => {
+it('applies the odds changes the data supports (the guards are in propose.ts), and new odds go out with a redeploy', () => {
   const t = readFileSync('.github/workflows/live-data.yml', 'utf8')
   expect(t).toContain('npx vite-node scripts/live/weights.ts | tee weights.txt')
   expect(t).not.toContain('scripts/live/weights.ts --propose')
   expect(t).toContain('git add data/live src/data/liveWeights.ts')
-  // the strengths are re-measured under the new odds before the site redeploys (they deploy it)
-  expect(t).toContain('gh workflow run strengths.yml')
+  // a push made with the workflow's token starts no other workflow, so the redeploy is started here
+  expect(t).toContain('if [ -n "$odds" ] || [ -n "$icons" ]; then gh workflow run deploy.yml; fi')
 })
 
 it('pulls the named panel icons too', () => {
@@ -45,7 +45,7 @@ it('teaches the reader the icons players named, every hour, and redeploys when t
 })
 
 it('every workflow that commits to main rebases onto it first: another job may have pushed meanwhile', () => {
-  for (const f of ['live-data', 'strengths', 'daily-check']) {
+  for (const f of ['live-data', 'daily-check']) {
     const t = readFileSync(`.github/workflows/${f}.yml`, 'utf8')
     expect(t.indexOf('git pull --rebase'), f).toBeGreaterThan(t.indexOf('git commit'))
     expect(t.indexOf('git pull --rebase'), f).toBeLessThan(t.indexOf('git push'))

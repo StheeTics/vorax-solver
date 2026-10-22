@@ -14,21 +14,22 @@ import { buildProgress } from '@/strategy/steer'
 import { toState } from '@/strategy/advisor'
 import { ultimateActivity } from '@/engine/game'
 import type { GameState } from '@/engine/types'
-import { finish, goalScore, options, play, refreshingPriorPicker, type InstrumentPicker } from '@/strategy/bot'
+import { finish, goalScore, options, play, valuePicker, type InstrumentPicker } from '@/strategy/bot'
 import { canRefresh } from '@/engine/game'
 import { runGame, stats, evChooser, peekChooser, planChooser, planPicker, boardPicker, rankInstruments, type Plan, type Chooser } from '@/strategy/bot'
 
 const [, , nArg, pol, mode, json] = process.argv
 const N = Number(nArg); const SEED0 = Number(process.env.SEED0 ?? 1_000_000); const RAW = !!process.env.RAW
-// VALUE_MODEL=<json>: the player inside every future picks by that board value (the smarter player)
+// VALUE_MODEL=<json>: the player inside every future picks by that board value (the smarter player); without it,
+// boards are judged by their score (instrument offers too)
 const SMART = !!process.env.VALUE_MODEL
-if (SMART) setBoardValue(JSON.parse(readFileSync(process.env.VALUE_MODEL!, 'utf8')))
+setBoardValue(SMART ? JSON.parse(readFileSync(process.env.VALUE_MODEL!, 'utf8')) : null)
 const chooser: Chooser = pol === 'peek' ? peekChooser : pol.startsWith('plan:') ? (() => { const [, top, playouts, steer, inner] = pol.split(':').map(Number); return planChooser({ top, playouts, steer: steer || 0, value: SMART, innerSamples: inner || 2, halving: pol.endsWith(':halving') }) })() : (() => { const [, k, h, r] = pol.split(":").map(Number); return evChooser({ samples: k, horizon: h, rollSamples: r || 1 }) })()
 // KIT_RULE=1: the Solver's rule: a Potion Kit on offer is taken instead of a potion reroll
 // ORACLE=1: a cheater, for the ceiling: each choice is played to the end with the game's real upcoming cards and
 // outcomes (the inner player after it), and the best real ending is taken
 const oracleInner = evChooser({ samples: 2, horizon: 0, steer: 0.3 })
-const realEnd = (st: GameState, sd: number) => goalScore(ultimateActivity(finish(st, sd, oracleInner, refreshingPriorPicker)))
+const realEnd = (st: GameState, sd: number) => goalScore(ultimateActivity(finish(st, sd, oracleInner, valuePicker)))
 const oracleChooser: Chooser = (st, sd) => {
   const opts = [...options(st), ...(st.openBox === null && canRefresh(st) ? [[{ type: 'refresh' } as const]] : [])]
   let best = opts[0], bv = -1
@@ -61,7 +62,7 @@ if (mode === 'real') for (const p of JSON.parse(json) as Plan[]) {
 }
 if (mode === 'board') {
   // INSTR_STEER=<x>: the instrument futures steer toward the instruments too
-  const base = boardPicker(Number(json), evChooser({ samples: 4, horizon: 0, steer: Number(process.env.INSTR_STEER ?? 0), value: SMART }), process.env.GOAL === 'mean' ? 'mean' : 'target', Number(process.env.REFRESH_PLAYOUTS ?? json), SMART)
+  const base = boardPicker(Number(json), evChooser({ samples: 4, horizon: 0, steer: Number(process.env.INSTR_STEER ?? 0), value: SMART }), process.env.GOAL === 'mean' ? 'mean' : 'target', Number(process.env.REFRESH_PLAYOUTS ?? json))
   // REFRESH_RULE: an instrument refresh rule to compare. never: never refresh; first-never: not on the first
   // offer; margin:<x>: only when the refresh's value beats the best offer's by the share x
   const rule = process.env.REFRESH_RULE ?? ''

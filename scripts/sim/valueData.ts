@@ -1,5 +1,5 @@
 // Training games for the board value (src/strategy/value.ts): every board along the way, with how its game ended
-// (the final score counted up to 950,000, in millions), summed per round as XᵀX, Xᵀy, yᵀy and n for a least-squares
+// (the final score counted up to the target, 900,000, in millions), summed per round as XᵀX, Xᵀy, yᵀy and n for a least-squares
 // fit (valueFit.ts), so the file stays small however many games are played.
 // Usage: vite-node scripts/sim/valueData.ts <games> <out.bin>
 //   SEED0: first game's seed. EPS: share of moves played at random, so boards a better player reaches are seen too
@@ -8,15 +8,16 @@
 import { readFileSync, writeFileSync } from 'node:fs'
 import { createGame, DEFAULT_SETTINGS, canRefresh, ultimateActivity } from '@/engine/game'
 import { createRng } from '@/engine/rng'
-import { evChooser, goalScore, mix, options, play, refreshingPriorPicker, valuePicker } from '@/strategy/bot'
+import { evChooser, goalScore, mix, options, play, valuePicker } from '@/strategy/bot'
 import { features, FEATURE_NAMES, setBoardValue, treeFeatures, TREE_FEATURES } from '@/strategy/value'
 
 const [, , nArg, out] = process.argv
 const N = Number(nArg), SEED0 = Number(process.env.SEED0 ?? 5_000_000), EPS = Number(process.env.EPS ?? 0.1)
 const smart = !!process.env.VALUE_MODEL
-if (smart) setBoardValue(JSON.parse(readFileSync(process.env.VALUE_MODEL!, 'utf8')))
+// without a board value, boards (instrument offers too) are judged by their score
+setBoardValue(smart ? JSON.parse(readFileSync(process.env.VALUE_MODEL!, 'utf8')) : null)
 const chooser = evChooser({ samples: 2, horizon: 0, steer: 0.3, value: smart })
-const picker = smart ? valuePicker : refreshingPriorPicker
+const picker = valuePicker
 
 const F = FEATURE_NAMES.length, R = 13
 const xtx = new Float64Array(R * F * F), xty = new Float64Array(R * F), yy = new Float64Array(R), n = new Float64Array(R)

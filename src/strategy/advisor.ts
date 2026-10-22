@@ -25,7 +25,7 @@ export interface ScreenState {
   /** Intern Shelley level; DEFAULT_SETTINGS when absent */
   shelley?: number
 }
-/** end: with look-ahead, the predicted end of the run (average final Ultimate Activity counted up to 950,000; share reaching 950,000, which counts as rainbow) */
+/** end: with look-ahead, the predicted end of the run (average final Ultimate Activity counted up to the target, 900,000; share reaching it, which counts as rainbow) */
 export interface Ranked {
   index: number
   targets: number[]
@@ -173,7 +173,7 @@ export function prepare(x: ScreenState, futures?: number): Prepared {
 export function playWork(w: Work, from: number, to: number): Tally[] {
   return w.kind === 'potion'
     ? potionFutures(w.s, w.seed, w.la, w.opts.map(c => c.o), from, to)
-    : instrumentFutures(w.s, w.seed, w.choices, evChooser(INSTRUMENT_ROLLOUT), 'target', from, to, true)
+    : instrumentFutures(w.s, w.seed, w.choices, evChooser(INSTRUMENT_ROLLOUT), 'target', from, to)
 }
 
 /** Adds up slices of futures, option by option. */

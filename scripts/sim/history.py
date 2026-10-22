@@ -2,7 +2,7 @@
 Usage: python3 scripts/sim/history.py <run dir> <date> <what changed>"""
 import glob, json, sys
 
-TARGET = 950_000  # the advice's goal (src/strategy/bot.ts TARGET)
+TARGET = 900_000  # the advice's goal (src/strategy/bot.ts TARGET)
 
 
 def metrics(d):

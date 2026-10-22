@@ -14,7 +14,7 @@ export const SCHEDULE: Record<string, string[]> = {
 }
 
 /** The workflows the dashboard's Run now may start (not the app release: that needs its version tag). */
-export const RUNNABLE = new Set(['live-data.yml', 'issue-fixer.yml', 'daily-check.yml', 'smarter-player.yml', 'strengths.yml', 'deploy.yml'])
+export const RUNNABLE = new Set(['live-data.yml', 'issue-fixer.yml', 'daily-check.yml', 'smarter-player.yml', 'deploy.yml'])
 
 type Fetch = (url: string, init: RequestInit) => Promise<Response>
 

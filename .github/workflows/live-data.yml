@@ -5,9 +5,8 @@
 # the real moves in the simulator (data/live/rules-check.json), runs the tests and commits. Cards the Solver
 # couldn't name come in too (data/live/cards.jsonl, a picture of each in data/live/new-cards/): each new one gets a
 # GitHub issue (scripts/live/newCards.ts), so it can be added. When the odds
-# changed, it notes the change in the dashboard's history and starts the strengths workflow, which
-# re-measures the instrument strengths under the new odds and redeploys the site (a push made with the
-# workflow's token starts no other workflow by itself). Or on demand:
+# changed, it notes the change in the dashboard's history; when the odds or the icons changed, it redeploys the
+# site (a push made with the workflow's token starts no other workflow by itself). Or on demand:
 # gh workflow run live-data.yml
 # Needs the repo variable LIVE_DATA_URL and the secret LIVE_DATA_TOKEN (see worker/README.md); until the
 # variable is set, the job is skipped.
@@ -88,8 +87,8 @@ jobs:
           git commit -F message.txt
           git pull --rebase
           git push
-          # new odds: re-measure the strengths, which then redeploys the site; new icons alone: redeploy
-          if [ -n "$odds" ]; then gh workflow run strengths.yml; elif [ -n "$icons" ]; then gh workflow run deploy.yml; fi
+          # new odds or new icons: redeploy
+          if [ -n "$odds" ] || [ -n "$icons" ]; then gh workflow run deploy.yml; fi
 
       # off while cards cut off mid-slide or under a hover are shared as new ones (Oct 21)
       - name: Open an issue for each new card
