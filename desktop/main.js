@@ -11,6 +11,7 @@
 // Nothing here touches the game: no clicks, no keys (AGENTS.md).
 
 const { cleanCard } = require('./lib/card');
+const { pageOf: pageIn, dumpStorage, restoreStorage } = require('./lib/site');
 const { app, BrowserWindow, Menu, Notification, Tray, desktopCapturer, dialog, globalShortcut, ipcMain, nativeImage, net, screen, session, shell } = require('electron');
 const fs = require('fs');
 const os = require('os');
@@ -23,10 +24,13 @@ const arg = (name) => {
   const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
   return hit ? hit.slice(name.length + 3) : null;
 };
-const LIVE_SITE = 'https://tidewarden.github.io/tli-vorax-simulator/';
+const LIVE_SITE = 'https://voraxlab.pages.dev/tli-vorax-simulator/';
+// where the site was until 0.1.10: what players saved there is copied over once (moveStorage)
+const OLD_SITE = 'https://tidewarden.github.io/tli-vorax-simulator/';
 const SITE = arg('site') || LIVE_SITE;
 const SITE_URL = new URL(SITE);
-const PAGE = 'solver.html';
+// the Solver page, by name: Cloudflare Pages serves solver.html as /solver
+const PAGE = 'solver';
 const GAME_TITLE = new RegExp(arg('game-title') || '^Torchlight: Infinite\\s*$');
 const LOG_OVERRIDE = arg('log');
 const STEAM_APP = '1974050'; // Torchlight: Infinite on Steam
@@ -289,14 +293,7 @@ const wins = { solver: null, overlay: null };
 let quitting = false;
 let tray = null;
 const send = (name, channel, data) => wins[name] && !wins[name].isDestroyed() && wins[name].webContents.send(channel, data);
-const pageOf = (url) => {
-  try {
-    const u = new URL(url);
-    return u.origin === SITE_URL.origin && u.pathname.startsWith(SITE_URL.pathname) ? u.pathname.slice(SITE_URL.pathname.length) : null;
-  } catch (e) {
-    return null;
-  }
-};
+const pageOf = (url) => pageIn(url, SITE);
 const fromSolver = (e) => !!wins.solver && !wins.solver.isDestroyed() && e.sender === wins.solver.webContents && !!e.senderFrame && pageOf(e.senderFrame.url) === PAGE;
 const fromOverlay = (e) => !!wins.overlay && !wins.overlay.isDestroyed() && e.sender === wins.overlay.webContents;
 
@@ -307,7 +304,7 @@ const onScreen = (b) => screen.getAllDisplays().some((d) => {
 
 let loadedBuild = null;
 function loadSolver() {
-  wins.solver.loadURL(SITE + PAGE, { extraHeaders: 'pragma: no-cache\n' }).catch(() => {
+  wins.solver.loadURL(SITE + 'solver.html', { extraHeaders: 'pragma: no-cache\n' }).catch(() => {
     // did-fail-load retries
   });
 }
@@ -745,6 +742,36 @@ function permissions() {
   session.defaultSession.setPermissionCheckHandler((wc, permission, origin) => allowed.has(permission) && origin === SITE_URL.origin);
 }
 
+// The site moved address, and a page's storage stays with its address: once, before the Solver opens, what the
+// player saved at the old one is copied to the new one (never over anything saved there). Each address is opened
+// in a hidden window on its version.json, a page of that address with no script of its own. If the old site can't
+// be reached, the Solver opens anyway and the copy is tried again at the next start.
+async function moveStorage() {
+  if (settings.storageMoved === OLD_SITE) return;
+  const win = new BrowserWindow({ show: false, webPreferences: { contextIsolation: true, sandbox: true, javascript: true } });
+  win.webContents.on('will-navigate', (e) => e.preventDefault());
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  const at = async (site, code) => {
+    await win.loadURL(`${site}version.json`);
+    if (new URL(win.webContents.getURL()).origin !== new URL(site).origin) throw new Error(`${site} answered from ${win.webContents.getURL()}`);
+    return win.webContents.executeJavaScript(code);
+  };
+  const timeout = new Promise((_, no) => setTimeout(() => no(new Error('timed out')), 20000));
+  try {
+    await Promise.race([timeout, (async () => {
+      const dump = await at(OLD_SITE, `(${dumpStorage.toString()})()`);
+      const added = await at(SITE, `(${restoreStorage.toString()})(${JSON.stringify(dump)})`);
+      note(`saved data moved from ${OLD_SITE}: ${Object.keys(dump.local).length} settings and ${Object.keys(dump.refs).length} named cards there, ${added} entries added`);
+      settings.storageMoved = OLD_SITE;
+      saveSettings();
+    })()]);
+  } catch (e) {
+    note('saved data not moved yet (tried again next start):', String((e && e.message) || e));
+  } finally {
+    if (!win.isDestroyed()) win.destroy();
+  }
+}
+
 app.on('second-instance', showSolver);
 app.on('window-all-closed', (e) => e.preventDefault());
 app.on('before-quit', () => (quitting = true));
@@ -756,6 +783,7 @@ app.whenReady().then(async () => {
   permissions();
   // testing against a dev server: --fresh starts its page with nothing saved (the live site's storage is kept)
   if (arg('site') && process.argv.includes('--fresh')) await session.defaultSession.clearStorageData({ origin: SITE_URL.origin, storages: ['localstorage'] });
+  if (!arg('site')) await moveStorage();
   makeSolver();
   makeOverlay();
   tray = new Tray(nativeImage.createFromPath(ICON).resize({ width: 16, height: 16 }));

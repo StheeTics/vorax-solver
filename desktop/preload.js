@@ -1,8 +1,9 @@
 // window.VoraxDesktop for the Solver page (src/solver/desktop/bridge.ts is the other side of this contract).
-// Only on the site's solver.html: the shell also checks every message comes from that page.
+// Only on the site's Solver page (solver.html, or /solver where Cloudflare Pages drops the .html): the shell also
+// checks every message comes from that page.
 const { contextBridge, ipcRenderer } = require('electron');
 
-if (/\/solver\.html$/.test(location.pathname)) {
+if (/\/solver(\.html)?$/.test(location.pathname)) {
   contextBridge.exposeInMainWorld('VoraxDesktop', {
     logSize: () => ipcRenderer.invoke('log:size'),
     // the shell sends the bytes; the page gets an ArrayBuffer of exactly them

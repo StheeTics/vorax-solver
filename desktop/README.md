@@ -5,13 +5,14 @@ monitor is enough. The design follows CoffeeBns's Tartarus Overlay (used with pe
 
 ## How it's built
 
-A thin Electron shell around the **live website**: it loads `solver.html` from the site, so every fix to the
+A thin Electron shell around the **live website** (`https://voraxlab.pages.dev/tli-vorax-simulator/`; until 0.1.10
+`tidewarden.github.io`, whose saved data it copies over once at the first start): it loads `solver.html` from the site, so every fix to the
 site reaches the app the next time the page loads, and the app's advice is exactly the website's.
 
 | Piece | What it does |
 |---|---|
 | `main.js` | Finds `UE_game.log` (Steam's libraries via the registry and `libraryfolders.vdf`, app 1974050; beside the running game; the launcher's folders; or one the player chose) and reads it for the page. Finds the game window by its title (`Torchlight: Infinite`) and answers the page's window share with it, with no picker. Shows the overlay while the game is in front. Tray menu, hotkeys, site and app updates. Runs the page below normal priority so the game gets the processor first. |
-| `preload.js` | `window.VoraxDesktop` for solver.html only. The other side is `src/solver/desktop/bridge.ts`, which the site's tests cover. |
+| `preload.js` | `window.VoraxDesktop` for the Solver page only (`solver.html`, or `/solver` on Cloudflare Pages). The other side is `src/solver/desktop/bridge.ts`, which the site's tests cover. |
 | `lib/overlay.*` | The card over the game: the move, its predicted end, the next choices, and Reload / Restart when there's an update. |
 
 Pictures and the log never leave the PC. Boards are shared only by the page's own sharing switch. Nothing
