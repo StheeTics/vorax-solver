@@ -33,7 +33,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Digestive Enzyme Solution': 1,
     'Vivigenic Powder': 1.2383536714046495,
     'Potent Xenopurge Powder': 1.0548938682335904,
-    'Xenopurge Powder': 1.3761559259558511,
+    'Xenopurge Powder': 1.1144862567413816,
     'Pure Leech Solution': 1.1772004036809631,
     'Bewitching Tincture': 1,
     'Mutagenic Powder': 1.174336906813309,
@@ -89,14 +89,14 @@ export const LIVE_WEIGHTS: LiveWeights = {
   },
   instrumentOffer: {
     basic: {
-      'Chrysalis Specimen': 0.049181514006532284,
-      'Incubation Sac': 0.036420608924659204,
-      'Hyperplastic Frontal Lobe': 0.033517913777280355,
-      'Hypertrophic Pituitary': 0.06276393658294654,
-      'Adherent Metatarsals': 0.037844572581863925,
-      'Contracted Claws': 0.05953263443775121,
-      'Aberrant Sprout': 0.06046368759823123,
-      'Prismatic Liver': 0.03340837811134153
+      'Chrysalis Specimen': 0.04268161271262089,
+      'Incubation Sac': 0.030935897586279484,
+      'Hyperplastic Frontal Lobe': 0.028330334019520648,
+      'Hypertrophic Pituitary': 0.05322794143521617,
+      'Adherent Metatarsals': 0.03192849323075904,
+      'Contracted Claws': 0.05144954090552363,
+      'Aberrant Sprout': 0.051573615361083576,
+      'Prismatic Liver': 0.028702557386200485
     },
     advanced: {
       'Clustered Eggs': 1.0923380349730878,
@@ -104,7 +104,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Sinew Garrote': 1,
       'Vermicular Spinal Cord': 1,
       'Rawhide Restraint': 1,
-      'Black Goat Gut Suture': 1,
+      'Black Goat Gut Suture': 1.0612962866043483,
       'Pig Iron Bone Saw': 1,
       'Two-Inch Skull Nail': 1.0844514203946165,
       'Fouled Scraper': 1,
