@@ -12,11 +12,11 @@ export interface LiveWeights {
 }
 
 export const LIVE_WEIGHTS: LiveWeights = {
-  updated: '2026-10-22',
+  updated: '2026-10-23',
   supremeChance: 0.007355399531929121,
   potionOffer: {
     'Probiotic Enzyme Solution': 0.9631639666480608,
-    'Slough Solution': 1.2077770375428065,
+    'Slough Solution': 1.0242164567778829,
     'Leptomeningeal Solution': 0.878,
     'Osteolytic Ointment': 0.878,
     'Cleansing Ointment': 0.878,
@@ -29,8 +29,8 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Gray Matter Spinal Solution': 1.2078328141730366,
     'Hollow Spinal Solution': 1.3606602068520224,
     'Green Bile Solution': 1.2635789440579461,
-    'Compound Leech Solution': 1,
-    'Digestive Enzyme Solution': 1,
+    'Compound Leech Solution': 1.1643723929685408,
+    'Digestive Enzyme Solution': 1.1212474895252613,
     'Vivigenic Powder': 1.2383536714046495,
     'Potent Xenopurge Powder': 1.0548938682335904,
     'Xenopurge Powder': 1.1144862567413816,
@@ -38,17 +38,17 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Bewitching Tincture': 1.2759669729212593,
     'Mutagenic Powder': 1.174336906813309,
     'Viscous Bile Solution': 1.2689303052664929,
-    'Slender-Limb Powder - Pest': 1.538,
-    'Twin Hormone - Pest': 1.8386082884450798,
-    'Spinal Solution - Agito': 2.0333461518125726,
+    'Slender-Limb Powder - Pest': 1.7178086538239583,
+    'Twin Hormone - Pest': 1.674683750380679,
+    'Spinal Solution - Agito': 1.8687458158754358,
     'Anesthetic Tincture - Agito': 1.8156538218377043,
     'Slender-Limb Powder - Bone Sentry': 1.9015624305185754,
-    'Twin Hormone - Bone Sentry': 2.1481458356384016,
-    'Anesthetic Tincture - Aemberon': 1.538,
+    'Twin Hormone - Bone Sentry': 1.8328083963393698,
+    'Anesthetic Tincture - Aemberon': 1.7609335572672373,
     'Spinal Solution - Aemberon': 1.7467120697271608,
     'Xeno-Hormone': 1.8682814688474927,
     'Targeted Xeno-Hormone': 1.6817148624013758,
-    'Potion Kit (Large)': 0.4681530847731749,
+    'Potion Kit (Large)': 0.5570300028090241,
     'Potion Kit (Small)': 0.5574612988490939,
     'Rare Potion Kit (Small)': 0.6268209941677856
   },
@@ -83,7 +83,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     'Slender-Limb Powder - Bone Sentry': 1,
     'Twin Hormone - Bone Sentry': 2,
     'Anesthetic Tincture - Aemberon': 1,
-    'Spinal Solution - Aemberon': 1,
+    'Spinal Solution - Aemberon': 1.9516483516483516,
     'Xeno-Hormone': 1,
     'Targeted Xeno-Hormone': 1
   },
@@ -100,7 +100,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
     },
     advanced: {
       'Clustered Eggs': 1.0923380349730878,
-      'Sloughed Cortex': 1.131050605060506,
+      'Sloughed Cortex': 1.0717694014191772,
       'Sinew Garrote': 1,
       'Vermicular Spinal Cord': 1,
       'Rawhide Restraint': 1,
@@ -114,7 +114,7 @@ export const LIVE_WEIGHTS: LiveWeights = {
       'Tanned Leather Restraint': 1,
       'Eyelid Speculum': 0.21893671294907466,
       'Beak of the Twice-Born': 0.25,
-      'Nettle Toggle': 1,
+      'Nettle Toggle': 1.0604638170160212,
       'Egg-Burdened Butterfly': 0.125
     }
   },
