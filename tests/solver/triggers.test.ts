@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs'
-import { classify, createSettler, isAnimation, logTime, uiScaleOf } from '@/solver/live/triggers'
+import { classify, createSettler, isAnimation, logTime } from '@/solver/live/triggers'
 
 const fixture = readFileSync('tests/fixtures/vorax-log-excerpt.log', 'utf8').split('\n').filter(Boolean)
 const find = (s: string) => fixture.find(l => l.includes(s))!
@@ -253,13 +253,4 @@ it('numbers landing with the deal are no reason for an instant picture: it waits
   s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle', LANDED, LANDED, 'Play_UI_S13_KYZ_Card_Figure_Add_Large'], 443)
   expect(s.due(443)).toBe('board')
   expect(s.settledBy).toBe('dealt')
-})
-
-it('reads the interface scale the game logs as a page opens, as the reader\u2019s scale', () => {
-  const line = (v: string) => `[2026.10.23-22.24.11:769][  0]TLLua: Display: [Game] PageView@PageViewSetUIScale PageId = 69917_FightCtrl, PageScale = ${v} ${Number(v).toFixed(3)} ${v}`
-  expect(uiScaleOf(line('0.66887495368719'))).toBeCloseTo(1, 6)
-  expect(uiScaleOf(line('0.64'))).toBeCloseTo(0.957, 3)
-  expect(uiScaleOf(line('0.84115232944489'))).toBeCloseTo(1.258, 3)
-  expect(uiScaleOf(line('1.0'))).toBeCloseTo(1.495, 3)
-  expect(uiScaleOf('[Game] S13GamePlayMain Run')).toBeNull()
 })

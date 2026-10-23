@@ -107,11 +107,9 @@ interface Props {
   /** whether the Vorax screen is closed or the run over (the log said so): nothing on it to point at; finished:
    *  the run itself is done */
   onOver?(over: boolean, finished: boolean): void
-  /** the interface scale the game logged, for reading its boards at */
-  onScale?(ui: number): void
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap, onChanged, onOver, onScale }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap, onChanged, onOver }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -138,15 +136,13 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
   changed.current = onChanged
   const overRef = useRef(onOver)
   overRef.current = onOver
-  const scaleRef = useRef(onScale)
-  scaleRef.current = onScale
 
   // the screen, looked at while the log settles (createSampler), so a still screen is proven by the time it does
   const sampler = useRef<Sampler | null>(null)
   useEffect(() => () => sampler.current?.stop(), [])
   const onEvent = useRef<(e: LiveEvent) => void>(() => {})
   onEvent.current = (e: LiveEvent) => {
-    if (e.type === 'status') return overRef.current?.(e.over, e.finished), e.ui && scaleRef.current?.(e.ui), setStatus(e)
+    if (e.type === 'status') return overRef.current?.(e.over, e.finished), setStatus(e)
     if (e.type === 'changed') {
       sampler.current?.stop()
       const sh = shareRef.current

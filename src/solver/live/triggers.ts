@@ -79,21 +79,6 @@ export function classify(line: string, rules = DEFAULT_RULES): TriggerKind | nul
   return ORDER.find(k => rules.patterns[k].some(p => line.includes(p))) ?? null
 }
 
-/** The interface scale the labelled frames were captured at, as the game logs it: the reader's 1x. */
-export const REF_PAGE_SCALE = 0.66887495368719
-
-/**
- * The reader's interface scale from the game's own line, written as each page opens:
- * "PageView@PageViewSetUIScale PageId = 70434_SettingCtrl, PageScale = 0.84115232944489 0.841 0.84115232944489".
- * The last number is the slider setting (0.64 lowest, 0.841 recommended, 1 highest; Oct 23), the same on every page;
- * the first is fixed on a few. A screenshot at 0.64 fit 0.955x on the reader's layout, its estimate 0.957.
- */
-export function uiScaleOf(line: string): number | null {
-  const m = /PageViewSetUIScale PageId = \S+, PageScale = [\d.]+ [\d.]+ ([\d.]+)/.exec(line)
-  const v = m ? Number(m[1]) : NaN
-  return v > 0.3 && v < 3 ? v / REF_PAGE_SCALE : null
-}
-
 export const isAnimation = (line: string, rules = DEFAULT_RULES) =>
   line.includes(rules.animation) && !rules.playerSounds.some(p => line.includes(p))
 

@@ -165,8 +165,6 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   }
 
   // A board that didn't read cleanly is looked at again soon, a few times (retry.ts)
-  // the interface scale the game logged (live reads are read at it)
-  const loggedUi = useRef<number | undefined>(undefined)
   // pictures in the order they were taken, and the latest whose read was used
   const frames = useRef(0)
   const applied = useRef(0)
@@ -185,7 +183,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     try {
       const img = await gamePicture(captured)
       const readFrom = Date.now()
-      const read$ = await read(img, trigger, refs ?? local, trigger ? loggedUi.current : undefined)
+      const read$ = await read(img, trigger, refs ?? local)
       const ms = Date.now() - readFrom
       console.info(`[timing] read the screen in ${ms} ms`)
       if (slowReadsOn() && isSlow(read$))
@@ -352,7 +350,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep, timing) => void onFrame(img, trigger, undefined, keep, timing)} onTrouble={setTrouble} snap={snapAgain} onChanged={() => setChanging(true)} onOver={(o, f) => (setOver(o), setFinished(f))} onScale={u => (loggedUi.current = u)} />
+            <LiveSource onFrame={(img, trigger, keep, timing) => void onFrame(img, trigger, undefined, keep, timing)} onTrouble={setTrouble} snap={snapAgain} onChanged={() => setChanging(true)} onOver={(o, f) => (setOver(o), setFinished(f))} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}

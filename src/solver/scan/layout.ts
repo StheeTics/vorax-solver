@@ -97,10 +97,9 @@ export interface Layout {
   instrumentIcon: Rect[]
 }
 
-/** The game's interface scale (its settings' slider; Windows' display scale doesn't change it) enlarges every panel,
- *  card and label from where it's anchored, while the 3D tanks stay put. The scales tried when the game hasn't said
- *  (uiScaleOf in triggers.ts): the slider runs 0.957x-1.495x of the labelled frames, 1.257x recommended (Oct 23). */
-export const UI_SCALES = [1, 1.257, 0.957, 1.495, 1.128, 1.376]
+/** The game's interface scale: Windows' display scale (or the game's own) enlarges every panel, card and label
+ *  from where it's anchored, while the 3D tanks stay put (issue #12: 125% at 2560x1440). */
+export const UI_SCALES = [1, 1.25, 1.5, 1.75, 2]
 /** The tanks' labels grow about their total's row. */
 const LABEL_MID = 542
 
