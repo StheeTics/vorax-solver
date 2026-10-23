@@ -96,6 +96,32 @@ describe('the debug part: kept field by field, dropped whole (board kept) when a
   })
 })
 
+describe('how a live board’s read went (its timings), shared to make reading faster', () => {
+  const debug = { frame: [1920, 1080], dpr: 1, hdr: false, browser: 'Electron 44', off: 0.05, corrected: false, tanks: [], scores: {} }
+  const timing = { why: 'dealt', lag: 40, log: 180, screen: 35, early: true, pixels: 120, names: 210, steps: [1, 1, 2] }
+  it('keeps well-formed timings', () => {
+    expect(validate({ ...good, debug: { ...debug, timing } }, names)!.debug).toEqual({ ...debug, timing })
+  })
+  it('keeps the parts there are (older Solvers send fewer)', () => {
+    expect(validate({ ...good, debug: { ...debug, timing: { pixels: 90, names: 300 } } }, names)!.debug).toEqual({ ...debug, timing: { pixels: 90, names: 300 } })
+  })
+  it.each([
+    ['an unknown reason', { why: '<b>' }],
+    ['a negative time', { log: -5 }],
+    ['an endless time', { screen: 9e9 }],
+    ['a step that doesn’t exist', { steps: [1, 7] }],
+    ['too many steps', { steps: [1, 1, 1, 1, 1, 1] }],
+    ['a reason that isn’t a word', { early: 'yes' }],
+  ])('drops the timings alone with %s, keeping the rest', (_, change) => {
+    expect(validate({ ...good, debug: { ...debug, timing: { ...timing, ...change } } }, names)!.debug).toEqual(debug)
+  })
+  it('keeps how long the advice took, and drops only that when it’s off', () => {
+    const advice = { move: 'Refresh', activity: null, reached: null }
+    expect(validate({ ...good, advice: { ...advice, ms: 640 } }, names)!.advice).toEqual({ ...advice, ms: 640 })
+    expect(validate({ ...good, advice: { ...advice, ms: -1 } }, names)!.advice).toEqual(advice)
+  })
+})
+
 it('keeps the random install number players are counted by; a malformed one is dropped, the board kept', () => {
   const install = '7d444840-9dc0-41d2-8f2b-0e7c1b8f3a11'
   expect(validate({ ...good, install }, names)).toEqual({ ...good, install })

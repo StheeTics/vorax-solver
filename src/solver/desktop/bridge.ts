@@ -33,6 +33,9 @@ export interface DesktopBridge {
   gameWindow?(): Promise<GameWindow | null>
   /** green boxes over the game around the advised move, none to clear them (apps from 0.1.12 on) */
   showHighlights?(boxes: Box[]): void
+  /** the game just wrote to its log, so it's read now rather than at the next poll; returns the way to stop
+   *  (apps from 0.1.13 on; the poll goes on either way) */
+  onLogChanged?(cb: () => void): () => void
 }
 
 /** What the overlay card shows: plain text only. */

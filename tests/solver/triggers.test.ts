@@ -4,8 +4,6 @@ import { classify, createSettler, isAnimation, logTime } from '@/solver/live/tri
 const fixture = readFileSync('tests/fixtures/vorax-log-excerpt.log', 'utf8').split('\n').filter(Boolean)
 const find = (s: string) => fixture.find(l => l.includes(s))!
 const ANIM = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card_Figure_Add_Small' requested row"
-/** a deal: cards shuffled in, no numbers changing */
-const DEAL = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card_Selected_Shuffle' requested row"
 
 it('classifies real log lines', () => {
   expect(classify(find('ProtoId = 5619'))).toBe('board')
@@ -31,10 +29,13 @@ const DONE = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card
 const MY_CLICK_SOUND = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card_Selected' requested row"
 const CLICK = '[Game] UIButton@ normal-click SelectBtn'
 
+/** an instrument firing: an animation that isn't a deal */
+const SURGERY = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card_Tool_Surgery' requested row"
+
 it('settler waits for animations to go quiet', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
-  s.feed([DEAL], 500)
+  s.feed([SURGERY], 500)
   expect(s.due(800)).toBeNull()
   expect(s.due(900)).toBe('board')
   expect(s.due(1000)).toBeNull()
@@ -68,7 +69,7 @@ it('settler caps the wait', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
   for (let t = 100; t < 3000; t += 100) {
-    s.feed([DEAL], t)
+    s.feed([SURGERY], t)
     expect(s.due(t)).toBeNull()
   }
   expect(s.due(3000)).toBe('board')
@@ -168,12 +169,36 @@ it('a big potion is waited for past 3 s (numbers landed up to 4.8 s after the bo
   expect(s.settledBy).toBe('done')
 })
 
-it('a board with no numbers changing (an instrument pick, a deal) still settles after 0.4 s of silence', () => {
+// The new hand being dealt (Selected_Shuffle) was the last animation of all 42 plain deals in the logs of
+// Oct 22-23, and the next click came 0.47 s after it at the soonest: a deal with no numbers changing is
+// settled 0.1 s after it ('dealt'), and the picture still waits for a still screen.
+it('a board with no numbers changing settles 0.1 s after the new hand is dealt', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
   s.feed(['Play_UI_S13_KYZ_Card_Tool_Surgery'], 6)
   s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 537)
-  expect(s.due(900)).toBeNull()
+  expect(s.due(600)).toBeNull()
+  expect(s.due(650)).toBe('board')
+  expect(s.settledBy).toBe('dealt')
+})
+
+it('anything animating after the deal falls back to the silence', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 500)
+  s.feed(['Play_UI_S13_KYZ_Card_Tool_Surgery'], 550)
+  expect(s.due(700)).toBeNull()
   expect(s.due(950)).toBe('board')
   expect(s.settledBy).toBe('quiet')
+})
+
+it('a deal while numbers change still waits for them to land', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed([ADD], 60)
+  s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 300)
+  expect(s.due(450)).toBeNull()
+  s.feed([LANDED], 700)
+  expect(s.due(850)).toBe('board')
+  expect(s.settledBy).toBe('done')
 })

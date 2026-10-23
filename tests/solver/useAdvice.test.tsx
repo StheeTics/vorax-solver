@@ -40,3 +40,14 @@ it('a board with no cards on offer (between rounds) leaves the last advice up an
   expect(result.current.shown?.board).toBe(a)
   expect(result.current.updating).toBe(false)
 })
+
+it('a board read off the screen is advised at once; one edited by hand waits for the next keystroke', () => {
+  const { rerender } = renderHook(({ s, read }) => useAdvice(s, read), { initialProps: { s: board(1), read: true } })
+  act(() => void vi.advanceTimersByTime(0))
+  expect(pending).toHaveLength(1)
+  rerender({ s: board(2), read: false })
+  act(() => void vi.advanceTimersByTime(100))
+  expect(pending).toHaveLength(1)
+  act(() => void vi.advanceTimersByTime(60))
+  expect(pending).toHaveLength(2)
+})

@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { createFollower, type FileLike } from './logFollower'
 import { CHECK_MS, createLiveLoop, POLL_MS, type LiveEvent } from './liveLoop'
 import { changeGate, isCaptureMode, nextIndex, saveFrame, saveReading, TICK_MS } from './captureMode'
-import { waitStable } from './stable'
+import { createSampler, waitStable, type Sampler } from './stable'
+import { logTime } from './triggers'
 import { DEFAULT_RULES, type TriggerRules } from './triggers'
 import { NotAWindowError, shareWindow, toPng, type WindowShare } from './windowCapture'
 import { bridgeLog, desktopBridge, type DesktopBridge } from '../desktop/bridge'
@@ -13,7 +14,8 @@ export interface Following { stop(): void; snapNow(): void; cancel(): void }
 
 export interface LiveDeps {
   shareWindow(): Promise<WindowShare>
-  follow(handle: FileLike, on: (e: LiveEvent) => void, rules: TriggerRules): Following
+  /** wake: the app's word that the log just changed, so it's read at once (the poll goes on regardless) */
+  follow(handle: FileLike, on: (e: LiveEvent) => void, rules: TriggerRules, wake?: (cb: () => void) => () => void): Following
   pickLog(): Promise<FileLike>
 }
 
@@ -22,7 +24,7 @@ export interface LiveDeps {
  * when the log comes through Vorax Overlay (it can't be handed to a Worker; the app's pages aren't slowed in
  * the background anyway).
  */
-function follow(handle: FileLike, on: (e: LiveEvent) => void, rules: TriggerRules): Following {
+export function follow(handle: FileLike, on: (e: LiveEvent) => void, rules: TriggerRules, wake?: (cb: () => void) => () => void): Following {
   const transferable = 'kind' in handle
   if (typeof Worker !== 'undefined' && transferable) {
     const w = new Worker(new URL('./liveWorker.ts', import.meta.url), { type: 'module' })
@@ -31,10 +33,32 @@ function follow(handle: FileLike, on: (e: LiveEvent) => void, rules: TriggerRule
     return { stop: () => w.terminate(), snapNow: () => w.postMessage({ type: 'snapNow' }), cancel: () => w.postMessage({ type: 'cancel' }) }
   }
   const loop = createLiveLoop({ follower: createFollower(handle), now: () => Date.now(), post: on, rules })
-  const p = setInterval(() => void loop.poll(), POLL_MS)
+  // one read at a time (two at once would read the same lines twice); a wake-up during a read reads again after it
+  let busy = false
+  let again = false
+  const pollNow = async () => {
+    if (busy) return void (again = true)
+    busy = true
+    try {
+      do {
+        again = false
+        await loop.poll()
+        loop.check()
+      } while (again)
+    } finally {
+      busy = false
+    }
+  }
+  const p = setInterval(() => void pollNow(), POLL_MS)
   const c = setInterval(() => loop.check(), CHECK_MS)
   const k = setInterval(() => on({ type: 'tick' }), TICK_MS)
-  return { stop: () => (clearInterval(p), clearInterval(c), clearInterval(k)), snapNow: loop.snapNow, cancel: loop.cancel }
+  let unwake: (() => void) | undefined
+  try {
+    unwake = wake?.(() => void pollNow())
+  } catch {
+    // no wake-ups: the poll alone, as before
+  }
+  return { stop: () => (clearInterval(p), clearInterval(c), clearInterval(k), unwake?.()), snapNow: loop.snapNow, cancel: loop.cancel }
 }
 
 async function pickLog(): Promise<FileLike> {
@@ -54,9 +78,23 @@ const FOLDERS = [
 const NO_LOG_MS = 30_000
 const RETRY_SHARE_MS = 15_000
 
+/** How a live picture came to be taken, for the debug log and the shared board's timings. */
+export interface SnapTiming {
+  /** why the log counted the board as settled */
+  why?: string
+  /** ms from the board's line being written (its own time stamp) to it being read: the log's lag */
+  lag?: number
+  /** ms from the line being read to the log settling */
+  log: number
+  /** ms from the log settling to the picture */
+  screen: number
+  /** the screen was already proven still by the looks taken while the log settled */
+  early: boolean
+}
+
 interface Props {
   /** keep: in capture mode, saves what was read from this frame (or advised for it) beside it */
-  onFrame(img: ImageData, trigger: string, keep?: (value: unknown, what?: 'reading' | 'advice' | 'pick') => void): void
+  onFrame(img: ImageData, trigger: string, keep?: (value: unknown, what?: 'reading' | 'advice' | 'pick') => void, timing?: SnapTiming): void
   deps?: LiveDeps
   /** inside Vorax Overlay: the log comes from the app, and the game window is shared while the game runs */
   desktop?: DesktopBridge | null
@@ -94,25 +132,44 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
   const changed = useRef(onChanged)
   changed.current = onChanged
 
+  // the screen, looked at while the log settles (createSampler), so a still screen is proven by the time it does
+  const sampler = useRef<Sampler | null>(null)
+  useEffect(() => () => sampler.current?.stop(), [])
   const onEvent = useRef<(e: LiveEvent) => void>(() => {})
   onEvent.current = (e: LiveEvent) => {
     if (e.type === 'status') return setStatus(e)
-    if (e.type === 'changed') return changed.current?.()
+    if (e.type === 'changed') {
+      sampler.current?.stop()
+      const sh = shareRef.current
+      sampler.current = sh ? createSampler(() => sh.grab()) : null
+      return changed.current?.()
+    }
     const s = shareRef.current
     if (!s) return
     if (e.type === 'tick') return void tick(s)
     const askedAt = Date.now()
-    // the numbers landed: the board is still, so it's taken at once. Anything else (a quiet log, a click
-    // while numbers may still be moving, the wait running out) waits for the screen to stop changing.
-    const take = e.kind === 'manual' || e.why === 'done' ? s.grab() : waitStable(() => s.grab())
+    const looked = sampler.current
+    sampler.current = null
+    // the numbers landed: the board is still, so it's taken at once. Anything else (a quiet log, the new hand
+    // dealt, a click while numbers may still be moving, the wait running out) needs a still screen: proven
+    // already by the looks taken while the log settled, or else waited for as before.
+    let early = false
+    const settled = async () => {
+      const ready = looked ? await looked.take() : null
+      if (ready) return (early = true), ready
+      return waitStable(() => s.grab())
+    }
+    const take = e.kind === 'manual' || e.why === 'done' ? (looked?.stop(), s.grab()) : settled()
     void take.then(async img => {
       const snappedAt = Date.now()
+      const written = logTime(e.lines[0] ?? '')
+      const timing: SnapTiming = { why: e.why, log: askedAt - e.triggerAt, screen: snappedAt - askedAt, early, ...(written !== null ? { lag: e.triggerAt - written } : {}) }
       // for Vorax Overlay's debug log: how long the log took to go quiet, and the screen to settle
-      console.info(`[timing] ${e.kind}: picture ${askedAt - e.triggerAt} ms after the log line${e.why ? ` (${e.why})` : ''}, ${snappedAt - askedAt} ms for the screen to settle`)
+      console.info(`[timing] ${e.kind}: picture ${timing.log} ms after the log line${e.why ? ` (${e.why})` : ''}, ${timing.screen} ms for the screen to settle${early ? ' (already still)' : ''}${timing.lag !== undefined ? `, line read ${timing.lag} ms after it was written` : ''}`)
       setFrames(n => n + 1)
       const d = dirRef.current
       const n = d ? ++savedRef.current : 0
-      onFrame(img, e.kind, d ? (value, what) => void saveReading(d, n, e.kind, value, what) : undefined)
+      onFrame(img, e.kind, d ? (value, what) => void saveReading(d, n, e.kind, value, what) : undefined, e.kind === 'manual' ? undefined : timing)
       if (d) {
         await saveFrame(d, n, e.kind, await toPng(img), { lines: e.lines, triggerAt: e.triggerAt, askedAt, snappedAt, width: img.width, height: img.height })
         setSaved(n)
@@ -142,7 +199,8 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
 
   useEffect(() => {
     if (!log) return
-    following.current = deps.follow(log, e => onEvent.current(e), rules)
+    const wake = desktop?.onLogChanged ? (cb: () => void) => desktop.onLogChanged!(cb) : undefined
+    following.current = deps.follow(log, e => onEvent.current(e), rules, wake)
     return () => following.current?.stop()
   }, [log, deps, rules])
 

@@ -50,6 +50,26 @@ export interface Reading {
   /** the game's interface scale it was read at, when not 1 (see layout.ts) */
   ui?: number
   debug?: ReadDebug
+  /** how a live board's read went, step by step, shared with it to make reading faster (ms throughout) */
+  timing?: ReadTiming
+}
+
+export interface ReadTiming {
+  /** why the log counted the board as settled: done, acted, dealt, quiet or max */
+  why?: string
+  /** from the board's line being written to it being read */
+  lag?: number
+  /** from the line being read to the log settling */
+  log?: number
+  /** from the log settling to the picture */
+  screen?: number
+  /** the screen was already proven still when the log settled */
+  early?: boolean
+  /** reading the board's pixels, then the cards' names */
+  pixels?: number
+  names?: number
+  /** per card, the step that read its name (titles.ts): 1 the title alone, 2 half size, 3 as before, 4 none */
+  steps?: number[]
 }
 
 export const emptyState = (): ScreenState => ({ tanks: [null, null, null, null, null, null], hand: [], instruments: [], phase: 'potion', round: 1, potionRefreshes: POTION_REFRESHES })

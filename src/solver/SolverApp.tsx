@@ -17,7 +17,7 @@ import { cropTo, windowedGame } from './live/windowCrop'
 import { carriedRound } from './live/round'
 import { BoardPanel } from './board/BoardPanel'
 import { FrameView } from './board/FrameView'
-import { LiveSource } from './live/LiveSource'
+import { LiveSource, type SnapTiming } from './live/LiveSource'
 import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
 import { cardPicture, confirmUnknown, shareCard } from './share/card'
@@ -80,7 +80,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const read = scanner ?? workerScan
   const canLive = liveSupported()
   const board = useMemo(() => ({ ...state, shelley }), [state, shelley])
-  const { shown, updating } = useAdvice(board)
+  // a board just read is advised at once; one edited by hand waits for the next keystroke
+  const fromRead = useRef(false)
+  const { shown, updating } = useAdvice(board, fromRead.current)
   // the advice for the board on screen now (capture mode saves it beside the frame)
   const advice = shown && shown.board === board ? shown.advice : null
   // shared with the board, so real games can check the predictions
@@ -156,7 +158,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   }
 
   // A frame from Live or a screenshot becomes the board; fields the reader was unsure of are marked.
-  const onFrame = async (captured: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep) => {
+  const onFrame = async (captured: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep, snap?: SnapTiming) => {
     setReadingBusy(true)
     try {
       const img = await gamePicture(captured)
@@ -164,7 +166,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       const read$ = await read(img, trigger, refs ?? local)
       const ms = Date.now() - readFrom
       console.info(`[timing] read the screen in ${ms} ms`)
-      const raw = read$.debug ? { ...read$, debug: { ...read$.debug, ms } } : read$
+      const timed = snap ? { ...read$, timing: { ...read$.timing, ...snap } } : read$
+      const raw = timed.debug ? { ...timed, debug: { ...timed.debug, ms } } : timed
       // a card flying off as it's played or picked: the last board and its advice still stand
       if (raw.problems.some(p => p.kind === 'animating')) {
         keep?.(raw, 'reading')
@@ -211,6 +214,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       setReading(r)
       setCorrections({})
       if (!r.problems.some(p => p.kind === 'notFound')) {
+        fromRead.current = true
         setState(r.state)
         setFields(r.fields)
       }
@@ -228,6 +232,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     tracker.current = confirmPick(tracker.current, question.slot, name)
     setChecking(c => (c?.slot === question.slot ? null : c))
     const owned = tracker.current.owned
+    fromRead.current = false
     setState(s => ({ ...s, instruments: owned }))
     setFields(f => ({ ...f, [`instrument${question.slot}`]: { sure: true, guess: name } }))
     keep?.({ picked: name, slot: question.slot, offer: question.offer }, 'pick')
@@ -249,6 +254,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   }, [])
 
   const edit = (next: ScreenState, field: FieldKey) => {
+    fromRead.current = false
     setState(next)
     if (reading) setCorrections(c => ({ ...c, [field]: valueOf(next, field) }))
     // a corrected instrument is the player's word: no longer an unsure pick
@@ -316,7 +322,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} onChanged={() => setChanging(true)} />
+            <LiveSource onFrame={(img, trigger, keep, timing) => void onFrame(img, trigger, undefined, keep, timing)} onTrouble={setTrouble} snap={snapAgain} onChanged={() => setChanging(true)} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}

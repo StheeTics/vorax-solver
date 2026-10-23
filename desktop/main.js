@@ -162,6 +162,45 @@ async function refreshLog() {
     note(`log file (${found.by}):`, logPath || 'not found');
     rebuildMenu();
   }
+  watchLog();
+}
+
+// The game writing to its log is passed to the Solver page at once (at most every 30 ms), so it reads the new lines
+// then instead of at its next poll. The folder is watched, not the file: the game replaces the file when it
+// starts. If Windows sends nothing, or the watch fails, the page's poll reads the log as before.
+let logWatcher = null;
+let watchedLog = null;
+let pushTimer = null;
+let lastPush = 0;
+function logChanged() {
+  if (pushTimer) return;
+  pushTimer = setTimeout(() => {
+    pushTimer = null;
+    lastPush = Date.now();
+    if (wins.solver && !wins.solver.isDestroyed()) wins.solver.webContents.send('log:changed');
+  }, Math.max(0, 30 - (Date.now() - lastPush)));
+}
+function watchLog() {
+  if (watchedLog === logPath) return;
+  if (logWatcher) logWatcher.close();
+  logWatcher = null;
+  watchedLog = logPath;
+  if (!logPath) return;
+  const name = path.basename(logPath).toLowerCase();
+  try {
+    logWatcher = fs.watch(path.dirname(logPath), { persistent: false }, (event, file) => {
+      if (!file || String(file).toLowerCase() === name) logChanged();
+    });
+    logWatcher.on('error', (e) => {
+      note('log watch stopped:', String(e));
+      logWatcher = null;
+      watchedLog = null;
+    });
+    note('watching the log folder for new lines');
+  } catch (e) {
+    note('log watch unavailable, polling only:', String(e));
+    logWatcher = null;
+  }
 }
 
 async function pickLog() {

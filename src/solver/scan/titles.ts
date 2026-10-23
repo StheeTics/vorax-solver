@@ -9,7 +9,7 @@ import type { FieldRead, Problem, Reading } from '../types'
 import type { HandPhase } from './data'
 import { handAt } from './cards'
 import { cardFace, layout, type CardPos } from './layout'
-import { patch, type Img } from './pixels'
+import { patch, resize, type Img } from './pixels'
 
 /** Reads the text in a picture (dark text on white). */
 export type ReadText = (img: Img) => Promise<string>
@@ -86,8 +86,94 @@ export function titleCrop(img: Img, c: CardPos, k: number): Img {
   return { width: W, height: H, data }
 }
 
-const ranked = (phase: HandPhase, text: string) => NAMES[phase].map(n => [n, nameFit(n, text).q] as const).sort((a, b) => b[1] - a[1])
-const settled = (r: (readonly [string, number])[]) => r[0][1] >= MIN_Q && r[0][1] - (r[1]?.[1] ?? -Infinity) >= GAP
+export const ranked = (phase: HandPhase, text: string) => NAMES[phase].map(n => [n, nameFit(n, text).q] as const).sort((a, b) => b[1] - a[1])
+export const settled = (r: (readonly [string, number])[]) => r[0][1] >= MIN_Q && r[0][1] - (r[1]?.[1] ?? -Infinity) >= GAP
+
+// Reading a title is most of a board's read, so it's done in steps, cheapest first (measured on 350 labelled
+// cards, Oct 23: 82 ms a title against 109, 342 right against 339, none wrong):
+//   1. only the title: the rows just above the card's effect text (bold black, where the title is grey), taken
+//      only when the WHOLE name is there, so a title cut to its first line can't pass for a shorter name;
+//   2. the whole title area at half size, taken when it settles a name;
+//   3. the whole title area as before.
+
+/** Where the effect text starts in a title area: the first band of text at least half as dark as the card's darkest. */
+function effectStart(img: Img): number | null {
+  const { width: W, height: H, data } = img
+  const dark = new Array<number>(H).fill(0)
+  const ink = new Array<number>(H).fill(0)
+  for (let y = 0; y < H; y++)
+    for (let x = 30; x < Math.min(W, 450); x++) {
+      const v = data[(y * W + x) * 4]
+      if (v < 70) dark[y]++
+      if (v < 190) ink[y]++
+    }
+  const bands: { y0: number; y1: number; dark: number; ink: number }[] = []
+  for (let y = 0; y < H; y++) {
+    if (ink[y] <= 8) continue
+    const last = bands[bands.length - 1]
+    if (last && y - last.y1 <= 2) Object.assign(last, { y1: y, dark: last.dark + dark[y], ink: last.ink + ink[y] })
+    else bands.push({ y0: y, y1: y, dark: dark[y], ink: ink[y] })
+  }
+  const big = bands.filter(b => b.y1 - b.y0 >= 8 && b.y0 > 60)
+  if (!big.length) return null
+  const top = Math.max(...big.map(b => b.dark / b.ink))
+  return big.find(b => b.dark / b.ink >= 0.5 * top && b.dark / b.ink > 0.12)?.y0 ?? null
+}
+
+/** The rows above the effect text, tall enough for a title on two lines with the art touching it, without the
+ *  next card's edge; null when no effect text is found. */
+export function titleWindow(img: Img): Img | null {
+  const e = effectStart(img)
+  if (e === null) return null
+  const y0 = Math.max(0, e - 110)
+  const w = Math.min(img.width, 490)
+  const h = e - 1 - y0
+  if (h < 20) return null
+  const data = new Uint8ClampedArray(w * h * 4)
+  for (let y = 0; y < h; y++) data.set(img.data.subarray(((y0 + y) * img.width) * 4, ((y0 + y) * img.width + w) * 4), y * w * 4)
+  return { width: w, height: h, data }
+}
+
+/** Fewest edits that match all of p somewhere inside t. */
+function fullCost(p: string, t: string): number {
+  let prev = new Array<number>(t.length + 1).fill(0)
+  for (let i = 1; i <= p.length; i++) {
+    const row = [i]
+    for (let j = 1; j <= t.length; j++) row[j] = Math.min(prev[j] + 1, row[j - 1] + 1, prev[j - 1] + (p[i - 1] === t[j - 1] ? 0 : 1))
+    prev = row
+  }
+  return Math.min(...prev)
+}
+
+/** The name the text shows whole: its end included, under one mistake in five letters, well ahead of the next,
+ *  and not the start of a longer name (Xenopanacea, Xenopanacea: Osteotrophy). */
+export function wholeName(phase: HandPhase, text: string): string | null {
+  const t = letters(text)
+  if (!t) return null
+  const c = NAMES[phase].map(n => [n, fullCost(letters(n), t) / letters(n).length] as const).sort((a, b) => a[1] - b[1])
+  if (!(c[0][1] <= 0.2 && (c[1]?.[1] ?? 1) - c[0][1] >= 0.15)) return null
+  const best = letters(c[0][0])
+  return NAMES[phase].some(n => n !== c[0][0] && letters(n).includes(best)) ? null : c[0][0]
+}
+
+/** One card's title text, read in steps (above): the first that settles it, else the best that was read; step:
+ *  which one read it (4: none settled it). */
+export async function readTitle(crop: Img, phases: HandPhase[], readText: ReadText): Promise<{ text: string; step: number }> {
+  const read = (img: Img) => readText(img).catch(() => '')
+  const window = titleWindow(crop)
+  if (window) {
+    const t = await read(window)
+    if (phases.some(p => wholeName(p, t) !== null && settled(ranked(p, t)))) return { text: t, step: 1 }
+  }
+  const fit = (t: string) => Math.max(...phases.map(p => ranked(p, t)[0][1]))
+  const tries: string[] = []
+  for (const [step, img] of [[2, resize(crop, Math.round(crop.width / 2), Math.round(crop.height / 2))], [3, crop]] as const) {
+    const t = await read(img)
+    if (phases.some(p => settled(ranked(p, t)))) return { text: t, step }
+    tries.push(t)
+  }
+  return { text: tries.reduce((a, b) => (fit(b) > fit(a) ? b : a)), step: 4 }
+}
 
 /** Some of a hand's cards matched by their pictures: per position, the best few cards, that position's
  *  field, and whether no picture was close enough. */
@@ -104,8 +190,11 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
   const l = layout(img, reading.ui)
   const header = reading.state.phase
   const phases: HandPhase[] = reading.fields.phase?.sure ? [header] : PHASES
+  let steps: number[] = []
   const titles = async (size: number) => {
-    const texts = await Promise.all(handAt(l, size).map(c => readText(titleCrop(img, c, l.k)).catch(() => '')))
+    const reads = await Promise.all(handAt(l, size).map(c => readTitle(titleCrop(img, c, l.k), phases, readText)))
+    const texts = reads.map(r => r.text)
+    steps = reads.map(r => r.step)
     // A card raised by the mouse can cover the header: then the names say which pick it is.
     return phases
       .map(phase => {
@@ -164,7 +253,7 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
     if (phase === 'potion') state.potionRefreshes = left
     else state.instrumentRefreshes = left
   }
-  const out: Reading = { ...reading, state, fields, problems, handRanks: pos.map((_, j) => pics[j]?.ranks ?? []) }
+  const out: Reading = { ...reading, state, fields, problems, handRanks: pos.map((_, j) => pics[j]?.ranks ?? []), timing: { ...reading.timing, steps } }
   delete out.handPending
   return out
 }
