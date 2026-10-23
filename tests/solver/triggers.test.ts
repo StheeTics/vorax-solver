@@ -220,7 +220,8 @@ it('a deal while numbers change still waits for them to land', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
   s.feed([ADD], 60)
-  s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 300)
+  // as in potion rounds: the deal ~0.58 s before the numbers land
+  s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 120)
   expect(s.due(450)).toBeNull()
   s.feed([LANDED], 700)
   expect(s.due(850)).toBe('board')
@@ -243,4 +244,13 @@ it('closing the Vorax screen is over but not finished; the reward screen finishe
   s.feed(['[Game] S13GamePlayMain Run'], 9000)
   expect(s.over).toBe(false)
   expect(s.finished).toBe(false)
+})
+
+// Protocol rounds, Oct 23: the deal and the numbers landing logged at the same moment, the cards still flying in
+it('numbers landing with the deal are no reason for an instant picture: it waits for a still screen', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle', LANDED, LANDED, 'Play_UI_S13_KYZ_Card_Figure_Add_Large'], 443)
+  expect(s.due(443)).toBe('board')
+  expect(s.settledBy).toBe('dealt')
 })

@@ -88,7 +88,11 @@ export function readPhase(img: Img, l: Layout, data: ScanData): { phase: HandPha
   return { phase: ranked[0][1] >= HEADER_MIN ? ranked[0][0] : null, score: ranked[0][1], second: ranked[1]?.[1] ?? 0 }
 }
 
-const dot = (a: number[], b: number[]) => a.reduce((s, x, i) => s + x * b[i], 0)
+const dot = (a: number[], b: number[]) => {
+  let s = 0
+  for (let i = 0; i < a.length; i++) s += a[i] * b[i]
+  return s
+}
 
 /** Where a known card's references fit best around its position (reference px), and how well: a card
  *  raised by the mouse fits about 35 higher, one in a flash of light fits poorly. null with no references. */
@@ -107,14 +111,14 @@ export function fitOffset(img: Img, c: CardPos, k: number, key: string, data: Sc
   return { at, score: best }
 }
 
-/** Every known card ranked for one card position, best first. */
-function rank(img: Img, c: CardPos, k: number, prefix: string, data: ScanData, local: Record<string, ArtFeature[]>): (readonly [string, number])[] {
+/** Every known card ranked for one card position, best first; among: only these names. */
+function rank(img: Img, c: CardPos, k: number, prefix: string, data: ScanData, local: Record<string, ArtFeature[]>, among?: string[]): (readonly [string, number])[] {
   const arts = new Map<string, ArtFeature>()
   const txts = new Map<string, number[]>()
   const art = (dx: number, dy: number) => arts.get(`${dx},${dy}`) ?? arts.set(`${dx},${dy}`, cardArt(img, c, k, dx, dy)).get(`${dx},${dy}`)!
   const text = (dx: number, dy: number) => txts.get(`${dx},${dy}`) ?? txts.set(`${dx},${dy}`, cardText(img, c, k, dx, dy)).get(`${dx},${dy}`)!
   const scored = Object.entries({ ...data.cards, ...local })
-    .filter(([key]) => key.startsWith(prefix))
+    .filter(([key]) => key.startsWith(prefix) && (!among || among.includes(key.slice(prefix.length))))
     .map(([key, fs]) => {
       const texts = data.texts[key]
       const artAt = (dx: number, dy: number) => Math.max(...fs.map(f => similarity(f, art(dx, dy))))
@@ -137,7 +141,7 @@ function rank(img: Img, c: CardPos, k: number, prefix: string, data: ScanData, l
   return scored.map(s => [s.name, s.best] as const).sort((a, b) => b[1] - a[1])
 }
 
-function readAt(img: Img, l: Layout, size: number, phase: HandPhase, data: ScanData, local: Record<string, ArtFeature[]>, slots?: number[]) {
+function readAt(img: Img, l: Layout, size: number, phase: HandPhase, data: ScanData, local: Record<string, ArtFeature[]>, slots?: number[], among: Record<number, string[]> = {}) {
   const fields: Record<string, FieldRead> = {}
   const problems: Problem[] = []
   const names: string[] = []
@@ -145,7 +149,7 @@ function readAt(img: Img, l: Layout, size: number, phase: HandPhase, data: ScanD
   let total = 0
   handAt(l, size).forEach((c, j) => {
     if (slots && !slots.includes(j)) return ranks.push([])
-    const ranked = rank(img, c, l.k, `${phase}:`, data, local)
+    const ranked = rank(img, c, l.k, `${phase}:`, data, local, among[j])
     ranks.push(ranked.slice(0, KEEP_RANKS).map(([n, v]) => [n, v]))
     total += ranked[0]?.[1] ?? 0
     if (!ranked.length || ranked[0][1] < ART_UNKNOWN) {
@@ -165,9 +169,10 @@ export function headerOnly(img: Img, l: Layout, data: ScanData): HandRead {
   return { phase, names: [], fields: { phase: { sure: !!phase && score - second >= 0.05, guess: phase ?? undefined, score, second } }, problems: [] }
 }
 
-/** Some of a hand's cards by their pictures: those the printed names couldn't settle. */
-export function readSlots(img: Img, l: Layout, size: number, phase: HandPhase, slots: number[], data: ScanData, local: Record<string, ArtFeature[]> = {}) {
-  const { fields, problems, ranks } = readAt(img, l, size, phase, data, local, slots)
+/** Some of a hand's cards by their pictures: those the printed names couldn't settle. among: per position, the
+ *  few names its printed name was torn between, when it was; the picture then only chooses between them. */
+export function readSlots(img: Img, l: Layout, size: number, phase: HandPhase, slots: number[], data: ScanData, local: Record<string, ArtFeature[]> = {}, among: Record<number, string[]> = {}) {
+  const { fields, problems, ranks } = readAt(img, l, size, phase, data, local, slots, among)
   return { fields, problems, ranks }
 }
 

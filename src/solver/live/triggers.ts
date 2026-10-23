@@ -20,6 +20,9 @@ export interface TriggerRules {
   dealtDelayMs: number
   /** how long a new board waits for its deal before silence counts again (a deal never logged) */
   dealWaitMs: number
+  /** numbers landing sooner than this after the deal: the cards are still flying in, so the picture waits for a
+   *  still screen (settled as 'dealt') instead of being taken at once */
+  dealLandsMs: number
   /** the player clicked something: the board they're looking at has settled */
   playerActions: string[]
   /** the tanks' numbers are changing (a potion's effects): only their landing, `done`, means they've settled */
@@ -58,6 +61,9 @@ export const DEFAULT_RULES: TriggerRules = {
   dealtDelayMs: 100,
   // the deal came 0.42-0.53 s after the board's line when nothing was logged before it (Oct 23)
   dealWaitMs: 1000,
+  // protocol rounds log the deal and the landing together (cards caught mid-flight, Oct 23); in potion rounds the
+  // deal came 0.57-0.58 s before the landing
+  dealLandsMs: 450,
   settleMs: 150,
   maxMs: 3000,
   // 63 boards of real games (Oct 22-23): the numbers landed 0.58 s after the last change, so 0.4 s of silence
@@ -100,8 +106,8 @@ export interface Settler {
 }
 
 export function createSettler(rules = DEFAULT_RULES): Settler {
-  let pending: { kind: 'board' | 'screen'; t0: number; lastAnim: number; doneAt: number | null; dealtAt: number | null; acted: boolean; effects: boolean; awaitDeal: boolean } | null = null
-  const start = (kind: 'board' | 'screen', now: number) => ({ kind, t0: now, lastAnim: now, doneAt: null, dealtAt: null, acted: false, effects: false, awaitDeal: false })
+  let pending: { kind: 'board' | 'screen'; t0: number; lastAnim: number; doneAt: number | null; dealtAt: number | null; dealAt: number | null; acted: boolean; effects: boolean; awaitDeal: boolean } | null = null
+  const start = (kind: 'board' | 'screen', now: number) => ({ kind, t0: now, lastAnim: now, doneAt: null, dealtAt: null, dealAt: null, acted: false, effects: false, awaitDeal: false })
   let refreshes = 0
   let over = false
   let finished = false
@@ -133,7 +139,7 @@ export function createSettler(rules = DEFAULT_RULES): Settler {
         } else if (pending && isAnimation(line, rules)) {
           pending.lastAnim = now
           if (rules.effects.some(p => line.includes(p))) pending.effects = true
-          if (line.includes(rules.dealt)) pending.awaitDeal = false
+          if (line.includes(rules.dealt)) [pending.awaitDeal, pending.dealAt] = [false, now]
           // the deal counts only while it's the last thing animating
           pending.dealtAt = line.includes(rules.dealt) ? now : null
         }
@@ -141,12 +147,14 @@ export function createSettler(rules = DEFAULT_RULES): Settler {
     },
     due(now) {
       if (!pending) return null
-      const { kind, t0, lastAnim, doneAt, dealtAt, acted, effects, awaitDeal } = pending
+      const { kind, t0, lastAnim, doneAt, dealtAt, dealAt, acted, effects, awaitDeal } = pending
       // a deal still to come: no silence counts until it has, or until it's clearly not coming
       const quiet = awaitDeal && now - t0 < rules.dealWaitMs ? Infinity : effects ? rules.effectSettleMs : rules.settleMs
       const max = effects ? rules.effectMaxMs : rules.maxMs
       const dealt = !effects && dealtAt !== null && now - dealtAt >= rules.dealtDelayMs
-      const why: SettledBy | null = acted ? 'acted' : doneAt !== null && now - doneAt >= rules.doneDelayMs ? 'done' : dealt ? 'dealt' : now - lastAnim >= quiet ? 'quiet' : now - t0 >= max ? 'max' : null
+      const landed = doneAt !== null && now - doneAt >= rules.doneDelayMs
+      const flying = landed && dealAt !== null && doneAt! - dealAt < rules.dealLandsMs
+      const why: SettledBy | null = acted ? 'acted' : landed ? (flying ? 'dealt' : 'done') : dealt ? 'dealt' : now - lastAnim >= quiet ? 'quiet' : now - t0 >= max ? 'max' : null
       if (why) {
         pending = null
         settledBy = why
