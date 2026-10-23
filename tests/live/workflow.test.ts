@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 
 // The live data, the daily check and the smarter player run on the PC, in scripts/nightly.sh (since 2026-10-22)
 const nightly = readFileSync('scripts/nightly.sh', 'utf8')
@@ -60,6 +60,5 @@ it('runs at the lowest priority, 16 at once overnight and 8 with --day, and comm
 })
 
 it('the moved jobs are gone from GitHub Actions, and the collector no longer starts them', () => {
-  const { readdirSync } = require('node:fs') as typeof import('node:fs')
   expect(readdirSync('.github/workflows').sort()).toEqual(['deploy.yml', 'desktop.yml', 'issue-fixer.yml'])
 })
