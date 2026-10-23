@@ -37,8 +37,20 @@ it('a snap after connecting grabs a frame and hands it on', async () => {
   const t = setup()
   await connect()
   t.emit({ type: 'snap', kind: 'board', triggerAt: 0, lines: [] })
-  await waitFor(() => expect(t.onFrame).toHaveBeenCalledWith(expect.objectContaining({ width: 4 }), 'board', undefined))
+  await waitFor(() => expect(t.onFrame).toHaveBeenCalledWith(expect.objectContaining({ width: 4 }), 'board', undefined, expect.objectContaining({ early: false })))
   expect(t.share.grab.mock.calls.length).toBeGreaterThanOrEqual(2)
+})
+
+it('a screen already proven still while the log settled is taken at once, with how it went', async () => {
+  const t = setup()
+  await connect()
+  t.emit({ type: 'changed', kind: 'board', at: 0 })
+  await act(() => new Promise(r => setTimeout(r, 500)))
+  const grabs = t.share.grab.mock.calls.length
+  t.emit({ type: 'snap', kind: 'board', triggerAt: 0, lines: ['[2026.10.23-04.27.21:522][175]TLLua: x ProtoId = 5619'], why: 'dealt' })
+  await waitFor(() => expect(t.onFrame).toHaveBeenCalledWith(expect.objectContaining({ width: 4 }), 'board', undefined, expect.objectContaining({ why: 'dealt', early: true })))
+  // one more look to confirm, not the three of the full check
+  expect(t.share.grab.mock.calls.length).toBe(grabs + 1)
 })
 
 it('returns to step 2 when sharing ends, and cancels a pending snap', async () => {

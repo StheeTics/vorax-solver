@@ -55,3 +55,57 @@ export async function waitStable(grab: () => Promise<ImageData>, o: StableOption
   }
   return frame
 }
+
+export interface Sampler {
+  /** a fresh picture, when it and the last two looks all match (the same proof as waitStable's), else null */
+  take(): Promise<ImageData | null>
+  stop(): void
+}
+
+/**
+ * Looks at the screen every intervalMs while the log is still settling, so that when it settles a still screen is
+ * already proven and its picture taken at once, instead of starting waitStable's three looks only then. Anything
+ * short of that proof (too few looks, a change, a failed grab) answers null, and waitStable runs as before.
+ */
+export function createSampler(grab: () => Promise<ImageData>, o: { intervalMs?: number; maxMs?: number; threshold?: number } = {}): Sampler {
+  const { intervalMs = 150, maxMs = 8000, threshold = 1.5 } = o
+  let last: Thumb | null = null
+  // how many looks in a row matched the one before
+  let still = 0
+  let stopped = false
+  let busy: Promise<void> | null = null
+  const look = async () => {
+    try {
+      const t = thumb(await grab())
+      still = last && frameDiff(last, t) < threshold ? still + 1 : 0
+      last = t
+    } catch {
+      last = null
+      still = 0
+    }
+  }
+  const timer = setInterval(() => {
+    if (stopped || busy) return
+    busy = look().finally(() => (busy = null))
+  }, intervalMs)
+  const end = setTimeout(() => stop(), maxMs)
+  function stop() {
+    stopped = true
+    clearInterval(timer)
+    clearTimeout(end)
+  }
+  return {
+    async take() {
+      stop()
+      if (busy) await busy
+      if (!last || still < 1) return null
+      try {
+        const frame = await grab()
+        return frameDiff(last, thumb(frame)) < threshold ? frame : null
+      } catch {
+        return null
+      }
+    },
+    stop,
+  }
+}

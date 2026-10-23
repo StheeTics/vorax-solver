@@ -80,8 +80,8 @@ describe('what is shared', () => {
     const { sharedAdvice } = await import('@/solver/share/snapshot')
     const board = { ...reading.state, hand: ['Xeno-Hormone', 'Mutagenic Powder'] }
     const best = { index: 1, targets: [0], value: 1, end: { activity: 812_000.4, reached: 0.4 } }
-    expect(sharedAdvice({ board, advice: { best, ranking: [best], board: 0, plan: true, final: true, ms: 1, unknown: [] } })).toEqual({ move: 'Play Mutagenic Powder (card 2) → tank 1', activity: 812_000, reached: 0.4 })
-    expect(sharedAdvice({ board, advice: { best: 'refresh', ranking: [], board: 0, plan: true, final: true, ms: 1, unknown: [], refreshEnd: { activity: 500_000, reached: 0.1 } } })).toEqual({ move: 'Refresh', activity: 500_000, reached: 0.1 })
+    expect(sharedAdvice({ board, advice: { best, ranking: [best], board: 0, plan: true, final: true, ms: 1, unknown: [] } })).toEqual({ move: 'Play Mutagenic Powder (card 2) → tank 1', activity: 812_000, reached: 0.4, ms: 1 })
+    expect(sharedAdvice({ board, advice: { best: 'refresh', ranking: [], board: 0, plan: true, final: true, ms: 1, unknown: [], refreshEnd: { activity: 500_000, reached: 0.1 } } })).toEqual({ move: 'Refresh', activity: 500_000, reached: 0.1, ms: 1 })
     expect(sharedAdvice(null)).toBeUndefined()
   })
 })

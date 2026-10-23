@@ -86,22 +86,56 @@ function debugOf(raw: unknown): { debug?: Record<string, unknown> } {
     if (!w || !size(w.outer) || !size(w.client) || !num(w.scale, 0.25, 8)) return {}
     win = { window: { outer: w.outer, client: w.client, scale: w.scale } }
   }
+  const timing = timingOf(d.timing)
   return {
     debug: {
       frame: d.frame, dpr: d.dpr, hdr: d.hdr, browser: d.browser, ...(d.ms !== undefined ? { ms: d.ms } : {}),
       off: d.off, corrected: d.corrected, tanks, scores: Object.fromEntries(scores.map(([k, v]) => [k, clamp1(v as [number, number])])), ...win,
+      ...(timing ? { timing } : {}),
     },
   }
 }
 
+const WHY = ['done', 'acted', 'dealt', 'quiet', 'max']
+const TIMES = ['lag', 'log', 'screen', 'pixels', 'names'] as const
+
+/** How a live board's read went (src/solver/types.ts ReadTiming): the parts there are, each in range; anything
+ *  off drops the timings alone. */
+function timingOf(raw: unknown): Record<string, unknown> | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const t = raw as Record<string, unknown>
+  const out: Record<string, unknown> = {}
+  if (t.why !== undefined) {
+    if (!WHY.includes(t.why as string)) return null
+    out.why = t.why
+  }
+  for (const k of TIMES) {
+    if (t[k] === undefined) continue
+    // the log's lag can come out a little negative when the clocks differ by a hair
+    if (!int(t[k], k === 'lag' ? -60_000 : 0, 600_000)) return null
+    out[k] = t[k]
+  }
+  if (t.early !== undefined) {
+    if (typeof t.early !== 'boolean') return null
+    out.early = t.early
+  }
+  if (t.steps !== undefined) {
+    if (!Array.isArray(t.steps) || t.steps.length > 5 || !t.steps.every(v => int(v, 1, 4))) return null
+    out.steps = t.steps
+  }
+  return Object.keys(out).length ? out : null
+}
+
 /** The advice shown with a board ({ move, activity, reached }); a malformed one is dropped, the board kept. */
-function adviceOf(raw: unknown): { advice?: { move: string; activity: number | null; reached: number | null } } {
+function adviceOf(raw: unknown): { advice?: { move: string; activity: number | null; reached: number | null; ms?: number } } {
   if (!raw || typeof raw !== 'object') return {}
   const a = raw as Record<string, unknown>
   const okActivity = a.activity === null || int(a.activity, 0, 100 * MAX_STAT)
   const okReached = a.reached === null || (typeof a.reached === 'number' && a.reached >= 0 && a.reached <= 1)
   if (!str(a.move, /^[^<>]{1,160}$/) || !okActivity || !okReached) return {}
-  return { advice: { move: a.move, activity: a.activity as number | null, reached: a.reached as number | null } }
+  // how long it took to work out: kept when it's a sensible number
+  const ms = int(a.ms, 0, 600_000) ? { ms: a.ms } : {}
+  return { advice: { move: a.move, activity: a.activity as number | null, reached: a.reached as number | null, ...ms } }
 }
 
 /** Values in an instrument icon's pattern: 24x24 grey levels, centred and scaled to length 1. */

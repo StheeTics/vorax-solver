@@ -15,6 +15,12 @@ if (/\/solver(\.html)?$/.test(location.pathname)) {
     onSnap: (cb) => ipcRenderer.on('snap', () => cb()),
     showAdvice: (card) => ipcRenderer.send('advice', card),
     showHighlights: (boxes) => ipcRenderer.send('highlights', boxes),
+    // the game just wrote to its log: the page reads it now instead of at its next poll
+    onLogChanged: (cb) => {
+      const f = () => cb();
+      ipcRenderer.on('log:changed', f);
+      return () => ipcRenderer.removeListener('log:changed', f);
+    },
     gameWindow: () => ipcRenderer.invoke('game:window'),
     showSolver: () => ipcRenderer.send('solver:show'),
     onChoose: (cb) => ipcRenderer.on('choose', (e, name) => cb(name)),

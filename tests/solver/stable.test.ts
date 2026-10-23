@@ -1,4 +1,4 @@
-import { frameDiff, thumb, waitStable } from '@/solver/live/stable'
+import { createSampler, frameDiff, thumb, waitStable } from '@/solver/live/stable'
 
 const img = (w: number, h: number, fill: (x: number, y: number) => number) => {
   const data = new Uint8ClampedArray(w * h * 4)
@@ -51,4 +51,45 @@ it('waitStable gives up after maxMs with the latest frame', async () => {
   let t = 0
   const got = await waitStable(grab, { intervalMs: 0, maxMs: 500, now: () => (t += 200) })
   expect(got).toBeTruthy()
+})
+
+describe('watching the screen while the log settles', () => {
+  const still = img(960, 400, () => 100)
+  const moved = img(960, 400, x => (x < 480 ? 100 : 200))
+  beforeEach(() => vi.useFakeTimers())
+  afterEach(() => vi.useRealTimers())
+
+  it('a screen already still gives its picture at once', async () => {
+    const s = createSampler(async () => still)
+    await vi.advanceTimersByTimeAsync(400)
+    expect(await s.take()).toBe(still)
+    s.stop()
+  })
+  it('a screen that just moved gives none: the full stillness check runs instead', async () => {
+    let n = 0
+    const s = createSampler(async () => (n++ % 2 ? moved : still))
+    await vi.advanceTimersByTimeAsync(400)
+    expect(await s.take()).toBeNull()
+    s.stop()
+  })
+  it('too few looks yet gives none', async () => {
+    const s = createSampler(async () => still)
+    expect(await s.take()).toBeNull()
+    s.stop()
+  })
+  it('a grab that fails gives none, and stops nothing else', async () => {
+    const s = createSampler(async () => { throw new Error('capture lost') })
+    await vi.advanceTimersByTimeAsync(400)
+    expect(await s.take()).toBeNull()
+    s.stop()
+  })
+  it('stops looking when told, and after a while on its own', async () => {
+    let grabs = 0
+    const s = createSampler(async () => (grabs++, still), { maxMs: 1000 })
+    await vi.advanceTimersByTimeAsync(3000)
+    const after = grabs
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(grabs).toBe(after)
+    s.stop()
+  })
 })

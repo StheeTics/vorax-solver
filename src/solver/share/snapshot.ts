@@ -1,14 +1,15 @@
 // What the Solver shares for the odds study: one board it read, with no picture, no time and nothing
 // about the player but a random install number (to count players). Boards of one game share a run id, in seq order.
 import type { ScreenMonster } from '@/strategy/advisor'
-import type { FieldKey, Reading, ReadDebug, Source } from '../types'
+import type { FieldKey, Reading, ReadDebug, ReadTiming, Source } from '../types'
 import type { Environment } from './setup'
 import type { Shown } from '../advice/useAdvice'
 import { describe } from '../advice/describe'
 
 /** The advice shown for a board, so real games can check the predictions: the move in words, and its
  *  predicted end (average counted to 840,000, share of futures reaching it) when the look-ahead gave one. */
-export interface SharedAdvice { move: string; activity: number | null; reached: number | null }
+/** ms: how long the advice took to work out */
+export interface SharedAdvice { move: string; activity: number | null; reached: number | null; ms?: number }
 
 export interface Snapshot {
   uid: string
@@ -43,7 +44,7 @@ export interface GameWindow { outer: [number, number]; client: [number, number];
 
 /** What helps find out why a setup misreads: the capture's size, the screen, the browser, the colours, each
  *  tank's lines as read, and the match scores of the unsure fields. */
-export type SharedDebug = Environment & Omit<ReadDebug, 'ms'> & { frame: [number, number]; ms?: number; scores: Record<FieldKey, [number, number]>; window?: GameWindow }
+export type SharedDebug = Environment & Omit<ReadDebug, 'ms'> & { frame: [number, number]; ms?: number; scores: Record<FieldKey, [number, number]>; window?: GameWindow; timing?: ReadTiming }
 
 export function debugOf(r: Reading, unsure: FieldKey[], env: Environment, win: GameWindow | null): SharedDebug {
   // what the collector keeps: scores within -1..1, a line of at most 16 characters
@@ -53,6 +54,7 @@ export function debugOf(r: Reading, unsure: FieldKey[], env: Environment, win: G
   return {
     frame: [r.frame?.width ?? 0, r.frame?.height ?? 0], ...env, ...(d?.ms !== undefined ? { ms: d.ms } : {}),
     off: d?.off ?? 0, corrected: d?.corrected ?? false, tanks: (d?.tanks ?? []).map(t => t && { ...t, total: t.total.slice(0, 16), aq: t.aq.slice(0, 16) }), scores, ...(win ? { window: win } : {}),
+    ...(r.timing ? { timing: r.timing } : {}),
   }
 }
 
@@ -60,7 +62,7 @@ export function sharedAdvice(shown: Shown | null): SharedAdvice | undefined {
   const best = shown?.advice.best
   if (!shown || !best) return undefined
   const end = best === 'refresh' ? shown.advice.refreshEnd : best.end
-  return { move: best === 'refresh' ? 'Refresh' : describe(best, shown.board, true), activity: end ? Math.round(end.activity) : null, reached: end ? end.reached : null }
+  return { move: best === 'refresh' ? 'Refresh' : describe(best, shown.board, true), activity: end ? Math.round(end.activity) : null, reached: end ? end.reached : null, ms: Math.round(shown.advice.ms) }
 }
 
 /** Every board read from the game, sure or not (each card seen counts toward the odds), and pictures that

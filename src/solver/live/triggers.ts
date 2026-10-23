@@ -11,6 +11,11 @@ export interface TriggerRules {
   playerSounds: string[]
   /** the board's numbers have landed: the last animation of a played potion */
   done: string
+  /** the new hand being dealt: on a board with no numbers changing, the last of its animations */
+  dealt: string
+  /** how long after the deal a board with no numbers changing counts as settled (its picture still waits for a
+   *  still screen) */
+  dealtDelayMs: number
   /** the player clicked something: the board they're looking at has settled */
   playerActions: string[]
   /** the tanks' numbers are changing (a potion's effects): only their landing, `done`, means they've settled */
@@ -35,11 +40,15 @@ export const DEFAULT_RULES: TriggerRules = {
   animation: 'Play_UI_S13_KYZ_Card_',
   playerSounds: ["KYZ_Card_Selected'", 'KYZ_Card_Selected_Confirm', 'KYZ_Card_Agentia_Use'],
   done: 'KYZ_Card_Figure_Refresh',
+  dealt: 'KYZ_Card_Selected_Shuffle',
   playerActions: ['normal-click SelectBtn', 'normal-click ComfirmBtn', 'normal-click RefreshBtn', 'normal-click RelicBtn'],
   effects: ['KYZ_Card_Figure_Add', 'KYZ_Card_Monster_'],
   // Measured on a real game at the game's x4 Speed-up: a potion's animations end with the numbers
   // landing (done); a deal after an instrument pick or a reroll goes quiet within ~300 ms.
   doneDelayMs: 150,
+  // 105 boards, Oct 22-23: the deal was the last animation of all 42 plain deals; the next click came 0.47 s
+  // after it at the soonest
+  dealtDelayMs: 100,
   settleMs: 400,
   maxMs: 3000,
   // 63 boards of real games (Oct 22-23): the numbers landed 0.58 s after the last change, so 0.4 s of silence
@@ -64,8 +73,9 @@ export function logTime(line: string): number | null {
   return m ? Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6], +m[7]) : null
 }
 
-/** Why a board counted as settled: its numbers landed, the player clicked, the log went quiet, or the wait ran out. */
-export type SettledBy = 'done' | 'acted' | 'quiet' | 'max'
+/** Why a board counted as settled: its numbers landed, the player clicked, the new hand was dealt with no numbers
+ *  changing, the log went quiet, or the wait ran out. */
+export type SettledBy = 'done' | 'acted' | 'dealt' | 'quiet' | 'max'
 
 export interface Settler {
   feed(lines: string[], now: number): void
@@ -79,8 +89,8 @@ export interface Settler {
 }
 
 export function createSettler(rules = DEFAULT_RULES): Settler {
-  let pending: { kind: 'board' | 'screen'; t0: number; lastAnim: number; doneAt: number | null; acted: boolean; effects: boolean } | null = null
-  const start = (kind: 'board' | 'screen', now: number) => ({ kind, t0: now, lastAnim: now, doneAt: null, acted: false, effects: false })
+  let pending: { kind: 'board' | 'screen'; t0: number; lastAnim: number; doneAt: number | null; dealtAt: number | null; acted: boolean; effects: boolean } | null = null
+  const start = (kind: 'board' | 'screen', now: number) => ({ kind, t0: now, lastAnim: now, doneAt: null, dealtAt: null, acted: false, effects: false })
   let refreshes = 0
   let over = false
   let settledBy: SettledBy | null = null
@@ -107,15 +117,18 @@ export function createSettler(rules = DEFAULT_RULES): Settler {
         } else if (pending && isAnimation(line, rules)) {
           pending.lastAnim = now
           if (rules.effects.some(p => line.includes(p))) pending.effects = true
+          // the deal counts only while it's the last thing animating
+          pending.dealtAt = line.includes(rules.dealt) ? now : null
         }
       }
     },
     due(now) {
       if (!pending) return null
-      const { kind, t0, lastAnim, doneAt, acted, effects } = pending
+      const { kind, t0, lastAnim, doneAt, dealtAt, acted, effects } = pending
       const quiet = effects ? rules.effectSettleMs : rules.settleMs
       const max = effects ? rules.effectMaxMs : rules.maxMs
-      const why: SettledBy | null = acted ? 'acted' : doneAt !== null && now - doneAt >= rules.doneDelayMs ? 'done' : now - lastAnim >= quiet ? 'quiet' : now - t0 >= max ? 'max' : null
+      const dealt = !effects && dealtAt !== null && now - dealtAt >= rules.dealtDelayMs
+      const why: SettledBy | null = acted ? 'acted' : doneAt !== null && now - doneAt >= rules.doneDelayMs ? 'done' : dealt ? 'dealt' : now - lastAnim >= quiet ? 'quiet' : now - t0 >= max ? 'max' : null
       if (why) {
         pending = null
         settledBy = why

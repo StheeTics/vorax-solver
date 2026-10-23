@@ -4,6 +4,8 @@ import { runAdvice } from './runAdvice'
 import { adviseOn } from './adviseOn'
 import { futuresPool } from './pool'
 
+/** A board edited by hand waits this long for the next keystroke; a board read off the screen is advised at once
+ *  (a newer board drops the older one's futures anyway). */
 const DEBOUNCE_MS = 150
 
 export interface Shown { board: ScreenState; advice: Advice }
@@ -14,8 +16,10 @@ export interface Shown { board: ScreenState; advice: Advice }
  * (`updating` meanwhile), so the panel never blanks between rounds; a board with no cards on offer asks for nothing
  * and leaves it up. A newer board drops the older one's futures not yet started.
  */
-export function useAdvice(state: ScreenState): { shown: Shown | null; updating: boolean } {
+export function useAdvice(state: ScreenState, read = false): { shown: Shown | null; updating: boolean } {
   const [shown, setShown] = useState<Shown | null>(null)
+  const fromRead = useRef(read)
+  fromRead.current = read
   const [wanted, setWanted] = useState<ScreenState | null>(null)
   const latest = useRef(0)
 
@@ -33,7 +37,7 @@ export function useAdvice(state: ScreenState): { shown: Shown | null; updating: 
       if (!pool) return runAdvice(state, show)
       pool.clear('board')
       adviseOn(state, pool, 'board').then(show, e => console.error('advice failed', e))
-    }, DEBOUNCE_MS)
+    }, fromRead.current ? 0 : DEBOUNCE_MS)
     return () => clearTimeout(t)
   }, [state])
 
