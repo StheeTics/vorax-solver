@@ -38,8 +38,8 @@ CREATE TABLE IF NOT EXISTS summary (
   body TEXT NOT NULL
 );
 
--- The daily limit per client was a row rewritten on every upload: dropped on Oct 23 for the rate limit
--- (wrangler.jsonc). Its table, quota, may still be in the database, unused.
+-- The daily limit per client (table quota, a row rewritten on every upload) was dropped on Oct 23 for the rate
+-- limit (wrangler.jsonc).
 
 -- One row per instrument panel icon a player named in the Solver ("Which instrument did you pick?"):
 -- `body` is {uid, name, pattern}, the pattern 576 grey levels of the icon, never a screenshot.
