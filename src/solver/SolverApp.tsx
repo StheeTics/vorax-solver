@@ -51,6 +51,9 @@ let askId = 0
 /** How long after a pick the Solver looks at the panel again: long enough for the new icon to land at the
  *  game's normal speed (the first picture is taken 0.4 s after the log goes quiet, measured at x4). */
 const RELOOK_MS = 1500
+/** a board whose tanks weren't read for sure (or caught mid-animation): looked at again this soon, this often */
+const RETRY_MS = 500
+const RETRIES = 3
 /** Off while cards cut off mid-slide or under a hover are still shared as new ones (Oct 21). */
 const SHARE_NEW_CARDS = false
 
@@ -127,23 +130,46 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   // cards the reader couldn't name on this board: the advice leaves them out, and they're reported so they can be added
   const unknownCards = reading?.state.phase === 'protocol' ? [] : (reading?.problems ?? []).flatMap(p => (p.kind === 'unknownArt' ? [Number(/\d+/.exec(p.field)?.[0] ?? 0) + 1] : []))
   useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles, unknownCards), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable })
+  const retries = useRef(0)
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
     keepAdvice.current = null
   }, [advice, state])
 
+  // a windowed game's capture holds its title bar and borders, found in the picture: the game alone is read.
+  // In the app, Windows says whether the game's window has a frame (its outer size isn't its picture's)
+  const gamePicture = async (captured: ImageData) => {
+    const win = await desktopBridge()?.gameWindow?.().catch(() => null)
+    const framed = !!win && (win.outer[0] !== win.client[0] || win.outer[1] !== win.client[1])
+    const area = windowedGame(captured, framed)
+    const cut = area ? cropTo(captured, area) : null
+    return cut ? (typeof ImageData === 'undefined' ? (cut as unknown as ImageData) : new ImageData(cut.data, cut.width, cut.height)) : captured
+  }
+
+  // An early picture of a new board, while its tanks settle: its cards' names are read (and remembered by the
+  // text reader, so the settled picture's read finds them); nothing else from it is used.
+  const onEarly = async (captured: ImageData) => {
+    const r = await read(await gamePicture(captured), 'early', local)
+    if (r.problems.some(p => p.kind === 'animating' || p.kind === 'notFound')) return false
+    return r.state.hand.length > 0 && r.state.hand.every((_, j) => r.fields[`hand${j}`]?.sure)
+  }
+
+  // A board that didn't read cleanly (caught mid-animation, or tanks not read for sure) is looked at again
+  // soon, a few times: counted from the board's own picture.
+  const retryIfUnsure = (trigger: string | undefined, unsure: boolean) => {
+    if (trigger === 'board' || trigger === 'screen') retries.current = 0
+    else if (trigger !== 'manual') return
+    if (!unsure || retries.current >= RETRIES) return
+    retries.current++
+    setTimeout(() => snapAgain.current?.(), RETRY_MS)
+  }
+
   // A frame from Live or a screenshot becomes the board; fields the reader was unsure of are marked.
   const onFrame = async (captured: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep) => {
     setReadingBusy(true)
     try {
-      // a windowed game's capture holds its title bar and borders, found in the picture: the game alone is read.
-      // In the app, Windows says whether the game's window has a frame (its outer size isn't its picture's)
-      const win = await desktopBridge()?.gameWindow?.().catch(() => null)
-      const framed = !!win && (win.outer[0] !== win.client[0] || win.outer[1] !== win.client[1])
-      const area = windowedGame(captured, framed)
-      const cut = area ? cropTo(captured, area) : null
-      const img = cut ? (typeof ImageData === 'undefined' ? (cut as unknown as ImageData) : new ImageData(cut.data, cut.width, cut.height)) : captured
+      const img = await gamePicture(captured)
       const readFrom = Date.now()
       const read$ = await read(img, trigger, refs ?? local)
       const ms = Date.now() - readFrom
@@ -152,6 +178,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       // a card flying off as it's played or picked: the last board and its advice still stand
       if (raw.problems.some(p => p.kind === 'animating')) {
         keep?.(raw, 'reading')
+        retryIfUnsure(trigger, true)
         return
       }
       // the game closing after round 13's last pick: the last board and its advice still stand
@@ -189,6 +216,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       }
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null
+      retryIfUnsure(trigger, !raw.problems.some(p => p.kind === 'notFound') && unreadTanks(r.fields, {}).length > 0)
       setReading(r)
       setCorrections({})
       if (!r.problems.some(p => p.kind === 'notFound')) {
@@ -297,7 +325,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} />
+            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} onEarly={onEarly} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}

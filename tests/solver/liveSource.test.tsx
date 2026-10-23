@@ -2,7 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { LiveSource, type LiveDeps } from '@/solver/live/LiveSource'
 import type { LiveEvent } from '@/solver/live/liveLoop'
 
-function setup(onTrouble?: (t: string | null) => void) {
+function setup(onTrouble?: (t: string | null) => void, early: { onChanged?(): void; onEarly?(img: ImageData): Promise<boolean> } = {}) {
   let emit: (e: LiveEvent) => void = () => {}
   let ended: () => void = () => {}
   const following = { stop: vi.fn(), snapNow: vi.fn(), cancel: vi.fn() }
@@ -17,7 +17,7 @@ function setup(onTrouble?: (t: string | null) => void) {
     pickLog: vi.fn(async () => ({ getFile: async () => ({ size: 0, slice: () => ({ arrayBuffer: async () => new ArrayBuffer(0) }) }) })),
   }
   const onFrame = vi.fn()
-  render(<LiveSource onFrame={onFrame} deps={deps} onTrouble={onTrouble} />)
+  render(<LiveSource onFrame={onFrame} deps={deps} onTrouble={onTrouble} {...early} />)
   return { deps, onFrame, share, following, emit: (e: LiveEvent) => act(() => emit(e)), end: () => act(() => ended()) }
 }
 
@@ -125,4 +125,52 @@ it('capture-mode ticks grab nothing until a folder is picked', async () => {
   await act(async () => {})
   expect(t.share.grab).not.toHaveBeenCalled()
   window.history.pushState({}, '', '/')
+})
+
+it('a board whose numbers landed is taken in one picture, without waiting for the screen to settle', async () => {
+  const t = setup()
+  await connect()
+  t.emit({ type: 'snap', kind: 'board', triggerAt: 0, lines: [], why: 'done' })
+  await waitFor(() => expect(t.onFrame).toHaveBeenCalled())
+  expect(t.share.grab).toHaveBeenCalledTimes(1)
+})
+
+it('a new board clears what was shown at once, and its cards are read from early pictures until they read', async () => {
+  vi.useFakeTimers({ shouldAdvanceTime: true })
+  try {
+    const answers = [false, false, true]
+    const onChanged = vi.fn()
+    const onEarly = vi.fn(async () => answers.shift() ?? true)
+    const t = setup(undefined, { onChanged, onEarly })
+    await connect()
+    t.emit({ type: 'changed', kind: 'board', at: 0 })
+    expect(onChanged).toHaveBeenCalledTimes(1)
+    await act(async () => {})
+    expect(onEarly).toHaveBeenCalledTimes(1)
+    await act(async () => void (await vi.advanceTimersByTimeAsync(500)))
+    expect(onEarly).toHaveBeenCalledTimes(2)
+    await act(async () => void (await vi.advanceTimersByTimeAsync(500)))
+    expect(onEarly).toHaveBeenCalledTimes(3)
+    // read: no more early pictures
+    await act(async () => void (await vi.advanceTimersByTimeAsync(2000)))
+    expect(onEarly).toHaveBeenCalledTimes(3)
+  } finally {
+    vi.useRealTimers()
+  }
+})
+
+it('the board’s settled picture stops the early pictures', async () => {
+  vi.useFakeTimers({ shouldAdvanceTime: true })
+  try {
+    const onEarly = vi.fn(async () => false)
+    const t = setup(undefined, { onEarly })
+    await connect()
+    t.emit({ type: 'changed', kind: 'board', at: 0 })
+    await act(async () => {})
+    t.emit({ type: 'snap', kind: 'board', triggerAt: 0, lines: [], why: 'acted' })
+    await act(async () => void (await vi.advanceTimersByTimeAsync(3000)))
+    expect(onEarly).toHaveBeenCalledTimes(1)
+  } finally {
+    vi.useRealTimers()
+  }
 })

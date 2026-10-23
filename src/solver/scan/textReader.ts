@@ -3,6 +3,7 @@
 // then read from their pictures alone.
 import type { Img } from './pixels'
 import type { ReadText } from './titles'
+import { cachedTextReader } from './textCache'
 
 const WORKERS = 3
 
@@ -25,7 +26,8 @@ export function browserTextReader(): Promise<ReadText | null> {
       await w.setParameters({ tessedit_pageseg_mode: T.PSM.SINGLE_BLOCK })
       scheduler.addWorker(w)
     }
-    return async (img: Img) => (await scheduler.addJob('recognize', toCanvas(img))).data.text
+    // a title read early, while the tanks settle, isn't read again from the settled picture
+    return cachedTextReader(async (img: Img) => (await scheduler.addJob('recognize', toCanvas(img))).data.text)
   })().catch(() => {
     pool = null
     return null

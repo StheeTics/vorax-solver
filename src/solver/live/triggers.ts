@@ -53,6 +53,9 @@ export function logTime(line: string): number | null {
   return m ? Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6], +m[7]) : null
 }
 
+/** Why a board counted as settled: its numbers landed, the player clicked, the log went quiet, or the wait ran out. */
+export type SettledBy = 'done' | 'acted' | 'quiet' | 'max'
+
 export interface Settler {
   feed(lines: string[], now: number): void
   /** a snap to take now, at most once per trigger */
@@ -60,6 +63,8 @@ export interface Settler {
   cancel(): void
   readonly refreshes: number
   readonly over: boolean
+  /** why the last snap was due */
+  readonly settledBy: SettledBy | null
 }
 
 export function createSettler(rules = DEFAULT_RULES): Settler {
@@ -67,6 +72,7 @@ export function createSettler(rules = DEFAULT_RULES): Settler {
   const start = (kind: 'board' | 'screen', now: number) => ({ kind, t0: now, lastAnim: now, doneAt: null, acted: false })
   let refreshes = 0
   let over = false
+  let settledBy: SettledBy | null = null
 
   return {
     feed(lines, now) {
@@ -95,9 +101,10 @@ export function createSettler(rules = DEFAULT_RULES): Settler {
     due(now) {
       if (!pending) return null
       const { kind, t0, lastAnim, doneAt, acted } = pending
-      const settled = acted || (doneAt !== null && now - doneAt >= rules.doneDelayMs) || now - lastAnim >= rules.settleMs
-      if (settled || now - t0 >= rules.maxMs) {
+      const why: SettledBy | null = acted ? 'acted' : doneAt !== null && now - doneAt >= rules.doneDelayMs ? 'done' : now - lastAnim >= rules.settleMs ? 'quiet' : now - t0 >= rules.maxMs ? 'max' : null
+      if (why) {
         pending = null
+        settledBy = why
         return kind
       }
       return null
@@ -110,6 +117,9 @@ export function createSettler(rules = DEFAULT_RULES): Settler {
     },
     get over() {
       return over
+    },
+    get settledBy() {
+      return settledBy
     },
   }
 }

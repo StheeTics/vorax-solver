@@ -52,6 +52,9 @@ const FOLDERS = [
 ]
 
 const NO_LOG_MS = 30_000
+/** the cards' names, read while the tanks settle: a picture at once, then every EARLY_MS until they're read */
+const EARLY_MS = 500
+const EARLY_TRIES = 8
 const RETRY_SHARE_MS = 15_000
 
 interface Props {
@@ -64,9 +67,14 @@ interface Props {
   onTrouble?(trouble: Trouble | null): void
   /** set to a function that takes a picture now (another look at a new instrument icon) */
   snap?: { current: (() => void) | null }
+  /** a new board came in (its line was just read): what was shown for the last one no longer stands */
+  onChanged?(): void
+  /** an early picture of a new board, while its tanks settle: true once its cards are read for sure (no more
+   *  pictures then). Only the cards are taken from it. */
+  onEarly?(img: ImageData): Promise<boolean>
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap, onChanged, onEarly }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -89,18 +97,42 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
   shareRef.current = share
   dirRef.current = dir
 
+  // the early pictures of the board in hand: a newer board, or its settled picture, stops them
+  const early = useRef(0)
+  const earlyFns = useRef({ onChanged, onEarly })
+  earlyFns.current = { onChanged, onEarly }
+  async function readEarly(s: WindowShare, run: number) {
+    for (let i = 0; i < EARLY_TRIES; i++) {
+      if (i) await new Promise(r => setTimeout(r, EARLY_MS))
+      if (run !== early.current) return
+      try {
+        if (await earlyFns.current.onEarly?.(await s.grab())) return
+      } catch {
+        return
+      }
+    }
+  }
+
   const onEvent = useRef<(e: LiveEvent) => void>(() => {})
   onEvent.current = (e: LiveEvent) => {
     if (e.type === 'status') return setStatus(e)
+    if (e.type === 'changed') earlyFns.current.onChanged?.()
     const s = shareRef.current
     if (!s) return
     if (e.type === 'tick') return void tick(s)
+    if (e.type === 'changed') {
+      if (earlyFns.current.onEarly) void readEarly(s, ++early.current)
+      return
+    }
+    early.current++
     const askedAt = Date.now()
-    const take = e.kind === 'manual' ? s.grab() : waitStable(() => s.grab())
+    // the numbers landed, or the player clicked: the board is still, so it's taken at once. A log that went
+    // quiet gets one look to check the screen agrees; one that ran out of time, the full wait.
+    const take = e.kind === 'manual' || e.why === 'done' || e.why === 'acted' ? s.grab() : waitStable(() => s.grab(), e.why === 'quiet' ? { matches: 1 } : {})
     void take.then(async img => {
       const snappedAt = Date.now()
       // for Vorax Overlay's debug log: how long the log took to go quiet, and the screen to settle
-      console.info(`[timing] ${e.kind}: picture ${askedAt - e.triggerAt} ms after the log line, ${snappedAt - askedAt} ms for the screen to settle`)
+      console.info(`[timing] ${e.kind}: picture ${askedAt - e.triggerAt} ms after the log line${e.why ? ` (${e.why})` : ''}, ${snappedAt - askedAt} ms for the screen to settle`)
       setFrames(n => n + 1)
       const d = dirRef.current
       const n = d ? ++savedRef.current : 0

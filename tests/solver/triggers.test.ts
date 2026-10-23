@@ -116,3 +116,12 @@ it('replaying a real game snaps once per board update', () => {
   expect(s.refreshes).toBe(fixture.filter(l => l.includes("'S13GamePlayMain_C_RefreshBtn'")).length)
   expect(s.over).toBe(true)
 })
+
+it('remembers why the last snap was due', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  // animations keep going: only the time limit ends the wait
+  for (let t = 100; t < 3000; t += 100) s.feed(['Play_UI_S13_KYZ_Card_Figure_Add_Small'], t)
+  expect(s.due(3000)).toBe('board')
+  expect(s.settledBy).toBe('max')
+})

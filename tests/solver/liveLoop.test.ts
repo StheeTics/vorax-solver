@@ -45,3 +45,25 @@ it('cancel drops a pending snap', async () => {
   loop.check()
   expect(events.filter(e => e.type === 'snap')).toHaveLength(0)
 })
+
+it('says at once that a new board came in, before it settles', async () => {
+  const { queue, events, loop } = setup()
+  queue.push(['[x] ProtoId = 5619'])
+  await loop.poll()
+  expect(events).toContainEqual({ type: 'changed', kind: 'board', at: 0 })
+  expect(events.filter(e => e.type === 'snap')).toHaveLength(0)
+})
+
+it('says why the board counts as settled: numbers landed, a click, quiet, or out of time', async () => {
+  const settle = async (lines: string[], t: number) => {
+    const { queue, events, loop, at } = setup()
+    queue.push(['[x] ProtoId = 5619', ...lines])
+    await loop.poll()
+    at(t)
+    loop.check()
+    return events.find(e => e.type === 'snap')
+  }
+  expect(await settle(['Play_UI_S13_KYZ_Card_Figure_Refresh'], 200)).toMatchObject({ kind: 'board', why: 'done' })
+  expect(await settle(['normal-click SelectBtn'], 10)).toMatchObject({ why: 'acted' })
+  expect(await settle([], 450)).toMatchObject({ why: 'quiet' })
+})
