@@ -30,6 +30,7 @@ import { confirmPick, newTracker, trackInstruments, type PickQuestion } from './
 import type { LocalRefs } from './scan/scan'
 import { useScan, type Scanner } from './scan/useScan'
 import { boardFromLink, demoPick } from './boardLink'
+import { isSlow, sendSlow, slowReadsOn } from './live/slowReads'
 import { emptyState, liveSupported, type FieldKey, type FieldRead, type Reading, type Source } from './types'
 import styles from './SolverApp.module.css'
 
@@ -184,6 +185,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       const read$ = await read(img, trigger, refs ?? local)
       const ms = Date.now() - readFrom
       console.info(`[timing] read the screen in ${ms} ms`)
+      if (slowReadsOn() && isSlow(read$))
+        void sendSlow(img, { ...read$, timing: { ...read$.timing, ...snap } }).then(f => console.info(`[timing] slow read saved: ${f}`), () => {})
       // a slow read (a card's name taking every try) finishing after a later picture's: that board is gone
       if (seq < applied.current) return console.info(`[timing] dropped the read of an older picture`)
       applied.current = seq
