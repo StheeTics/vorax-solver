@@ -1,6 +1,6 @@
 import { toState } from '@/strategy/advisor'
 import SHIPPED from '@/data/boardValue.json'
-import { boardValue, features, FEATURE_NAMES, hasBoardValue, setBoardValue, treeFeatures, TREE_FEATURES, useShippedBoardValue, type ValueModel } from '@/strategy/value'
+import { boardValue, features, FEATURE_NAMES, hasBoardValue, setBoardValue, useShippedBoardValue, type ValueModel } from '@/strategy/value'
 import { evChooser } from '@/strategy/bot'
 import { ultimateActivity } from '@/engine/game'
 
@@ -75,22 +75,6 @@ describe('instrument pairs', () => {
     const w = FEATURE_NAMES.map(n => (n === 'bias' ? 0.5 : 0)).slice(0, FEATURE_NAMES.indexOf('Incubation Sac + Clustered Eggs') - 5)
     setBoardValue({ rounds: Array.from({ length: 13 }, () => w) })
     expect(boardValue(incubation)).toBe(500_000)
-  })
-})
-
-describe('a board value made of decision trees', () => {
-  it('describes the board in raw numbers, with archetype and rarity together (a Rare Agito is visible)', () => {
-    const x = treeFeatures({ ...incubation, tanks: [{ archetype: 'agito', rarity: 'rare', activity: 15, quantity: 12 }, null, null, null, null, null] })
-    expect(x).toHaveLength(TREE_FEATURES.length)
-    expect(x[TREE_FEATURES.indexOf('rare agito')]).toBe(1)
-    expect(x[TREE_FEATURES.indexOf('magic pest')]).toBe(0)
-  })
-  it('adds up its trees’ answers: a question per branch, an amount per leaf', () => {
-    // one tree: own Incubation Sac? yes → +0.3, no → −0.1 (in millions), on top of 0.5
-    const sac = TREE_FEATURES.indexOf('Incubation Sac')
-    setBoardValue({ base: 0.5, trees: [{ f: [sac, -1, -1], t: [0.5, 0, 0], l: [1, -1, -1], r: [2, -1, -1], v: [0, -0.1, 0.3] }] })
-    expect(boardValue(incubation)).toBe(800_000)
-    expect(boardValue({ ...incubation, instruments: [] })).toBe(400_000)
   })
 })
 

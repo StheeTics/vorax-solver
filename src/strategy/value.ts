@@ -89,57 +89,9 @@ function parts(s: GameState) {
   return { head, paired, logScore }
 }
 
-/** The instruments that fire every few rounds, for the trees: rounds until each next fires (-1 when not owned). */
-const PERIODIC = INSTRUMENTS.filter(d => d.timing.kind === 'periodic')
-
-/** A board in raw numbers for the decision trees, which find the combinations themselves (TREE_FEATURES). */
-export const TREE_FEATURES: string[] = [
-  'round', 'choosing an instrument', 'instrument-only round', 'potion rerolls', 'instrument rerolls', 'instruments', 'picks pending',
-  '8,000 reached', '28,000 reached', 'log score', 'capped score', 'activity', 'quantity', 'top activity', 'top quantity', 'top group', 'groups',
-  ...ARCHETYPES, ...RARITIES, ...RARITIES.flatMap(r => ARCHETYPES.map(a => `${r} ${a}`)), 'act>150&qty>150', 'qty>275', 'act>255',
-  ...INSTRUMENTS.map(d => d.name), ...PERIODIC.map(d => `${d.name} next in`),
-]
-
-export function treeFeatures(s: GameState): number[] {
-  const ms = s.tanks.filter((t): t is Monster => !!t)
-  const ua = ultimateActivity(s)
-  const count = (ok: (m: Monster) => boolean) => ms.filter(ok).length
-  const owned = new Map(s.instruments.map(i => [i.id, i.acquiredRound]))
-  const nextIn = (d: (typeof PERIODIC)[number]) => {
-    const at = owned.get(d.id)
-    if (at === undefined || d.timing.kind !== 'periodic') return -1
-    for (let k = 0; ; k++) if (s.round + k - at > 0 && (s.round + k - at) % d.timing.every === 0) return k
-  }
-  return [
-    s.round, +(s.phase === 'instrumentSelect'), +(s.phase === 'roundEnd'), s.potionRefreshes, s.instrumentRefreshes, s.instruments.length, s.pendingPicks,
-    +s.thresholds.t8000, +s.thresholds.t28000, Math.log1p(ua), Math.min(ua, FEATURE_CAP),
-    ms.reduce((t, m) => t + m.activity, 0), ms.reduce((t, m) => t + m.quantity, 0),
-    Math.max(0, ...ms.map(m => m.activity)), Math.max(0, ...ms.map(m => m.quantity)), Math.max(0, ...ms.map(m => m.activity * m.quantity)), ms.length,
-    ...ARCHETYPES.map(a => count(m => m.archetype === a)), ...RARITIES.map(r => count(m => m.rarity === r)),
-    ...RARITIES.flatMap(r => ARCHETYPES.map(a => count(m => m.rarity === r && m.archetype === a))),
-    count(m => m.activity > 150 && m.quantity > 150), count(m => m.quantity > 275), count(m => m.activity > 255),
-    ...INSTRUMENTS.map(d => (owned.has(d.id) ? 1 : 0)), ...PERIODIC.map(nextIn),
-  ]
-}
-
-/** One decision tree: node 0 is the root; at a branch (f ≥ 0) go to l when x[f] < t, else to r; a leaf (f = -1) gives v. */
-export interface Tree { f: number[]; t: number[]; l: number[]; r: number[]; v: number[] }
-
-/**
- * Weights per round (index 0 = round 1), one per feature (a model may know only the first ones), or decision trees
- * on treeFeatures added to `base`; the prediction is in millions.
- */
-export type ValueModel = { rounds: number[][] } | { base: number; trees: Tree[] }
-
-function treeSum(m: { base: number; trees: Tree[] }, x: number[]): number {
-  let v = m.base
-  for (const t of m.trees) {
-    let n = 0
-    while (t.f[n] >= 0) n = x[t.f[n]] < t.t[n] ? t.l[n] : t.r[n]
-    v += t.v[n]
-  }
-  return v
-}
+/** Weights per round (index 0 = round 1), one per feature (a model may know only the first ones); the prediction is in
+ *  millions. */
+export type ValueModel = { rounds: number[][] }
 
 /** The board value the Solver ships with: fitted Oct 22, 2026 to 110,000 games under that day's odds, scored to the
  *  840,000 target. On the daily check's 240 games, 157 reached 840,000 against 140 for the one before it (900,000). */
@@ -153,10 +105,6 @@ export const hasBoardValue = () => !!model
 export function boardValue(s: GameState): number {
   if (!model) return ultimateActivity(s)
   if (s.phase === 'gameOver') return Math.min(ultimateActivity(s), TARGET)
-  let v = 0
-  if ('trees' in model) v = treeSum(model, treeFeatures(s))
-  else {
-    v = weighted(s, model.rounds[Math.min(s.round, model.rounds.length) - 1])
-  }
+  const v = weighted(s, model.rounds[Math.min(s.round, model.rounds.length) - 1])
   return Math.max(0, Math.min(TARGET, v * 1e6))
 }

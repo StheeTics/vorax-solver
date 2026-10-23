@@ -124,12 +124,3 @@ export function DiceIcon({ size = 22, className }: IconProps) {
     </svg>
   )
 }
-
-export function InstrumentIcon({ size = 18, className }: IconProps) {
-  return (
-    <svg data-icon="instrument" className={className} width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" style={{ verticalAlign: '-0.2em' }}>
-      <path d="M3 21 14.5 9.5l2 2L5 23Z" fill="#c9ccd3" stroke="#2a2c31" strokeWidth="0.8" />
-      <path d="M14.5 9.5 20 4c1-1 2.5.5 1.5 1.5L16.5 11.5Z" fill="#8a6a3a" stroke="#2a1d0a" strokeWidth="0.8" />
-    </svg>
-  )
-}

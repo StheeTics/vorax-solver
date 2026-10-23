@@ -22,7 +22,6 @@ it('it does nothing harmful without the collector’s address and token', () => 
 it('applies the odds changes the data supports (the guards are in propose.ts); a push that changes src/ redeploys', () => {
   const t = job('live')
   expect(t).toContain('vn scripts/live/weights.ts | tee')
-  expect(t).not.toContain('scripts/live/weights.ts --propose')
   expect(t).toContain('git add data/live src/data/liveWeights.ts src/solver/scan/learnedIcons.json')
   // pushed from the PC, so deploy.yml starts by itself; the data alone doesn't redeploy
   const deploy = readFileSync('.github/workflows/deploy.yml', 'utf8')

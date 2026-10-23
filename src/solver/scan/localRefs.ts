@@ -66,23 +66,3 @@ export async function mergeLocalRefs(refs: LocalRefs): Promise<number> {
     return 0
   }
 }
-
-/** The named cards as a JSON file, for adding them to the built-in data. */
-export async function exportLocalRefs(): Promise<Blob> {
-  return new Blob([JSON.stringify(await loadLocalRefs())], { type: 'application/json' })
-}
-
-/** Forgets every card named in this browser (a wrong name would keep being read). */
-export async function forgetLocalRefs(): Promise<void> {
-  try {
-    const db = await open()
-    await new Promise<void>(resolve => {
-      const tx = db.transaction(STORE, 'readwrite')
-      tx.objectStore(STORE).clear()
-      tx.oncomplete = () => resolve()
-      tx.onerror = () => resolve()
-    })
-  } catch {
-    // nothing stored, or storage blocked
-  }
-}
