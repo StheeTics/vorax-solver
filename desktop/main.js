@@ -5,12 +5,14 @@
 // shell adds is what a browser can't do:
 //   - find the game's UE_game.log and read it for the page (no file to drag in),
 //   - find the game window and answer the page's window share with it (no picker),
-//   - show the page's advice in an always-on-top card over the game,
+//   - show the page's advice in an always-on-top card over the game, and green boxes on the game around the
+//     advised card and tanks,
 //   - a tray menu, hotkeys, and updates of the site and of the app.
 // Pictures and the log never leave the PC. Boards are shared only by the page's own sharing switch.
 // Nothing here touches the game: no clicks, no keys (AGENTS.md).
 
 const { cleanCard } = require('./lib/card');
+const { cleanBoxes } = require('./lib/boxes');
 const { pageOf: pageIn, dumpStorage, restoreStorage } = require('./lib/site');
 const { app, BrowserWindow, Menu, Notification, Tray, desktopCapturer, dialog, globalShortcut, ipcMain, nativeImage, net, screen, session, shell } = require('electron');
 const fs = require('fs');
@@ -50,7 +52,7 @@ app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
 const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
 const settings = Object.assign(
-  { logPath: null, overlay: null, overlayOn: true, hideBehind: false, folded: false, gameFirst: true, solver: null },
+  { logPath: null, overlay: null, overlayOn: true, hideBehind: false, folded: false, gameFirst: true, solver: null, highlight: true },
   (() => {
     try {
       return JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
@@ -190,6 +192,8 @@ const win32 = (() => {
     const foreground = user32.func('__stdcall', 'GetForegroundWindow', 'intptr', []);
     const getRect = user32.func('__stdcall', 'GetWindowRect', 'bool', ['intptr', koffi.out(koffi.pointer(RECT))]);
     const getClientRect = user32.func('__stdcall', 'GetClientRect', 'bool', ['intptr', koffi.out(koffi.pointer(RECT))]);
+    const POINT = koffi.struct('POINT', { x: 'long', y: 'long' });
+    const clientToScreen = user32.func('__stdcall', 'ClientToScreen', 'bool', ['intptr', koffi.inout(koffi.pointer(POINT))]);
     const iconic = user32.func('__stdcall', 'IsIconic', 'bool', ['intptr']);
     const visible = user32.func('__stdcall', 'IsWindowVisible', 'bool', ['intptr']);
     const nextWindow = user32.func('__stdcall', 'FindWindowExW', 'intptr', ['intptr', 'intptr', 'void *', 'void *']);
@@ -247,6 +251,13 @@ const win32 = (() => {
         const r = {};
         return getClientRect(hwnd, r) ? { width: r.right - r.left, height: r.bottom - r.top } : null;
       },
+      /** The picture inside the window, where it is on screen (screen pixels): for drawing over it. */
+      clientOnScreen(hwnd) {
+        const r = {};
+        const p = { x: 0, y: 0 };
+        if (!getClientRect(hwnd, r) || !clientToScreen(hwnd, p)) return null;
+        return { x: p.x, y: p.y, width: r.right - r.left, height: r.bottom - r.top };
+      },
     };
   } catch (e) {
     return null;
@@ -295,7 +306,7 @@ async function lookForGame() {
 
 // ---------- Windows ----------
 
-const wins = { solver: null, overlay: null };
+const wins = { solver: null, overlay: null, highlight: null };
 let quitting = false;
 let tray = null;
 const send = (name, channel, data) => wins[name] && !wins[name].isDestroyed() && wins[name].webContents.send(channel, data);
@@ -483,6 +494,7 @@ const hwndOf = (win) => {
 };
 let lastRaise = 0;
 function updateOverlay() {
+  updateHighlight();
   const win = wins.overlay;
   if (!win || win.isDestroyed()) return;
   const want = overlayWanted();
@@ -505,6 +517,77 @@ function setOverlayOn(on) {
   saveSettings();
   updateOverlay();
   rebuildMenu();
+}
+
+// ---------- The boxes on the game ----------
+
+// Green boxes around the advised card and tanks (src/solver/advice/highlight.ts), drawn by a see-through
+// window laid over the game's picture that never takes a click or the focus. Shown only while the game is
+// in front, so they never cover another window.
+let boxes = [];
+let highlightAt = null;
+function makeHighlight() {
+  const win = new BrowserWindow({
+    show: false,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    maximizable: false,
+    minimizable: false,
+    fullscreenable: false,
+    alwaysOnTop: true,
+    skipTaskbar: true,
+    focusable: false,
+    hasShadow: false,
+    title: 'Vorax highlights',
+    webPreferences: { preload: path.join(__dirname, 'lib', 'highlight-preload.js'), backgroundThrottling: false, contextIsolation: true, sandbox: true },
+  });
+  wins.highlight = win;
+  // clicks go through to the game
+  win.setIgnoreMouseEvents(true);
+  // under the card (which asks for 'screen-saver'), over the game
+  win.setAlwaysOnTop(true, 'pop-up-menu');
+  win.loadFile(path.join(__dirname, 'lib', 'highlight.html'));
+  win.webContents.on('will-navigate', (e) => e.preventDefault());
+  win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  win.webContents.on('did-finish-load', () => send('highlight', 'boxes', boxes));
+  win.on('close', (e) => {
+    if (!quitting) e.preventDefault();
+  });
+  return win;
+}
+function updateHighlight() {
+  const win = wins.highlight;
+  if (!win || win.isDestroyed()) return;
+  const front = win32 && game.running && game.hwnd && !win32.minimized(game.hwnd) && win32.foreground() === game.hwnd;
+  const at = settings.highlight && boxes.length && front ? win32.clientOnScreen(game.hwnd) : null;
+  if (!at || at.width < 100 || at.height < 100) {
+    if (win.isVisible()) win.hide();
+    highlightAt = null;
+    return;
+  }
+  // the game's picture in Electron's own units, which a display's scaling makes differ from screen pixels
+  const b = screen.screenToDipRect(null, at);
+  const key = `${b.x},${b.y},${b.width},${b.height}`;
+  if (key !== highlightAt) {
+    highlightAt = key;
+    win.setBounds({ x: Math.round(b.x), y: Math.round(b.y), width: Math.round(b.width), height: Math.round(b.height) });
+  }
+  if (!win.isVisible()) {
+    win.showInactive();
+    win.setAlwaysOnTop(true, 'pop-up-menu');
+  }
+}
+ipcMain.on('highlights', (e, list) => {
+  if (!fromSolver(e)) return;
+  boxes = cleanBoxes(list);
+  send('highlight', 'boxes', boxes);
+  updateHighlight();
+});
+function setHighlight(on) {
+  settings.highlight = !!on;
+  saveSettings();
+  updateHighlight();
 }
 
 // ---------- Between the page and the overlay ----------
@@ -696,6 +779,7 @@ function rebuildMenu() {
   tray.setContextMenu(Menu.buildFromTemplate([
     { label: 'Open the Solver', accelerator: HOTKEYS.solver, click: showSolver },
     { label: 'Show the overlay over the game', type: 'checkbox', checked: settings.overlayOn, accelerator: HOTKEYS.overlay, click: (i) => setOverlayOn(i.checked) },
+    { label: 'Highlight the advised move on the game', type: 'checkbox', checked: settings.highlight, enabled: !!win32, click: (i) => setHighlight(i.checked) },
     { label: 'Hide it while another window is in front', type: 'checkbox', checked: settings.hideBehind, enabled: !!win32, click: (i) => ((settings.hideBehind = i.checked), saveSettings(), updateOverlay()) },
     { label: 'Take a picture now', accelerator: HOTKEYS.snap, enabled: game.running, click: () => send('solver', 'snap') },
     { type: 'separator' },
@@ -792,6 +876,7 @@ app.whenReady().then(async () => {
   if (!arg('site')) await moveStorage();
   makeSolver();
   makeOverlay();
+  makeHighlight();
   tray = new Tray(nativeImage.createFromPath(ICON).resize({ width: 16, height: 16 }));
   tray.on('click', showSolver);
   rebuildMenu();

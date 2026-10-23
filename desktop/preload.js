@@ -14,6 +14,7 @@ if (/\/solver(\.html)?$/.test(location.pathname)) {
     },
     onSnap: (cb) => ipcRenderer.on('snap', () => cb()),
     showAdvice: (card) => ipcRenderer.send('advice', card),
+    showHighlights: (boxes) => ipcRenderer.send('highlights', boxes),
     gameWindow: () => ipcRenderer.invoke('game:window'),
     showSolver: () => ipcRenderer.send('solver:show'),
     onChoose: (cb) => ipcRenderer.on('choose', (e, name) => cb(name)),

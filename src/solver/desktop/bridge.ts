@@ -12,6 +12,7 @@ import { SCALING_FIX, TROUBLES, type Trouble } from '../live/troubles'
 import type { Shown } from '../advice/useAdvice'
 import { describe, predicted } from '../advice/describe'
 import { PAUSES, type Pause } from '../advice/paused'
+import { highlightBoxes, type Box } from '../advice/highlight'
 
 export interface DesktopBridge {
   /** the log's size in bytes, or null while the app hasn't found it */
@@ -30,6 +31,8 @@ export interface DesktopBridge {
   showSolver?(): void
   /** the game window's outer size, the picture's, and the display scaling (apps from 0.1.4 on) */
   gameWindow?(): Promise<GameWindow | null>
+  /** green boxes over the game around the advised move, none to clear them (apps from 0.1.11 on) */
+  showHighlights?(boxes: Box[]): void
 }
 
 /** What the overlay card shows: plain text only. */
@@ -133,4 +136,13 @@ export function useOverlay(shown: Shown | null, updating: boolean, asks: string[
     const split = (k: string) => (k ? (k.split(',') as Pause[]) : [])
     bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends, offer ? offer.split('\n') : [], { paused: split(paused), forced: split(forced) }))
   }, [shown, updating, key, bridge, depends, offer, paused, forced])
+}
+
+/** Keeps the green boxes over the game in step with the advice: drawn only while the advice is for the screen
+ *  and shown as a move, cleared otherwise. frame and ui: the picture the board was read from. */
+export function useHighlights(shown: Shown | null, updating: boolean, frame: { width: number; height: number } | undefined, ui: number | undefined, held: boolean, bridge: DesktopBridge | null = desktopBridge()): void {
+  const boxes = JSON.stringify(highlightBoxes(shown, frame, ui, { updating, held }))
+  useEffect(() => {
+    bridge?.showHighlights?.(JSON.parse(boxes) as Box[])
+  }, [boxes, bridge])
 }

@@ -7,7 +7,7 @@ import { AdvicePanel } from './advice/AdvicePanel'
 import { PausedPanel, UnreliableNote } from './advice/PausedPanel'
 import { pausesOf, stillPaused, type Pause } from './advice/paused'
 import { useAdvice } from './advice/useAdvice'
-import { desktopBridge, overlayAsks, useOverlay } from './desktop/bridge'
+import { desktopBridge, overlayAsks, useHighlights, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
 import { nextLook, RETRY_MS, unsureReading } from './live/retry'
 import { dependsOn } from './advice/depends'
@@ -129,6 +129,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const unknownCards = reading?.state.phase === 'protocol' ? [] : (reading?.problems ?? []).flatMap(p => (p.kind === 'unknownArt' ? [Number(/\d+/.exec(p.field)?.[0] ?? 0) + 1] : []))
   useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles, unknownCards), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable })
   const retries = useRef(0)
+  useHighlights(shown, updating, reading?.frame, reading?.ui, paused.length > 0 || unreliable.length > 0 || !!depends)
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')

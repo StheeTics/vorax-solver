@@ -11,9 +11,11 @@ const REF_H = 1440
 /** Reference rects, x relative to the frame centre unless noted. */
 /** The tanks' labels, by screen shape: centres under the six tanks (perspective pushes the right-hand ones
  *  further out), and the rows of the name, the total and Activity x Quantity. */
-interface TankScene { x: number[]; name: [number, number]; total: [number, number]; aq: [number, number]; icon: number; iconSize: number }
-const ULTRAWIDE: TankScene = { x: [-858, -421, 16, 454, 913, 1386], name: [556, 577], total: [578, 600], aq: [599, 619], icon: 533, iconSize: 26 }
-const WIDE_16_9: TankScene = { x: [-756, -400, -48, 304, 667, 1037], name: [511, 531], total: [532, 552], aq: [554, 574], icon: 496, iconSize: 22 }
+/** jar: the whole tank, from its cap down past its labels, for pointing at it: each jar's centre from its
+ *  label's (the camera looks at the row from a little to the right), its width and its top and bottom. */
+interface TankScene { x: number[]; name: [number, number]; total: [number, number]; aq: [number, number]; icon: number; iconSize: number; jar: { dx: number[]; w: number; y: [number, number] } }
+const ULTRAWIDE: TankScene = { x: [-858, -421, 16, 454, 913, 1386], name: [556, 577], total: [578, 600], aq: [599, 619], icon: 533, iconSize: 26, jar: { dx: [57, 46, 32, 19, 0, -27], w: 290, y: [62, 630] } }
+const WIDE_16_9: TankScene = { x: [-756, -400, -48, 304, 667, 1037], name: [511, 531], total: [532, 552], aq: [554, 574], icon: 496, iconSize: 22, jar: { dx: [35, 27, 8, 7, -3, -23], w: 230, y: [90, 585] } }
 const ASPECT_16_9 = 16 / 9
 const ASPECT_ULTRAWIDE = 3440 / 1440
 const LABEL_HALF_W = 200
@@ -31,6 +33,11 @@ export function tankScene(aspect: number): TankScene {
     aq: mixPair(WIDE_16_9.aq, ULTRAWIDE.aq, t),
     icon: mix(WIDE_16_9.icon, ULTRAWIDE.icon, t),
     iconSize: mix(WIDE_16_9.iconSize, ULTRAWIDE.iconSize, t),
+    jar: {
+      dx: ULTRAWIDE.jar.dx.map((x, i) => mix(WIDE_16_9.jar.dx[i], x, t)),
+      w: mix(WIDE_16_9.jar.w, ULTRAWIDE.jar.w, t),
+      y: mixPair(WIDE_16_9.jar.y, ULTRAWIDE.jar.y, t),
+    },
   }
 }
 
@@ -49,6 +56,8 @@ const HAND5 = { x: [-385, -163, 70, 303, 515], y: [1141, 1121, 1111, 1121, 1141]
 export const CARD_LOCAL = { art: { x: -50, y: -155, w: 100, h: 120 }, text: { x: -100, y: -45, w: 185, h: 175 } }
 const HEADER = { x: -260, y: 908, w: 560, h: 30 }
 const REFRESH = { x: 300, y: 1342, w: 160, h: 40 }
+/** the whole Refresh button, its dice and its count: for pointing at it */
+const REFRESH_BUTTON = { x: 262, y: 1328, w: 162, h: 64 }
 
 /** From the left edge. */
 const ROUND = { x: 105, y: 500, w: 100, h: 70 }
@@ -68,6 +77,8 @@ export interface Layout {
   /** pixels per reference pixel of the interface */
   k: number
   tankCx: number[]
+  /** each whole tank, jar and labels (the 3D scene: not scaled with the interface) */
+  tank: Rect[]
   icon: Rect[]
   nameBand: Rect[]
   totalBand: Rect[]
@@ -80,6 +91,7 @@ export interface Layout {
   hand5: CardPos[]
   header: Rect
   refresh: Rect
+  refreshButton: Rect
   round: Rect
   /** rightmost slot first */
   instrumentIcon: Rect[]
@@ -111,6 +123,7 @@ export function layout(frame: { width: number; height: number }, ui = 1): Layout
     height,
     k,
     tankCx,
+    tank: tankCx.map((x, i) => ({ x: x + (scene.jar.dx[i] - scene.jar.w / 2) * s, y: scene.jar.y[0] * s, w: scene.jar.w * s, h: (scene.jar.y[1] - scene.jar.y[0]) * s })),
     icon: tankCx.map(x => ({ x: x - (scene.iconSize / 2) * k, y: label(scene.icon) - (scene.iconSize / 2) * k, w: scene.iconSize * k, h: scene.iconSize * k })),
     nameBand: tankCx.map(x => band(x, scene.name)),
     totalBand: tankCx.map(x => band(x, scene.total)),
@@ -121,6 +134,7 @@ export function layout(frame: { width: number; height: number }, ui = 1): Layout
     hand5: HAND5.x.map((x, j) => ({ cx: cx + x * k, cy: bottom(HAND5.y[j]), angle: HAND5.tilt[j] })),
     header: { x: cx + HEADER.x * k, y: bottom(HEADER.y), w: HEADER.w * k, h: HEADER.h * k },
     refresh: { x: cx + REFRESH.x * k, y: bottom(REFRESH.y), w: REFRESH.w * k, h: REFRESH.h * k },
+    refreshButton: { x: cx + REFRESH_BUTTON.x * k, y: bottom(REFRESH_BUTTON.y), w: REFRESH_BUTTON.w * k, h: REFRESH_BUTTON.h * k },
     round: { x: ROUND.x * k, y: middle(ROUND.y), w: ROUND.w * k, h: ROUND.h * k },
     instrumentIcon: instrumentCx.map(x => ({ x: x - (INSTRUMENT.size / 2) * k, y: (INSTRUMENT.y - INSTRUMENT.size / 2) * k, w: INSTRUMENT.size * k, h: INSTRUMENT.size * k })),
   }
