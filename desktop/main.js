@@ -42,6 +42,12 @@ const SUPPORT_URL = 'https://buymeacoffee.com/tidewarden';
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
+// The Solver window is hidden, and the game covers it: Chromium would count it as in the background and slow
+// it down (card names read in 1.2-2.9 s with the processor idle, against 0.25 s in sessions where it wasn't,
+// Oct 20-23). As Tartarus Overlay does, it's never treated as covered.
+app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+
 const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
 const settings = Object.assign(
   { logPath: null, overlay: null, overlayOn: true, hideBehind: false, folded: false, gameFirst: true, solver: null },

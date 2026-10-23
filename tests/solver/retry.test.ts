@@ -36,3 +36,8 @@ it('stops as soon as a look reads cleanly; screenshots and capture mode aren’t
   expect(nextLook(undefined, true, 0).again).toBe(false)
   expect(nextLook('tick', true, 0).again).toBe(false)
 })
+
+it('a protocol’s name not read for sure isn’t looked at again: it doesn’t change the advice', () => {
+  const r = reading({ fields: { ...reading().fields, hand1: { sure: false } } })
+  expect(unsureReading({ ...r, state: { ...r.state, phase: 'protocol' } })).toBe(false)
+})

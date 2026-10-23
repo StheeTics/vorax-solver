@@ -7,9 +7,12 @@ export const RETRY_MS = 500
 export const RETRIES = 6
 
 /** Whether a reading needs another look: caught mid-animation, the board not found, or a tank or card not read
- *  for sure. */
+ *  for sure. A protocol's name doesn't change the advice (protocols are the player's call), so it isn't looked
+ *  at again for one. */
 export const unsureReading = (r: Reading) =>
-  r.problems.some(p => p.kind === 'animating' || p.kind === 'notFound') || unreadTanks(r.fields, {}).length > 0 || r.state.hand.some((_, j) => !r.fields[`hand${j}`]?.sure)
+  r.problems.some(p => p.kind === 'animating' || p.kind === 'notFound') ||
+  unreadTanks(r.fields, {}).length > 0 ||
+  (r.state.phase !== 'protocol' && r.state.hand.some((_, j) => !r.fields[`hand${j}`]?.sure))
 
 /** Looks taken since the board's picture, and whether to take another. A board or screen picture starts the
  *  count; the looks themselves are manual pictures; anything else (a screenshot, capture mode) isn't retried. */
