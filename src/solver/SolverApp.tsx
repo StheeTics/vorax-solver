@@ -22,6 +22,7 @@ import { LiveSource, type SnapTiming } from './live/LiveSource'
 import { ReportBox } from './report/ReportBox'
 import { ShareSwitch } from './share/ShareSwitch'
 import { cardPicture, confirmUnknown, shareCard } from './share/card'
+import { sendTraining, trainingWanted } from './share/training'
 import { useShare } from './share/useShare'
 import { sharedAdvice } from './share/snapshot'
 import { WhichPick, teachPick } from './board/WhichPick'
@@ -229,6 +230,8 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         const u = confirmUnknown(unknownSeen.current, r.state.phase, r.state.round, r.problems)
         unknownSeen.current = u.seen
         for (const p of u.share) void shareCard({ phase: r.state.phase, text: p.text ?? '', picture: cardPicture(img, p.crop) })
+        // a screenshot for the cards the reader is short of pictures of, or couldn't settle quickly (live reads only)
+        if (trigger) void sendTraining(img, r, trainingWanted(r, new Set(u.share.map(p => p.field))))
         if (u.relook) setTimeout(() => snapAgain.current?.(), RELOOK_MS)
       }
       keep?.(r, 'reading')
@@ -314,11 +317,12 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
           <ul>
             <li>Reads only the log file you give it, from the moment you connect it.</li>
             <li>Sees only the one window you share, and only when the log shows a move or you press Snap now.</li>
-            <li>Pictures stay in this browser and are gone when you close the tab.</li>
+            <li>Pictures stay in this browser and are gone when you close the tab, but for the few below.</li>
             <li>Never clicks or types for you.</li>
             <li>Shares the boards it reads (tanks, cards offered, instruments, round), with no picture, no account and nothing about you: only a random install number, to count players. Turn it off with the switch beside Board state.</li>
             <li>With each board, to find out why some setups misread: the picture’s size, your screen’s scaling, whether it’s HDR, your browser and its version, how the numbers read, and in the app whether the game is windowed. No picture, no name, nothing that lasts from one day to the next.</li>
             <li>When you say which instrument you picked, shares that name and the icon's small grey pattern, never a screenshot.</li>
+            <li>With the switch on, so it learns the cards it reads badly: for a card it doesn’t recognise, a small picture of that card alone; and for a card it has almost no pictures of, or couldn’t read quickly, sometimes one picture of the game window (never the rest of your screen). Each card is wanted only a few times from all players, and at most once from you.</li>
           </ul>
         </details>
       </header>

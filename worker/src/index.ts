@@ -8,8 +8,9 @@ import type { Stats } from './stats'
 import { isStats, withCounts, type DayCount } from './summary'
 import { DASHBOARD_HTML } from './dashboard'
 import { dispatch, FILES, LISTED, onSchedule, repoFile, repoRuns, RUNNABLE } from './schedule'
+import { fileShot, MAX_ASK, MAX_PICTURE, validateCard as validateTrainingCard, validateShot, wanted, type TrainingRow, type TrainingStore } from './training'
 
-export interface Store {
+export interface Store extends TrainingStore {
   /** stores an upload's boards, a JSON array, as one row */
   insertBatch(body: string): Promise<void>
   /** notes a daily player code as seen that day: a write only the first time */
@@ -37,6 +38,8 @@ export interface Env {
   /** starts the repo's workflows on schedule, and reads the private repo for the dashboard (src/schedule.ts) */
   GITHUB_DISPATCH_TOKEN?: string
   IP_SALT: string
+  /** opens the training-data issues and commits their screenshots in the private repo (src/training.ts) */
+  TRAINING_TOKEN?: string
   LIMIT: { limit(o: { key: string }): Promise<{ success: boolean }> }
   DB?: D1Like
 }
@@ -116,6 +119,31 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     if (!icon) return json({ error: 'not an icon' }, 400, cors)
     const stored = await store.insertIcon({ uid: icon.uid as string, client, body: JSON.stringify(icon) })
     return json({ stored }, 200, cors)
+  }
+
+  // training data (src/training.ts): whether a card's screenshot is still wanted, then the screenshot itself
+  if ((url.pathname === '/v1/training/ask' || url.pathname === '/v1/training') && req.method === 'POST') {
+    const ip = req.headers.get('cf-connecting-ip') ?? 'unknown'
+    const day = new Date().toISOString().slice(0, 10)
+    const client = (await sha256(`${env.IP_SALT}|${day}|${ip}`)).slice(0, 24)
+    if (!(await env.LIMIT.limit({ key: client })).success) return json({ error: 'slow down' }, 429, cors)
+    if (!env.TRAINING_TOKEN) return json({ want: false }, 200, cors)
+    const ask = url.pathname === '/v1/training/ask'
+    const text = await req.text()
+    if (text.length > (ask ? MAX_ASK : MAX_PICTURE + 4_000)) return json({ error: 'too large' }, 413, cors)
+    let raw: unknown
+    try {
+      raw = JSON.parse(text)
+    } catch {
+      return json({ error: 'not JSON' }, 400, cors)
+    }
+    if (ask) {
+      const card = validateTrainingCard(raw)
+      return card ? json({ want: await wanted(store, card) }, 200, cors) : json({ error: 'not a card' }, 400, cors)
+    }
+    const shot = validateShot(raw)
+    if (!shot) return json({ error: 'not a screenshot' }, 400, cors)
+    return json(await fileShot(store, shot, env.TRAINING_TOKEN, (u, i) => fetch(u, i)), 200, cors)
   }
 
   // a card the Solver couldn't name: one at a time, so its picture never weighs down a batch of boards
@@ -242,6 +270,26 @@ export function d1Store(db: D1Like): Store {
     async exportCards(after, limit) {
       const { results } = await db.prepare('SELECT id, uid, received, body FROM cards WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
       return results
+    },
+    async training(key) {
+      return db.prepare('SELECT key, title, issue, shots, created FROM training WHERE key = ?').bind(key).first<TrainingRow>()
+    },
+    async claimTraining(key, title, created) {
+      const res = await db.prepare('INSERT OR IGNORE INTO training (key, title, issue, shots, created) VALUES (?, ?, NULL, 0, ?)').bind(key, title, created).run()
+      return res.meta.changes === 1
+    },
+    async setTrainingIssue(key, issue) {
+      await db.prepare('UPDATE training SET issue = ? WHERE key = ?').bind(issue, key).run()
+    },
+    async addTrainingShot(key) {
+      await db.prepare('UPDATE training SET shots = shots + 1 WHERE key = ?').bind(key).run()
+    },
+    async dropTraining(key) {
+      await db.prepare('DELETE FROM training WHERE key = ?').bind(key).run()
+    },
+    async trainingSince(day) {
+      const row = await db.prepare('SELECT COUNT(*) AS n FROM training WHERE created >= ?').bind(day).first<{ n: number }>()
+      return row?.n ?? 0
     },
     async dayCounts() {
       // a row per player per day, in key order: thousands of rows, not every board

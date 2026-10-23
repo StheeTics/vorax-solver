@@ -1,0 +1,104 @@
+// @vitest-environment node
+import { BRANCH, fileShot, NEW_A_DAY, SHOTS, titleOf, validateCard, validateShot, wanted, type Shot } from '../../worker/src/training'
+import { memoryTraining } from './trainingStore'
+
+const JPEG = '/9j/4AAQSkZJRgABAQ=='
+const shot = (o: Partial<Shot> = {}): Shot => ({ uid: 'u-1234567890', phase: 'instrument', name: 'Egg-Burdened Butterfly', slot: 0, hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], why: 'rare', round: 4, picture: JPEG, ...o })
+
+/** GitHub as far as fileShot uses it, recording each call. */
+function github(o: { branch?: boolean; fail?: string } = {}) {
+  const calls: { method: string; path: string; body?: Record<string, unknown> }[] = []
+  let branch = o.branch ?? true
+  let issues = 40
+  const fetcher = async (url: string, init: RequestInit = {}) => {
+    const path = url.replace('https://api.github.com/repos/tidewarden/vorax-solver', '')
+    const method = init.method ?? 'GET'
+    const body = init.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : undefined
+    calls.push({ method, path, body })
+    const reply = (status: number, data: unknown = {}) => new Response(JSON.stringify(data), { status })
+    if (o.fail && path.startsWith(o.fail)) return reply(500)
+    if (path === `/git/ref/heads/${BRANCH}`) return branch ? reply(200) : reply(404)
+    if (path === '/git/ref/heads/main') return reply(200, { object: { sha: 'abc' } })
+    if (path === '/git/refs') return (branch = true), reply(201)
+    if (path.startsWith('/contents/')) return reply(201)
+    if (path === '/issues') return reply(201, { number: ++issues })
+    if (/^\/issues\/\d+\/comments$/.test(path)) return reply(201)
+    return reply(404)
+  }
+  return { calls, fetcher }
+}
+
+describe('what the collector accepts', () => {
+  it('a card it knows by name, or an unrecognised card by its title as read', () => {
+    expect(validateCard({ phase: 'instrument', name: 'Egg-Burdened Butterfly' })).toEqual({ phase: 'instrument', name: 'Egg-Burdened Butterfly' })
+    expect(validateCard({ phase: 'potion', text: 'The Holiest Wa' })).toEqual({ phase: 'potion', text: 'The Holiest Wa' })
+    expect(validateCard({ phase: 'potion', name: 'Not A Card' })).toBeNull()
+    expect(validateCard({ phase: 'boss', name: 'Egg-Burdened Butterfly' })).toBeNull()
+    expect(validateCard({ phase: 'potion', text: 'x'.repeat(121) })).toBeNull()
+  })
+  it('a screenshot only as a JPEG, with a sane slot and hand', () => {
+    expect(validateShot(shot())).toMatchObject({ name: 'Egg-Burdened Butterfly', slot: 0 })
+    expect(validateShot({ ...shot(), picture: 'iVBORw0KGgo=' })).toBeNull()
+    expect(validateShot({ ...shot(), picture: '/9j/<script>' })).toBeNull()
+    expect(validateShot({ ...shot(), slot: 7 })).toBeNull()
+    expect(validateShot({ ...shot(), hand: ['a', 'b', 'c', 'd', 'e', 'f'] })).toBeNull()
+    expect(validateShot({ ...shot(), why: 'because' })).toBeNull()
+  })
+})
+
+describe('one issue per card, three screenshots each', () => {
+  it('the first screenshot makes the branch if needed, saves the picture and opens "Training Data: <name>"', async () => {
+    const store = memoryTraining()
+    const gh = github({ branch: false })
+    expect(await fileShot(store, shot(), 'token', gh.fetcher)).toEqual({ filed: true, issue: 41 })
+    expect(gh.calls.map(c => `${c.method} ${c.path.replace(/\/contents\/.*/, '/contents/…')}`)).toEqual([`GET /git/ref/heads/${BRANCH}`, 'GET /git/ref/heads/main', 'POST /git/refs', 'PUT /contents/…', 'POST /issues'])
+    const issue = gh.calls.at(-1)!.body!
+    expect(issue.title).toBe('Training Data: Egg-Burdened Butterfly')
+    expect(issue.body).toContain(`/blob/${BRANCH}/training-data/egg-burdened-butterfly/`)
+    expect(issue.body).toContain('"slot": 0')
+    expect(gh.calls[3].body).toMatchObject({ content: JPEG, branch: BRANCH })
+    expect(store.rows.get('instrument:Egg-Burdened Butterfly')).toMatchObject({ issue: 41, shots: 1 })
+  })
+  it('later screenshots of the card are comments on its issue, and after three it is no longer wanted', async () => {
+    const store = memoryTraining()
+    const gh = github()
+    await fileShot(store, shot(), 'token', gh.fetcher)
+    for (let i = 1; i < SHOTS; i++) expect(await fileShot(store, shot({ uid: `u-${i}` }), 'token', gh.fetcher)).toEqual({ filed: true, issue: 41 })
+    expect(gh.calls.filter(c => c.path === '/issues')).toHaveLength(1)
+    expect(gh.calls.filter(c => c.path === '/issues/41/comments')).toHaveLength(SHOTS - 1)
+    expect(await wanted(store, { phase: 'instrument', name: 'Egg-Burdened Butterfly' })).toBe(false)
+    expect((await fileShot(store, shot({ uid: 'u-late' }), 'token', gh.fetcher)).filed).toBe(false)
+  })
+  it('an unrecognised card is filed by its title as read, the same title read again its same issue', async () => {
+    const store = memoryTraining()
+    const gh = github()
+    const holiest = { phase: 'potion' as const, name: undefined, text: 'The Holiest Water\nAll Agitoes awaken' }
+    expect(titleOf(holiest)).toBe('Training Data: unknown potion "The Holiest Water All Agitoes awaken"')
+    await fileShot(store, shot(holiest), 'token', gh.fetcher)
+    await fileShot(store, shot({ ...holiest, uid: 'u-2', text: 'The Holiest Water | All Agitoes' }), 'token', gh.fetcher)
+    expect(gh.calls.filter(c => c.path === '/issues')).toHaveLength(1)
+  })
+  it(`at most ${NEW_A_DAY} new issues a day`, async () => {
+    const store = memoryTraining()
+    const gh = github()
+    const day = new Date('2026-10-23T12:00:00Z')
+    const instruments = ['Aberrant Stinger', 'Chrysalis Specimen', 'Egg-Burdened Butterfly', 'Eyelid Speculum', 'Lady of the Plague Quarter', 'Canine Teeth File', 'Rawhide Restraint', 'Nettle Toggle', 'Sinew Garrote', 'Fouled Scraper', 'Contracted Claws']
+    for (const name of instruments.slice(0, NEW_A_DAY)) await fileShot(store, shot({ name, uid: name }), 'token', gh.fetcher, day)
+    expect(await wanted(store, { phase: 'instrument', name: instruments[NEW_A_DAY] }, day)).toBe(false)
+    expect(await fileShot(store, shot({ name: instruments[NEW_A_DAY], uid: 'x' }), 'token', gh.fetcher, day)).toEqual({ filed: false, why: 'enough new cards today' })
+    // the next day there's room again
+    expect(await wanted(store, { phase: 'instrument', name: instruments[NEW_A_DAY] }, new Date('2026-10-24T12:00:00Z'))).toBe(true)
+  })
+  it('a card whose issue failed to open is wanted again, not stuck', async () => {
+    const store = memoryTraining()
+    expect((await fileShot(store, shot(), 'token', github({ fail: '/issues' }).fetcher)).filed).toBe(false)
+    expect(store.rows.size).toBe(0)
+    expect(await wanted(store, { phase: 'instrument', name: 'Egg-Burdened Butterfly' })).toBe(true)
+  })
+  it('a card whose issue another upload is still opening is not filed twice', async () => {
+    const store = memoryTraining()
+    await store.claimTraining('instrument:Egg-Burdened Butterfly', 'Training Data: Egg-Burdened Butterfly', new Date().toISOString())
+    expect(await fileShot(store, shot(), 'token', github().fetcher)).toEqual({ filed: false, why: 'not wanted' })
+    expect(await wanted(store, { phase: 'instrument', name: 'Egg-Burdened Butterfly' })).toBe(false)
+  })
+})
