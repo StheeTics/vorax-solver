@@ -12,11 +12,11 @@
 #               goes in data/sim/smarter-history.jsonl; a challenger that passes becomes a pull request.
 # Every job's outcome is added to data/live/nightly.jsonl, the dashboard's Loops table.
 #
-# It works in a clone of its own (~/repos/vorax-nightly, made on the first run), on main, so the working copy
-# and its branch are never touched. Logs: that clone's scripts/sim/results/nightly/<time>/.
+# It works in a clone of its own (~/.local/share/vorax/nightly, made on the first run and out of the way), on
+# main, so the working copy and its branch are never touched. Logs: that clone's scripts/sim/results/nightly/<time>/.
 # Needs ~/.config/vorax/nightly.env with LIVE_DATA_URL and LIVE_DATA_TOKEN (the collector's EXPORT_TOKEN).
 #
-# Usage: bash ~/repos/vorax-nightly/scripts/nightly.sh (from anywhere), or bash scripts/nightly.sh
+# Usage: bash ~/repos/tli-vorax-simulator/scripts/nightly.sh (from anywhere), or bash scripts/nightly.sh
 #        [--day] [--force] [live] [check] [smarter]   (no job named: all three)
 #   --day    8 processes at once, for when the PC may be used for gaming (otherwise 16); always at nice 19
 #   --force  run check and smarter even when the odds didn't change
@@ -24,7 +24,7 @@
 #            nothing and opens no pull request
 set -uo pipefail
 
-CLONE=${VORAX_NIGHTLY_DIR:-$HOME/repos/vorax-nightly}
+CLONE=${VORAX_NIGHTLY_DIR:-$HOME/.local/share/vorax/nightly}
 ENV_FILE=$HOME/.config/vorax/nightly.env
 JOBS=16
 FORCE=
