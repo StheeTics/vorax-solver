@@ -13,6 +13,6 @@ if (!url || !token) {
 }
 const usage = await usageOf({
   cfToken: process.env.CF_ANALYTICS_TOKEN, cfAccount: process.env.CLOUDFLARE_ACCOUNT_ID,
-  ghToken: process.env.GH_BILLING_TOKEN, ghUser: process.env.GITHUB_REPOSITORY_OWNER,
+  ghToken: process.env.GH_BILLING_TOKEN, ghRepo: process.env.GITHUB_REPOSITORY,
 })
 console.log(`Dashboard summary sent: ${await sendSummary(url, token, statRows(), fetch, usage)}${usage ? ' (with usage)' : ''}`)

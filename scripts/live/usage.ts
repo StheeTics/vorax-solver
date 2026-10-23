@@ -1,5 +1,5 @@
 // How much of the free plans is used, for the dashboard: the D1 database and the Worker per day from Cloudflare's
-// analytics API, and this month's GitHub Actions minutes from GitHub's billing API. scripts/live/summary.ts adds it
+// analytics API, and this repo's GitHub Actions minutes this month from GitHub's billing API. scripts/live/summary.ts adds it
 // to the summary. Each part needs its own token (see .github/workflows/dashboard.yml); without it, or when the API
 // fails, that part is left out and the summary is sent as usual.
 import type { Usage } from '../../worker/src/stats'
@@ -12,7 +12,7 @@ const DAYS = 7
 /** GitHub counts a Windows minute as 2 of the free minutes and a macOS minute as 10 */
 const WEIGHT: [RegExp, number][] = [[/windows/i, 2], [/mac/i, 10]]
 
-export interface UsageEnv { cfToken?: string; cfAccount?: string; ghToken?: string; ghUser?: string }
+export interface UsageEnv { cfToken?: string; cfAccount?: string; ghToken?: string; ghRepo?: string }
 
 const QUERY = `query($a: String!, $s: Date!) { viewer { accounts(filter: { accountTag: $a }) {
   d1AnalyticsAdaptiveGroups(limit: 1000, filter: { date_geq: $s }) { sum { rowsRead rowsWritten } dimensions { date } }
@@ -46,36 +46,39 @@ async function cloudflare(token: string, account: string, now: Date, fetchFn: ty
   return [...days.values()].sort((x, y) => x.day.localeCompare(y.day))
 }
 
-interface BillingItem { product: string; sku: string; quantity: number; unitType: string; netAmount: number }
+interface BillingItem { product: string; sku: string; quantity: number; unitType: string; netAmount: number; repositoryName?: string }
 
-async function github(token: string, user: string, now: Date, fetchFn: typeof fetch): Promise<Usage['github']> {
+async function github(token: string, repo: string, now: Date, fetchFn: typeof fetch): Promise<Usage['github']> {
   const year = now.getUTCFullYear(), month = now.getUTCMonth() + 1
-  const res = await fetchFn(`https://api.github.com/users/${user}/settings/billing/usage?year=${year}&month=${month}`, {
+  const res = await fetchFn(`https://api.github.com/users/${repo.split('/')[0]}/settings/billing/usage?year=${year}&month=${month}`, {
     headers: { authorization: `Bearer ${token}`, accept: 'application/vnd.github+json', 'x-github-api-version': '2022-11-28' },
   })
   if (!res.ok) throw new Error(`GitHub answered ${res.status}`)
   const { usageItems = [] } = (await res.json()) as { usageItems?: BillingItem[] }
+  const actions = usageItems.filter(i => /actions/i.test(i.product))
   const runners: Record<string, number> = {}
-  let minutes = 0, charged = 0
-  for (const i of usageItems.filter(i => /actions/i.test(i.product))) {
+  let minutes = 0, others = 0, charged = 0
+  for (const i of actions) {
     charged += i.netAmount ?? 0
     if (!/minute/i.test(i.unitType)) continue
+    // the report covers every repo of the account: only this one is counted
+    if (i.repositoryName !== repo) { others += i.quantity; continue }
     runners[i.sku] = (runners[i.sku] ?? 0) + i.quantity
     minutes += i.quantity * (WEIGHT.find(([re]) => re.test(i.sku))?.[1] ?? 1)
   }
-  return { month: `${year}-${String(month).padStart(2, '0')}`, minutes: Math.round(minutes), runners, charged: Math.round(charged * 100) / 100 }
+  return { month: `${year}-${String(month).padStart(2, '0')}`, minutes: Math.round(minutes), runners, others: Math.round(others), charged: Math.round(charged * 100) / 100 }
 }
 
 /** The usage for the summary, or null when neither part's token is set. A part whose API failed is left out,
  *  with a line in the log. */
 export async function usageOf(env: UsageEnv, now = new Date(), fetchFn: typeof fetch = fetch): Promise<Usage | null> {
-  if (!(env.cfToken && env.cfAccount) && !(env.ghToken && env.ghUser)) return null
+  if (!(env.cfToken && env.cfAccount) && !(env.ghToken && env.ghRepo)) return null
   const u: Usage = { checked: now.toISOString(), limits: LIMITS }
   if (env.cfToken && env.cfAccount) {
     try { u.cloudflare = await cloudflare(env.cfToken, env.cfAccount, now, fetchFn) } catch (e) { console.log(`Cloudflare usage left out: ${(e as Error).message}`) }
   }
-  if (env.ghToken && env.ghUser) {
-    try { u.github = await github(env.ghToken, env.ghUser, now, fetchFn) } catch (e) { console.log(`GitHub usage left out: ${(e as Error).message}`) }
+  if (env.ghToken && env.ghRepo) {
+    try { u.github = await github(env.ghToken, env.ghRepo, now, fetchFn) } catch (e) { console.log(`GitHub usage left out: ${(e as Error).message}`) }
   }
   return u
 }

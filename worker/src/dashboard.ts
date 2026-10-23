@@ -355,7 +355,7 @@ function usage(u) {
   } else s += '<p class="sub">Cloudflare usage isn’t set up or didn’t answer (CF_ANALYTICS_TOKEN).</p>'
   if (gh) {
     const runners = Object.entries(gh.runners).map(([k, v]) => k.replace(/^actions[_ ]/i, '').replace(/^./, c => c.toUpperCase()) + ' ' + Math.round(v)).join(' · ')
-    s += meter('Actions minutes', gh.minutes, L.minutes, num, 'GitHub this month: ' + (runners || 'no runs yet') + ' · Windows counts twice' + (gh.charged ? ' · charged $' + gh.charged.toFixed(2) : ''))
+    s += meter('Actions minutes', gh.minutes, L.minutes, num, 'GitHub this month, this repo: ' + (runners || 'no runs yet') + ' · Windows counts twice' + (gh.others ? ' · ' + num(gh.others) + ' more in other repos' : '') + (gh.charged ? ' · charged $' + gh.charged.toFixed(2) : ''))
   } else s += '<p class="sub">GitHub usage isn’t set up or didn’t answer (GH_BILLING_TOKEN).</p>'
   s += '</div>'
   if (cf && cf.length > 1) s += '<div class="scroll">' + table(['Day (UTC)', 'Rows written', 'Rows read', 'Requests', 'Database'], cf.slice().reverse().map(d => [d.day, num(d.rowsWritten), num(d.rowsRead), num(d.requests), mb(d.bytes)]), [1, 2, 3, 4]) + '</div>'

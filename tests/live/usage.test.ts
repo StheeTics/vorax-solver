@@ -22,13 +22,14 @@ const cfAnswer = {
 }
 const ghAnswer = {
   usageItems: [
-    { product: 'actions', sku: 'actions_linux', quantity: 300, unitType: 'Minutes', netAmount: 0 },
-    { product: 'actions', sku: 'actions_windows', quantity: 40, unitType: 'Minutes', netAmount: 0 },
+    { product: 'actions', sku: 'actions_linux', quantity: 300, unitType: 'Minutes', netAmount: 0, repositoryName: 'someone/secret' },
+    { product: 'actions', sku: 'actions_windows', quantity: 40, unitType: 'Minutes', netAmount: 0, repositoryName: 'someone/secret' },
+    { product: 'actions', sku: 'actions_linux', quantity: 4000, unitType: 'Minutes', netAmount: 0, repositoryName: 'someone/open' },
     { product: 'actions', sku: 'actions_storage', quantity: 1.5, unitType: 'GigabyteHours', netAmount: 0 },
     { product: 'copilot', sku: 'copilot_for_business', quantity: 1, unitType: 'UserMonths', netAmount: 19 },
   ],
 }
-const env = { cfToken: 'cf', cfAccount: 'acct', ghToken: 'gh', ghUser: 'someone' }
+const env = { cfToken: 'cf', cfAccount: 'acct', ghToken: 'gh', ghRepo: 'someone/secret' }
 
 function fakeFetch(answers: { cf?: unknown; gh?: unknown; cfStatus?: number; ghStatus?: number }) {
   const calls: { url: string; init?: RequestInit }[] = []
@@ -61,11 +62,11 @@ describe('the free plans’ use for the dashboard', () => {
     expect((calls[0].init?.headers as Record<string, string>).authorization).toBe('Bearer cf')
   })
 
-  it('GitHub this month: Actions minutes only, Windows counted twice, other products left out', async () => {
+  it('GitHub this month: this repo’s Actions minutes only, Windows counted twice; other repos’ apart', async () => {
     const { fn, calls } = fakeFetch({ cf: cfAnswer, gh: ghAnswer })
     const u = (await usageOf(env, now, fn))!
-    expect(u.github).toEqual({ month: '2026-10', minutes: 380, runners: { actions_linux: 300, actions_windows: 40 }, charged: 0 })
-    expect(calls[1].url).toBe('https://api.github.com/users/someone/settings/billing/usage?year=2026&month=10')
+    expect(u.github).toEqual({ month: '2026-10', minutes: 380, runners: { actions_linux: 300, actions_windows: 40 }, others: 4000, charged: 0 })
+    expect(calls.map(c => c.url)).toContain('https://api.github.com/users/someone/settings/billing/usage?year=2026&month=10')
   })
 
   it('a part whose API fails is left out, and the other is kept', async () => {
@@ -81,8 +82,8 @@ describe('the free plans’ use for the dashboard', () => {
 
   it('only the part whose token is set is asked', async () => {
     const { fn, calls } = fakeFetch({ gh: ghAnswer })
-    const u = (await usageOf({ ghToken: 'gh', ghUser: 'someone' }, now, fn))!
-    expect(calls).toHaveLength(1)
+    const u = (await usageOf({ ghToken: 'gh', ghRepo: 'someone/secret' }, now, fn))!
+    expect(calls.some(c => c.url.includes('cloudflare'))).toBe(false)
     expect(u.cloudflare).toBeUndefined()
   })
 })

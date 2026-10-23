@@ -67,9 +67,10 @@ export interface Usage {
   limits: { rowsRead: number; rowsWritten: number; requests: number; bytes: number; minutes: number }
   /** per UTC day, oldest first: the D1 database's rows read and written, its size, and the Worker's requests */
   cloudflare?: { day: string; rowsRead: number; rowsWritten: number; requests: number; bytes: number }[]
-  /** GitHub Actions this month: minutes as counted against the free minutes (Windows counts twice), the minutes
-   *  per runner, and what GitHub charges beyond the free minutes, in dollars */
-  github?: { month: string; minutes: number; runners: Record<string, number>; charged: number }
+  /** GitHub Actions this month in this repo: minutes as counted against the free minutes (Windows counts twice)
+   *  and the minutes per runner; others: the account's other repos' minutes; charged: what GitHub charges
+   *  beyond the free minutes, in dollars */
+  github?: { month: string; minutes: number; runners: Record<string, number>; others?: number; charged: number }
 }
 
 const RECENT = 25
