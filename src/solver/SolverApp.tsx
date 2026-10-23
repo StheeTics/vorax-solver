@@ -9,6 +9,7 @@ import { pausesOf, stillPaused, type Pause } from './advice/paused'
 import { useAdvice } from './advice/useAdvice'
 import { desktopBridge, overlayAsks, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
+import { nextLook, RETRY_MS, unsureReading } from './live/retry'
 import { dependsOn } from './advice/depends'
 import { useAlternatives } from './advice/useAlternatives'
 import { gameClosing, screenTrouble, type Trouble } from './live/troubles'
@@ -51,9 +52,6 @@ let askId = 0
 /** How long after a pick the Solver looks at the panel again: long enough for the new icon to land at the
  *  game's normal speed (the first picture is taken 0.4 s after the log goes quiet, measured at x4). */
 const RELOOK_MS = 1500
-/** a board whose tanks weren't read for sure (or caught mid-animation): looked at again this soon, this often */
-const RETRY_MS = 500
-const RETRIES = 3
 /** Off while cards cut off mid-slide or under a hover are still shared as new ones (Oct 21). */
 const SHARE_NEW_CARDS = false
 
@@ -147,22 +145,11 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
     return cut ? (typeof ImageData === 'undefined' ? (cut as unknown as ImageData) : new ImageData(cut.data, cut.width, cut.height)) : captured
   }
 
-  // An early picture of a new board, while its tanks settle: its cards' names are read (and remembered by the
-  // text reader, so the settled picture's read finds them); nothing else from it is used.
-  const onEarly = async (captured: ImageData) => {
-    const r = await read(await gamePicture(captured), 'early', local)
-    if (r.problems.some(p => p.kind === 'animating' || p.kind === 'notFound')) return false
-    return r.state.hand.length > 0 && r.state.hand.every((_, j) => r.fields[`hand${j}`]?.sure)
-  }
-
-  // A board that didn't read cleanly (caught mid-animation, or tanks not read for sure) is looked at again
-  // soon, a few times: counted from the board's own picture.
-  const retryIfUnsure = (trigger: string | undefined, unsure: boolean) => {
-    if (trigger === 'board' || trigger === 'screen') retries.current = 0
-    else if (trigger !== 'manual') return
-    if (!unsure || retries.current >= RETRIES) return
-    retries.current++
-    setTimeout(() => snapAgain.current?.(), RETRY_MS)
+  // A board that didn't read cleanly is looked at again soon, a few times (retry.ts)
+  const retryIfUnsure = (trigger: string | undefined, r: Reading) => {
+    const next = nextLook(trigger, unsureReading(r), retries.current)
+    retries.current = next.looks
+    if (next.again) setTimeout(() => snapAgain.current?.(), RETRY_MS)
   }
 
   // A frame from Live or a screenshot becomes the board; fields the reader was unsure of are marked.
@@ -178,7 +165,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       // a card flying off as it's played or picked: the last board and its advice still stand
       if (raw.problems.some(p => p.kind === 'animating')) {
         keep?.(raw, 'reading')
-        retryIfUnsure(trigger, true)
+        retryIfUnsure(trigger, raw)
         return
       }
       // the game closing after round 13's last pick: the last board and its advice still stand
@@ -216,7 +203,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       }
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null
-      retryIfUnsure(trigger, !raw.problems.some(p => p.kind === 'notFound') && unreadTanks(r.fields, {}).length > 0)
+      retryIfUnsure(trigger, r)
       setReading(r)
       setCorrections({})
       if (!r.problems.some(p => p.kind === 'notFound')) {
@@ -325,7 +312,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} onEarly={onEarly} />
+            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}

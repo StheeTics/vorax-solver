@@ -52,9 +52,6 @@ const FOLDERS = [
 ]
 
 const NO_LOG_MS = 30_000
-/** the cards' names, read while the tanks settle: a picture at once, then every EARLY_MS until they're read */
-const EARLY_MS = 500
-const EARLY_TRIES = 8
 const RETRY_SHARE_MS = 15_000
 
 interface Props {
@@ -69,12 +66,9 @@ interface Props {
   snap?: { current: (() => void) | null }
   /** a new board came in (its line was just read): what was shown for the last one no longer stands */
   onChanged?(): void
-  /** an early picture of a new board, while its tanks settle: true once its cards are read for sure (no more
-   *  pictures then). Only the cards are taken from it. */
-  onEarly?(img: ImageData): Promise<boolean>
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap, onChanged, onEarly }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap, onChanged }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -97,38 +91,20 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
   shareRef.current = share
   dirRef.current = dir
 
-  // the early pictures of the board in hand: a newer board, or its settled picture, stops them
-  const early = useRef(0)
-  const earlyFns = useRef({ onChanged, onEarly })
-  earlyFns.current = { onChanged, onEarly }
-  async function readEarly(s: WindowShare, run: number) {
-    for (let i = 0; i < EARLY_TRIES; i++) {
-      if (i) await new Promise(r => setTimeout(r, EARLY_MS))
-      if (run !== early.current) return
-      try {
-        if (await earlyFns.current.onEarly?.(await s.grab())) return
-      } catch {
-        return
-      }
-    }
-  }
+  const changed = useRef(onChanged)
+  changed.current = onChanged
 
   const onEvent = useRef<(e: LiveEvent) => void>(() => {})
   onEvent.current = (e: LiveEvent) => {
     if (e.type === 'status') return setStatus(e)
-    if (e.type === 'changed') earlyFns.current.onChanged?.()
+    if (e.type === 'changed') return changed.current?.()
     const s = shareRef.current
     if (!s) return
     if (e.type === 'tick') return void tick(s)
-    if (e.type === 'changed') {
-      if (earlyFns.current.onEarly) void readEarly(s, ++early.current)
-      return
-    }
-    early.current++
     const askedAt = Date.now()
-    // the numbers landed, or the player clicked: the board is still, so it's taken at once. A log that went
-    // quiet gets one look to check the screen agrees; one that ran out of time, the full wait.
-    const take = e.kind === 'manual' || e.why === 'done' || e.why === 'acted' ? s.grab() : waitStable(() => s.grab(), e.why === 'quiet' ? { matches: 1 } : {})
+    // the numbers landed: the board is still, so it's taken at once. Anything else (a quiet log, a click
+    // while numbers may still be moving, the wait running out) waits for the screen to stop changing.
+    const take = e.kind === 'manual' || e.why === 'done' ? s.grab() : waitStable(() => s.grab())
     void take.then(async img => {
       const snappedAt = Date.now()
       // for Vorax Overlay's debug log: how long the log took to go quiet, and the screen to settle

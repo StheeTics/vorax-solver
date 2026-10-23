@@ -13,9 +13,14 @@ export interface TriggerRules {
   done: string
   /** the player clicked something: the board they're looking at has settled */
   playerActions: string[]
+  /** the tanks' numbers are changing (a potion's effects): only their landing, `done`, means they've settled */
+  effects: string[]
   doneDelayMs: number
   settleMs: number
   maxMs: number
+  /** the same, while numbers are changing and their landing hasn't been logged */
+  effectSettleMs: number
+  effectMaxMs: number
 }
 
 export const DEFAULT_RULES: TriggerRules = {
@@ -31,11 +36,17 @@ export const DEFAULT_RULES: TriggerRules = {
   playerSounds: ["KYZ_Card_Selected'", 'KYZ_Card_Selected_Confirm', 'KYZ_Card_Agentia_Use'],
   done: 'KYZ_Card_Figure_Refresh',
   playerActions: ['normal-click SelectBtn', 'normal-click ComfirmBtn', 'normal-click RefreshBtn', 'normal-click RelicBtn'],
+  effects: ['KYZ_Card_Figure_Add', 'KYZ_Card_Monster_'],
   // Measured on a real game at the game's x4 Speed-up: a potion's animations end with the numbers
   // landing (done); a deal after an instrument pick or a reroll goes quiet within ~300 ms.
   doneDelayMs: 150,
   settleMs: 400,
   maxMs: 3000,
+  // 63 boards of real games (Oct 22-23): the numbers landed 0.58 s after the last change, so 0.4 s of silence
+  // came before every one of 32 landings; the slowest landed 4.8 s after the board. 4 boards changed numbers
+  // and logged no landing.
+  effectSettleMs: 800,
+  effectMaxMs: 6000,
 }
 
 const ORDER: TriggerKind[] = ['board', 'screen', 'refresh', 'over']
@@ -68,8 +79,8 @@ export interface Settler {
 }
 
 export function createSettler(rules = DEFAULT_RULES): Settler {
-  let pending: { kind: 'board' | 'screen'; t0: number; lastAnim: number; doneAt: number | null; acted: boolean } | null = null
-  const start = (kind: 'board' | 'screen', now: number) => ({ kind, t0: now, lastAnim: now, doneAt: null, acted: false })
+  let pending: { kind: 'board' | 'screen'; t0: number; lastAnim: number; doneAt: number | null; acted: boolean; effects: boolean } | null = null
+  const start = (kind: 'board' | 'screen', now: number) => ({ kind, t0: now, lastAnim: now, doneAt: null, acted: false, effects: false })
   let refreshes = 0
   let over = false
   let settledBy: SettledBy | null = null
@@ -95,13 +106,16 @@ export function createSettler(rules = DEFAULT_RULES): Settler {
           pending.doneAt = now
         } else if (pending && isAnimation(line, rules)) {
           pending.lastAnim = now
+          if (rules.effects.some(p => line.includes(p))) pending.effects = true
         }
       }
     },
     due(now) {
       if (!pending) return null
-      const { kind, t0, lastAnim, doneAt, acted } = pending
-      const why: SettledBy | null = acted ? 'acted' : doneAt !== null && now - doneAt >= rules.doneDelayMs ? 'done' : now - lastAnim >= rules.settleMs ? 'quiet' : now - t0 >= rules.maxMs ? 'max' : null
+      const { kind, t0, lastAnim, doneAt, acted, effects } = pending
+      const quiet = effects ? rules.effectSettleMs : rules.settleMs
+      const max = effects ? rules.effectMaxMs : rules.maxMs
+      const why: SettledBy | null = acted ? 'acted' : doneAt !== null && now - doneAt >= rules.doneDelayMs ? 'done' : now - lastAnim >= quiet ? 'quiet' : now - t0 >= max ? 'max' : null
       if (why) {
         pending = null
         settledBy = why

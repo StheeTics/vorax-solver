@@ -4,6 +4,8 @@ import { classify, createSettler, isAnimation, logTime } from '@/solver/live/tri
 const fixture = readFileSync('tests/fixtures/vorax-log-excerpt.log', 'utf8').split('\n').filter(Boolean)
 const find = (s: string) => fixture.find(l => l.includes(s))!
 const ANIM = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card_Figure_Add_Small' requested row"
+/** a deal: cards shuffled in, no numbers changing */
+const DEAL = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card_Selected_Shuffle' requested row"
 
 it('classifies real log lines', () => {
   expect(classify(find('ProtoId = 5619'))).toBe('board')
@@ -32,7 +34,7 @@ const CLICK = '[Game] UIButton@ normal-click SelectBtn'
 it('settler waits for animations to go quiet', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
-  s.feed([ANIM], 500)
+  s.feed([DEAL], 500)
   expect(s.due(800)).toBeNull()
   expect(s.due(900)).toBe('board')
   expect(s.due(1000)).toBeNull()
@@ -66,7 +68,7 @@ it('settler caps the wait', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
   for (let t = 100; t < 3000; t += 100) {
-    s.feed([ANIM], t)
+    s.feed([DEAL], t)
     expect(s.due(t)).toBeNull()
   }
   expect(s.due(3000)).toBe('board')
@@ -120,8 +122,58 @@ it('replaying a real game snaps once per board update', () => {
 it('remembers why the last snap was due', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
-  // animations keep going: only the time limit ends the wait
-  for (let t = 100; t < 3000; t += 100) s.feed(['Play_UI_S13_KYZ_Card_Figure_Add_Small'], t)
-  expect(s.due(3000)).toBe('board')
+  // numbers keep changing: only the time limit ends the wait, at 6 s
+  for (let t = 100; t < 6000; t += 100) s.feed(['Play_UI_S13_KYZ_Card_Figure_Add_Small'], t)
+  expect(s.due(5900)).toBeNull()
+  expect(s.due(6000)).toBe('board')
   expect(s.settledBy).toBe('max')
+})
+
+// A potion's numbers, as the game logged them (Oct 22-23, at x4): additions about 220 ms apart, then ~580 ms
+// of silence before the numbers land (Figure_Refresh). 0.4 s of silence came before every one of 32 landings.
+const ADD = 'Play_UI_S13_KYZ_Card_Figure_Add_Small'
+const LANDED = 'Play_UI_S13_KYZ_Card_Figure_Refresh'
+
+it('a board whose numbers change waits for them to land, past the silence before they do', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed(['Play_UI_S13_KYZ_Card_Monster_change', ADD], 60)
+  s.feed([ADD], 280)
+  s.feed(['Play_UI_S13_KYZ_Card_Figure_Add_Large', 'Play_UI_S13_KYZ_Card_Selected_Shuffle'], 713)
+  // 0.4 s of silence: not enough while numbers are changing
+  expect(s.due(1150)).toBeNull()
+  s.feed([LANDED, LANDED], 1293)
+  expect(s.due(1400)).toBeNull()
+  expect(s.due(1450)).toBe('board')
+  expect(s.settledBy).toBe('done')
+})
+
+it('numbers that change without a landing line: 0.8 s of silence', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed([ADD], 60)
+  s.feed(['Play_UI_S13_KYZ_Card_Figure_Add_Large'], 550)
+  expect(s.due(1300)).toBeNull()
+  expect(s.due(1350)).toBe('board')
+  expect(s.settledBy).toBe('quiet')
+})
+
+it('a big potion is waited for past 3 s (numbers landed up to 4.8 s after the board)', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  for (let t = 60; t < 4600; t += 220) s.feed([ADD], t)
+  expect(s.due(4600)).toBeNull()
+  s.feed([LANDED], 4777)
+  expect(s.due(4950)).toBe('board')
+  expect(s.settledBy).toBe('done')
+})
+
+it('a board with no numbers changing (an instrument pick, a deal) still settles after 0.4 s of silence', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed(['Play_UI_S13_KYZ_Card_Tool_Surgery'], 6)
+  s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 537)
+  expect(s.due(900)).toBeNull()
+  expect(s.due(950)).toBe('board')
+  expect(s.settledBy).toBe('quiet')
 })
