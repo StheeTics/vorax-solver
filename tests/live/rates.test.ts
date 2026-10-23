@@ -64,6 +64,34 @@ it('pull pages through the export until it runs dry', async () => {
   }
 })
 
+it('pull spreads an upload’s boards out, and keeps each board once though its upload came twice', async () => {
+  const { pull } = await import('../../scripts/live/collect')
+  const fs = await import('node:fs')
+  const { tmpdir } = await import('node:os')
+  const dir = fs.mkdtempSync(`${tmpdir()}/batches-`)
+  const cwd = process.cwd()
+  process.chdir(dir)
+  try {
+    fs.mkdirSync('data/live/raw', { recursive: true })
+    fs.writeFileSync('data/live/raw/2026-10-22.jsonl', '{"received":"2026-10-22T01:00:00Z","uid":"a","x":0}\n')
+    const pages = [
+      { rows: [
+        { id: 1_000_000_001, received: '2026-10-23T01:00:00Z', body: '[{"uid":"a","x":1},{"uid":"b","x":2}]' },
+        // the same upload again (its answer was lost, so the Solver sent it twice)
+        { id: 1_000_000_002, received: '2026-10-23T01:00:05Z', body: '[{"uid":"b","x":2},{"uid":"c","x":3}]' },
+      ], last: 1_000_000_002 },
+      { rows: [], last: 1_000_000_002 },
+    ]
+    const fetchFn = vi.fn(async () => new Response(JSON.stringify(pages.shift())))
+    expect(await pull('https://w.dev', 't', fetchFn as unknown as typeof fetch)).toBe(2)
+    expect(fs.readFileSync('data/live/raw/2026-10-23.jsonl', 'utf8')).toBe(
+      '{"received":"2026-10-23T01:00:00Z","uid":"b","x":2}\n{"received":"2026-10-23T01:00:05Z","uid":"c","x":3}\n')
+    expect(JSON.parse(fs.readFileSync('data/live/state.json', 'utf8')).last).toBe(1_000_000_002)
+  } finally {
+    process.chdir(cwd)
+  }
+})
+
 it('pullIcons saves shared icons beside the boards, keeping the boards’ place in the export', async () => {
   const { pull, pullIcons } = await import('../../scripts/live/collect')
   const fs = await import('node:fs')

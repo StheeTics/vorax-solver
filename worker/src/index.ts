@@ -1,6 +1,7 @@
 // The live-data collector: a Cloudflare Worker with a D1 database. The Solver posts the boards it read;
-// the nightly jobs (scripts/nightly.sh) pull them with the export token. No addresses are stored: the daily
-// quota is counted against a salted hash that changes every day.
+// the nightly jobs (scripts/nightly.sh) pull them with the export token. No addresses are stored: players are
+// counted by a salted hash that changes every day. The free plan allows 100,000 row writes a day, so an upload
+// is one row however many boards it carries, and a player one row a day.
 import names from './names.json'
 import { validate, validateCard, validateIcon } from './validate'
 import type { Stats } from './stats'
@@ -9,18 +10,20 @@ import { DASHBOARD_HTML } from './dashboard'
 import { dispatch, FILES, LISTED, onSchedule, repoFile, repoRuns, RUNNABLE } from './schedule'
 
 export interface Store {
-  /** stores rows with new uids; returns how many were new */
-  insert(rows: { uid: string; client: string; body: string }[]): Promise<number>
-  used(key: string, day: string): Promise<number>
-  addUsed(key: string, day: string, n: number): Promise<void>
-  export(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
+  /** stores an upload's boards, a JSON array, as one row */
+  insertBatch(body: string): Promise<void>
+  /** notes a daily player code as seen that day: a write only the first time */
+  seePlayer(day: string, client: string): Promise<void>
+  /** boards after an id, about `limit` of them: a board per row up to Oct 23, then an upload per row (its body an
+   *  array of boards; ids from BATCHES on) */
+  export(after: number, limit: number): Promise<{ id: number; received: string; body: string }[]>
   /** stores an icon with a new uid; returns 1 if it was new */
   insertIcon(row: { uid: string; client: string; body: string }): Promise<number>
   exportIcons(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
   /** stores a card the Solver couldn't name, with a new uid; returns 1 if it was new */
   insertCard(row: { uid: string; client: string; body: string }): Promise<number>
   exportCards(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
-  /** boards and different daily player codes per day, for the dashboard's counts */
+  /** different daily player codes per day, for the dashboard's counts */
   dayCounts(): Promise<DayCount[]>
   /** the dashboard's numbers the nightly jobs last worked out (summary.ts), or null before the first */
   summary(): Promise<Stats | null>
@@ -46,10 +49,11 @@ const ORIGIN = 'https://tidewarden.github.io'
 /** the site's second home while both are served (Cloudflare Pages, deploy.yml), and the local test server:
  *  Vorax Overlay pointed at it plays real games (any other origin gets the site's) */
 const ORIGINS = [ORIGIN, 'https://voraxlab.pages.dev', 'http://localhost:5173']
-const DAILY = 1500
 const MAX_BATCH = 10
 const MAX_BYTES = 64_000
 const EXPORT_MAX = 5000
+/** where the uploads' ids start in the export, after the boards stored one per row before them */
+export const BATCHES = 1_000_000_000
 /** the workflow's summary is tens of kilobytes */
 const MAX_SUMMARY = 1_000_000
 
@@ -85,11 +89,14 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
       return json({ error: 'not JSON' }, 400, cors)
     }
     if (!Array.isArray(body) || body.length < 1 || body.length > MAX_BATCH) return json({ error: `1 to ${MAX_BATCH} snapshots` }, 400, cors)
-    const valid = body.map(s => validate(s, names)).filter(s => s !== null)
-    if ((await store.used(client, day)) + valid.length > DAILY) return json({ error: 'daily limit' }, 429, cors)
-    const stored = await store.insert(valid.map(s => ({ uid: s.uid as string, client, body: JSON.stringify(s) })))
-    await store.addUsed(client, day, stored)
-    return json({ stored, dropped: body.length - stored }, 200, cors)
+    // a board sent twice in one upload is kept once; an upload sent twice is sorted out by the pull
+    const seen = new Set<unknown>()
+    const valid = body.map(s => validate(s, names)).filter(s => s !== null && !seen.has(s.uid) && seen.add(s.uid))
+    if (valid.length) {
+      await store.insertBatch(JSON.stringify(valid))
+      await store.seePlayer(day, client)
+    }
+    return json({ stored: valid.length, dropped: body.length - valid.length }, 200, cors)
   }
 
   if (url.pathname === '/v1/icons' && req.method === 'POST') {
@@ -107,10 +114,7 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     }
     const icon = validateIcon(raw, names)
     if (!icon) return json({ error: 'not an icon' }, 400, cors)
-    // an icon counts as one board towards the daily limit
-    if ((await store.used(client, day)) + 1 > DAILY) return json({ error: 'daily limit' }, 429, cors)
     const stored = await store.insertIcon({ uid: icon.uid as string, client, body: JSON.stringify(icon) })
-    await store.addUsed(client, day, stored)
     return json({ stored }, 200, cors)
   }
 
@@ -130,10 +134,7 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     }
     const card = validateCard(raw)
     if (!card) return json({ error: 'not a card' }, 400, cors)
-    // a card counts as one board towards the daily limit
-    if ((await store.used(client, day)) + 1 > DAILY) return json({ error: 'daily limit' }, 429, cors)
     const stored = await store.insertCard({ uid: card.uid as string, client, body: JSON.stringify(card) })
-    await store.addUsed(client, day, stored)
     return json({ stored }, 200, cors)
   }
 
@@ -210,24 +211,20 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
 /** The D1 tables in schema.sql. */
 export function d1Store(db: D1Like): Store {
   return {
-    async insert(rows) {
-      let n = 0
-      const received = new Date().toISOString()
-      for (const r of rows) {
-        const res = await db.prepare('INSERT OR IGNORE INTO snapshots (uid, received, client, body) VALUES (?, ?, ?, ?)').bind(r.uid, received, r.client, r.body).run()
-        n += res.meta.changes
-      }
-      return n
+    async insertBatch(body) {
+      await db.prepare('INSERT INTO batches (received, body) VALUES (?, ?)').bind(new Date().toISOString(), body).run()
     },
-    async used(key, day) {
-      const row = await db.prepare('SELECT n FROM quota WHERE key = ? AND day = ?').bind(key, day).first<{ n: number }>()
-      return row?.n ?? 0
-    },
-    async addUsed(key, day, n) {
-      await db.prepare('INSERT INTO quota (key, day, n) VALUES (?, ?, ?) ON CONFLICT(key) DO UPDATE SET n = CASE WHEN day = excluded.day THEN n + excluded.n ELSE excluded.n END, day = excluded.day').bind(key, day, n).run()
+    async seePlayer(day, client) {
+      await db.prepare('INSERT OR IGNORE INTO players (day, client) VALUES (?, ?)').bind(day, client).run()
     },
     async export(after, limit) {
-      const { results } = await db.prepare('SELECT id, uid, received, body FROM snapshots WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; uid: string; client: string; body: string }>()
+      if (after < BATCHES) {
+        const { results } = await db.prepare('SELECT id, received, body FROM snapshots WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; received: string; body: string }>()
+        if (results.length) return results
+      }
+      // an upload is up to 10 boards
+      const { results } = await db.prepare('SELECT id + ? AS id, received, body FROM batches WHERE id > ? ORDER BY id LIMIT ?')
+        .bind(BATCHES, Math.max(0, after - BATCHES), Math.ceil(limit / MAX_BATCH)).all<{ id: number; received: string; body: string }>()
       return results
     },
     async insertIcon(r) {
@@ -247,8 +244,8 @@ export function d1Store(db: D1Like): Store {
       return results
     },
     async dayCounts() {
-      // reads every row (no index: see schema.sql); the free plan's 5M reads a day cover many loads
-      const { results } = await db.prepare('SELECT substr(received, 1, 10) AS day, COUNT(*) AS boards, COUNT(DISTINCT client) AS players FROM snapshots GROUP BY day ORDER BY day').bind().all<DayCount>()
+      // a row per player per day, in key order: thousands of rows, not every board
+      const { results } = await db.prepare('SELECT day, COUNT(*) AS players FROM players GROUP BY day ORDER BY day').bind().all<DayCount>()
       return results
     },
     async summary() {

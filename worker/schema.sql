@@ -1,8 +1,8 @@
 -- The live-data collector's tables. Apply with:
 --   npx wrangler d1 execute vorax-live --remote --file schema.sql
 
--- One row per board a Solver read and shared. `body` is the validated snapshot as JSON; boards of one
--- game share its run id. `client` is a salted daily hash, never an address.
+-- One row per board a Solver read and shared, up to Oct 23 (since then: batches). `body` is the validated
+-- snapshot as JSON; boards of one game share its run id. `client` is a salted daily hash, never an address.
 CREATE TABLE IF NOT EXISTS snapshots (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   uid TEXT NOT NULL UNIQUE,
@@ -11,22 +11,35 @@ CREATE TABLE IF NOT EXISTS snapshots (
   body TEXT NOT NULL
 );
 -- No index for the dashboard's per-day counts: an index costs a row write per board, and the free plan allows
--- 100,000 writes a day (creating one on Oct 22 used half of that day's and stopped the uploads). Reads are cheap.
+-- 100,000 writes a day (creating one on Oct 22 used half of that day's and stopped the uploads).
 
--- The dashboard's numbers the repo's hourly workflow worked out from the boards (scripts/live/summary.ts):
--- one row, replaced each time. Counts by the daily player code are added on each request instead.
+-- One row per upload since Oct 23: `body` is a JSON array of its boards (up to 10), so an upload costs one row
+-- write instead of two per board. No uid index: an upload sent twice is sorted out by the pull, by each board's uid.
+-- No AUTOINCREMENT either, which would write sqlite_sequence on every insert.
+CREATE TABLE IF NOT EXISTS batches (
+  id INTEGER PRIMARY KEY,
+  received TEXT NOT NULL,
+  body TEXT NOT NULL
+);
+
+-- Each daily player code once per day it sent boards, for the dashboard's players per day: a write the first
+-- time a player uploads that day, and none after.
+CREATE TABLE IF NOT EXISTS players (
+  day TEXT NOT NULL,
+  client TEXT NOT NULL,
+  PRIMARY KEY (day, client)
+) WITHOUT ROWID;
+
+-- The dashboard's numbers the 2-hourly workflow worked out from the boards (scripts/live/summary.ts):
+-- one row, replaced each time. Players per day are added on each request instead (players).
 CREATE TABLE IF NOT EXISTS summary (
   id INTEGER PRIMARY KEY CHECK (id = 1),
   updated TEXT NOT NULL,
   body TEXT NOT NULL
 );
 
--- Boards stored per client per day, for the daily limit.
-CREATE TABLE IF NOT EXISTS quota (
-  key TEXT PRIMARY KEY,
-  day TEXT NOT NULL,
-  n INTEGER NOT NULL
-);
+-- The daily limit per client was a row rewritten on every upload: dropped on Oct 23 for the rate limit
+-- (wrangler.jsonc). Its table, quota, may still be in the database, unused.
 
 -- One row per instrument panel icon a player named in the Solver ("Which instrument did you pick?"):
 -- `body` is {uid, name, pattern}, the pattern 576 grey levels of the icon, never a screenshot.

@@ -16,8 +16,9 @@ free plan: nothing is billed, and if a daily limit is hit, uploads simply fail u
 - `GET /dashboard`, `GET /v1/stats`: the private analytics page and its numbers, the stored summary with the
   boards and players per day counted here. Needs the dashboard password (`DASHBOARD_TOKEN`).
 
-No accounts and no addresses: each address may upload 60 times a minute and 1,500 boards a day, counted
-against a salted hash that changes daily. Only the site (`https://tidewarden.github.io`, and `https://voraxlab.pages.dev`) may post from a browser.
+No accounts and no addresses: each address may upload 20 times a minute (up to 10 boards each), counted
+against a salted hash that changes daily. An upload is one row in `batches`, and each player one row a day in
+`players`, so the free plan's 100,000 row writes a day go a long way. Only the site (`https://tidewarden.github.io`, and `https://voraxlab.pages.dev`) may post from a browser.
 
 ## Setup (once, about 10 minutes)
 

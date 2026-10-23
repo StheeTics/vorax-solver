@@ -1,5 +1,6 @@
 // Pulling shared boards from the collector into data/live/raw/<date>.jsonl (scripts/live/pull.ts runs it). Each
 // line is a board with `received`, when the collector stored it (boards pulled before Oct 22 have only the file's date).
+// Since Oct 23 the collector keeps an upload's boards together: its export row's body is an array of them.
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import type { Snapshot } from '../../src/solver/share/snapshot'
 import { summarize, type StatRow } from '../../worker/src/stats'
@@ -7,7 +8,7 @@ import { summarize, type StatRow } from '../../worker/src/stats'
 const DIR = 'data/live'
 const RAW = `${DIR}/raw`
 
-interface Row { id: number; uid: string; received: string; body: string }
+interface Row { id: number; received: string; body: string }
 
 // Where each export was read up to: { last } for boards, { icons } for named panel icons, { cards } for cards
 // the Solver couldn't name.
@@ -31,10 +32,25 @@ async function drain(url: string, token: string, path: string, key: string, fetc
   return added
 }
 
+const UID = /"uid":"([^"]+)"/
+
 export async function pull(url: string, token: string, fetchFn: typeof fetch = fetch): Promise<number> {
   mkdirSync(RAW, { recursive: true })
-  // each board keeps when it came, for the dashboard's recent games (scripts/live/summary.ts)
-  return drain(url, token, '/v1/export', 'last', fetchFn, r => appendFileSync(`${RAW}/${r.received.slice(0, 10)}.jsonl`, JSON.stringify({ received: r.received, ...JSON.parse(r.body) }) + '\n'))
+  // an upload sent again (its answer lost) comes twice: each board is kept once, by its uid
+  const seen = new Set(readdirSync(RAW).filter(f => f.endsWith('.jsonl'))
+    .flatMap(f => readFileSync(`${RAW}/${f}`, 'utf8').split('\n').map(l => UID.exec(l)?.[1]).filter(u => u !== undefined)))
+  let added = 0
+  await drain(url, token, '/v1/export', 'last', fetchFn, r => {
+    const got = JSON.parse(r.body) as Record<string, unknown> | Record<string, unknown>[]
+    for (const b of Array.isArray(got) ? got : [got]) {
+      if (typeof b.uid === 'string' && seen.has(b.uid)) continue
+      if (typeof b.uid === 'string') seen.add(b.uid)
+      // each board keeps when it came, for the dashboard's recent games (scripts/live/summary.ts)
+      appendFileSync(`${RAW}/${r.received.slice(0, 10)}.jsonl`, JSON.stringify({ received: r.received, ...b }) + '\n')
+      added++
+    }
+  })
+  return added
 }
 
 /** Panel icons players named, into data/live/icons.jsonl: checked by hand before they join the reader's data. */

@@ -1,18 +1,19 @@
 // @vitest-environment node
 import { handle, type Store } from '../../worker/src/index'
 
-function memory(): Store & { summaries: string[]; rows: { id: number; uid: string; client: string; body: string }[]; icons: { id: number; uid: string; client: string; body: string }[]; cards: { id: number; uid: string; client: string; body: string }[]; quota: Map<string, number> } {
-  const rows: { id: number; uid: string; client: string; body: string }[] = []
-  const icons: { id: number; uid: string; client: string; body: string }[] = []
-  const cards: { id: number; uid: string; client: string; body: string }[] = []
-  const quota = new Map<string, number>()
+type Row = { id: number; uid: string; client: string; body: string }
+function memory(): Store & { summaries: string[]; batches: { id: number; received: string; body: string }[]; players: Set<string>; icons: Row[]; cards: Row[] } {
+  const batches: { id: number; received: string; body: string }[] = []
+  const players = new Set<string>()
+  const icons: Row[] = []
+  const cards: Row[] = []
   const summaries: string[] = []
   return {
     summaries,
-    rows,
+    batches,
+    players,
     icons,
     cards,
-    quota,
     async insertCard(r) {
       if (cards.some(x => x.uid === r.uid)) return 0
       cards.push({ id: cards.length + 1, ...r })
@@ -29,26 +30,17 @@ function memory(): Store & { summaries: string[]; rows: { id: number; uid: strin
     async exportIcons(after, limit) {
       return icons.filter(r => r.id > after).slice(0, limit)
     },
-    async insert(list) {
-      let n = 0
-      for (const r of list) {
-        if (rows.some(x => x.uid === r.uid)) continue
-        rows.push({ id: rows.length + 1, ...r })
-        n++
-      }
-      return n
+    async insertBatch(body) {
+      batches.push({ id: batches.length + 1, received: '2026-10-18T10:00:00.000Z', body })
     },
-    async used(key) {
-      return quota.get(key) ?? 0
-    },
-    async addUsed(key, _day, n) {
-      quota.set(key, (quota.get(key) ?? 0) + n)
+    async seePlayer(day, client) {
+      players.add(`${day}|${client}`)
     },
     async export(after, limit) {
-      return rows.filter(r => r.id > after).slice(0, limit)
+      return batches.filter(r => r.id > after).slice(0, limit)
     },
     async dayCounts() {
-      return rows.length ? [{ day: '2026-10-18', boards: rows.length, players: new Set(rows.map(r => r.client)).size }] : []
+      return players.size ? [{ day: '2026-10-18', players: players.size }] : []
     },
     async summary() {
       return summaries.length ? JSON.parse(summaries[summaries.length - 1]) : null
@@ -67,33 +59,41 @@ const snap = (uid: string) => ({
 const uid = (n: number) => `0b6f1f4e-6a37-4c1e-9d0e-${String(n).padStart(12, '0')}`
 const post = (body: unknown, ip = '9.9.9.9') => new Request('https://w.dev/v1/snapshots', { method: 'POST', body: JSON.stringify(body), headers: { 'cf-connecting-ip': ip, origin: 'https://tidewarden.github.io' } })
 
-it('stores valid snapshots once, drops the rest', async () => {
+it('stores the valid snapshots of an upload together, in one row, each once; drops the rest', async () => {
   const store = memory()
-  const res = await handle(post([snap(uid(1)), snap(uid(1)), { junk: true }]), env, store)
+  const res = await handle(post([snap(uid(1)), snap(uid(1)), snap(uid(2)), { junk: true }]), env, store)
   expect(res.status).toBe(200)
-  expect(await res.json()).toEqual({ stored: 1, dropped: 2 })
-  expect(store.rows).toHaveLength(1)
+  expect(await res.json()).toEqual({ stored: 2, dropped: 2 })
+  expect(store.batches).toHaveLength(1)
+  expect(JSON.parse(store.batches[0].body).map((s: { uid: string }) => s.uid)).toEqual([uid(1), uid(2)])
+})
+
+it('an upload with nothing valid in it stores nothing', async () => {
+  const store = memory()
+  expect(await (await handle(post([{ junk: true }]), env, store)).json()).toEqual({ stored: 0, dropped: 1 })
+  expect(store.batches).toHaveLength(0)
+  expect(store.players.size).toBe(0)
 })
 
 it('never stores the address', async () => {
   const store = memory()
   await handle(post([snap(uid(1))], '1.2.3.4'), env, store)
-  expect(JSON.stringify(store.rows)).not.toContain('1.2.3.4')
-  expect([...store.quota.keys()].join()).not.toContain('1.2.3.4')
+  expect(JSON.stringify(store.batches)).not.toContain('1.2.3.4')
+  expect([...store.players].join()).not.toContain('1.2.3.4')
+})
+
+it('counts each player once a day by their daily code, however often they upload', async () => {
+  const store = memory()
+  await handle(post([snap(uid(1))], '1.1.1.1'), env, store)
+  await handle(post([snap(uid(2))], '1.1.1.1'), env, store)
+  await handle(post([snap(uid(3))], '2.2.2.2'), env, store)
+  expect(store.players.size).toBe(2)
+  expect([...store.players].every(k => /^\d{4}-\d\d-\d\d\|[0-9a-f]{24}$/.test(k))).toBe(true)
 })
 
 it('takes 1 to 10 snapshots per upload', async () => {
   expect((await handle(post([]), env, memory())).status).toBe(400)
   expect((await handle(post(Array.from({ length: 11 }, (_, i) => snap(uid(i)))), env, memory())).status).toBe(400)
-})
-
-it('limits each address to 1,500 snapshots a day', async () => {
-  const store = memory()
-  for (const k of store.quota.keys()) store.quota.delete(k)
-  await handle(post([snap(uid(1))]), env, store)
-  const key = [...store.quota.keys()][0]
-  store.quota.set(key, 1500)
-  expect((await handle(post([snap(uid(2))]), env, store)).status).toBe(429)
 })
 
 it('rate-limited uploads get 429', async () => {
@@ -103,11 +103,13 @@ it('rate-limited uploads get 429', async () => {
 
 it('export needs the token', async () => {
   const store = memory()
-  await handle(post([snap(uid(1)), snap(uid(2))]), env, store)
+  await handle(post([snap(uid(1))]), env, store)
+  await handle(post([snap(uid(2)), snap(uid(3))]), env, store)
   expect((await handle(new Request('https://w.dev/v1/export?after=0'), env, store)).status).toBe(401)
   const res = await handle(new Request('https://w.dev/v1/export?after=1', { headers: { authorization: 'Bearer secret' } }), env, store)
-  const body = await res.json() as { rows: { id: number }[]; last: number }
+  const body = await res.json() as { rows: { id: number; body: string }[]; last: number }
   expect(body.rows.map(r => r.id)).toEqual([2])
+  expect(JSON.parse(body.rows[0].body)).toHaveLength(2)
   expect(body.last).toBe(2)
 })
 
@@ -223,7 +225,7 @@ describe('the dashboard summary the hourly workflow sends', () => {
     await handle(post([snap(uid(1)), snap(uid(2))]), denv, store)
     expect((await handle(new Request('https://w.dev/v1/stats', { headers: { authorization: 'Bearer secret' } }), denv, store)).status).toBe(401)
     const s = await (await handle(new Request('https://w.dev/v1/stats', { headers: { authorization: 'Bearer pw' } }), denv, store)).json()
-    expect(s.totals).toMatchObject({ games: 3, boards: 2, playerDays: 1 })
-    expect(s.days).toEqual([expect.objectContaining({ day: '2026-10-18', boards: 2, players: 1, games: 0 })])
+    expect(s.totals).toMatchObject({ games: 3, playerDays: 1 })
+    expect(s.days).toEqual([expect.objectContaining({ day: '2026-10-18', players: 1, games: 0 })])
   })
 })
