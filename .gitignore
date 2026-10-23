@@ -24,3 +24,4 @@ training/
 # Agent working notes and scratch scripts
 .superpowers/
 eng.traineddata
+scripts/scan/training-pending.json

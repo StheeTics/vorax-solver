@@ -21,3 +21,14 @@ it('rows are written with the Up filter, so flat areas compress', () => {
   expect(Array.from(decodePng(png).data)).toEqual(Array.from(data))
   expect(png.length).toBeLessThan(400)
 })
+
+it('decodes a JPEG too (screenshots sent as training data), to RGBA of its size', async () => {
+  const { default: jpeg } = await import('jpeg-js')
+  const data = Buffer.alloc(16 * 8 * 4)
+  for (let i = 0; i < data.length; i += 4) [data[i], data[i + 1], data[i + 2], data[i + 3]] = [200, 40, 40, 255]
+  const img = decodePng(Buffer.from(jpeg.encode({ data, width: 16, height: 8 }, 90).data))
+  expect([img.width, img.height, img.data.length]).toEqual([16, 8, 16 * 8 * 4])
+  // lossy, but close: a flat red stays red
+  expect(Math.abs(img.data[0] - 200)).toBeLessThan(8)
+  expect(Math.abs(img.data[1] - 40)).toBeLessThan(8)
+})

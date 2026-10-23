@@ -1,11 +1,17 @@
 // A small PNG decoder and encoder over node:zlib, for the reader's build and test scripts (no dependencies).
-// Decodes 8-bit greyscale, RGB and RGBA (with or without alpha), non-interlaced, all five row filters.
+// Decodes 8-bit greyscale, RGB and RGBA (with or without alpha), non-interlaced, all five row filters. A JPEG (the
+// screenshots players send as training data, scripts/scan/pullTraining.ts) is decoded by jpeg-js.
 import { deflateSync, inflateSync } from 'node:zlib'
+import jpeg from 'jpeg-js'
 import type { Img } from '../../src/solver/scan/pixels'
 
 const SIGNATURE = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])
 
 export function decodePng(buf: Buffer): Img {
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    const j = jpeg.decode(buf, { useTArray: true, formatAsRGBA: true, maxMemoryUsageInMB: 1024 })
+    return { width: j.width, height: j.height, data: new Uint8ClampedArray(j.data.buffer, j.data.byteOffset, j.data.length) }
+  }
   if (buf.length < 8 || !buf.subarray(0, 8).equals(SIGNATURE)) throw new Error('Not a PNG file')
   let pos = 8
   let width = 0, height = 0, colorType = 0, depth = 0, interlace = 0

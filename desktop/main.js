@@ -8,7 +8,7 @@
 //   - show the page's advice in an always-on-top card over the game, and green boxes on the game around the
 //     advised card and tanks,
 //   - a tray menu, hotkeys, and updates of the site and of the app.
-// Pictures and the log never leave the PC. Boards are shared only by the page's own sharing switch.
+// The log never leaves the PC. Boards (and a few pictures of cards it reads badly) are shared only by the page's own sharing switch.
 // Nothing here touches the game: no clicks, no keys (AGENTS.md).
 
 const { cleanCard } = require('./lib/card');

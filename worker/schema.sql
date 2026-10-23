@@ -60,3 +60,13 @@ CREATE TABLE IF NOT EXISTS cards (
   client TEXT NOT NULL,
   body TEXT NOT NULL
 );
+
+-- Training data (src/training.ts): one row per card wanted for the reader, its GitHub issue and how many
+-- screenshots it has. key: phase:name, or phase:?letters of an unrecognised card's title.
+CREATE TABLE IF NOT EXISTS training (
+  key TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  issue INTEGER,
+  shots INTEGER NOT NULL DEFAULT 0,
+  created TEXT NOT NULL
+);

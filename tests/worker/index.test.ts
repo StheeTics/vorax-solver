@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { handle, type Store } from '../../worker/src/index'
+import { memoryTraining } from './trainingStore'
 
 type Row = { id: number; uid: string; client: string; body: string }
 function memory(): Store & { summaries: string[]; batches: { id: number; received: string; body: string }[]; players: Set<string>; icons: Row[]; cards: Row[] } {
@@ -9,6 +10,7 @@ function memory(): Store & { summaries: string[]; batches: { id: number; receive
   const cards: Row[] = []
   const summaries: string[] = []
   return {
+    ...memoryTraining(),
     summaries,
     batches,
     players,
@@ -227,5 +229,19 @@ describe('the dashboard summary the hourly workflow sends', () => {
     const s = await (await handle(new Request('https://w.dev/v1/stats', { headers: { authorization: 'Bearer pw' } }), denv, store)).json()
     expect(s.totals).toMatchObject({ games: 3, playerDays: 1 })
     expect(s.days).toEqual([expect.objectContaining({ day: '2026-10-18', players: 1, games: 0 })])
+  })
+})
+
+describe('training data endpoints', () => {
+  const ask = (body: unknown) => new Request('https://w.dev/v1/training/ask', { method: 'POST', body: JSON.stringify(body), headers: { 'cf-connecting-ip': '9.9.9.9', origin: 'https://voraxlab.pages.dev' } })
+  it('want nothing without a token: the feature is off until TRAINING_TOKEN is set', async () => {
+    expect(await (await handle(ask({ phase: 'instrument', name: 'Egg-Burdened Butterfly' }), env, memory())).json()).toEqual({ want: false })
+  })
+  it('with one, want a card not yet filed, and refuse anything that isn’t a card', async () => {
+    const withToken = { ...env, TRAINING_TOKEN: 't' }
+    expect(await (await handle(ask({ phase: 'instrument', name: 'Egg-Burdened Butterfly' }), withToken, memory())).json()).toEqual({ want: true })
+    expect((await handle(ask({ phase: 'instrument', name: 'Not A Card' }), withToken, memory())).status).toBe(400)
+    const big = new Request('https://w.dev/v1/training/ask', { method: 'POST', body: 'x'.repeat(3000), headers: { 'cf-connecting-ip': '9.9.9.9' } })
+    expect((await handle(big, withToken, memory())).status).toBe(413)
   })
 })
