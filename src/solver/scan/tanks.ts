@@ -9,9 +9,9 @@ import { hsv, type Img } from './pixels'
 import { readText } from './digits'
 import { brightest } from './text'
 
-/** How bright a name must be to be there at all: names measure 119 or more even shrunk to 1080p, empty
- *  tanks (dark glass) 88 or less. */
-const NAME_MIN = 105
+/** How bright a name must be to be there at all: on the labelled frames names measure 120 or more, and still
+ *  97 or more blurred by a 50% render scale; empty tanks (dark glass) 90 or less, blurred or not. */
+const NAME_MIN = 94
 const DIGIT_MIN = 0.75
 
 /** The engine's cap on Activity and Quantity (src/ui/sandboxValidate.ts). */
@@ -20,10 +20,12 @@ const MAX_STAT = 1_000_000
 /** Activity x Quantity from their line, kept within the game, and whether they multiply to the total. */
 export function stats(total: string | undefined, aq: string | undefined): { activity: number; quantity: number; fits: boolean } {
   const parts = (aq ?? '').split('x')
-  const [a, q] = parts.length === 2 ? parts.map(Number) : [NaN, NaN]
+  // the game writes no leading zeros: a reading that needs one ("139x08") is a misread
+  const number = (s: string | undefined) => (s !== undefined && /^[1-9]\d*$/.test(s) ? Number(s) : NaN)
+  const [a, q] = parts.length === 2 ? parts.map(number) : [NaN, NaN]
   const ok = (n: number) => Number.isInteger(n) && n >= 1 && n <= MAX_STAT
   if (!ok(a) || !ok(q)) return { activity: 1, quantity: 1, fits: false }
-  return { activity: a, quantity: q, fits: a * q === Number(total) }
+  return { activity: a, quantity: q, fits: a * q === number(total) }
 }
 
 /**
@@ -55,14 +57,22 @@ type Alts = string[][]
 /** Most readings tried when working out which of a line's candidate characters make the numbers fit. */
 const MAX_COMBOS = 200_000
 
+/** Other brightness cuts tried when the lines don't fit: blurred text (a lower render scale) runs digits
+ *  together under the usual one, and a stricter cut parts them. */
+const RETRY_CUTS = [0.85, 1, 0.55]
+
 /** Most stray glyphs dropped from one end of a line: a cursor over the label read as "21" (1x36 as 1x3621). */
 const MAX_STRAY = 2
+
+/** Most glyphs of a line taken from their next-best characters: a digit or two smudged by the heart icon, not
+ *  a line rewritten (blurred glyphs have many near candidates: "180x64" became "139x08" to fit a misread total) */
+const MAX_SWAPS = 2
 
 /** All readings of a line from its candidates, with how far down each glyph's list it went. */
 function readings(alts: Alts): { text: string; rank: number }[] {
   if (alts.reduce((n, a) => n * a.length, 1) > MAX_COMBOS) return []
-  let out: { text: string; rank: number }[] = [{ text: '', rank: 0 }]
-  for (const choices of alts) out = out.flatMap(o => choices.map((c, i) => ({ text: o.text + c, rank: o.rank + i })))
+  let out: { text: string; rank: number; swaps: number }[] = [{ text: '', rank: 0, swaps: 0 }]
+  for (const choices of alts) out = out.flatMap(o => choices.map((c, i) => ({ text: o.text + c, rank: o.rank + i, swaps: o.swaps + (i ? 1 : 0) }))).filter(o => o.swaps <= MAX_SWAPS)
   return out
 }
 
@@ -140,12 +150,24 @@ export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: 
   const { archetype, sure: archetypeSure } = archetypeOf(img, l.icon[i])
   fields[`tank${i}.archetype`] = { sure: archetypeSure, guess: archetype }
 
-  const total = readText(img, g, l.totalBand[i], 'label', data.digits.label)
-  const aq = readText(img, g, l.aqBand[i], 'label', data.digits.label)
-  let st = stats(total?.text, aq?.text)
-  // a digit beside the heart icon can be misread: the total decides which next-best digits are right
-  const fix = !st.fits && total && aq ? reconcile(total.alts, aq.alts) : null
-  if (fix) st = stats(fix.total, fix.aq)
+  const read = (cut?: number) => {
+    const total = readText(img, g, l.totalBand[i], 'label', data.digits.label, cut)
+    const aq = readText(img, g, l.aqBand[i], 'label', data.digits.label, cut)
+    let st = stats(total?.text, aq?.text)
+    // a digit beside the heart icon can be misread: the total decides which next-best digits are right
+    const fix = !st.fits && total && aq ? reconcile(total.alts, aq.alts) : null
+    if (fix) st = stats(fix.total, fix.aq)
+    return { total, aq, st, fix }
+  }
+  let r = read()
+  // kept only when Activity x Quantity makes the total as read, with no digits swapped for their next best: blurred
+  // glyphs have many near candidates, and some combination of them can make a misread total by chance
+  for (const cut of RETRY_CUTS) {
+    if (r.st.fits) break
+    const again = read(cut)
+    if (again.st.fits && !again.fix) r = again
+  }
+  const { total, aq, st, fix } = r
   // numbers that multiply to the total are right whatever the glyph scores: the check is too strict to pass by chance
   const fits = st.fits && !!total && !!aq && (!!fix || (total.score >= DIGIT_MIN && aq.score >= DIGIT_MIN))
   fields[`tank${i}.activity`] = { sure: fits, guess: String(st.activity), score: aq?.score, second: aq?.second }

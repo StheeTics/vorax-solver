@@ -137,8 +137,11 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const onFrame = async (captured: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep) => {
     setReadingBusy(true)
     try {
-      // a windowed game's capture holds its title bar and borders, found in the picture: the game alone is read
-      const area = windowedGame(captured)
+      // a windowed game's capture holds its title bar and borders, found in the picture: the game alone is read.
+      // In the app, Windows says whether the game's window has a frame (its outer size isn't its picture's)
+      const win = await desktopBridge()?.gameWindow?.().catch(() => null)
+      const framed = !!win && (win.outer[0] !== win.client[0] || win.outer[1] !== win.client[1])
+      const area = windowedGame(captured, framed)
       const cut = area ? cropTo(captured, area) : null
       const img = cut ? (typeof ImageData === 'undefined' ? (cut as unknown as ImageData) : new ImageData(cut.data, cut.width, cut.height)) : captured
       const readFrom = Date.now()

@@ -73,6 +73,12 @@ describe('digits that don’t fit the total are corrected from it', () => {
     const aq = alts([['4'], ['6'], ['3'], ['x'], ['1'], ['6'], ['7']])
     expect(reconcile(total, aq)).toEqual({ total: '77321', aq: '463x167' })
   })
+  it('never needs a leading zero, nor rewrites a line: blurred digits can make a misread total that way', () => {
+    // h2-087 at a 50% render scale: 11520 read as 1112, and 180x64 made into 139x08 to fit it
+    const total = alts([['1', '2', '7'], ['1', '2', '7'], ['1', '2', '7'], ['2', '7', '3']])
+    const aq = alts([['1', '2', '3'], ['8', '3', '9'], ['0', '6', '9'], ['x', '4', '8'], ['6', '8', '0'], ['4', 'x', '8']])
+    expect(reconcile(total, aq)).toBeNull()
+  })
   it('keeps what was read when it already fits', () => {
     expect(reconcile(alts([['3'], ['6']]), alts([['1'], ['x'], ['3', '8'], ['6']]))).toEqual({ total: '36', aq: '1x36' })
   })

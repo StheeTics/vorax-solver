@@ -59,6 +59,17 @@ describe('a windowed game’s title bar, found in the picture (the website and t
     expect(r.state.round).toBe(2)
     expect(windowedGame(stretch(frame('windowed-1866.png'), 1.25))).toEqual({ x: 2, y: 39, w: 2329, h: 1309 })
   })
+  // the 1866x1080 windowed boards shared since Oct 21: none read, their captures having no edge above the title
+  it('a title bar with no window edge above it, when the app knows the window has a frame', () => {
+    const img = frame('windowed-1866.png')
+    const noEdge = cropTo(img, { x: 0, y: 1, w: img.width, h: img.height - 1 })
+    expect(windowedGame(noEdge)).toBeNull()
+    const area = windowedGame(noEdge, true)!
+    expect(area.y).toBe(30)
+    const r = scan(cropTo(noEdge, area) as never, data)
+    expect(r.state.tanks.slice(0, 3).map(t => t && [t.activity, t.quantity])).toEqual([[5, 24], [5, 24], [5, 24]])
+    expect(['tank0', 'tank1', 'tank2'].every(t => r.fields[`${t}.activity`].sure && r.fields[`${t}.quantity`].sure)).toBe(true)
+  })
   it('nothing on a game screen that’s evenly dark at the top (a loading screen): no window edge, no border under it', () => {
     const img = { width: 400, height: 300, data: new Uint8ClampedArray(400 * 300 * 4).fill(45) }
     for (let y = 22; y < 300; y++) for (let x = 0; x < 400; x++) img.data.set([45 + (y % 30), 47, 50, 255], (y * 400 + x) * 4)
@@ -67,5 +78,8 @@ describe('a windowed game’s title bar, found in the picture (the website and t
   it('nothing on a borderless or fullscreen picture', () => {
     expect(windowedGame(frame('board-012.png'))).toBeNull()
     expect(windowedGame(frame('board-1080p.png'))).toBeNull()
+    // nor when the app says the window has a frame: the game's own top bar isn't flat like a title
+    expect(windowedGame(frame('board-012.png'), true)).toBeNull()
+    expect(windowedGame(frame('board-1080p.png'), true)).toBeNull()
   })
 })

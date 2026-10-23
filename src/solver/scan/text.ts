@@ -39,19 +39,23 @@ function otsu(img: Img, r: Rect, use: (r: number, g: number, b: number) => boole
   return at
 }
 
-function testFor(img: Img, r: Rect, kind: TextKind): (r: number, g: number, b: number) => boolean {
+function testFor(img: Img, r: Rect, kind: TextKind, cut: number): (r: number, g: number, b: number) => boolean {
   if (kind === 'round') return (R, G, B) => { const [, s, v] = hsv(R, G, B); return s > 0.2 && v > 0.45 && R >= G && G >= B }
   if (kind === 'refresh') return (R, G, B) => { const [, s, v] = hsv(R, G, B); return s < 0.35 && v > 0.6 }
-  const t = Math.max(60, 0.7 * otsu(img, r, (R, G, B) => !isRed(R, G, B)))
+  const t = Math.max(60, cut * otsu(img, r, (R, G, B) => !isRed(R, G, B)))
   return (R, G, B) => !isRed(R, G, B) && lum(R, G, B) > t
 }
 
+/** How bright a label's text pixels must be, as a share of its Otsu threshold. */
+export const LABEL_CUT = 0.7
+
 /**
  * Glyph boxes in a rect, left to right. Small text breaks apart under any brightness cut, so glyphs are the
- * runs of columns holding text pixels within the text's own row, not connected blobs.
+ * runs of columns holding text pixels within the text's own row, not connected blobs. cut: a label's
+ * brightness cut (LABEL_CUT), higher to part digits that blur runs together.
  */
-export function glyphs(img: Img, r: Rect, kind: TextKind): Rect[] {
-  const test = testFor(img, r, kind)
+export function glyphs(img: Img, r: Rect, kind: TextKind, cut = LABEL_CUT): Rect[] {
+  const test = testFor(img, r, kind, cut)
   const x0 = Math.max(0, Math.floor(r.x)), x1 = Math.min(img.width, Math.ceil(r.x + r.w))
   const y0 = Math.max(0, Math.floor(r.y)), y1 = Math.min(img.height, Math.ceil(r.y + r.h))
   const w = x1 - x0, h = y1 - y0

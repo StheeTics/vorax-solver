@@ -33,7 +33,10 @@ const EDGE_STEP = 25
 const CARD_DETAIL = 0.07
 
 // Measured at the screen's own resolution: stretched to the reference size, a smaller screen's edges soften.
-function hasCard(img: Img, c: CardPos, k: number): boolean {
+const hasCard = (img: Img, c: CardPos, k: number) => cardDetail(img, c, k) > CARD_DETAIL
+
+/** The share of a card face's middle that's edges. */
+function cardDetail(img: Img, c: CardPos, k: number): number {
   const p = patch(img, c.cx, c.cy, c.angle, { x: FACE_MIDDLE.x * k, y: FACE_MIDDLE.y * k, w: FACE_MIDDLE.w * k, h: FACE_MIDDLE.h * k }, 1)
   const g = gray(p)
   let edges = 0
@@ -42,12 +45,23 @@ function hasCard(img: Img, c: CardPos, k: number): boolean {
       const i = y * p.width + x
       if (Math.abs(g[i] - g[i - 1]) > EDGE_STEP || Math.abs(g[i] - g[i - p.width]) > EDGE_STEP) edges++
     }
-  return edges / (p.width * p.height) > CARD_DETAIL
+  return edges / (p.width * p.height)
 }
+
+/** A slot as busy as this share of the busiest one holds a card too: blur (a lower render scale) softens every
+ *  card's edges alike, and a real hand's weakest card keeps 0.3 of the busiest's detail at a 50% render scale
+ *  (0.4 sharp), where a bare slot beside cards has under 0.2. */
+const CARD_SHARE = 0.3
+/** ...once the busiest is a card at all: 0.063 or more at a 50% render scale, bare floor 0.04 or less */
+const CARD_BUSY = 0.05
 
 /** How many of the three hand positions hold a card. A real hand fills all three (a Potion Kit's five
  *  cover them too); when a card is played or picked it flies off alone, leaving one or two. */
-export const cardsPresent = (img: Img, l: Layout): number => l.cards.filter(c => hasCard(img, c, l.k)).length
+export function cardsPresent(img: Img, l: Layout): number {
+  const d = l.cards.map(c => cardDetail(img, c, l.k))
+  const busiest = Math.max(...d)
+  return d.filter(v => v > CARD_DETAIL || (busiest > CARD_BUSY && v >= CARD_SHARE * busiest)).length
+}
 
 /** 5 when a Potion Kit's fan reaches both far ends, where a usual hand of three leaves bare floor. */
 export const fanSize = (img: Img, l: Layout): 3 | 5 => (hasCard(img, l.hand5[0], l.k) && hasCard(img, l.hand5[4], l.k) ? 5 : 3)

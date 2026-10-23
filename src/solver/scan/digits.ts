@@ -7,8 +7,8 @@ import { glyphs, type TextKind } from './text'
 export interface TextRead { text: string; score: number; second: number; alts: string[][] }
 
 /** The characters in a rect, with the mean best and runner-up match scores (1 = identical). */
-export function readText(img: Img, g: Float32Array, r: Rect, kind: TextKind, refs: Record<string, number[][]>): TextRead | null {
-  const gs = glyphs(img, r, kind)
+export function readText(img: Img, g: Float32Array, r: Rect, kind: TextKind, refs: Record<string, number[][]>, cut?: number): TextRead | null {
+  const gs = glyphs(img, r, kind, cut)
   if (!gs.length) return null
   const lineH = Math.max(...gs.map(b => b.h))
   let text = '', score = 0, second = 0
