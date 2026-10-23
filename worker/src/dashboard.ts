@@ -92,6 +92,15 @@ export const DASHBOARD_HTML = `<!doctype html>
   .stat div span { display: block; color: var(--muted); font-size: 12px; }
   .stat div b { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
 
+  .meters { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 18px 24px; margin-bottom: 14px; }
+  .meter-head { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; color: var(--muted); font-size: 12.5px; }
+  .meter-head b { color: var(--text); font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .meter-head b small { color: var(--faint); font-size: 12px; font-weight: 400; }
+  .meter > small { display: block; margin-top: 4px; color: var(--faint); font-size: 12px; }
+  .track { height: 8px; margin-top: 6px; border-radius: 4px; background: var(--grid); overflow: hidden; }
+  .track i { display: block; height: 100%; border-radius: 4px; }
+  .track i.ok { background: var(--ok); } .track i.warn { background: var(--warn); } .track i.bad { background: var(--bad); }
+
   form { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; max-width: 520px; padding: 20px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
   form label { width: 100%; color: var(--muted); font-size: 13px; }
   input { flex: 1; min-width: 200px; padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font: inherit; }
@@ -126,6 +135,11 @@ export const DASHBOARD_HTML = `<!doctype html>
         <h2>Automation health</h2>
         <p class="sub">The repo's loops: on GitHub, and the nightly jobs on the PC. Late: a loop hasn't run in 2.5 times its interval.</p>
         <div class="scroll" id="health"><p class="sub">Reading GitHub…</p></div>
+      </section>
+      <section class="card" id="usage-card" hidden>
+        <h2>Free plan usage</h2>
+        <p class="sub" id="usage-sub"></p>
+        <div id="usage"></div>
       </section>
       <section class="card half">
         <h2>Games and players per day</h2>
@@ -315,6 +329,41 @@ document.addEventListener('click', async e => {
   }
 })
 
+// The free plans' use (scripts/live/usage.ts): today's share of each limit, amber from 70%, red from 90%, then
+// the last days. Cloudflare counts per UTC day.
+const mb = v => Math.round(v / 1e6) + ' MB'
+function usage(u) {
+  if (!u) return
+  const meter = (label, used, limit, fmt, note) => {
+    const share = limit ? used / limit : 0
+    const kind = share >= 0.9 ? 'bad' : share >= 0.7 ? 'warn' : 'ok'
+    return '<div class="meter"><div class="meter-head"><span>' + esc(label) + '</span><b>' + esc(fmt(used)) + ' <small>of ' + esc(fmt(limit)) + '</small></b></div>'
+      + '<div class="track"><i class="' + kind + '" style="width:' + Math.min(100, Math.max(1, Math.round(100 * share))) + '%"></i></div><small>' + esc(note) + '</small></div>'
+  }
+  const L = u.limits, cf = u.cloudflare, gh = u.github
+  let s = '<div class="meters">'
+  const today = cf && cf[cf.length - 1]
+  if (today) {
+    // the database grows by about its last day's growth each day: when it would be full at that rate
+    const before = cf.length > 1 ? cf[cf.length - 2].bytes : today.bytes
+    const grow = today.bytes - before
+    const full = grow > 0 ? Math.floor((L.bytes - today.bytes) / grow) : null
+    s += meter('Rows written', today.rowsWritten, L.rowsWritten, num, 'D1 today, resets 00:00 UTC. Past the limit, uploads wait in the players’ Solvers.')
+      + meter('Rows read', today.rowsRead, L.rowsRead, num, 'D1 today, resets 00:00 UTC')
+      + meter('Requests', today.requests, L.requests, num, 'the collector Worker today, resets 00:00 UTC')
+      + meter('Database', today.bytes, L.bytes, mb, (grow > 0 ? '+' + mb(grow) + ' since yesterday' : 'not growing') + (full !== null ? ' · full in about ' + full + ' day' + (full === 1 ? '' : 's') + ' at that rate' : ''))
+  } else s += '<p class="sub">Cloudflare usage isn’t set up or didn’t answer (CF_ANALYTICS_TOKEN).</p>'
+  if (gh) {
+    const runners = Object.entries(gh.runners).map(([k, v]) => k.replace(/^actions[_ ]/i, '').replace(/^./, c => c.toUpperCase()) + ' ' + Math.round(v)).join(' · ')
+    s += meter('Actions minutes', gh.minutes, L.minutes, num, 'GitHub this month: ' + (runners || 'no runs yet') + ' · Windows counts twice' + (gh.charged ? ' · charged $' + gh.charged.toFixed(2) : ''))
+  } else s += '<p class="sub">GitHub usage isn’t set up or didn’t answer (GH_BILLING_TOKEN).</p>'
+  s += '</div>'
+  if (cf && cf.length > 1) s += '<div class="scroll">' + table(['Day (UTC)', 'Rows written', 'Rows read', 'Requests', 'Database'], cf.slice().reverse().map(d => [d.day, num(d.rowsWritten), num(d.rowsRead), num(d.requests), mb(d.bytes)]), [1, 2, 3, 4]) + '</div>'
+  $('usage').innerHTML = s
+  $('usage-sub').textContent = 'Checked ' + u.checked.replace('T', ' ').slice(0, 16) + ' UTC, every 2 hours. Free limits: Cloudflare D1 and Workers per day, GitHub minutes per month.'
+  $('usage-card').hidden = false
+}
+
 async function load(pw) {
   password = pw
   const r = await fetch('/v1/stats', { headers: { authorization: 'Bearer ' + pw } })
@@ -336,6 +385,7 @@ async function load(pw) {
   $('updated').textContent = 'Updated ' + s.generated.replace('T', ' ').slice(0, 16) + ' UTC'
   $('updated').hidden = false
   void health()
+  usage(s.usage)
   $('days').innerHTML = bars(s.days)
   $('scores').innerHTML = scoreChart(s.days)
   $('real').innerHTML = (f.games
