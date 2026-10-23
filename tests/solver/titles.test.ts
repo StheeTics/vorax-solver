@@ -1,4 +1,4 @@
-import { nameFit, readTitles } from '@/solver/scan/titles'
+import { nameFit, readTitles, wholeName, type PictureRead } from '@/solver/scan/titles'
 import { emptyState, type Reading } from '@/solver/types'
 
 describe('nameFit', () => {
@@ -53,23 +53,42 @@ describe('readTitles', () => {
 describe('readTitles on a reading that left the cards to their names', () => {
   const pending = (): Reading => ({ state: { ...emptyState(), phase: 'potion', hand: [] }, fields: { phase: { sure: true, guess: 'potion' } }, problems: [], handPending: true })
 
-  it('asks for no pictures when every name reads', async () => {
+  it('matches every card by its picture, one at a time, while the names are read', async () => {
     const texts = ['Green Bile Solution', 'Fresh Spinal Powder', 'Slough Solution']
-    let asked = 0
-    const r = await readTitles(img, pending(), async () => texts.shift() ?? '', async () => (asked++, {}))
+    const asked: number[][] = []
+    const r = await readTitles(img, pending(), async () => texts.shift() ?? '', async (_phase, _size, slots) => (asked.push(slots), {}))
     expect(r.state.hand).toEqual(['Green Bile Solution', 'Fresh Spinal Powder', 'Slough Solution'])
-    expect(asked).toBe(0)
+    expect(asked).toEqual([[0], [1], [2]])
+    // this blank test picture has no title strip for the first step: the names come from the second
+    expect(r.timing?.steps).toEqual([2, 2, 2])
     expect(r.handPending).toBeUndefined()
   })
-  it('asks for pictures of only the cards it can’t name', async () => {
-    const texts = ['Green Bile Solution', '~~', 'Slough Solution']
-    const asked: number[][] = []
-    const r = await readTitles(img, pending(), async () => texts.shift() ?? '', async (_phase, _size, slots) => {
-      asked.push(slots)
-      return { 1: { ranks: [['Fresh Spinal Powder', 0.97]], field: { sure: true, guess: 'Fresh Spinal Powder' }, unknown: false } }
-    })
-    expect(asked).toEqual([[1]])
+  it('a sure picture names a card its title can’t, without the slower reads', async () => {
+    // the second card's picture is sure, so its title is never read
+    const texts = ['Green Bile Solution', 'Slough Solution']
+    let reads = 0
+    const r = await readTitles(img, pending(), async () => (reads++, texts.shift() ?? ''), async (_phase, _size, slots): Promise<Record<number, PictureRead>> =>
+      slots[0] === 1 ? { 1: { ranks: [['Fresh Spinal Powder', 0.97], ['Eggshell Powder', 0.9]], field: { sure: true, guess: 'Fresh Spinal Powder' }, unknown: false } } : {})
     expect(r.state.hand).toEqual(['Green Bile Solution', 'Fresh Spinal Powder', 'Slough Solution'])
+    expect(r.timing?.steps).toEqual([2, 0, 2])
+    expect(r.fields.hand1).toMatchObject({ sure: true, guess: 'Fresh Spinal Powder' })
+    expect(reads).toBe(2)
+  })
+  it('a picture that isn’t sure leaves the card to the slower reads', async () => {
+    const texts = ['Green Bile Solution', '~~', 'Slough Solution', 'Fresh Spinal Powder']
+    // its picture only 0.02 ahead of the next card: not sure, so its title is read on
+    const r = await readTitles(img, pending(), async () => texts.shift() ?? '', async (_phase, _size, slots): Promise<Record<number, PictureRead>> =>
+      slots[0] === 1 ? { 1: { ranks: [['Fresh Spinal Powder', 0.97], ['Eggshell Powder', 0.95]], field: { sure: true, guess: 'Fresh Spinal Powder' }, unknown: false } } : {})
+    expect(r.state.hand).toEqual(['Green Bile Solution', 'Fresh Spinal Powder', 'Slough Solution'])
+    expect(r.timing?.steps).toEqual([2, 3, 2])
+  })
+  it('no picture first when the pick isn’t known: the names say which it is', async () => {
+    const texts = ['Green Bile Solution', 'Fresh Spinal Powder', 'Slough Solution']
+    let asked = 0
+    const unsure: Reading = { ...pending(), fields: { phase: { sure: false, guess: 'potion' } } }
+    const r = await readTitles(img, unsure, async () => texts.shift() ?? '', async () => (asked++, {}))
+    expect(r.state.hand).toEqual(['Green Bile Solution', 'Fresh Spinal Powder', 'Slough Solution'])
+    expect(asked).toBe(0)
   })
   it('reads five cards when the hand is a Potion Kit’s fan', async () => {
     const texts = ['Eggshell Powder', 'Xeno-Hormone', 'Spinal Solution - Aemberon', 'Twin Hormone - Bone Sentry', 'Anesthetic Tincture - Aemberon']
@@ -97,5 +116,24 @@ describe('the Holy Water rites (Supreme potions whose effect is another card lat
     expect(best('First Rite Holy Wat')).toBe('First Rite Holy Water: Confession')
     expect(best('Ritual Holy Water: Flagelation | It')).toBe('Ritual Holy Water: Flagellation')
     expect(best('Purest Holy Water\nAwaken all')).toBe('Purest Holy Water')
+  })
+})
+
+describe('look-alike names on the first try (one name inside another)', () => {
+  it('takes the longer name when its extra word was read', () => {
+    expect(wholeName('potion', 'Targeted Xeno-Hormone')).toBe('Targeted Xeno-Hormone')
+    expect(wholeName('potion', 'Rare Potion Kit (Small)')).toBe('Rare Potion Kit (Small)')
+    expect(wholeName('potion', 'Potent Xenopurge Powder')).toBe('Potent Xenopurge Powder')
+  })
+  it('takes the shorter name when the longer one’s extra word, before it, is clearly missing', () => {
+    expect(wholeName('potion', 'Xeno-Hormone')).toBe('Xeno-Hormone')
+    expect(wholeName('potion', 'Potion Kit (Small)')).toBe('Potion Kit (Small)')
+    expect(wholeName('potion', 'Xenopurge Powder')).toBe('Xenopurge Powder')
+  })
+  it('a stray fragment is no extra word: "I po" doesn’t make Potent (it settles nothing, and the next try reads on)', () => {
+    expect(wholeName('potion', 'I po Xenopurge Powder')).not.toBe('Potent Xenopurge Powder')
+  })
+  it('a title cut short at its end can’t pass for the name it starts with', () => {
+    expect(wholeName('potion', 'Xenopanacea:')).toBeNull()
   })
 })

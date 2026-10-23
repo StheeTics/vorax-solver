@@ -19,8 +19,8 @@ const ocr = process.argv.includes('--text') ? await nodeTextReader() : null
 // as the site reads: the board's pixels, the cards' printed names, their pictures only where a name can't be read
 const read = async (img: Img, data: ReturnType<typeof buildData>) =>
   ocr
-    ? readTitles(img, scan(img, data, {}, { pictures: false }), ocr.readText, async (phase, size, slots) => {
-        const { fields, problems, ranks } = readSlots(img, layout(img), size, phase, slots, data)
+    ? readTitles(img, scan(img, data, {}, { pictures: false }), ocr.readText, async (phase, size, slots, among) => {
+        const { fields, problems, ranks } = readSlots(img, layout(img), size, phase, slots, data, {}, among)
         return Object.fromEntries(slots.map(j => [j, { ranks: ranks[j], field: fields[`hand${j}`], unknown: problems.some(p => p.kind === 'unknownArt' && p.field === `hand${j}`) }]))
       })
     : scan(img, data)

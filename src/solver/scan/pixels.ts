@@ -198,15 +198,17 @@ export function patch(img: Img, cx: number, cy: number, angle: number, r: Rect, 
   const w = Math.max(1, Math.round(r.w)), h = Math.max(1, Math.round(r.h))
   const data = new Uint8ClampedArray(w * h * 4)
   const c = Math.cos(angle), s = Math.sin(angle)
+  // the same sums as a per-pixel helper would make, without one: the picture match cuts thousands of these
+  const src = img.data, W = img.width
   for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
     const u = (r.x + i + 0.5) * scale, v = (r.y + j + 0.5) * scale
-    const x = Math.min(img.width - 1.001, Math.max(0, cx + u * c - v * s - 0.5))
+    const x = Math.min(W - 1.001, Math.max(0, cx + u * c - v * s - 0.5))
     const y = Math.min(img.height - 1.001, Math.max(0, cy + u * s + v * c - 0.5))
     const x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0
-    for (let k = 0; k < 4; k++) {
-      const at = (xx: number, yy: number) => img.data[(yy * img.width + xx) * 4 + k]
-      data[(j * w + i) * 4 + k] = (at(x0, y0) * (1 - fx) + at(x0 + 1, y0) * fx) * (1 - fy) + (at(x0, y0 + 1) * (1 - fx) + at(x0 + 1, y0 + 1) * fx) * fy
-    }
+    const p00 = (y0 * W + x0) * 4, p10 = p00 + 4, p01 = p00 + W * 4, p11 = p01 + 4
+    const o = (j * w + i) * 4
+    for (let k = 0; k < 4; k++)
+      data[o + k] = (src[p00 + k] * (1 - fx) + src[p10 + k] * fx) * (1 - fy) + (src[p01 + k] * (1 - fx) + src[p11 + k] * fx) * fy
   }
   return { width: w, height: h, data }
 }

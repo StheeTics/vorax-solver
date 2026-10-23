@@ -6,14 +6,14 @@ import { readSlots } from './cards'
 
 type Ask =
   | { id: number; kind?: 'frame'; img: ImageData; trigger?: string; local: LocalRefs; pictures?: boolean }
-  | { id: number; kind: 'slots'; img: ImageData; phase: HandPhase; size: number; slots: number[]; local: LocalRefs; ui?: number }
+  | { id: number; kind: 'slots'; img: ImageData; phase: HandPhase; size: number; slots: number[]; local: LocalRefs; ui?: number; among?: Record<number, string[]> }
 
 const DATA = unpack(data as unknown as PackedScanData)
 
 self.onmessage = (e: MessageEvent<Ask>) => {
   const ask = e.data
   if (ask.kind === 'slots') {
-    const { fields, problems, ranks } = readSlots(ask.img, layout(ask.img, ask.ui), ask.size, ask.phase, ask.slots, DATA, ask.local)
+    const { fields, problems, ranks } = readSlots(ask.img, layout(ask.img, ask.ui), ask.size, ask.phase, ask.slots, DATA, ask.local, ask.among)
     const read = Object.fromEntries(ask.slots.map(j => [j, { ranks: ranks[j], field: fields[`hand${j}`], unknown: problems.some(p => p.kind === 'unknownArt' && p.field === `hand${j}`) }]))
     self.postMessage({ id: ask.id, read })
     return

@@ -145,26 +145,52 @@ function fullCost(p: string, t: string): number {
   return Math.min(...prev)
 }
 
-/** The name the text shows whole: its end included, under one mistake in five letters, well ahead of the next,
- *  and not the start of a longer name (Xenopanacea, Xenopanacea: Osteotrophy). */
+/** A longer twin's extra letters (Targeted, Potent, Rare) must be missed this much or more for its shorter
+ *  twin to be taken: at 0.5-1 none of 2,206 labelled cards was misread; 0.75 keeps a margin either way. */
+const TWIN_MISSING = 0.75
+
+/** The name the text shows whole: its end included, under one mistake in five letters, well ahead of the next.
+ *  Twins (one name inside another: Xeno-Hormone, Targeted Xeno-Hormone) are told apart by the longer one's extra
+ *  letters. A longer name counts as read only when its extra letters were read too (a quarter of them missed at
+ *  most: "I po" is no Potent), and then the shorter one inside it is part of it. A shorter one is taken only when
+ *  the longer's extra letters come before it (Rare, Targeted, Potent) and are clearly missing: a title cut short
+ *  at its end can't pass for its shorter twin (Xenopanacea: cut to Xenopanacea). */
 export function wholeName(phase: HandPhase, text: string): string | null {
   const t = letters(text)
   if (!t) return null
-  const c = NAMES[phase].map(n => [n, fullCost(letters(n), t) / letters(n).length] as const).sort((a, b) => a[1] - b[1])
-  if (!(c[0][1] <= 0.2 && (c[1]?.[1] ?? 1) - c[0][1] >= 0.15)) return null
-  const best = letters(c[0][0])
-  return NAMES[phase].some(n => n !== c[0][0] && letters(n).includes(best)) ? null : c[0][0]
+  const raw = new Map(NAMES[phase].map(n => [n, fullCost(letters(n), t)]))
+  const cost = (n: string) => raw.get(n)! / letters(n).length
+  const inside = (short: string, long: string) => short !== long && letters(long).includes(letters(short))
+  // the extra letters' own misses: the longer name's, less those it shares with the shorter
+  const extraMissed = (long: string, short: string) => (raw.get(long)! - raw.get(short)!) / (letters(long).length - letters(short).length)
+  const whole = NAMES[phase].filter(n => cost(n) <= 0.2)
+  const fit = whole.filter(m => !whole.some(n => inside(n, m) && extraMissed(m, n) > 0.25))
+  const kept = fit.filter(n => !fit.some(m => inside(n, m)))
+  if (kept.length !== 1) return null
+  const b = kept[0]
+  const rivals = NAMES[phase].filter(n => n !== b && !inside(n, b) && !inside(b, n))
+  if (Math.min(...rivals.map(cost)) - cost(b) < 0.15) return null
+  for (const n of NAMES[phase].filter(n => inside(b, n)))
+    if (!letters(n).endsWith(letters(b)) || extraMissed(n, b) < TWIN_MISSING) return null
+  return b
 }
 
 /** One card's title text, read in steps (above): the first that settles it, else the best that was read; step:
- *  which one read it (4: none settled it). */
-export async function readTitle(crop: Img, phases: HandPhase[], readText: ReadText): Promise<{ text: string; step: number }> {
+ *  which one read it (4: none settled it). pictured: the card's name from its picture, when that match is sure,
+ *  found while the first step reads; it settles the card (step 0) unless that step settled it sooner. */
+export async function readTitle(crop: Img, phases: HandPhase[], readText: ReadText, pictured?: Promise<string | null>): Promise<{ text: string; step: number; name?: string }> {
   const read = (img: Img) => readText(img).catch(() => '')
   const window = titleWindow(crop)
-  if (window) {
-    const t = await read(window)
-    if (phases.some(p => wholeName(p, t) !== null && settled(ranked(p, t)))) return { text: t, step: 1 }
-  }
+  const first = window ? read(window) : Promise.resolve('')
+  const quick = (t: string) => phases.some(p => wholeName(p, t) !== null && settled(ranked(p, t)))
+  // whichever settles the card first: its picture, or its title alone
+  const early = await new Promise<{ text: string; step: number; name?: string } | null>(done => {
+    let left = pictured ? 2 : 1
+    const answer = (v: { text: string; step: number; name?: string } | null) => (v ? done(v) : --left === 0 && done(null))
+    pictured?.then(n => answer(n ? { text: '', step: 0, name: n } : null), () => answer(null))
+    first.then(t => answer(window && quick(t) ? { text: t, step: 1 } : null))
+  })
+  if (early) return early
   const fit = (t: string) => Math.max(...phases.map(p => ranked(p, t)[0][1]))
   const tries: string[] = []
   for (const [step, img] of [[2, resize(crop, Math.round(crop.width / 2), Math.round(crop.height / 2))], [3, crop]] as const) {
@@ -178,9 +204,19 @@ export async function readTitle(crop: Img, phases: HandPhase[], readText: ReadTe
 /** Some of a hand's cards matched by their pictures: per position, the best few cards, that position's
  *  field, and whether no picture was close enough. */
 export interface PictureRead { ranks: [string, number][]; field?: FieldRead; unknown: boolean }
-export type Pictures = (phase: HandPhase, size: number, slots: number[]) => Promise<Record<number, PictureRead>>
+export type Pictures = (phase: HandPhase, size: number, slots: number[], among?: Record<number, string[]>) => Promise<Record<number, PictureRead>>
 
 const PHASES: HandPhase[] = ['potion', 'instrument', 'protocol']
+
+/** A picture match taken without reading the name: its score and its lead over the next card. On 2,206 labelled
+ *  still cards matched with references from other games only (Oct 23), 89% cleared these and none was wrong; of the
+ *  cards whose title alone didn't settle them, 87% did. */
+const PICTURE_SURE = 0.95
+const PICTURE_LEAD = 0.04
+export const pictureSure = (p: PictureRead | undefined): string | null => {
+  const [top, next] = p?.ranks ?? []
+  return p && !p.unknown && top && top[1] >= PICTURE_SURE && top[1] - (next?.[1] ?? 0) >= PICTURE_LEAD ? top[0] : null
+}
 
 /** The reading with each card's printed name added. pictures: matches the cards whose names can't be
  *  settled, when the reading left them out (handPending). */
@@ -190,11 +226,18 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
   const l = layout(img, reading.ui)
   const header = reading.state.phase
   const phases: HandPhase[] = reading.fields.phase?.sure ? [header] : PHASES
+  const size0 = read || reading.handSize || 3
+  // image first: with the pick known, each card is matched by its picture (one at a time, so the first card's
+  // answer doesn't wait for the last) while its title is read
+  const byPicture: Promise<PictureRead | undefined>[] =
+    phases.length === 1 && pictures && !read ? handAt(l, size0).map((_, j) => pictures(header, size0, [j]).then(r => r[j], () => undefined)) : []
   let steps: number[] = []
+  let pictured: (string | undefined)[] = []
   const titles = async (size: number) => {
-    const reads = await Promise.all(handAt(l, size).map(c => readTitle(titleCrop(img, c, l.k), phases, readText)))
+    const reads = await Promise.all(handAt(l, size).map((c, j) => readTitle(titleCrop(img, c, l.k), phases, readText, byPicture[j]?.then(pictureSure))))
     const texts = reads.map(r => r.text)
     steps = reads.map(r => r.step)
+    pictured = reads.map(r => r.name)
     // A card raised by the mouse can cover the header: then the names say which pick it is.
     return phases
       .map(phase => {
@@ -203,17 +246,26 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
       })
       .reduce((a, b) => (b.fit > a.fit ? b : a))
   }
-  const { phase, size, slots, texts } = await titles(read || reading.handSize || 3)
+  const { phase, size, slots, texts } = await titles(size0)
   const pos = handAt(l, size)
 
-  // the cards the names don't settle, by their pictures: the reading's own when it has them for this hand
-  const need = slots.flatMap((r, j) => (settled(r) ? [] : [j]))
+  // the cards neither their picture nor their name settled, by their pictures: the reading's own when it has them
+  // for this hand, or the ones matched above
+  const need = slots.flatMap((r, j) => (settled(r) || pictured[j] ? [] : [j]))
+  // a name torn between a few (Spinal Solution - Agi: Agito or Aemberon) has its picture compared with those
+  // alone, not every card: the whole set took about 2 s a board on live boards
+  const close = (r: (readonly [string, number])[]) => r.filter(([, q]) => q >= r[0][1] - GAP).map(([n]) => n)
+  const among = Object.fromEntries(need.filter(j => slots[j][0][1] >= MIN_Q).map(j => [j, close(slots[j])]))
   const fromReading = read === size && phase === header
-  const pics: Record<number, PictureRead> = fromReading
-    ? Object.fromEntries(need.map(j => [j, { ranks: reading.handRanks![j], field: reading.fields[`hand${j}`], unknown: reading.problems.some(p => p.kind === 'unknownArt' && p.field === `hand${j}`) }]))
-    : need.length && pictures
-      ? await pictures(phase, size, need)
-      : {}
+  // only the cards still unnamed wait for their pictures (and those named by them, already in): a hand its names
+  // settled is done without them
+  let pics: Record<number, PictureRead> = {}
+  if (byPicture.length) {
+    const wanted = pos.flatMap((_, j) => (need.includes(j) || pictured[j] ? [j] : []))
+    for (const [j, m] of await Promise.all(wanted.map(async j => [j, await byPicture[j]] as const))) if (m) pics[j] = m
+  }
+  else if (fromReading) pics = Object.fromEntries(need.map(j => [j, { ranks: reading.handRanks![j], field: reading.fields[`hand${j}`], unknown: reading.problems.some(p => p.kind === 'unknownArt' && p.field === `hand${j}`) }]))
+  else if (need.length && pictures) pics = await pictures(phase, size, need, among)
 
   const fields: Record<string, FieldRead> = Object.fromEntries(Object.entries(reading.fields).filter(([k]) => !/^hand\d$/.test(k)))
   const hand: string[] = []
@@ -223,13 +275,15 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
     const key = `hand${j}`
     const pic = pics[j]
     let name: string | undefined
-    if (settled(r)) {
+    if (pictured[j]) {
+      name = pictured[j]
+      fields[key] = { sure: true, guess: name, score: pic?.ranks[0]?.[1], second: pic?.ranks[1]?.[1] }
+    } else if (settled(r)) {
       name = top[0]
       fields[key] = { sure: true, guess: name, score: top[1], second: second?.[1] }
     } else if (top[1] >= MIN_Q) {
       // two names fit about as well: the picture picks between them
-      const close = r.filter(([, q]) => q >= top[1] - GAP).map(([n]) => n)
-      name = pic?.ranks.find(([n]) => close.includes(n))?.[0] ?? top[0]
+      name = pic?.ranks.find(([n]) => close(r).includes(n))?.[0] ?? top[0]
       fields[key] = { sure: pic?.ranks[0]?.[0] === name && !!pic.field?.sure, guess: name, score: top[1], second: second?.[1] }
     } else if (pic && !pic.unknown && pic.field?.guess) {
       name = pic.field.guess
