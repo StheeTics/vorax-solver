@@ -226,3 +226,21 @@ describe('the round each instrument was picked in (for the instruments that fire
     expect(r.rounds).toEqual([0, 0])
   })
 })
+
+// Oct 23: a run began with a flask the game puts in the instrument panel (never offered), and the Vorax screen
+// was opened again mid-run; the Solver forgot the run and read the flask as Incubation Sac (0.65)
+const FLASK: [string, number][] = [['Incubation Sac', 0.65], ['Chrysalis Specimen', 0.64]]
+
+it('the screen opened again mid-run keeps the run: its picks and its starting item', () => {
+  let t = newTracker()
+  t = trackInstruments(t, reading({ phase: 'instrument', round: 1, hand: offer, panel: [FLASK] }), 'screen').tracker
+  t = trackInstruments(t, reading({ panel: [FLASK, [['Contracted Claws', 0.97]]] }), 'board').tracker
+  expect(t.owned).toEqual(['Contracted Claws'])
+  const r = trackInstruments(t, reading({ round: 4, panel: [FLASK, [['Contracted Claws', 0.97]]] }), 'screen')
+  expect(r.instruments).toEqual(['Contracted Claws'])
+})
+
+it('joined mid-run, an icon in the oldest slot like no instrument we know is a starting item, not a guess', () => {
+  const r = trackInstruments(newTracker(), reading({ round: 4, panel: [FLASK, [['Chrysalis Specimen', 0.95]], [['Beak of the Twice-Born', 1]]] }), 'board')
+  expect(r.instruments).toEqual(['Chrysalis Specimen', 'Beak of the Twice-Born'])
+})

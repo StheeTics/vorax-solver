@@ -46,7 +46,9 @@ export function trackInstruments(
   trigger?: string,
 ): { tracker: InstrumentTracker; instruments: string[]; rounds: number[]; fields: Record<string, FieldRead>; ask?: PickQuestion; settled: number[] } {
   const s = r.state
-  const start = trigger === 'screen' || (s.phase === 'instrument' && s.round === 1 && s.instruments.length === 0)
+  // a run starts with its first instrument offer; the screen opened again later in a run (round 2 on) is the same
+  // run, whose picks, corrections and starting items stand (they were lost, Oct 23)
+  const start = (trigger === 'screen' && s.phase === 'instrument' && s.round === 1) || (s.phase === 'instrument' && s.round === 1 && s.instruments.length === 0)
   let owned = start ? [] : [...t.owned]
   // a pick comes from the offer before this picture; this picture's offer is for the next pick
   let offer = start ? null : t.offer
@@ -117,7 +119,14 @@ export function trackInstruments(
     if (!sure) unsure = [...unsure, { offer: [...offer], slot: count - 1, looks: 0 }]
     offer = null
   } else {
-    // out of step (joined mid-game, or a missed picture): take the panel as read
+    // out of step (joined mid-game, or a missed picture): take the panel as read, less any icons in its oldest
+    // slots like no instrument we know: things the game puts there that are never offered (starting items), which
+    // a first offer would have shown for what they are. A guess at one read it as Incubation Sac (0.65; known
+    // instruments ~0.95-1, Oct 23).
+    let lead = 0
+    while (lead < panel.length && (ranks[lead]?.[0]?.[1] ?? 0) < SURE) lead++
+    startItems += lead
+    panel = panel.slice(lead)
     owned = [...panel]
     rounds = owned.map(() => 0)
     unsure = unsure.filter(q => q.slot < owned.length)
