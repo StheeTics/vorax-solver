@@ -48,6 +48,9 @@ async function cloudflare(token: string, account: string, now: Date, fetchFn: ty
 
 interface BillingItem { product: string; sku: string; quantity: number; unitType: string; netAmount: number; repositoryName?: string }
 
+/** The report names a repo "owner/name" or just "name" */
+const sameRepo = (named: string | undefined, repo: string) => !!named && (named.toLowerCase() === repo.toLowerCase() || named.toLowerCase() === repo.split('/')[1]?.toLowerCase())
+
 async function github(token: string, repo: string, now: Date, fetchFn: typeof fetch): Promise<Usage['github']> {
   const year = now.getUTCFullYear(), month = now.getUTCMonth() + 1
   const res = await fetchFn(`https://api.github.com/users/${repo.split('/')[0]}/settings/billing/usage?year=${year}&month=${month}`, {
@@ -62,10 +65,12 @@ async function github(token: string, repo: string, now: Date, fetchFn: typeof fe
     charged += i.netAmount ?? 0
     if (!/minute/i.test(i.unitType)) continue
     // the report covers every repo of the account: only this one is counted
-    if (i.repositoryName !== repo) { others += i.quantity; continue }
+    if (!sameRepo(i.repositoryName, repo)) { others += i.quantity; continue }
     runners[i.sku] = (runners[i.sku] ?? 0) + i.quantity
     minutes += i.quantity * (WEIGHT.find(([re]) => re.test(i.sku))?.[1] ?? 1)
   }
+  const names = [...new Set(actions.map(i => i.repositoryName ?? '(none)'))].join(', ')
+  console.log(`GitHub Actions minutes this month: ${Math.round(minutes)} in ${repo}, ${Math.round(others)} in others (report's repos: ${names})`)
   return { month: `${year}-${String(month).padStart(2, '0')}`, minutes: Math.round(minutes), runners, others: Math.round(others), charged: Math.round(charged * 100) / 100 }
 }
 

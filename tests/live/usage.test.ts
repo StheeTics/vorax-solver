@@ -23,7 +23,7 @@ const cfAnswer = {
 const ghAnswer = {
   usageItems: [
     { product: 'actions', sku: 'actions_linux', quantity: 300, unitType: 'Minutes', netAmount: 0, repositoryName: 'someone/secret' },
-    { product: 'actions', sku: 'actions_windows', quantity: 40, unitType: 'Minutes', netAmount: 0, repositoryName: 'someone/secret' },
+    { product: 'actions', sku: 'actions_windows', quantity: 40, unitType: 'Minutes', netAmount: 0, repositoryName: 'secret' },
     { product: 'actions', sku: 'actions_linux', quantity: 4000, unitType: 'Minutes', netAmount: 0, repositoryName: 'someone/open' },
     { product: 'actions', sku: 'actions_storage', quantity: 1.5, unitType: 'GigabyteHours', netAmount: 0 },
     { product: 'copilot', sku: 'copilot_for_business', quantity: 1, unitType: 'UserMonths', netAmount: 19 },
