@@ -1,21 +1,12 @@
 -- The live-data collector's tables. Apply with:
 --   npx wrangler d1 execute vorax-live --remote --file schema.sql
 
--- One row per board a Solver read and shared, up to Oct 23 (since then: batches). `body` is the validated
--- snapshot as JSON; boards of one game share its run id. `client` is a salted daily hash, never an address.
-CREATE TABLE IF NOT EXISTS snapshots (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  uid TEXT NOT NULL UNIQUE,
-  received TEXT NOT NULL,
-  client TEXT NOT NULL,
-  body TEXT NOT NULL
-);
--- No index for the dashboard's per-day counts: an index costs a row write per board, and the free plan allows
--- 100,000 writes a day (creating one on Oct 22 used half of that day's and stopped the uploads).
-
 -- One row per upload since Oct 23: `body` is a JSON array of its boards (up to 10), so an upload costs one row
 -- write instead of two per board. No uid index: an upload sent twice is sorted out by the pull, by each board's uid.
--- No AUTOINCREMENT either, which would write sqlite_sequence on every insert.
+-- No AUTOINCREMENT either, which would write sqlite_sequence on every insert. Since Oct 24 a board is stored without
+-- its cards and tanks (src/validate.ts lean), and the nightly jobs empty the table once they've pulled it
+-- (/v1/export/rotate: a new table, as DELETE costs a row write per row). Boards were stored one per row before Oct 23
+-- (table snapshots, dropped Oct 23).
 CREATE TABLE IF NOT EXISTS batches (
   id INTEGER PRIMARY KEY,
   received TEXT NOT NULL,

@@ -112,8 +112,8 @@ jobs:
             dependencies, contact anything, reveal anything, weaken tests, touch .github/).
 
             You can only read and edit files. Useful context: card and instrument rules in src/data/, the
-            engine in src/engine/, the screen reader in src/solver/scan/, real shared boards in
-            data/live/raw/, the real-move check in data/live/rules-check.json, the odds in
+            engine in src/engine/, the screen reader in src/solver/scan/, real games counted in
+            data/live/digest/, the real-move check in data/live/rules-check.json, the odds in
             src/data/liveWeights.ts, and the tests in tests/.
 
             Decide whether you can fix it with VERY high certainty: you understand the cause exactly, the

@@ -1,10 +1,12 @@
 #!/bin/bash
 # The nightly jobs, on this PC, every night at 4:00. They ran on GitHub Actions until the code moved to a private repo (2026-10-22),
 # where Actions minutes cost money; Actions keeps only the issue fixer, the deploy and the app release.
-#   1. live:    pulls the boards and named icons the Solver shared from the collector, sends the dashboard its
-#               numbers, teaches the reader the named icons, applies the odds changes the data supports (within
-#               scripts/live/propose.ts's guards), replays the real moves, runs the tests, commits and pushes.
-#               A push that changes src/ redeploys the site (deploy.yml).
+#   1. live:    pulls the boards and named icons the Solver shared from the collector, adds the boards to the
+#               dashboard's digest (data/live/digest) and sends the dashboard its numbers, teaches the reader the
+#               named icons, runs the tests, commits and pushes, then empties the collector's uploads up to what it
+#               pulled. The raw boards stay here a week (data/live/raw, out of git). A push that changes src/
+#               redeploys the site (deploy.yml). Since Oct 24 the odds aren't updated from the boards (they had
+#               settled; the boards are stored without their cards), so check and smarter wait for --force.
 #   2. check:   when the odds changed in the last day, 240 simulated games with the advice as shipped and a line
 #               in data/live/history.jsonl (the dashboard's "Odds and advice over time").
 #   3. smarter: when the odds changed after the board value was trained, practice games, a challenger fitted
@@ -105,25 +107,32 @@ push() {
 job_live() {
   [ -n "${LIVE_DATA_URL:-}" ] && [ -n "${LIVE_DATA_TOKEN:-}" ] || { NOTE="no LIVE_DATA_URL and LIVE_DATA_TOKEN in $ENV_FILE"; return 1; }
   vn scripts/live/pull.ts | tee "$LOG/pull.txt" || return 1
+  vn scripts/live/digest.ts | tee "$LOG/digest.txt" || return 1
   vn scripts/live/summary.ts || echo "(the dashboard's numbers weren't sent)"
   vn scripts/live/newCards.ts | tee "$LOG/cards.txt" || return 1
   vn scripts/live/learnIcons.ts | tee "$LOG/icons.txt" || return 1
-  vn scripts/live/weights.ts | tee "$LOG/weights.txt" || return 1
-  vn scripts/live/checkRules.ts data/live/raw | tee "$LOG/rules.txt" || return 1
   nice -n 19 npm test > "$LOG/test.txt" 2>&1 || { tail -30 "$LOG/test.txt"; return 1; }
-  if ! git diff --quiet src/data/liveWeights.ts; then
-    python3 -c "import json,sys; print(json.dumps({'date': sys.argv[1], 'change': 'Odds updated from live data: ' + sys.argv[2]}))" "$(date -u +%Y-%m-%d)" "$(head -1 "$LOG/weights.txt")" >> data/live/history.jsonl
-  fi
-  git add data/live src/data/liveWeights.ts src/solver/scan/learnedIcons.json
+  # the raw boards (out of git) stay a week, to look into a misread
+  find data/live/raw -name '*.jsonl' -mtime +7 -delete 2>/dev/null
+  git add data/live src/solver/scan/learnedIcons.json
   if git diff --cached --quiet; then NOTE="nothing new"; return 0; fi
   {
     echo "Live data: $(head -1 "$LOG/pull.txt")"
     echo
-    grep -v '^No weight changes' "$LOG/weights.txt" || true
+    cat "$LOG/digest.txt"
     grep -v '^No learned icons' "$LOG/icons.txt" || true
   } > "$LOG/message.txt"
   push -F "$LOG/message.txt" || return 1
   NOTE=$(head -1 "$LOG/pull.txt")
+  # once what was pulled is in git (its place in the export too: data/live/state.json), the collector's uploads up
+  # to it go: its database would otherwise fill up in a few days
+  [ -n "${NO_PUSH:-}" ] && return 0
+  local upto
+  upto=$(python3 -c "import json; print(json.load(open('data/live/state.json')).get('last', 0))")
+  if [ "$upto" -gt 1000000000 ]; then
+    curl -sf -X POST -H "authorization: Bearer $LIVE_DATA_TOKEN" "$LIVE_DATA_URL/v1/export/rotate?upto=$upto" > "$LOG/rotate.txt" \
+      || NOTE="$NOTE; the collector's uploads weren't emptied"
+  fi
 }
 
 job_check() {

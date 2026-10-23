@@ -1,4 +1,4 @@
-import { summarize, type StatRow } from '../../worker/src/stats'
+import { digest, report, summarize, type StatRow } from '../../worker/src/stats'
 import { handle, type Store } from '../../worker/src/index'
 import { emptyStats, withCounts } from '../../worker/src/summary'
 
@@ -82,7 +82,7 @@ describe('the dashboard summary', () => {
     expect(s.corrected).toBe(0.25)
   })
   it('the latest games, newest first, without anything about who played', () => {
-    expect(s.recent[0]).toEqual({ start: '2026-10-19T09:00:00Z', boards: 1, round: 13, app: false, instruments: ['Incubation Sac'], score: 0, finished: false })
+    expect(s.recent[0]).toEqual({ start: '2026-10-19T09:00:00Z', boards: 1, round: 13, app: false, score: 0, finished: false })
     expect(JSON.stringify(s)).not.toMatch(/"a2"|"client"/)
   })
 })
@@ -256,5 +256,51 @@ describe('the summary with the collector’s counts put in', () => {
     const e = withCounts(null, counts, now)
     expect(e.totals).toMatchObject({ boards: 0, playerDays: 4, games: 0 })
     expect(e.finished).toEqual(emptyStats(now).finished)
+  })
+})
+
+describe('the digest, kept between pulls so the boards needn’t be', () => {
+  const pest = (activity: number, quantity: number) => ({ archetype: 'pest', rarity: 'magic', activity, quantity })
+  const dbg = { frame: [1920, 1080], dpr: 1, hdr: false, browser: 'Chrome 131', off: 0, corrected: false, tanks: [], scores: {} }
+  const rows = [
+    row('2026-10-18T10:00:00Z', 'a', board('r', 3, { install: '11111111-1111-4111-8111-111111111111', debug: dbg, advice: { move: 'x', activity: 1, reached: 0.7 } })),
+    row('2026-10-18T10:10:00Z', 'a', board('r', 9, { unsure: ['hand0'], debug: dbg })),
+    row('2026-10-18T23:50:00Z', 'a', board('r', 13, { phase: 'protocol', tanks: [pest(1000, 1000)] })),
+    // the next game in the same run, over midnight
+    row('2026-10-19T00:10:00Z', 'a', board('r', 2, { instruments: ['Incubation Sac'], corrected: ['hand1'] })),
+    row('2026-10-19T00:20:00Z', 'b', board('q', 5)),
+  ]
+  const now = new Date('2026-10-19T12:00:00Z')
+  it('boards added a pull at a time give the numbers all of them at once do', () => {
+    for (let cut = 0; cut <= rows.length; cut++) {
+      const twice = digest(rows.slice(cut), JSON.parse(JSON.stringify(digest(rows.slice(0, cut)))))
+      expect(report(twice, now)).toEqual(summarize(rows, now))
+    }
+  })
+  it('says how far it goes', () => {
+    expect(digest(rows).upto).toBe('2026-10-19T00:20:00Z')
+  })
+  it('holds no cards and no daily player code beyond what the collector already counts', () => {
+    expect(JSON.stringify(digest(rows))).not.toMatch(/Incubation Sac|pest/)
+  })
+})
+
+describe('boards stored lean (since Oct 24): no tanks or instruments', () => {
+  const lean = (run: string, round: number, extra: Record<string, unknown> = {}) => JSON.stringify({ run, seq: 0, app: 'abc1234', source: 'live', trigger: 'board', round, phase: 'potion', refreshes: 0, shelley: 6, corrected: [], score: 0, picks: 0, ...extra })
+  const s = summarize([
+    row('2026-10-24T10:00:00Z', 'a', lean('g1', 1, { phase: 'instrument' })),
+    row('2026-10-24T10:01:00Z', 'a', lean('g1', 1, { picks: 1, score: 4000 })),
+    row('2026-10-24T10:30:00Z', 'a', lean('g1', 13, { phase: 'protocol', picks: 3, score: 900_000, final: 950_000 })),
+    // a final with an unsure number isn't one
+    row('2026-10-24T11:00:00Z', 'b', lean('g2', 13, { phase: 'protocol', picks: 3, score: 9, final: 9, unsure: ['tank0.quantity'] })),
+    // never past the first offer
+    row('2026-10-24T12:00:00Z', 'c', lean('g3', 1, { phase: 'instrument' })),
+  ], new Date('2026-10-24T13:00:00Z'))
+  it('a game is played once it has an instrument; its final is the one stored', () => {
+    expect(s.totals.games).toBe(2)
+    expect(s.finished.finals).toEqual([950_000])
+  })
+  it('a game’s score at its last board is the stored total', () => {
+    expect(s.recent.find(g => g.start === '2026-10-24T11:00:00Z')).toMatchObject({ score: 9, finished: false })
   })
 })

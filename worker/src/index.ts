@@ -3,7 +3,7 @@
 // counted by a salted hash that changes every day. The free plan allows 100,000 row writes a day, so an upload
 // is one row however many boards it carries, and a player one row a day.
 import names from './names.json'
-import { validate, validateCard, validateIcon } from './validate'
+import { lean, validate, validateCard, validateIcon } from './validate'
 import type { Stats } from './stats'
 import { isStats, withCounts, type DayCount } from './summary'
 import { DASHBOARD_HTML } from './dashboard'
@@ -15,9 +15,13 @@ export interface Store extends TrainingStore {
   insertBatch(body: string): Promise<void>
   /** notes a daily player code as seen that day: a write only the first time */
   seePlayer(day: string, client: string): Promise<void>
-  /** boards after an id, about `limit` of them: a board per row up to Oct 23, then an upload per row (its body an
-   *  array of boards; ids from BATCHES on) */
+  /** uploads after an id (ids from BATCHES on; boards were stored one per row before Oct 23, ids below it),
+   *  about `limit` boards: an upload per row, its body an array of boards */
   export(after: number, limit: number): Promise<{ id: number; received: string; body: string }[]>
+  /** empties the uploads table up to an export id the nightly jobs have pulled, without a row write per upload (a
+   *  DELETE costs one per row, a DROP TABLE none): the uploads from that one on move to a new table, so ids carry
+   *  on; null when no upload has that id */
+  rotate(upto: number): Promise<{ kept: number; dropped: number } | null>
   /** stores an icon with a new uid; returns 1 if it was new */
   insertIcon(row: { uid: string; client: string; body: string }): Promise<number>
   exportIcons(after: number, limit: number): Promise<{ id: number; uid: string; client: string; body: string }[]>
@@ -44,8 +48,11 @@ export interface Env {
   DB?: D1Like
 }
 
+interface D1Bound { run(): Promise<{ meta: { changes: number } }>; first<T>(): Promise<T | null>; all<T>(): Promise<{ results: T[] }> }
 interface D1Like {
-  prepare(sql: string): { bind(...v: unknown[]): { run(): Promise<{ meta: { changes: number } }>; first<T>(): Promise<T | null>; all<T>(): Promise<{ results: T[] }> } }
+  prepare(sql: string): { bind(...v: unknown[]): D1Bound }
+  /** the statements in one transaction */
+  batch(statements: D1Bound[]): Promise<unknown>
 }
 
 const ORIGIN = 'https://tidewarden.github.io'
@@ -94,9 +101,9 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     if (!Array.isArray(body) || body.length < 1 || body.length > MAX_BATCH) return json({ error: `1 to ${MAX_BATCH} snapshots` }, 400, cors)
     // a board sent twice in one upload is kept once; an upload sent twice is sorted out by the pull
     const seen = new Set<unknown>()
-    const valid = body.map(s => validate(s, names)).filter(s => s !== null && !seen.has(s.uid) && seen.add(s.uid))
+    const valid = body.map(s => validate(s, names)).filter((s): s is NonNullable<typeof s> => s !== null && !seen.has(s.uid) && !!seen.add(s.uid))
     if (valid.length) {
-      await store.insertBatch(JSON.stringify(valid))
+      await store.insertBatch(JSON.stringify(valid.map(lean)))
       await store.seePlayer(day, client)
     }
     return json({ stored: valid.length, dropped: body.length - valid.length }, 200, cors)
@@ -187,6 +194,15 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
     return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
   }
 
+  // after the nightly jobs pulled: empties the uploads table up to what they pulled (Store rotate)
+  if (url.pathname === '/v1/export/rotate' && req.method === 'POST') {
+    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    const upto = Number(url.searchParams.get('upto'))
+    if (!Number.isInteger(upto) || upto <= BATCHES) return json({ error: 'upto: an export id' }, 400)
+    const done = await store.rotate(upto)
+    return done ? json(done) : json({ error: 'no upload with that id' }, 409)
+  }
+
   // The dashboard's numbers from the nightly jobs (scripts/live/summary.ts), with the export token
   if (url.pathname === '/v1/summary' && req.method === 'PUT') {
     if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
@@ -246,14 +262,23 @@ export function d1Store(db: D1Like): Store {
       await db.prepare('INSERT OR IGNORE INTO players (day, client) VALUES (?, ?)').bind(day, client).run()
     },
     async export(after, limit) {
-      if (after < BATCHES) {
-        const { results } = await db.prepare('SELECT id, received, body FROM snapshots WHERE id > ? ORDER BY id LIMIT ?').bind(after, limit).all<{ id: number; received: string; body: string }>()
-        if (results.length) return results
-      }
       // an upload is up to 10 boards
       const { results } = await db.prepare('SELECT id + ? AS id, received, body FROM batches WHERE id > ? ORDER BY id LIMIT ?')
         .bind(BATCHES, Math.max(0, after - BATCHES), Math.ceil(limit / MAX_BATCH)).all<{ id: number; received: string; body: string }>()
       return results
+    },
+    async rotate(upto) {
+      const id = upto - BATCHES
+      if (!(await db.prepare('SELECT 1 AS x FROM batches WHERE id = ?').bind(id).first())) return null
+      const n = await db.prepare('SELECT (SELECT COUNT(*) FROM batches WHERE id >= ?) AS kept, COUNT(*) AS total FROM batches').bind(id).first<{ kept: number; total: number }>()
+      // the pulled upload itself stays as the newest one there, so the next id is one past it
+      await db.batch([
+        db.prepare('CREATE TABLE batches_next (id INTEGER PRIMARY KEY, received TEXT NOT NULL, body TEXT NOT NULL)').bind(),
+        db.prepare('INSERT INTO batches_next SELECT id, received, body FROM batches WHERE id >= ?').bind(id),
+        db.prepare('DROP TABLE batches').bind(),
+        db.prepare('ALTER TABLE batches_next RENAME TO batches').bind(),
+      ])
+      return { kept: n!.kept, dropped: n!.total - n!.kept }
     },
     async insertIcon(r) {
       const res = await db.prepare('INSERT OR IGNORE INTO icons (uid, received, client, body) VALUES (?, ?, ?, ?)').bind(r.uid, new Date().toISOString(), r.client, r.body).run()

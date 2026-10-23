@@ -1,9 +1,12 @@
 // Pulling shared boards from the collector into data/live/raw/<date>.jsonl (scripts/live/pull.ts runs it). Each
 // line is a board with `received`, when the collector stored it (boards pulled before Oct 22 have only the file's date).
 // Since Oct 23 the collector keeps an upload's boards together: its export row's body is an array of them.
+// Since Oct 24 the raw boards stay on the PC that pulls them, for a week (scripts/nightly.sh), out of git: what the
+// dashboard needs of them is kept in git as a digest (data/live/digest/<day>.json: the day's boards counted, and the
+// games started that day; worker/src/stats.ts digest), added to on each pull.
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import type { Snapshot } from '../../src/solver/share/snapshot'
-import { summarize, type StatRow, type Usage } from '../../worker/src/stats'
+import { digest, emptyDigest, report, type Digest, type DayRecord, type GameRecord, type StatRow, type Usage } from '../../worker/src/stats'
 
 const DIR = 'data/live'
 const RAW = `${DIR}/raw`
@@ -95,12 +98,45 @@ export function statRows(): StatRow[] {
     }))
 }
 
+const DIGEST = `${DIR}/digest`
+const DAY_FILE = /^\d{4}-\d\d-\d\d\.json$/
+
+/** The digest in data/live/digest, or an empty one. */
+export function loadDigest(): Digest {
+  const d = emptyDigest()
+  if (!existsSync(DIGEST)) return d
+  for (const f of readdirSync(DIGEST).filter(f => DAY_FILE.test(f)).sort()) {
+    const x = JSON.parse(readFileSync(`${DIGEST}/${f}`, 'utf8')) as { day: DayRecord | null; games: GameRecord[] }
+    if (x.day) d.days.push(x.day)
+    d.games.push(...x.games)
+  }
+  if (existsSync(`${DIGEST}/upto.txt`)) d.upto = readFileSync(`${DIGEST}/upto.txt`, 'utf8').trim()
+  return d
+}
+
+/** Writes a digest out a file per day (a game in its start day's), a game per line. */
+export function saveDigest(d: Digest) {
+  mkdirSync(DIGEST, { recursive: true })
+  const days = new Map<string, { day: DayRecord | null; games: GameRecord[] }>(d.days.map(x => [x.day, { day: x, games: [] }]))
+  for (const g of d.games) (days.get(g.day) ?? days.set(g.day, { day: null, games: [] }).get(g.day)!).games.push(g)
+  for (const [day, x] of days) {
+    writeFileSync(`${DIGEST}/${day}.json`, `{"day":${JSON.stringify(x.day)},"games":[\n${x.games.map(g => JSON.stringify(g)).join(',\n')}\n]}\n`)
+  }
+  writeFileSync(`${DIGEST}/upto.txt`, d.upto + '\n')
+}
+
+/** The digest with the raw boards that came after it added. */
+export const updatedDigest = (): Digest => {
+  const d = loadDigest()
+  return digest(statRows().filter(r => r.received > d.upto), d)
+}
+
 /** Works out the dashboard's numbers and sends them to the collector, which is too small to do it per request
  *  (worker/src/summary.ts). Returns a line for the log. */
-export async function sendSummary(url: string, token: string, rows: StatRow[], fetchFn: typeof fetch = fetch, usage: Usage | null = null): Promise<string> {
-  const s = summarize(rows)
+export async function sendSummary(url: string, token: string, d: Digest, fetchFn: typeof fetch = fetch, usage: Usage | null = null): Promise<string> {
+  const s = report(d)
   if (usage) s.usage = usage
   const res = await fetchFn(`${url}/v1/summary`, { method: 'PUT', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(s) })
   if (!res.ok) throw new Error(`summary refused: ${res.status} ${(await res.text()).slice(0, 200)}`)
-  return `${s.totals.games} games, ${s.finished.games} finished, from ${rows.length} boards`
+  return `${s.totals.games} games, ${s.finished.games} finished, from ${s.totals.boards} boards`
 }

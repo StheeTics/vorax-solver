@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { validate } from '../../worker/src/validate'
+import { lean, validate } from '../../worker/src/validate'
 
 const names = { potions: ['Xeno-Hormone', 'Mutagenic Powder'], instruments: ['Hypertrophic Pituitary'], protocols: ['Trepanation'] }
 const good = {
@@ -126,4 +126,24 @@ it('keeps the random install number players are counted by; a malformed one is d
   const install = '7d444840-9dc0-41d2-8f2b-0e7c1b8f3a11'
   expect(validate({ ...good, install }, names)).toEqual({ ...good, install })
   expect(validate({ ...good, install: 'me@example.com' }, names)).toEqual(good)
+})
+
+describe('what’s stored of a board (lean): no cards or tanks', () => {
+  it('its total in place of its tanks, and how many instruments in place of their names', () => {
+    const b = lean(validate({ ...good, debug: undefined }, names)!)
+    expect(b).toEqual({ ...good, tanks: undefined, hand: undefined, instruments: undefined, score: 120, picks: 1 })
+    expect(Object.keys(b)).not.toContain('tanks')
+  })
+  it('a final score only on the round-13 board', () => {
+    expect(validate({ ...good, final: 5 }, names)).not.toHaveProperty('final')
+    const last = { ...good, round: 13, phase: 'protocol', hand: ['Trepanation'] }
+    expect(validate({ ...last, final: 999 }, names)).toMatchObject({ final: 999 })
+    expect(validate({ ...last, final: -1 }, names)).not.toHaveProperty('final')
+    expect(lean(validate({ ...last, final: 999 }, names)!).final).toBe(999)
+    expect(lean(validate(last, names)!).final).toBe(120)
+  })
+  it('the advice’s predicted end without its move', () => {
+    const advice = { move: 'Play Xeno-Hormone (card 1) → tank 2', activity: 812000, reached: 0.4, ms: 30 }
+    expect(lean(validate({ ...good, advice }, names)!).advice).toEqual({ activity: 812000, reached: 0.4, ms: 30 })
+  })
 })

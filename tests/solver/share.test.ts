@@ -35,6 +35,13 @@ describe('what is shared', () => {
     expect(toSnapshot(reading, ctx)).not.toHaveProperty('unreadable')
   })
 
+  it('the game’s last board carries its final score, after round 13’s last instrument effects; no other board does', () => {
+    // Fouled Scraper: +20 Activity to monsters with Quantity above 275, once more at the end of round 13
+    const last: Reading = { ...reading, state: { ...reading.state, round: 13, phase: 'protocol', hand: [], instruments: ['Fouled Scraper'], instrumentRounds: [4], tanks: [{ archetype: 'pest', rarity: 'magic', activity: 100, quantity: 300 }, null, null, null, null, null] } }
+    expect(toSnapshot(last, ctx).final).toBe(120 * 300)
+    expect(toSnapshot(reading, ctx)).not.toHaveProperty('final')
+  })
+
   it('a snapshot names its unsure fields', () => {
     expect(toSnapshot(reading, { ...ctx, unsure: ['hand0'] }).unsure).toEqual(['hand0'])
   })

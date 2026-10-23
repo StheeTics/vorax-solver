@@ -1,6 +1,7 @@
 // What the Solver shares for the odds study: one board it read, with no picture, no time and nothing
 // about the player but a random install number (to count players). Boards of one game share a run id, in seq order.
 import type { ScreenMonster } from '@/strategy/advisor'
+import { finalScore } from '@/engine/final'
 import type { FieldKey, Reading, ReadDebug, ReadTiming, Source } from '../types'
 import type { Environment } from './setup'
 import type { Shown } from '../advice/useAdvice'
@@ -33,6 +34,10 @@ export interface Snapshot {
   unsure?: FieldKey[]
   advice?: SharedAdvice
   debug?: SharedDebug
+  /** on the game's last board (the round-13 Surgical Protocol): the final score, after round 13's last instrument
+   *  effects (src/engine/final.ts), worked out here as only the Solver knows when each instrument was picked; the
+   *  collector keeps this, not the tanks */
+  final?: number
   /** a picture that wasn't the game screen: shared (with its setup) so a setup that breaks every read shows up;
    *  nothing is learned from it */
   unreadable?: true
@@ -110,6 +115,7 @@ export function toSnapshot(r: Reading, ctx: { run: string; seq: number; app: str
     unsure: [...ctx.unsure],
     ...(ctx.advice ? { advice: ctx.advice } : {}),
     ...(ctx.debug ? { debug: ctx.debug } : {}),
+    ...(isFinalBoard(r) ? { final: finalScore(s.tanks.map(t => t && { ...t }) as Parameters<typeof finalScore>[0], s.instruments, s.instrumentRounds) } : {}),
     ...(r.problems.some(p => p.kind === 'notFound') ? { unreadable: true as const } : {}),
   }
 }

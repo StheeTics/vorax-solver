@@ -4,9 +4,9 @@ import { readdirSync, readFileSync } from 'node:fs'
 const nightly = readFileSync('scripts/nightly.sh', 'utf8')
 const job = (name: string) => nightly.slice(nightly.indexOf(`job_${name}() {`), nightly.indexOf('\n}\n', nightly.indexOf(`job_${name}() {`)))
 
-it('the live-data job pulls, applies the odds, tests, then commits', () => {
+it('the live-data job pulls, adds to the digest, sends the summary, tests, commits, then empties the collector’s uploads', () => {
   const t = job('live')
-  const order = ['scripts/live/pull.ts', 'scripts/live/summary.ts', 'scripts/live/weights.ts', 'npm test', 'push -F']
+  const order = ['scripts/live/pull.ts', 'scripts/live/digest.ts', 'scripts/live/summary.ts', 'npm test', 'push -F', '/v1/export/rotate']
   let at = -1
   for (const s of order) {
     const i = t.indexOf(s)
@@ -19,10 +19,11 @@ it('it does nothing harmful without the collector’s address and token', () => 
   expect(job('live')).toMatch(/\[ -n "\$\{LIVE_DATA_URL:-\}" \] && \[ -n "\$\{LIVE_DATA_TOKEN:-\}" \] \|\| \{[^}]*return 1/)
 })
 
-it('applies the odds changes the data supports (the guards are in propose.ts); a push that changes src/ redeploys', () => {
+it('the odds aren’t updated from the boards since Oct 24 (stored without their cards); a push that changes src/ redeploys', () => {
   const t = job('live')
-  expect(t).toContain('vn scripts/live/weights.ts | tee')
-  expect(t).toContain('git add data/live src/data/liveWeights.ts src/solver/scan/learnedIcons.json')
+  expect(t).not.toContain('scripts/live/weights.ts')
+  expect(t).not.toContain('scripts/live/checkRules.ts')
+  expect(t).toContain('git add data/live src/solver/scan/learnedIcons.json')
   // pushed from the PC, so deploy.yml starts by itself; the data alone doesn't redeploy
   const deploy = readFileSync('.github/workflows/deploy.yml', 'utf8')
   expect(deploy).toContain("paths-ignore: ['data/**'")
@@ -33,9 +34,15 @@ it('pulls the named panel icons too', () => {
   expect(readFileSync('scripts/live/pull.ts', 'utf8')).toContain('pullIcons(')
 })
 
-it('pull leaves the odds file alone when no new boards came in, so a quiet run commits nothing', () => {
-  const t = readFileSync('scripts/live/pull.ts', 'utf8')
-  expect(t).toMatch(/if \(added > 0 \|\| !existsSync/)
+it('the collector’s uploads are emptied only after what was pulled is pushed, and never in a test run', () => {
+  const t = job('live')
+  expect(t.indexOf('/v1/export/rotate')).toBeGreaterThan(t.indexOf('push -F "$LOG/message.txt" || return 1'))
+  expect(t).toMatch(/NO_PUSH:-\}" \] && return 0[\s\S]*\/v1\/export\/rotate/)
+})
+
+it('the raw boards stay out of git, a week on the PC', () => {
+  expect(readFileSync('.gitignore', 'utf8')).toMatch(/^data\/live\/raw\/$/m)
+  expect(job('live')).toContain("find data/live/raw -name '*.jsonl' -mtime +7 -delete")
 })
 
 it('teaches the reader the icons players named, before the tests', () => {

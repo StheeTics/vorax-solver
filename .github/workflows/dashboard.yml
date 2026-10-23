@@ -1,5 +1,6 @@
 # Every 2 hours: pulls the boards shared since the last nightly commit from the live-data collector (worker/) and
-# sends the collector's dashboard its numbers worked out from every board (scripts/live/summary.ts). Nothing is
+# sends the collector's dashboard its numbers, worked out from the digest of every board before (data/live/digest)
+# and the new ones (scripts/live/summary.ts). Nothing is
 # committed: the odds, icons and tests stay with the nightly jobs on the PC (scripts/nightly.sh). Started by the
 # collector's cron trigger (worker/src/schedule.ts), with the schedule here as a backup. Or on demand:
 # gh workflow run dashboard.yml

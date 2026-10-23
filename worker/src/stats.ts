@@ -6,7 +6,9 @@ import { finalScore } from '../../src/engine/final'
 export interface StatRow { received: string; client: string; body: string }
 
 interface Tank { archetype: string; rarity: string; activity: number; quantity: number }
-interface Board { run: string; install?: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null } }
+/** A board as stored: since Oct 24 without its cards and tanks (worker/src/validate.ts lean): score, its total; final,
+ *  the round-13 board's final score; picks, how many instruments it showed. Boards from before have tanks and instruments. */
+interface Board { run: string; install?: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null }; score?: number; final?: number; picks?: number }
 
 interface Debug { frame: [number, number]; hdr: boolean; browser: string; window?: { outer: [number, number]; client: [number, number] } }
 
@@ -47,7 +49,7 @@ export interface Stats {
   /** games per site version */
   versions: Record<string, number>
   /** score: the final score when the game finished, else the total on its last shared board */
-  recent: { start: string; boards: number; round: number; app: boolean; instruments: string[]; score: number; finished: boolean }[]
+  recent: { start: string; boards: number; round: number; app: boolean; score: number; finished: boolean }[]
   /** games that reached the round-13 Surgical Protocol: the final score is its board after round 13's last
    *  instrument effects (src/engine/final.ts); average counts every point, capped stops counting at 840,000 */
   finished: { games: number; reached: number; finals: number[]; average: number; median: number; capped: number }
@@ -75,17 +77,33 @@ export interface Usage {
 
 const RECENT = 25
 
-export function summarize(rows: StatRow[], now = new Date()): Stats {
-  type Game = { start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; instruments: string[]; picked: Map<string, number>; final: number | null; predictions: number[]; last: number; score: number }
-  const games = new Map<string, Game>()
-  // a run (one Solver session) can hold several games: a new one starts when a round read for sure goes back
-  const current = new Map<string, { key: string; n: number; round: number }>()
-  const days = new Map<string, { boards: number; players: Set<string> }>()
-  let corrected = 0
-  let unsure = 0
-  const installs = new Set<string>()
-  let countedSince: string | null = null
-  const setups = new Map<string, { by: string; group: string; boards: number; unsure: number; numbers: number }>()
+/** One game as far as the boards so far tell: a run (one Solver session) can hold several, numbered n. Kept between
+ *  pulls in data/live/digest (scripts/live/collect.ts), so the boards themselves needn't be. run: its first 12
+ *  characters, plenty to tell runs apart. played: past its first instrument offer (an instrument owned). */
+export interface GameRecord { run: string; n: number; start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; played: boolean; final: number | null; predictions: number[]; last: number; score: number }
+/** One day's boards: how many, how many a player corrected or the reader was unsure of, the daily player codes and
+ *  installs (their first 12 characters) seen, and the boards and problems per setup. */
+export interface DayRecord { day: string; boards: number; corrected: number; unsure: number; clients: string[]; installs: string[]; setups: Setup[] }
+type Setup = { by: string; group: string; boards: number; unsure: number; numbers: number }
+/** Everything the dashboard's numbers are worked out from; upto: the newest board in it (when it came). */
+export interface Digest { upto: string; games: GameRecord[]; days: DayRecord[] }
+
+export const emptyDigest = (): Digest => ({ upto: '', games: [], days: [] })
+
+const RUN = 12
+const gameKey = (g: { run: string; n: number }) => `${g.run}#${g.n}`
+
+/** Adds boards to a digest: their games carry on from the ones in it, so a game split between two pulls is one. */
+export function digest(rows: StatRow[], prior: Digest = emptyDigest()): Digest {
+  const games = new Map(prior.games.map(g => [gameKey(g), { ...g, predictions: [...g.predictions] }]))
+  // a run's latest game: a new one starts when a round read for sure goes back
+  const current = new Map<string, GameRecord>()
+  for (const g of games.values()) if ((current.get(g.run)?.n ?? -1) < g.n) current.set(g.run, g)
+  const days = new Map(prior.days.map(d => [d.day, { ...d, clients: new Set(d.clients), installs: new Set(d.installs), setups: new Map(d.setups.map(x => [`${x.by}|${x.group}`, { ...x }])) }]))
+  // boards from before Oct 24 had their tanks and instruments: the round each instrument was first seen, for the
+  // ones that fire every few rounds
+  const picked = new Map<GameRecord, Map<string, number>>()
+  let upto = prior.upto
   for (const r of rows) {
     let b: Board
     try {
@@ -93,57 +111,67 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     } catch {
       continue
     }
+    if (r.received > upto) upto = r.received
     const day = r.received.slice(0, 10)
-    const d = days.get(day) ?? { boards: 0, players: new Set<string>() }
+    const d = days.get(day) ?? { day, boards: 0, corrected: 0, unsure: 0, clients: new Set<string>(), installs: new Set<string>(), setups: new Map<string, Setup>() }
     d.boards++
-    d.players.add(r.client)
-    days.set(day, d)
-    if (b.install) {
-      installs.add(b.install)
-      if (!countedSince || day < countedSince) countedSince = day
-    }
-    if (b.corrected?.length) corrected++
-    if (b.unsure?.length) unsure++
+    d.clients.add(r.client)
+    if (b.install) d.installs.add(b.install.slice(0, RUN))
+    if (b.corrected?.length) d.corrected++
+    if (b.unsure?.length) d.unsure++
     if (b.debug?.frame) for (const [by, group] of setupOf(b.debug)) {
       const k = `${by}|${group}`
-      const g = setups.get(k) ?? { by, group, boards: 0, unsure: 0, numbers: 0 }
+      const g = d.setups.get(k) ?? { by, group, boards: 0, unsure: 0, numbers: 0 }
       g.boards++
       // a picture that wasn't the game screen: nothing on it read
       if (b.unsure?.length || b.unreadable) g.unsure++
       if (b.unreadable || b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.numbers++
-      setups.set(k, g)
+      d.setups.set(k, g)
     }
-    const app = /-overlay$/.test(b.app)
+    days.set(day, d)
+    const run = b.run.slice(0, RUN)
     const sure = !b.unsure?.includes('round')
-    let at = current.get(b.run) ?? { key: b.run, n: 0, round: 0 }
-    if (sure && b.round < at.round) at = { key: `${b.run}#${at.n + 1}`, n: at.n + 1, round: 0 }
-    if (sure) at.round = Math.max(at.round, b.round)
-    current.set(b.run, at)
-    const g: Game = games.get(at.key) ?? { start: r.received, day, boards: 0, round: 0, read: 0, app, version: b.app.replace(/-overlay$/, ''), instruments: [], picked: new Map(), final: null, predictions: [], last: -1, score: 0 }
+    let g = current.get(run)
+    if (!g || (sure && b.round < g.read)) {
+      g = { run, n: g ? g.n + 1 : 0, start: r.received, day, boards: 0, round: 0, read: 0, app: /-overlay$/.test(b.app), version: b.app.replace(/-overlay$/, ''), played: false, final: null, predictions: [], last: -1, score: 0 }
+      games.set(gameKey(g), g)
+      current.set(run, g)
+    }
     g.boards++
     const seq = b.seq ?? g.boards
     if (seq >= g.last) {
       g.last = seq
-      g.score = total(b)
+      g.score = b.score ?? total(b)
     }
     g.round = Math.max(g.round, b.round)
     // an unread round falls back to 1: only a round read for sure says how far the game got
-    if (!b.unsure?.includes('round')) g.read = Math.max(g.read, b.round)
-    if (b.instruments?.length) g.instruments = b.instruments
-    // the round each instrument was first seen, for the ones that fire every few rounds
-    for (const n of b.instruments ?? []) if (!g.picked.has(n)) g.picked.set(n, sure ? b.round : 1)
+    if (sure) g.read = Math.max(g.read, b.round)
+    if ((b.instruments?.length ?? b.picks ?? 0) > 0) g.played = true
+    const pk = picked.get(g) ?? picked.set(g, new Map()).get(g)!
+    for (const n of b.instruments ?? []) if (!pk.has(n)) pk.set(n, sure ? b.round : 1)
     // a final score with an unsure number isn't one
-    if (b.round === 13 && b.phase === 'protocol' && b.tanks && !b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) {
+    if (b.round === 13 && b.phase === 'protocol' && !b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) {
       const ins = b.instruments ?? []
-      const end = finalScore(b.tanks as Parameters<typeof finalScore>[0], ins, ins.map(n => g.picked.get(n) ?? 1))
-      g.final = end <= MAX_FINAL ? end : null
+      const end = typeof b.final === 'number' ? b.final : b.tanks ? finalScore(b.tanks as Parameters<typeof finalScore>[0], ins, ins.map(n => pk.get(n) ?? 1)) : null
+      if (end !== null) g.final = end <= MAX_FINAL ? end : null
     }
-    if (typeof b.advice?.reached === 'number') g.predictions.push(b.advice.reached)
-    games.set(at.key, g)
+    if (typeof b.advice?.reached === 'number') g.predictions.push(Math.round(b.advice.reached * 1000) / 1000)
   }
+  return {
+    upto,
+    games: [...games.values()].sort((a, b) => a.start.localeCompare(b.start) || a.run.localeCompare(b.run) || a.n - b.n),
+    days: [...days.values()].sort((a, b) => a.day.localeCompare(b.day)).map(d => ({
+      day: d.day, boards: d.boards, corrected: d.corrected, unsure: d.unsure, clients: [...d.clients].sort(), installs: [...d.installs].sort(),
+      setups: [...d.setups.values()].sort((a, b) => a.by.localeCompare(b.by) || a.group.localeCompare(b.group)),
+    })),
+  }
+}
+
+/** The dashboard's numbers from a digest. */
+export function report(dg: Digest, now = new Date()): Stats {
   // a game that never got past its first instrument offer wasn't played: the Solver used to start a new game ID on
   // every board there (a reroll, a recheck), so most "games" seemed to stop at round 1. Those boards still count.
-  const list = [...games.values()].filter(g => g.round > 1 || g.instruments.length > 0)
+  const list = dg.games.filter(g => g.round > 1 || g.played)
   const today = now.toISOString().slice(0, 10)
   const rounds: Record<number, number> = {}
   const versions: Record<string, number> = {}
@@ -164,6 +192,17 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     if (g.final! >= TARGET) band.reached++
     bands.set(k, band)
   }
+  const boards = dg.days.reduce((n, d) => n + d.boards, 0)
+  const installs = new Set(dg.days.flatMap(d => d.installs))
+  const setups = new Map<string, Setup>()
+  for (const x of dg.days.flatMap(d => d.setups)) {
+    const k = `${x.by}|${x.group}`
+    const g = setups.get(k) ?? { by: x.by, group: x.group, boards: 0, unsure: 0, numbers: 0 }
+    g.boards += x.boards
+    g.unsure += x.unsure
+    g.numbers += x.numbers
+    setups.set(k, g)
+  }
   return {
     generated: now.toISOString(),
     finished: {
@@ -173,23 +212,26 @@ export function summarize(rows: StatRow[], now = new Date()): Stats {
     },
     calibration: [...bands.entries()].sort(([a], [b]) => a - b).map(([k, b]) => ({ band: `${k * 20}–${k * 20 + 20}%`, predicted: Math.round((100 * b.sum) / b.games) / 100, games: b.games, reached: b.reached })),
     totals: {
-      boards: rows.length, games: list.length, playersToday: days.get(today)?.players.size ?? 0,
-      playersEver: installs.size, countedSince, playerDays: [...days.values()].reduce((n, d) => n + d.players.size, 0),
+      boards, games: list.length, playersToday: dg.days.find(d => d.day === today)?.clients.length ?? 0,
+      playersEver: installs.size, countedSince: dg.days.find(d => d.installs.length)?.day ?? null, playerDays: dg.days.reduce((n, d) => n + d.clients.length, 0),
     },
-    days: [...days.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([day, d]) => {
-      const played = list.filter(g => g.day === day)
+    days: dg.days.map(d => {
+      const played = list.filter(g => g.day === d.day)
       const done = played.filter(g => g.final !== null)
       return {
-        day, boards: d.boards, games: played.length, players: d.players.size, website: played.filter(g => !g.app).length, app: played.filter(g => g.app).length,
+        day: d.day, boards: d.boards, games: played.length, players: d.clients.length, website: played.filter(g => !g.app).length, app: played.filter(g => g.app).length,
         finished: done.length, averageFinal: done.length ? Math.round(done.reduce((s, g) => s + g.final!, 0) / done.length) : null,
         medianFinal: done.length ? median(done.map(g => g.final!)) : null,
       }
     }),
     rounds,
-    corrected: rows.length ? corrected / rows.length : 0,
-    unsure: rows.length ? unsure / rows.length : 0,
+    corrected: boards ? dg.days.reduce((n, d) => n + d.corrected, 0) / boards : 0,
+    unsure: boards ? dg.days.reduce((n, d) => n + d.unsure, 0) / boards : 0,
     problems: [...setups.values()].map(g => ({ ...g, unsure: g.unsure / g.boards, numbers: g.numbers / g.boards })).sort((a, b) => a.by.localeCompare(b.by) || b.boards - a.boards),
     versions,
-    recent: list.sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, instruments: g.instruments, score: g.final ?? g.score, finished: g.final !== null })),
+    recent: [...list].sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, score: g.final ?? g.score, finished: g.final !== null })),
   }
 }
+
+/** The dashboard's numbers straight from boards. */
+export const summarize = (rows: StatRow[], now = new Date()): Stats => report(digest(rows), now)

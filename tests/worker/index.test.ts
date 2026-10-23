@@ -41,6 +41,12 @@ function memory(): Store & { summaries: string[]; batches: { id: number; receive
     async export(after, limit) {
       return batches.filter(r => r.id > after).slice(0, limit)
     },
+    async rotate(upto) {
+      if (!batches.some(r => r.id === upto - 1e9)) return null
+      const dropped = batches.filter(r => r.id < upto - 1e9).length
+      batches.splice(0, dropped)
+      return { kept: batches.length, dropped }
+    },
     async dayCounts() {
       return players.size ? [{ day: '2026-10-18', players: players.size }] : []
     },
@@ -70,6 +76,28 @@ it('stores the valid snapshots of an upload together, in one row, each once; dro
   expect(JSON.parse(store.batches[0].body).map((s: { uid: string }) => s.uid)).toEqual([uid(1), uid(2)])
 })
 
+it('stores each board without its cards and tanks: its total, how many instruments, and the advice’s predicted end', async () => {
+  const store = memory()
+  const tank = { archetype: 'pest', rarity: 'magic', activity: 50, quantity: 200 }
+  const advice = { move: 'Play Xeno-Hormone (card 1) → tank 1', activity: 812000, reached: 0.4 }
+  await handle(post([{ ...snap(uid(1)), tanks: [tank, tank, null, null, null, null], instruments: ['Incubation Sac'], advice }]), env, store)
+  const [b] = JSON.parse(store.batches[0].body)
+  expect(b).toMatchObject({ uid: uid(1), round: 1, phase: 'potion', score: 20_000, picks: 1, advice: { activity: 812000, reached: 0.4 } })
+  expect(b).not.toHaveProperty('tanks')
+  expect(b).not.toHaveProperty('hand')
+  expect(b).not.toHaveProperty('instruments')
+  expect(b).not.toHaveProperty('final')
+  expect(store.batches[0].body).not.toMatch(/Xeno-Hormone|Incubation Sac/)
+})
+
+it('the round-13 board keeps its final score: the Solver’s own, or worked out from its tanks for a Solver from before', async () => {
+  const store = memory()
+  const tank = { archetype: 'pest', rarity: 'magic', activity: 500, quantity: 1000 }
+  const last = { ...snap(uid(1)), round: 13, phase: 'protocol', hand: [], tanks: [tank, null, null, null, null, null] }
+  await handle(post([last, { ...last, uid: uid(2), final: 612_345 }]), env, store)
+  expect(JSON.parse(store.batches[0].body).map((b: { final: number }) => b.final)).toEqual([500_000, 612_345])
+})
+
 it('an upload with nothing valid in it stores nothing', async () => {
   const store = memory()
   expect(await (await handle(post([{ junk: true }]), env, store)).json()).toEqual({ stored: 0, dropped: 1 })
@@ -91,6 +119,17 @@ it('counts each player once a day by their daily code, however often they upload
   await handle(post([snap(uid(3))], '2.2.2.2'), env, store)
   expect(store.players.size).toBe(2)
   expect([...store.players].every(k => /^\d{4}-\d\d-\d\d\|[0-9a-f]{24}$/.test(k))).toBe(true)
+})
+
+it('empties the uploads up to what was pulled, with the export token', async () => {
+  const store = memory()
+  for (const n of [1, 2, 3]) await handle(post([snap(uid(n))]), env, store)
+  const rotate = (upto: number, token = 'secret') => handle(new Request(`https://w.dev/v1/export/rotate?upto=${upto}`, { method: 'POST', headers: { authorization: `Bearer ${token}` } }), env, store)
+  expect((await rotate(1e9 + 2, 'nope')).status).toBe(401)
+  expect((await rotate(2)).status).toBe(400)
+  expect((await rotate(1e9 + 9)).status).toBe(409)
+  expect(await (await rotate(1e9 + 2)).json()).toEqual({ kept: 2, dropped: 1 })
+  expect(store.batches.map(r => r.id)).toEqual([2, 3])
 })
 
 it('takes 1 to 10 snapshots per upload', async () => {

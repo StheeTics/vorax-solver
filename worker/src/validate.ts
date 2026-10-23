@@ -1,4 +1,5 @@
 // Rebuilds a snapshot from the fields the collector knows, so nothing else a client sends is stored.
+import { finalScore } from '../../src/engine/final'
 
 export interface Names { potions: string[]; instruments: string[]; protocols: string[] }
 
@@ -46,8 +47,29 @@ export function validate(raw: unknown, names: Names) {
     tanks, hand: s.hand as string[], instruments: s.instruments as string[],
     ...(s.unsure !== undefined ? { unsure: s.unsure as string[] } : {}),
     ...(s.unreadable === true ? { unreadable: true } : {}),
+    // the round-13 board's final score, as the Solver worked it out (it knows when each instrument was picked)
+    ...(s.round === 13 && s.phase === 'protocol' && int(s.final, 0, 100 * MAX_STAT) ? { final: s.final } : {}),
     ...adviceOf(s.advice),
     ...debugOf(s.debug),
+  }
+}
+
+type Board = NonNullable<ReturnType<typeof validate>>
+
+/** What's stored of a board since Oct 24: its game, how it was read (debug included) and the advice's predicted end,
+ *  but not its cards or tanks: score, its total; picks, how many instruments it showed; final, on the round-13 board,
+ *  the final score (the Solver's own, or worked out here with each instrument taken as picked in round 1, from a
+ *  Solver from before it sent one). */
+export function lean(b: Board) {
+  const { tanks, hand: _hand, instruments, advice, final, ...rest } = b
+  const end = b.round === 13 && b.phase === 'protocol' ? (final ?? finalScore(tanks as Parameters<typeof finalScore>[0], instruments)) : undefined
+  return {
+    ...rest,
+    score: tanks.reduce((s, t) => s + (t ? (t.activity as number) * (t.quantity as number) : 0), 0),
+    picks: instruments.length,
+    ...(end !== undefined ? { final: end } : {}),
+    // the predicted end without the move, which names cards
+    ...(advice ? { advice: { activity: advice.activity, reached: advice.reached, ...(advice.ms !== undefined ? { ms: advice.ms } : {}) } } : {}),
   }
 }
 

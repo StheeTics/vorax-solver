@@ -14,34 +14,35 @@ function d1() {
   const wrap = {
     prepare: (sql: string) => ({
       bind: (...v: unknown[]) => {
-        const st = db.prepare(sql)
+        // prepared when run: a batch's statements can use a table an earlier one makes
+        const st = () => db.prepare(sql)
         const args = v as (string | number | null)[]
         return {
-          run: async () => ({ meta: { changes: Number(st.run(...args).changes) } }),
-          first: async <T>() => (st.get(...args) ?? null) as T | null,
-          all: async <T>() => ({ results: st.all(...args) as T[] }),
+          run: async () => ({ meta: { changes: Number(st().run(...args).changes) } }),
+          first: async <T>() => (st().get(...args) ?? null) as T | null,
+          all: async <T>() => ({ results: st().all(...args) as T[] }),
         }
       },
     }),
+    batch: async (list: { run(): Promise<unknown> }[]) => {
+      db.exec('BEGIN')
+      for (const s of list) await s.run()
+      db.exec('COMMIT')
+    },
   }
   return { db, store: d1Store(wrap) }
 }
 
 describe('one row per upload, not per board', () => {
-  it('an upload of several boards is one row, exported after the boards stored one per row before', async () => {
+  it('an upload of several boards is one row, exported with ids from BATCHES on', async () => {
     const { db, store } = d1()
-    // boards stored before the change, one per row
-    db.prepare("INSERT INTO snapshots (uid, received, client, body) VALUES ('a', '2026-10-22T10:00:00Z', 'c1', '{\"uid\":\"a\"}')").run()
-    db.prepare("INSERT INTO snapshots (uid, received, client, body) VALUES ('b', '2026-10-22T11:00:00Z', 'c1', '{\"uid\":\"b\"}')").run()
     await store.insertBatch('[{"uid":"c"},{"uid":"d"}]')
     await store.insertBatch('[{"uid":"e"}]')
     expect(db.prepare('SELECT COUNT(*) n FROM batches').get()).toEqual({ n: 2 })
 
-    const first = await store.export(0, 5000)
-    expect(first.map(r => [r.id, r.body])).toEqual([[1, '{"uid":"a"}'], [2, '{"uid":"b"}']])
-    const next = await store.export(2, 5000)
-    expect(next.map(r => [r.id, r.body])).toEqual([[BATCHES + 1, '[{"uid":"c"},{"uid":"d"}]'], [BATCHES + 2, '[{"uid":"e"}]']])
-    expect(next[0].received).toMatch(/^\d{4}-\d\d-\d\dT/)
+    const all = await store.export(0, 5000)
+    expect(all.map(r => [r.id, r.body])).toEqual([[BATCHES + 1, '[{"uid":"c"},{"uid":"d"}]'], [BATCHES + 2, '[{"uid":"e"}]']])
+    expect(all[0].received).toMatch(/^\d{4}-\d\d-\d\dT/)
     expect(await store.export(BATCHES + 1, 5000)).toEqual([expect.objectContaining({ id: BATCHES + 2 })])
     expect(await store.export(BATCHES + 2, 5000)).toEqual([])
   })
@@ -50,6 +51,25 @@ describe('one row per upload, not per board', () => {
     const { store } = d1()
     for (let i = 0; i < 30; i++) await store.insertBatch('[]')
     expect(await store.export(0, 100)).toHaveLength(10)
+  })
+})
+
+describe('emptying the uploads once pulled', () => {
+  it('drops the uploads before the one pulled last; it and any after stay, and ids carry on from them', async () => {
+    const { db, store } = d1()
+    for (const u of ['a', 'b', 'c', 'd']) await store.insertBatch(`[{"uid":"${u}"}]`)
+    expect(await store.rotate(BATCHES + 2)).toEqual({ kept: 3, dropped: 1 })
+    expect(db.prepare('SELECT id FROM batches').all()).toEqual([{ id: 2 }, { id: 3 }, { id: 4 }])
+    // the pull goes on from where it was: what came meanwhile is still there
+    expect((await store.export(BATCHES + 2, 5000)).map(r => r.id)).toEqual([BATCHES + 3, BATCHES + 4])
+    await store.insertBatch('[{"uid":"e"}]')
+    expect((await store.export(BATCHES + 4, 5000)).map(r => [r.id, r.body])).toEqual([[BATCHES + 5, '[{"uid":"e"}]']])
+  })
+  it('nothing happens for an id it doesn’t have', async () => {
+    const { db, store } = d1()
+    await store.insertBatch('[]')
+    expect(await store.rotate(BATCHES + 7)).toBeNull()
+    expect(db.prepare('SELECT COUNT(*) n FROM batches').get()).toEqual({ n: 1 })
   })
 })
 

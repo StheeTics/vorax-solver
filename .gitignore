@@ -25,3 +25,7 @@ training/
 .superpowers/
 eng.traineddata
 scripts/scan/training-pending.json
+
+# Live boards as pulled: kept a week on the PC that pulls them (scripts/nightly.sh), never in git; the dashboard's
+# numbers come from data/live/digest
+data/live/raw/
