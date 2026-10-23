@@ -16,7 +16,8 @@
 # and its branch are never touched. Logs: that clone's scripts/sim/results/nightly/<time>/.
 # Needs ~/.config/vorax/nightly.env with LIVE_DATA_URL and LIVE_DATA_TOKEN (the collector's EXPORT_TOKEN).
 #
-# Usage: bash scripts/nightly.sh [--day] [--force] [live] [check] [smarter]   (no job named: all three)
+# Usage: bash ~/repos/vorax-nightly/scripts/nightly.sh (from anywhere), or bash scripts/nightly.sh
+#        [--day] [--force] [live] [check] [smarter]   (no job named: all three)
 #   --day    8 processes at once, for when the PC may be used for gaming (otherwise 16); always at nice 19
 #   --force  run check and smarter even when the odds didn't change
 #   NO_PUSH=1 bash scripts/nightly.sh ...: a test, on the working copy's commit: commits in the clone but pushes
