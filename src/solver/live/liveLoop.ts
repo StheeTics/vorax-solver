@@ -1,7 +1,7 @@
 // Following the log and deciding when to snap, without timers of its own: the Worker (or the page)
 // calls poll() every POLL_MS and check() every CHECK_MS.
 import type { Follower } from './logFollower'
-import { classify, createSettler, DEFAULT_RULES, type SettledBy, type TriggerRules } from './triggers'
+import { classify, createSettler, DEFAULT_RULES, uiScaleOf, type SettledBy, type TriggerRules } from './triggers'
 
 export const POLL_MS = 250
 export const CHECK_MS = 50
@@ -11,7 +11,8 @@ export type LiveEvent =
   | { type: 'snap'; kind: 'board' | 'screen' | 'manual'; triggerAt: number; lines: string[]; why?: SettledBy }
   /** a new board or screen came in, the moment its line is read: its cards are dealt long before it settles */
   | { type: 'changed'; kind: 'board' | 'screen'; at: number }
-  | { type: 'status'; detailSeen: boolean; refreshes: number; over: boolean; finished: boolean; lines: number }
+  /** ui: the interface scale the game last logged (uiScaleOf), once it has */
+  | { type: 'status'; detailSeen: boolean; refreshes: number; over: boolean; finished: boolean; lines: number; ui?: number }
   /** the capture-mode clock (TICK_MS), kept off the page so a background tab isn't throttled */
   | { type: 'tick' }
 
@@ -20,12 +21,14 @@ export function createLiveLoop(o: { follower: Follower; now: () => number; post:
   const settler = createSettler(rules)
   let trigger: { at: number; lines: string[] } | null = null
   let total = 0
+  let ui: number | null = null
 
   return {
     async poll() {
       const lines = await o.follower.poll()
       const t = o.now()
       for (const line of lines) {
+        ui = uiScaleOf(line) ?? ui
         const kind = classify(line, rules)
         if ((kind === 'board' && !settler.over) || kind === 'screen') {
           trigger = { at: t, lines: [line] }
@@ -35,7 +38,7 @@ export function createLiveLoop(o: { follower: Follower; now: () => number; post:
       }
       settler.feed(lines, t)
       total += lines.length
-      o.post({ type: 'status', detailSeen: o.follower.detailSeen, refreshes: settler.refreshes, over: settler.over, finished: settler.finished, lines: total })
+      o.post({ type: 'status', detailSeen: o.follower.detailSeen, refreshes: settler.refreshes, over: settler.over, finished: settler.finished, lines: total, ...(ui ? { ui } : {}) })
     },
     check() {
       const kind = settler.due(o.now())

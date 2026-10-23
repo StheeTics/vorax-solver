@@ -7,7 +7,8 @@ import { layout } from './layout'
 import { readTitles, type PictureRead, type Pictures, type ReadText } from './titles'
 import { browserTextReader } from './textReader'
 
-export type Scanner = (img: ImageData, trigger?: string, local?: LocalRefs) => Promise<Reading>
+/** ui: the interface scale the game logged, when it has */
+export type Scanner = (img: ImageData, trigger?: string, local?: LocalRefs, ui?: number) => Promise<Reading>
 
 // the reference data on the page itself, only where Workers aren't available
 let pageData: Promise<ScanData> | null = null
@@ -51,9 +52,9 @@ export function useScan(textReader: () => Promise<ReadText | null> = browserText
   }, [])
 
   const pixels = useCallback(
-    async (img: ImageData, trigger: string | undefined, local: LocalRefs, pictures: boolean): Promise<Reading> => {
-      if (workers.current.length) return ask<Reading>({ img, trigger, local, pictures })
-      const reading = scan(img, await loadData(), local, { pictures })
+    async (img: ImageData, trigger: string | undefined, local: LocalRefs, pictures: boolean, ui?: number): Promise<Reading> => {
+      if (workers.current.length) return ask<Reading>({ img, trigger, local, pictures, ui })
+      const reading = scan(img, await loadData(), local, { pictures, ui })
       if (reading.frame) reading.frame.trigger = trigger
       return reading
     },
@@ -72,11 +73,11 @@ export function useScan(textReader: () => Promise<ReadText | null> = browserText
   )
 
   return useCallback<Scanner>(
-    async (img, trigger, local = {}) => {
+    async (img, trigger, local = {}, ui) => {
       const readText = await textReader()
-      if (!readText) return pixels(img, trigger, local, true)
+      if (!readText) return pixels(img, trigger, local, true, ui)
       const t0 = Date.now()
-      const board = await pixels(img, trigger, local, false)
+      const board = await pixels(img, trigger, local, false, ui)
       const t1 = Date.now()
       const reading = await readTitles(img, board, readText, slots(img, local, board.ui))
       const names = Date.now() - t1
