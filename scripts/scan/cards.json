@@ -2351,5 +2351,13 @@
    "Eyelid Speculum",
    "Clustered Eggs"
   ]
+ },
+ "new/egg-burdened-butterfly-1.png": {
+  "phase": "instrument",
+  "hand": [
+   "Egg-Burdened Butterfly",
+   "Rawhide Restraint",
+   "Nettle Toggle"
+  ]
  }
 }
