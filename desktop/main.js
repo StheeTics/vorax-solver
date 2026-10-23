@@ -565,6 +565,8 @@ function setOverlayOn(on) {
 // in front, so they never cover another window.
 let boxes = [];
 let highlightAt = null;
+let highlightHide = null;
+const HIGHLIGHT_HIDE_MS = 2000;
 function makeHighlight() {
   const win = new BrowserWindow({
     show: false,
@@ -599,12 +601,25 @@ function updateHighlight() {
   const win = wins.highlight;
   if (!win || win.isDestroyed()) return;
   const front = win32 && game.running && game.hwnd && !win32.minimized(game.hwnd) && win32.foreground() === game.hwnd;
-  const at = settings.highlight && boxes.length && front ? win32.clientOnScreen(game.hwnd) : null;
+  const at = settings.highlight && front ? win32.clientOnScreen(game.hwnd) : null;
   if (!at || at.width < 100 || at.height < 100) {
+    clearTimeout(highlightHide);
+    highlightHide = null;
     if (win.isVisible()) win.hide();
     highlightAt = null;
     return;
   }
+  // No boxes: the window stays up, empty, a moment before it hides. Hidden at once, it kept its last picture (the
+  // old box), which flashed when it was shown for the next one.
+  if (!boxes.length) {
+    if (win.isVisible() && !highlightHide) highlightHide = setTimeout(() => {
+      highlightHide = null;
+      if (!boxes.length && !win.isDestroyed()) win.hide();
+    }, HIGHLIGHT_HIDE_MS);
+    return;
+  }
+  clearTimeout(highlightHide);
+  highlightHide = null;
   // the game's picture in Electron's own units, which a display's scaling makes differ from screen pixels
   const b = screen.screenToDipRect(null, at);
   const key = `${b.x},${b.y},${b.width},${b.height}`;
