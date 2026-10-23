@@ -31,7 +31,7 @@ export interface DesktopBridge {
   showSolver?(): void
   /** the game window's outer size, the picture's, and the display scaling (apps from 0.1.4 on) */
   gameWindow?(): Promise<GameWindow | null>
-  /** green boxes over the game around the advised move, none to clear them (apps from 0.1.11 on) */
+  /** green boxes over the game around the advised move, none to clear them (apps from 0.1.12 on) */
   showHighlights?(boxes: Box[]): void
 }
 

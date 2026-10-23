@@ -129,7 +129,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const unknownCards = reading?.state.phase === 'protocol' ? [] : (reading?.problems ?? []).flatMap(p => (p.kind === 'unknownArt' ? [Number(/\d+/.exec(p.field)?.[0] ?? 0) + 1] : []))
   useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles, unknownCards), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable })
   const retries = useRef(0)
-  useHighlights(shown, updating, reading?.frame, reading?.ui, paused.length > 0 || unreliable.length > 0 || !!depends)
+  // a new board came in: the boxes come off at once, and stay off until it's read and advised on
+  const [changing, setChanging] = useState(false)
+  useHighlights(shown, updating, reading?.frame, reading?.ui, changing || paused.length > 0 || unreliable.length > 0 || !!depends)
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -205,6 +207,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null
       retryIfUnsure(trigger, r)
+      setChanging(false)
       setReading(r)
       setCorrections({})
       if (!r.problems.some(p => p.kind === 'notFound')) {
@@ -313,7 +316,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} />
+            <LiveSource onFrame={(img, trigger, keep) => void onFrame(img, trigger, undefined, keep)} onTrouble={setTrouble} snap={snapAgain} onChanged={() => setChanging(true)} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}
