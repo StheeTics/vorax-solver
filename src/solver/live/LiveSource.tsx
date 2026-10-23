@@ -104,9 +104,12 @@ interface Props {
   snap?: { current: (() => void) | null }
   /** a new board came in (its line was just read): what was shown for the last one no longer stands */
   onChanged?(): void
+  /** whether the Vorax screen is closed or the run over (the log said so): nothing on it to point at; finished:
+   *  the run itself is done */
+  onOver?(over: boolean, finished: boolean): void
 }
 
-export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap, onChanged }: Props) {
+export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBridge(), onTrouble, snap, onChanged, onOver }: Props) {
   const [log, setLog] = useState<FileLike | null>(null)
   const [share, setShare] = useState<WindowShare | null>(null)
   const [error, setError] = useState('')
@@ -131,17 +134,19 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
 
   const changed = useRef(onChanged)
   changed.current = onChanged
+  const overRef = useRef(onOver)
+  overRef.current = onOver
 
   // the screen, looked at while the log settles (createSampler), so a still screen is proven by the time it does
   const sampler = useRef<Sampler | null>(null)
   useEffect(() => () => sampler.current?.stop(), [])
   const onEvent = useRef<(e: LiveEvent) => void>(() => {})
   onEvent.current = (e: LiveEvent) => {
-    if (e.type === 'status') return setStatus(e)
+    if (e.type === 'status') return overRef.current?.(e.over, e.finished), setStatus(e)
     if (e.type === 'changed') {
       sampler.current?.stop()
       const sh = shareRef.current
-      sampler.current = sh ? createSampler(() => sh.grab()) : null
+      sampler.current = sh ? createSampler(() => sh.grab(), { intervalMs: 80 }) : null
       return changed.current?.()
     }
     const s = shareRef.current
@@ -155,7 +160,9 @@ export function LiveSource({ onFrame, deps = DEFAULT_DEPS, desktop = desktopBrid
     // already by the looks taken while the log settled, or else waited for as before.
     let early = false
     const settled = async () => {
-      const ready = looked ? await looked.take() : null
+      // the looks go on from the log line until the screen is still, so the picture comes as soon as the cards land
+      const ready = looked ? await looked.still(2500) : null
+      looked?.stop()
       if (ready) return (early = true), ready
       return waitStable(() => s.grab())
     }

@@ -20,3 +20,9 @@ it('only plain text, cut to length; anything else is left out', () => {
   expect(cleanCard({ paused: 'yes', warning: { html: '<b>' } })).toMatchObject({ paused: true, warning: '' })
   expect(cleanCard(null)).toBeNull()
 })
+
+it('when the run is over, the card says so instead of the last pick’s advice, and passes through the app', () => {
+  const card = overlayCard(null, true, [], null, [], { paused: ['logOff'], forced: [] }, true)
+  expect(card).toMatchObject({ move: 'Enjoy your loot', updating: false, paused: false })
+  expect(cleanCard(card)).toEqual(card)
+})

@@ -11,7 +11,7 @@ export type LiveEvent =
   | { type: 'snap'; kind: 'board' | 'screen' | 'manual'; triggerAt: number; lines: string[]; why?: SettledBy }
   /** a new board or screen came in, the moment its line is read: its cards are dealt long before it settles */
   | { type: 'changed'; kind: 'board' | 'screen'; at: number }
-  | { type: 'status'; detailSeen: boolean; refreshes: number; over: boolean; lines: number }
+  | { type: 'status'; detailSeen: boolean; refreshes: number; over: boolean; finished: boolean; lines: number }
   /** the capture-mode clock (TICK_MS), kept off the page so a background tab isn't throttled */
   | { type: 'tick' }
 
@@ -35,7 +35,7 @@ export function createLiveLoop(o: { follower: Follower; now: () => number; post:
       }
       settler.feed(lines, t)
       total += lines.length
-      o.post({ type: 'status', detailSeen: o.follower.detailSeen, refreshes: settler.refreshes, over: settler.over, lines: total })
+      o.post({ type: 'status', detailSeen: o.follower.detailSeen, refreshes: settler.refreshes, over: settler.over, finished: settler.finished, lines: total })
     },
     check() {
       const kind = settler.due(o.now())

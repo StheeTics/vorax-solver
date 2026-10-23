@@ -51,3 +51,13 @@ it('a board read off the screen is advised at once; one edited by hand waits for
   act(() => void vi.advanceTimersByTime(60))
   expect(pending).toHaveLength(2)
 })
+
+it('is out of date from the render the new board arrives in, before its timer has run', () => {
+  const a = board(1), b = board(2)
+  const { result, rerender } = renderHook(({ s }) => useAdvice(s, true), { initialProps: { s: a } })
+  act(() => void vi.advanceTimersByTime(0))
+  act(() => pending[0].emit(advice(1)))
+  expect(result.current.updating).toBe(false)
+  rerender({ s: b })
+  expect(result.current.updating).toBe(true)
+})

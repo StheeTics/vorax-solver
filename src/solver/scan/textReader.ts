@@ -15,6 +15,21 @@ function toCanvas(img: Img): HTMLCanvasElement {
   c.getContext('2d')!.putImageData(new ImageData(new Uint8ClampedArray(img.data), img.width, img.height), 0, 0)
   return c
 }
+/** A card title's size and look, dark text on light, for the workers' practice read. */
+function practiceTitle(): HTMLCanvasElement {
+  const c = document.createElement('canvas')
+  c.width = 490
+  c.height = 100
+  const g = c.getContext('2d')!
+  g.fillStyle = '#fff'
+  g.fillRect(0, 0, c.width, c.height)
+  g.fillStyle = '#222'
+  g.font = '32px sans-serif'
+  g.fillText('Compound Leech', 60, 42)
+  g.fillText('Solution', 140, 84)
+  return c
+}
+
 let pool: Promise<ReadText | null> | null = null
 
 export function browserTextReader(): Promise<ReadText | null> {
@@ -26,6 +41,10 @@ export function browserTextReader(): Promise<ReadText | null> {
       await w.setParameters({ tessedit_pageseg_mode: T.PSM.SINGLE_BLOCK })
       scheduler.addWorker(w)
     }
+    // each worker reads a practice title now: its first read sets it up (~0.5-1 s), which the first board paid for
+    const t0 = Date.now()
+    await Promise.all(workers.map(w => w.recognize(practiceTitle()).catch(() => null)))
+    console.info(`[timing] warm-up: text reader ready in ${Date.now() - t0} ms`)
     // a title read early, while the tanks settle, isn't read again from the settled picture
     return cachedTextReader(async (img: Img) => (await scheduler.addJob('recognize', toCanvas(img))).data.text)
   })().catch(() => {

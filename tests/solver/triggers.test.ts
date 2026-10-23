@@ -12,6 +12,8 @@ it('classifies real log lines', () => {
   expect(classify(find('S13GamePlayMain Run'))).toBe('screen')
   expect(classify(find('S13GamePlayMain Hide'))).toBe('over')
   expect(classify(find('ProtoId = 5621'))).toBe('over')
+  expect(classify('[Game] S13GamePlayMain Destory')).toBe('over')
+  expect(classify('[Game] S13GamePlayReward Run')).toBe('over')
   expect(classify(find('HeartBeat'))).toBeNull()
   expect(isAnimation(find('KYZ_Card_Tool_Surgery'))).toBe(true)
 })
@@ -32,13 +34,35 @@ const CLICK = '[Game] UIButton@ normal-click SelectBtn'
 /** an instrument firing: an animation that isn't a deal */
 const SURGERY = "LogDataTable: Warning: UDataTable::FindRow : 'Play_UI_S13_KYZ_Card_Tool_Surgery' requested row"
 
-it('settler waits for animations to go quiet', () => {
+it('a board waits for its deal; with none logged, 1 s, then for animations to go quiet', () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
-  s.feed([SURGERY], 500)
-  expect(s.due(800)).toBeNull()
-  expect(s.due(900)).toBe('board')
+  s.feed([SURGERY], 900)
   expect(s.due(1000)).toBeNull()
+  expect(s.due(1050)).toBe('board')
+  expect(s.settledBy).toBe('quiet')
+  expect(s.due(1100)).toBeNull()
+})
+
+it('a screen opening settles once its animations go quiet (no deal to wait for)', () => {
+  const s = createSettler()
+  s.feed(['[Game] S13GamePlayMain Run'], 0)
+  s.feed([SURGERY], 100)
+  expect(s.due(249)).toBeNull()
+  expect(s.due(250)).toBe('screen')
+})
+
+// After an instrument pick or a potion that changes nothing, Oct 23: the board's line, then nothing logged for
+// 0.42-0.53 s before the deal. A picture in that gap has no cards.
+it('the silence before a deal does not settle a board', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed([SURGERY], 5)
+  expect(s.due(500)).toBeNull()
+  s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 520)
+  expect(s.due(619)).toBeNull()
+  expect(s.due(620)).toBe('board')
+  expect(s.settledBy).toBe('dealt')
 })
 
 it('the numbers landing ends the wait early', () => {
@@ -46,8 +70,8 @@ it('the numbers landing ends the wait early', () => {
   s.feed(['ProtoId = 5619'], 0)
   s.feed([ANIM], 100)
   s.feed([DONE], 200)
-  expect(s.due(300)).toBeNull()
-  expect(s.due(350)).toBe('board')
+  expect(s.due(199)).toBeNull()
+  expect(s.due(200)).toBe('board')
 })
 
 it('the player clicking means the board has settled', () => {
@@ -61,8 +85,9 @@ it('the player clicking means the board has settled', () => {
 it("the player's own click sounds are not animations", () => {
   const s = createSettler()
   s.feed(['ProtoId = 5619'], 0)
-  s.feed([MY_CLICK_SOUND], 300)
-  expect(s.due(400)).toBe('board')
+  s.feed([MY_CLICK_SOUND], 900)
+  // the deal wait over, the silence since the board's line counts: the click sound didn't break it
+  expect(s.due(1000)).toBe('board')
 })
 
 it('settler caps the wait', () => {
@@ -144,8 +169,7 @@ it('a board whose numbers change waits for them to land, past the silence before
   // 0.4 s of silence: not enough while numbers are changing
   expect(s.due(1150)).toBeNull()
   s.feed([LANDED, LANDED], 1293)
-  expect(s.due(1400)).toBeNull()
-  expect(s.due(1450)).toBe('board')
+  expect(s.due(1293)).toBe('board')
   expect(s.settledBy).toBe('done')
 })
 
@@ -187,8 +211,8 @@ it('anything animating after the deal falls back to the silence', () => {
   s.feed(['ProtoId = 5619'], 0)
   s.feed(['Play_UI_S13_KYZ_Card_Selected_Shuffle'], 500)
   s.feed(['Play_UI_S13_KYZ_Card_Tool_Surgery'], 550)
-  expect(s.due(700)).toBeNull()
-  expect(s.due(950)).toBe('board')
+  expect(s.due(699)).toBeNull()
+  expect(s.due(700)).toBe('board')
   expect(s.settledBy).toBe('quiet')
 })
 
@@ -201,4 +225,22 @@ it('a deal while numbers change still waits for them to land', () => {
   s.feed([LANDED], 700)
   expect(s.due(850)).toBe('board')
   expect(s.settledBy).toBe('done')
+})
+
+it('closing the Vorax screen is over but not finished; the reward screen finishes the run', () => {
+  const s = createSettler()
+  s.feed(['ProtoId = 5619'], 0)
+  s.feed(['[Game] S13GamePlayMain Destory'], 100)
+  expect(s.over).toBe(true)
+  expect(s.finished).toBe(false)
+  expect(s.due(5000)).toBeNull()
+  s.feed(['[Game] S13GamePlayMain Run'], 6000)
+  expect(s.over).toBe(false)
+  s.feed(['[Game] S13GamePlayMain Hide', '[Game] S13GamePlayReward Run'], 7000)
+  expect(s.over).toBe(true)
+  expect(s.finished).toBe(true)
+  // the next run clears both
+  s.feed(['[Game] S13GamePlayMain Run'], 9000)
+  expect(s.over).toBe(false)
+  expect(s.finished).toBe(false)
 })

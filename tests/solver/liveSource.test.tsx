@@ -49,8 +49,8 @@ it('a screen already proven still while the log settled is taken at once, with h
   const grabs = t.share.grab.mock.calls.length
   t.emit({ type: 'snap', kind: 'board', triggerAt: 0, lines: ['[2026.10.23-04.27.21:522][175]TLLua: x ProtoId = 5619'], why: 'dealt' })
   await waitFor(() => expect(t.onFrame).toHaveBeenCalledWith(expect.objectContaining({ width: 4 }), 'board', undefined, expect.objectContaining({ why: 'dealt', early: true })))
-  // one more look to confirm, not the three of the full check
-  expect(t.share.grab.mock.calls.length).toBe(grabs + 1)
+  // the look that proved it is the picture: no more looks, not the three of the full check
+  expect(t.share.grab.mock.calls.length).toBe(grabs)
 })
 
 it('returns to step 2 when sharing ends, and cancels a pending snap', async () => {
@@ -90,7 +90,7 @@ it('warns when the log shows no game lines 30 s after sharing', async () => {
   try {
     const t = setup()
     await connect()
-    t.emit({ type: 'status', detailSeen: false, refreshes: 0, over: false, lines: 10 })
+    t.emit({ type: 'status', detailSeen: false, refreshes: 0, over: false, finished: false, lines: 10 })
     await act(async () => vi.advanceTimersByTime(30_000))
     expect(screen.getByText(/Enable Log looks off/)).toBeTruthy()
   } finally {
@@ -104,10 +104,10 @@ it('tells the page when the log looks off, and when lines arrive after all, so t
     const onTrouble = vi.fn()
     const t = setup(onTrouble)
     await connect()
-    t.emit({ type: 'status', detailSeen: false, refreshes: 0, over: false, lines: 10 })
+    t.emit({ type: 'status', detailSeen: false, refreshes: 0, over: false, finished: false, lines: 10 })
     await act(async () => vi.advanceTimersByTime(30_000))
     expect(onTrouble).toHaveBeenLastCalledWith('logOff')
-    await act(async () => t.emit({ type: 'status', detailSeen: true, refreshes: 0, over: false, lines: 40 }))
+    await act(async () => t.emit({ type: 'status', detailSeen: true, refreshes: 0, over: false, finished: false, lines: 40 }))
     expect(onTrouble).toHaveBeenLastCalledWith(null)
   } finally {
     vi.useRealTimers()

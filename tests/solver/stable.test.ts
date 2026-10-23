@@ -59,28 +59,37 @@ describe('watching the screen while the log settles', () => {
   beforeEach(() => vi.useFakeTimers())
   afterEach(() => vi.useRealTimers())
 
-  it('a screen already still gives its picture at once', async () => {
+  it('a screen already still gives the look that proved it at once', async () => {
     const s = createSampler(async () => still)
-    await vi.advanceTimersByTimeAsync(400)
-    expect(await s.take()).toBe(still)
+    await vi.advanceTimersByTimeAsync(600)
+    expect(await s.still(1000)).toBe(still)
     s.stop()
   })
-  it('a screen that just moved gives none: the full stillness check runs instead', async () => {
+  it('a screen still moving is waited for: the first look matching the two before it', async () => {
+    let n = 0
+    const later = img(960, 400, () => 100)
+    const s = createSampler(async () => (n++ < 4 ? (n % 2 ? moved : still) : later))
+    const got = s.still(5000)
+    await vi.advanceTimersByTimeAsync(2000)
+    expect(await got).toBe(later)
+    s.stop()
+  })
+  it('a screen that never settles gives none once the wait runs out, or when stopped', async () => {
     let n = 0
     const s = createSampler(async () => (n++ % 2 ? moved : still))
-    await vi.advanceTimersByTimeAsync(400)
-    expect(await s.take()).toBeNull()
+    const got = s.still(500)
+    await vi.advanceTimersByTimeAsync(600)
+    expect(await got).toBeNull()
+    const again = s.still(5000)
     s.stop()
+    expect(await again).toBeNull()
+    expect(await s.still(5000)).toBeNull()
   })
-  it('too few looks yet gives none', async () => {
-    const s = createSampler(async () => still)
-    expect(await s.take()).toBeNull()
-    s.stop()
-  })
-  it('a grab that fails gives none, and stops nothing else', async () => {
+  it('a grab that fails gives none', async () => {
     const s = createSampler(async () => { throw new Error('capture lost') })
-    await vi.advanceTimersByTimeAsync(400)
-    expect(await s.take()).toBeNull()
+    const got = s.still(500)
+    await vi.advanceTimersByTimeAsync(600)
+    expect(await got).toBeNull()
     s.stop()
   })
   it('stops looking when told, and after a while on its own', async () => {

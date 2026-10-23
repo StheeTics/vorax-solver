@@ -5,6 +5,9 @@ import type { Reading } from '../types'
 /** another look after this long, up to this many times (3 s) from the board's own picture */
 export const RETRY_MS = 500
 export const RETRIES = 6
+/** then, still unsure, slower looks: something may cover the board for a while (~16 s more) */
+export const SLOW_RETRY_MS = 2000
+export const SLOW_RETRIES = 8
 
 /** Whether a reading needs another look: caught mid-animation, the board not found, or a tank or card not read
  *  for sure. A protocol's name doesn't change the advice (protocols are the player's call), so it isn't looked
@@ -16,9 +19,9 @@ export const unsureReading = (r: Reading) =>
 
 /** Looks taken since the board's picture, and whether to take another. A board or screen picture starts the
  *  count; the looks themselves are manual pictures; anything else (a screenshot, capture mode) isn't retried. */
-export function nextLook(trigger: string | undefined, unsure: boolean, looks: number): { looks: number; again: boolean } {
+export function nextLook(trigger: string | undefined, unsure: boolean, looks: number): { looks: number; again: boolean; delay: number } {
   if (trigger === 'board' || trigger === 'screen') looks = 0
-  else if (trigger !== 'manual') return { looks, again: false }
-  if (!unsure || looks >= RETRIES) return { looks, again: false }
-  return { looks: looks + 1, again: true }
+  else if (trigger !== 'manual') return { looks, again: false, delay: 0 }
+  if (!unsure || looks >= RETRIES + SLOW_RETRIES) return { looks, again: false, delay: 0 }
+  return { looks: looks + 1, again: true, delay: looks < RETRIES ? RETRY_MS : SLOW_RETRY_MS }
 }

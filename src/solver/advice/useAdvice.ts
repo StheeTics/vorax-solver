@@ -20,14 +20,12 @@ export function useAdvice(state: ScreenState, read = false): { shown: Shown | nu
   const [shown, setShown] = useState<Shown | null>(null)
   const fromRead = useRef(read)
   fromRead.current = read
-  const [wanted, setWanted] = useState<ScreenState | null>(null)
   const latest = useRef(0)
 
   useEffect(() => {
     if (state.hand.length === 0) return
     const id = ++latest.current
     const t = setTimeout(() => {
-      setWanted(state)
       const show = (a: Advice | null) => {
         if (!a || id !== latest.current) return
         setShown({ board: state, advice: a })
@@ -41,5 +39,7 @@ export function useAdvice(state: ScreenState, read = false): { shown: Shown | nu
     return () => clearTimeout(t)
   }, [state])
 
-  return { shown, updating: !!wanted && shown?.board !== wanted }
+  // out of date from the render the new board arrives in (not from the timer's), so the last board's green box
+  // isn't drawn again for a moment before the new advice comes
+  return { shown, updating: state.hand.length > 0 && shown?.board !== state }
 }

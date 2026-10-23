@@ -102,10 +102,11 @@ export function bridgeLog(bridge: DesktopBridge): FileLike {
 
 const OTHERS = 2
 
-export function overlayCard(shown: Shown | null, updating: boolean, asks: string[] = [], depends: Depends[] | null = null, choices: string[] = [], gate: Gate = { paused: [], forced: [] }): OverlayCard {
+export function overlayCard(shown: Shown | null, updating: boolean, asks: string[] = [], depends: Depends[] | null = null, choices: string[] = [], gate: Gate = { paused: [], forced: [] }, finished = false): OverlayCard {
   const ask = asks.length ? `${asks[0]}${asks.length > 1 ? ` (and ${asks.length - 1} more in the Solver)` : ''}` : null
   const warning = gate.forced.length ? `Unreliable: ${gate.forced.map(p => PAUSES[p].action.toLowerCase()).join(', ')}.` : ''
   const card = { detail: '', others: [], round: shown?.board.round ?? null, updating, asks, ask, choices, paused: false, warning }
+  if (finished) return { ...card, updating: false, warning: '', move: 'Enjoy your loot', detail: 'The run is over. The Solver picks up again when the next one starts.' }
   // paused: what to fix, in place of the move; Show me opens the Solver, which says how
   if (gate.paused.length) {
     const [first, ...rest] = gate.paused
@@ -130,15 +131,15 @@ export function overlayCard(shown: Shown | null, updating: boolean, asks: string
 }
 
 /** Keeps the overlay card in step with the advice on the page. */
-export function useOverlay(shown: Shown | null, updating: boolean, asks: string[] = [], bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null, choices: string[] = [], gate?: Gate): void {
+export function useOverlay(shown: Shown | null, updating: boolean, asks: string[] = [], bridge: DesktopBridge | null = desktopBridge(), depends: Depends[] | null = null, choices: string[] = [], gate?: Gate, finished = false): void {
   const key = asks.join('\n')
   const offer = choices.join('\n')
   const paused = gate?.paused.join(',') ?? ''
   const forced = gate?.forced.join(',') ?? ''
   useEffect(() => {
     const split = (k: string) => (k ? (k.split(',') as Pause[]) : [])
-    bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends, offer ? offer.split('\n') : [], { paused: split(paused), forced: split(forced) }))
-  }, [shown, updating, key, bridge, depends, offer, paused, forced])
+    bridge?.showAdvice(overlayCard(shown, updating, key ? key.split('\n') : [], depends, offer ? offer.split('\n') : [], { paused: split(paused), forced: split(forced) }, finished))
+  }, [shown, updating, key, bridge, depends, offer, paused, forced, finished])
 }
 
 /** Keeps the green boxes over the game in step with the advice: drawn only while the advice is for the screen

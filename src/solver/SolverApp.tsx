@@ -7,9 +7,10 @@ import { AdvicePanel } from './advice/AdvicePanel'
 import { PausedPanel, UnreliableNote } from './advice/PausedPanel'
 import { pausesOf, stillPaused, type Pause } from './advice/paused'
 import { useAdvice } from './advice/useAdvice'
+import { warmUp } from './advice/adviseOn'
 import { desktopBridge, overlayAsks, useHighlights, useOverlay } from './desktop/bridge'
 import { unreadTanks } from './advice/unread'
-import { nextLook, RETRY_MS, unsureReading } from './live/retry'
+import { nextLook, unsureReading } from './live/retry'
 import { dependsOn } from './advice/depends'
 import { useAlternatives } from './advice/useAlternatives'
 import { gameClosing, screenTrouble, type Trouble } from './live/troubles'
@@ -76,6 +77,10 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   const [corrections, setCorrections] = useState<Record<FieldKey, string>>({})
   const [local, setLocal] = useState<LocalRefs>({})
   useEffect(() => void loadLocalRefs().then(setLocal), [])
+  // in Vorax Overlay, the advice workers start and practice as the page loads, so the first board is as quick as the rest
+  useEffect(() => {
+    if (desktopBridge()) void warmUp().catch(() => {})
+  }, [])
   const workerScan = useScan()
   const read = scanner ?? workerScan
   const canLive = liveSupported()
@@ -129,11 +134,18 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   }, [])
   // cards the reader couldn't name on this board: the advice leaves them out, and they're reported so they can be added
   const unknownCards = reading?.state.phase === 'protocol' ? [] : (reading?.problems ?? []).flatMap(p => (p.kind === 'unknownArt' ? [Number(/\d+/.exec(p.field)?.[0] ?? 0) + 1] : []))
-  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles, unknownCards), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable })
+  // the Vorax screen closed or the run ended (the green boxes come off); finished: the run itself is done, and the
+  // card says so instead of the last pick's advice
+  const [over, setOver] = useState(false)
+  const [finished, setFinished] = useState(false)
+  const overRef = useRef(false)
+  overRef.current = over
+  useOverlay(shown, updating, overlayAsks(pickAsks.length, fields, corrections, askShelley, troubles, unknownCards), undefined, depends, pickAsks[0]?.question.offer ?? [], { paused, forced: unreliable }, finished)
   const retries = useRef(0)
   // a new board came in: the boxes come off at once, and stay off until it's read and advised on
   const [changing, setChanging] = useState(false)
-  useHighlights(shown, updating, reading?.frame, reading?.ui, changing || paused.length > 0 || unreliable.length > 0 || !!depends)
+  // the Vorax screen closed (or the run ended): the green boxes come off
+  useHighlights(shown, updating, reading?.frame, reading?.ui, over || changing || paused.length > 0 || unreliable.length > 0 || !!depends)
   useEffect(() => {
     if (!advice?.final || !keepAdvice.current) return
     keepAdvice.current({ ...advice, hand: state.hand, phase: state.phase }, 'advice')
@@ -151,14 +163,20 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
   }
 
   // A board that didn't read cleanly is looked at again soon, a few times (retry.ts)
+  // pictures in the order they were taken, and the latest whose read was used
+  const frames = useRef(0)
+  const applied = useRef(0)
   const retryIfUnsure = (trigger: string | undefined, r: Reading) => {
+    // the Vorax screen closed or the run over: nothing more to read
+    if (overRef.current) return
     const next = nextLook(trigger, unsureReading(r), retries.current)
     retries.current = next.looks
-    if (next.again) setTimeout(() => snapAgain.current?.(), RETRY_MS)
+    if (next.again) setTimeout(() => !overRef.current && snapAgain.current?.(), next.delay)
   }
 
   // A frame from Live or a screenshot becomes the board; fields the reader was unsure of are marked.
   const onFrame = async (captured: ImageData, trigger?: string, refs?: LocalRefs, keep?: Keep, snap?: SnapTiming) => {
+    const seq = ++frames.current
     setReadingBusy(true)
     try {
       const img = await gamePicture(captured)
@@ -166,6 +184,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       const read$ = await read(img, trigger, refs ?? local)
       const ms = Date.now() - readFrom
       console.info(`[timing] read the screen in ${ms} ms`)
+      // a slow read (a card's name taking every try) finishing after a later picture's: that board is gone
+      if (seq < applied.current) return console.info(`[timing] dropped the read of an older picture`)
+      applied.current = seq
       const timed = snap ? { ...read$, timing: { ...read$.timing, ...snap } } : read$
       const raw = timed.debug ? { ...timed, debug: { ...timed.debug, ms } } : timed
       // a card flying off as it's played or picked: the last board and its advice still stand
@@ -322,7 +343,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             </div>
           )}
           {canLive ? (
-            <LiveSource onFrame={(img, trigger, keep, timing) => void onFrame(img, trigger, undefined, keep, timing)} onTrouble={setTrouble} snap={snapAgain} onChanged={() => setChanging(true)} />
+            <LiveSource onFrame={(img, trigger, keep, timing) => void onFrame(img, trigger, undefined, keep, timing)} onTrouble={setTrouble} snap={snapAgain} onChanged={() => setChanging(true)} onOver={(o, f) => (setOver(o), setFinished(f))} />
           ) : (
             <p className={styles.note}>Live needs Chrome or Edge on a PC, or the Windows app.</p>
           )}

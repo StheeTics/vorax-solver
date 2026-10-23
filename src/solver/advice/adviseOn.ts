@@ -1,5 +1,5 @@
 import { addTallies, conclude, prepare, type Advice, type ScreenState } from '@/strategy/advisor'
-import type { Pool } from './pool'
+import { futuresPool, type Pool } from './pool'
 
 /** Slices per worker: small ones keep every worker busy to the end (in Edge on 16 threads, a round-1 potion board
  *  took ~570 ms at 4 against ~900 at 1, and 3.9 s on one core). */
@@ -19,4 +19,28 @@ export async function adviseOn(x: ScreenState, pool: Pick<Pool, 'size' | 'run'>,
   const n = p.work.futures, k = Math.min(pool.size * SLICES_PER_WORKER, n)
   const parts = await Promise.all(Array.from({ length: k }, (_, i) => pool.run({ work: p.work, from: Math.floor((i * n) / k), to: Math.floor(((i + 1) * n) / k) }, tag)))
   return parts.some(t => t === null) ? null : conclude(p, addTallies(parts as NonNullable<(typeof parts)[number]>[]))
+}
+
+/** A round-5 potion board: enough look-ahead (~3.5 s on one core) that every worker runs it long enough to be optimized. */
+const PRACTICE: ScreenState = {
+  tanks: Array.from({ length: 6 }, () => ({ archetype: 'pest' as const, rarity: 'magic' as const, activity: 81, quantity: 340 })),
+  hand: ['Mutagenic Powder', 'Green Bile Solution', 'Bewitching Tincture'],
+  instruments: [],
+  phase: 'potion',
+  round: 5,
+}
+
+/**
+ * Starts the workers and plays a practice board over them, a slice each, so the first real board doesn't pay for
+ * starting them and for the look-ahead's code still running unoptimized (~200 ms against ~50 on later boards).
+ */
+export async function warmUp(): Promise<void> {
+  const pool = futuresPool()
+  if (!pool) return
+  const t0 = Date.now()
+  const p = prepare(PRACTICE, futuresFor(pool.size + 1))
+  if ('advice' in p) return
+  const n = p.work.futures, k = Math.min(pool.size, n)
+  await Promise.all(Array.from({ length: k }, (_, i) => pool.run({ work: p.work, from: Math.floor((i * n) / k), to: Math.floor(((i + 1) * n) / k) }, 'warm')))
+  console.info(`[timing] warm-up: advice workers ready in ${Date.now() - t0} ms`)
 }

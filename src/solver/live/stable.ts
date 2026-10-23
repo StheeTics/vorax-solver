@@ -57,15 +57,15 @@ export async function waitStable(grab: () => Promise<ImageData>, o: StableOption
 }
 
 export interface Sampler {
-  /** a fresh picture, when it and the last two looks all match (the same proof as waitStable's), else null */
-  take(): Promise<ImageData | null>
+  /** the first look that matches the two before it (looking on until then), or null after maxMs or once stopped */
+  still(maxMs: number): Promise<ImageData | null>
   stop(): void
 }
 
 /**
- * Looks at the screen every intervalMs while the log is still settling, so that when it settles a still screen is
- * already proven and its picture taken at once, instead of starting waitStable's three looks only then. Anything
- * short of that proof (too few looks, a change, a failed grab) answers null, and waitStable runs as before.
+ * Looks at the screen every intervalMs from a board's log line on, so the picture is the first look that matches the
+ * two before it (the same proof as waitStable's): taken as soon as the cards have landed, often before the log has
+ * settled. Short of that proof (stopped, failed grabs, the wait running out) it answers null, and waitStable runs.
  */
 export function createSampler(grab: () => Promise<ImageData>, o: { intervalMs?: number; maxMs?: number; threshold?: number } = {}): Sampler {
   const { intervalMs = 150, maxMs = 8000, threshold = 1.5 } = o
@@ -74,13 +74,24 @@ export function createSampler(grab: () => Promise<ImageData>, o: { intervalMs?: 
   let still = 0
   let stopped = false
   let busy: Promise<void> | null = null
+  let waiter: ((f: ImageData | null) => void) | null = null
+  let lastFrame: ImageData | null = null
+  const answer = (f: ImageData | null) => {
+    const w = waiter
+    waiter = null
+    w?.(f)
+  }
   const look = async () => {
     try {
-      const t = thumb(await grab())
+      const frame = await grab()
+      const t = thumb(frame)
       still = last && frameDiff(last, t) < threshold ? still + 1 : 0
       last = t
+      lastFrame = frame
+      if (still >= 2) answer(frame)
     } catch {
       last = null
+      lastFrame = null
       still = 0
     }
   }
@@ -93,18 +104,17 @@ export function createSampler(grab: () => Promise<ImageData>, o: { intervalMs?: 
     stopped = true
     clearInterval(timer)
     clearTimeout(end)
+    answer(null)
   }
   return {
-    async take() {
-      stop()
-      if (busy) await busy
-      if (!last || still < 1) return null
-      try {
-        const frame = await grab()
-        return frameDiff(last, thumb(frame)) < threshold ? frame : null
-      } catch {
-        return null
-      }
+    still(maxMs) {
+      if (stopped) return Promise.resolve(null)
+      // already proven still: that look's picture
+      if (still >= 2 && lastFrame) return Promise.resolve(lastFrame)
+      return new Promise(done => {
+        const t = setTimeout(() => answer(null), maxMs)
+        waiter = f => (clearTimeout(t), done(f))
+      })
     },
     stop,
   }
