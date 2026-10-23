@@ -56,6 +56,20 @@ export interface Stats {
   problems: { by: string; group: string; boards: number; unsure: number; numbers: number }[]
   /** the advice's predicted chance of 840,000 (in 20% bands) against how those finished games ended */
   calibration: { band: string; predicted: number; games: number; reached: number }[]
+  /** the free plans' use, added by the workflow (scripts/live/usage.ts); absent before its tokens are set */
+  usage?: Usage
+}
+
+/** The free plans' use and limits. A part is left out when its token isn't set or its API didn't answer. */
+export interface Usage {
+  checked: string
+  /** what the dashboard measures against: per UTC day, but bytes for the database and minutes per month */
+  limits: { rowsRead: number; rowsWritten: number; requests: number; bytes: number; minutes: number }
+  /** per UTC day, oldest first: the D1 database's rows read and written, its size, and the Worker's requests */
+  cloudflare?: { day: string; rowsRead: number; rowsWritten: number; requests: number; bytes: number }[]
+  /** GitHub Actions this month: minutes as counted against the free minutes (Windows counts twice), the minutes
+   *  per runner, and what GitHub charges beyond the free minutes, in dollars */
+  github?: { month: string; minutes: number; runners: Record<string, number>; charged: number }
 }
 
 const RECENT = 25

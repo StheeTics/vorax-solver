@@ -3,7 +3,7 @@
 // Since Oct 23 the collector keeps an upload's boards together: its export row's body is an array of them.
 import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import type { Snapshot } from '../../src/solver/share/snapshot'
-import { summarize, type StatRow } from '../../worker/src/stats'
+import { summarize, type StatRow, type Usage } from '../../worker/src/stats'
 
 const DIR = 'data/live'
 const RAW = `${DIR}/raw`
@@ -97,8 +97,9 @@ export function statRows(): StatRow[] {
 
 /** Works out the dashboard's numbers and sends them to the collector, which is too small to do it per request
  *  (worker/src/summary.ts). Returns a line for the log. */
-export async function sendSummary(url: string, token: string, rows: StatRow[], fetchFn: typeof fetch = fetch): Promise<string> {
+export async function sendSummary(url: string, token: string, rows: StatRow[], fetchFn: typeof fetch = fetch, usage: Usage | null = null): Promise<string> {
   const s = summarize(rows)
+  if (usage) s.usage = usage
   const res = await fetchFn(`${url}/v1/summary`, { method: 'PUT', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(s) })
   if (!res.ok) throw new Error(`summary refused: ${res.status} ${(await res.text()).slice(0, 200)}`)
   return `${s.totals.games} games, ${s.finished.games} finished, from ${rows.length} boards`
