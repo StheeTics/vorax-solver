@@ -247,6 +247,7 @@ const LOOPS = [
   { job: 'live-data', name: 'Odds from live data', every: 24 },
   { job: 'daily-check', name: 'Daily check (simulation)', every: 24 },
   { job: 'smarter-player', name: 'Smarter player (nightly learning)', every: 24 },
+  { file: 'dashboard.yml', name: 'Dashboard numbers', every: 2 },
   { file: 'issue-fixer.yml', name: 'Issue fixer', every: 24 },
   { file: 'deploy.yml', name: 'Website deploy', every: null },
   { file: 'desktop.yml', name: 'Windows app release', every: null, noRun: true },
@@ -259,7 +260,7 @@ const ago = t => {
 async function health() {
   const nightly = fromRepo('nightly').catch(() => null)
   const rows = await Promise.all(LOOPS.map(async l => {
-    const every = { html: '<span class="sub">' + (l.job ? 'nightly, on the PC' : l.every ? 'every ' + (l.every === 1 ? 'hour' : 'day') : 'when needed') + '</span>' }
+    const every = { html: '<span class="sub">' + (l.job ? 'nightly, on the PC' : l.every ? 'every ' + (l.every === 1 ? 'hour' : l.every < 24 ? l.every + ' hours' : 'day') : 'when needed') + '</span>' }
     const late = t => l.every && Date.now() - new Date(t) > l.every * 2.5 * 3600000
     if (l.job) {
       const all = await nightly

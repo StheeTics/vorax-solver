@@ -60,5 +60,14 @@ it('runs at the lowest priority, 16 at once overnight and 8 with --day, and comm
 })
 
 it('the moved jobs are gone from GitHub Actions, and the collector no longer starts them', () => {
-  expect(readdirSync('.github/workflows').sort()).toEqual(['deploy.yml', 'desktop.yml', 'issue-fixer.yml'])
+  expect(readdirSync('.github/workflows').sort()).toEqual(['dashboard.yml', 'deploy.yml', 'desktop.yml', 'issue-fixer.yml'])
+})
+
+it('every 2 hours on GitHub, the dashboard gets its numbers from the new boards, and nothing is committed', () => {
+  const w = readFileSync('.github/workflows/dashboard.yml', 'utf8')
+  expect(w).toContain("cron: '17 */2 * * *'")
+  const runs = w.split('\n').filter(l => /^\s*(- )?run: /.test(l)).map(l => l.replace(/^\s*(- )?run: /, ''))
+  expect(runs).toEqual(['npm ci --no-audit --no-fund', 'npx vite-node scripts/live/pull.ts', 'npx vite-node scripts/live/summary.ts'])
+  expect(w).toContain('contents: read')
+  expect(w).not.toMatch(/git (commit|push)|weights\.ts|npm test/)
 })
