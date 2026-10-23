@@ -84,8 +84,9 @@ export async function leaveOldSite(loc: Location = location): Promise<boolean> {
 export async function arriveFromOldSite(loc: Location = location): Promise<number> {
   const at = loc.hash.indexOf(MARK)
   if (at < 0) return 0
-  history.replaceState(null, '', loc.pathname + loc.search)
+  // read before clearing: the real location's hash empties with the address bar
   const c = decodeCarried(loc.hash.slice(at + MARK.length))
+  history.replaceState(null, '', loc.pathname + loc.search)
   if (!c) return 0
   let added = 0
   try {

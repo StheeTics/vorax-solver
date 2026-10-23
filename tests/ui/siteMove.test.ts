@@ -76,6 +76,13 @@ describe('arriving at the new address', () => {
     expect(replaceState).toHaveBeenCalledWith(null, '', '/tli-vorax-simulator/solver?board=x')
     expect(localStorage.getItem('vorax.movedNotice')).toBe('show')
   })
+  it('reads what came before clearing the address bar: the real location changes with it', async () => {
+    const carried = encodeCarried({ local: { 'vorax.install': 'abc' }, refs: {} })
+    history.replaceState(null, '', `/tli-vorax-simulator/solver#vorax-move=${carried}`)
+    expect(await arriveFromOldSite()).toBe(1)
+    expect(localStorage.getItem('vorax.install')).toBe('abc')
+    expect(location.hash).toBe('')
+  })
   it('does nothing without anything carried', async () => {
     expect(await arriveFromOldSite(at('https://voraxlab.pages.dev/tli-vorax-simulator/solver#report'))).toBe(0)
     expect(localStorage.getItem('vorax.movedNotice')).toBeNull()
