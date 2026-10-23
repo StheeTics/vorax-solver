@@ -35,6 +35,21 @@ it('counts offers, instruments and starting tanks from a run', () => {
   expect(r.supreme.engine).toBe(LIVE_WEIGHTS.supremeChance)
 })
 
+it('a reward pick after round 1 is an advanced offer, though the screen still shows round 1', () => {
+  // the first pick (nothing held) is from the basic pool; Ultimate Activity's reward at the end of round 1 is
+  // offered while the round panel still says 1, from the advanced pool (src/engine/game.ts instrumentPool)
+  const rows = [
+    base({ seq: 0, phase: 'instrument', round: 1, hand: ['Hypertrophic Pituitary', 'Contracted Claws', 'Adherent Metatarsals'] }),
+    base({ seq: 1, phase: 'instrument', round: 1, instruments: ['Contracted Claws'], hand: ['Nettle Toggle', 'Fouled Scraper', 'Clustered Eggs'] }),
+    base({ seq: 2, phase: 'instrument', round: 3, instruments: ['Contracted Claws', 'Nettle Toggle'], hand: ['Sinew Garrote', 'Fouled Scraper', 'Rawhide Restraint'] }),
+  ]
+  const r = computeRates(rows)
+  expect(r.instrumentOffer.basic['Hypertrophic Pituitary'].n).toBe(3)
+  expect(r.instrumentOffer.basic['Nettle Toggle']).toBeUndefined()
+  expect(r.instrumentOffer.advanced['Fouled Scraper'].count).toBe(2)
+  expect(r.instrumentOffer.advanced['Fouled Scraper'].n).toBe(6)
+})
+
 it('the same offer read twice in one round counts once', () => {
   const offer = { round: 4, refreshes: 2, hand: ['Xeno-Hormone', 'Mutagenic Powder', 'Green Bile Solution'] }
   const r = computeRates([base({ seq: 3, ...offer }), base({ seq: 4, ...offer })])

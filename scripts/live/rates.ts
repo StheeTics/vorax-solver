@@ -80,9 +80,11 @@ export function computeRates(all: Snapshot[]): Rates {
     potionOffer: shares(normalHands, name => (supremeNames.has(name) ? perSupreme : perNormal(name)), [...NORMAL_POOL, ...SUPREME_POOL].map(p => p.name)),
     boxOffer: shares(boxHands, share(LIVE_WEIGHTS.boxOffer), []),
     supreme: rate(allCards.filter(c => supremeNames.has(c)).length, allCards.length, SUPREME_CHANCE),
+    // the pool goes by what's held, as in the engine (src/engine/game.ts instrumentPool), not by the round: the
+    // reward for Ultimate Activity at the end of round 1 is an advanced offer on a screen that still says round 1
     instrumentOffer: {
-      basic: shares(instruments.filter(r => r.round === 1).map(r => r.hand), share(LIVE_WEIGHTS.instrumentOffer.basic), BASIC_POOL.map(i => i.name)),
-      advanced: shares(instruments.filter(r => r.round > 1).map(r => r.hand), share(LIVE_WEIGHTS.instrumentOffer.advanced), ADVANCED_POOL.map(i => i.name)),
+      basic: shares(instruments.filter(r => r.instruments.length === 0).map(r => r.hand), share(LIVE_WEIGHTS.instrumentOffer.basic), BASIC_POOL.map(i => i.name)),
+      advanced: shares(instruments.filter(r => r.instruments.length > 0).map(r => r.hand), share(LIVE_WEIGHTS.instrumentOffer.advanced), ADVANCED_POOL.map(i => i.name)),
     },
     spawnRarity: Object.fromEntries(RARITIES.map(r => [r, rate(tanks.filter(t => t.rarity === r).length, tanks.length, SPAWN_WEIGHTS[r] / spawnTotal)])),
     spawnArchetype: Object.fromEntries(ARCHETYPES.map(a => [a, rate(tanks.filter(t => t.archetype === a).length, tanks.length, 1 / ARCHETYPES.length)])),
