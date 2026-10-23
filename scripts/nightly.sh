@@ -25,8 +25,9 @@
 #            nothing and opens no pull request
 set -uo pipefail
 
-# started by the Task Scheduler, the shell hasn't loaded nvm's node
-command -v npx > /dev/null || { [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"; }
+# nvm's node, first in the PATH: started by the Task Scheduler, the shell hasn't loaded it, and WSL's PATH has
+# Windows' node too
+[ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"
 [ -z "${VORAX_IN_CLONE:-}" ] && echo "== $(date '+%Y-%m-%d %H:%M') nightly.sh $*"
 
 CLONE=${VORAX_NIGHTLY_DIR:-$HOME/.local/share/vorax/nightly}
