@@ -1,4 +1,4 @@
-import { createGame, dispatch, DEFAULT_SETTINGS, canConfirm, canRefresh, needsTargets, ultimateActivity } from '@/engine/game'
+import { cloneState, createGame, dispatch, DEFAULT_SETTINGS, canConfirm, canRefresh, needsTargets, ultimateActivity } from '@/engine/game'
 import { dealPotions } from '@/engine/draw'
 import { createRng } from '@/engine/rng'
 import { potion } from '@/data/potions'
@@ -170,4 +170,31 @@ it('dispatch never mutates its input', () => {
   const copy = structuredClone(s)
   play(s, { type: 'selectCard', index: 0 }, { type: 'confirm' })
   expect(s).toEqual(copy)
+})
+
+const deepFreeze = <T,>(o: T): T => {
+  if (o && typeof o === 'object' && !Object.isFrozen(o)) {
+    Object.freeze(o)
+    for (const v of Object.values(o)) deepFreeze(v)
+  }
+  return o
+}
+
+it('cloneState copies everything dispatch changes, and shares only what nothing changes', () => {
+  const s = createGame(DEFAULT_SETTINGS, undefined, 7)
+  const c = cloneState(s)
+  expect(c).toEqual(s)
+  for (const k of ['tanks', 'instruments', 'hand', 'targets', 'thresholds', 'log'] as const) expect(c[k]).not.toBe(s[k])
+  s.tanks.forEach((t, i) => t && expect(c.tanks[i]).not.toBe(t))
+  expect(c.settings).toBe(s.settings)
+})
+
+it('dispatch never changes the state it was given: a whole game on deep-frozen states', () => {
+  let s = createGame(DEFAULT_SETTINGS, undefined, 11)
+  for (let i = 0; i < 400 && s.phase !== 'gameOver'; i++) {
+    deepFreeze(s)
+    const a: Action = s.phase === 'roundEnd' ? { type: 'confirm' } : s.selected === null ? { type: 'selectCard', index: 0 } : needsTargets(s) && s.targets.length === 0 ? { type: 'toggleTarget', tank: s.tanks.findIndex(t => t) } : { type: 'confirm' }
+    s = dispatch(s, a).state
+  }
+  expect(s.phase).toBe('gameOver')
 })

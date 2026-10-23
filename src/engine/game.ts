@@ -159,12 +159,29 @@ function refresh(run: Run) {
  * that only adds a monster does nothing when the tanks are full (unless an instrument rewards the overflow).
  * Its effect is applied to a copy, with its reactive instruments; true for a Potion Kit, which opens a hand.
  */
+/**
+ * A copy of the state that dispatch can change freely: what the engine changes in place (tanks and their monsters,
+ * the hand, instruments, targets, thresholds, the log's list) is copied; log entries, settings and the sandbox setup,
+ * never changed in place, are shared. Many times faster than structuredClone, which was a third of the look-ahead's time.
+ */
+export function cloneState(state: GameState): GameState {
+  return {
+    ...state,
+    tanks: state.tanks.map(t => (t ? { ...t } : null)),
+    instruments: state.instruments.map(i => ({ ...i })),
+    hand: state.hand.map(c => ({ ...c })),
+    targets: [...state.targets],
+    thresholds: { ...state.thresholds },
+    log: [...state.log],
+  }
+}
+
 export function cardChanges(state: GameState, index: number, targets: number[]): boolean {
   const card = state.hand[index]
   if (!card || card.kind !== 'potion') return true
   const def = potion(card.id)
   if (typeof def.targeting === 'object' || !def.effect) return typeof def.targeting === 'object'
-  const s = structuredClone(state)
+  const s = cloneState(state)
   const run: Run = { s, rng: createRng(s.rngState), log: [] }
   const before = JSON.stringify(s.tanks)
   def.effect(context(run), targets)
@@ -172,7 +189,7 @@ export function cardChanges(state: GameState, index: number, targets: number[]):
 }
 
 export function dispatch(state: GameState, action: Action): { state: GameState; log: LogEntry[] } {
-  const s = structuredClone(state)
+  const s = cloneState(state)
   const run: Run = { s, rng: createRng(s.rngState), log: [] }
   switch (action.type) {
     case 'selectCard':
