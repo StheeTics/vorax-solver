@@ -8,7 +8,7 @@ import type { GameWindow } from '../share/snapshot'
 import type { Depends } from '../advice/depends'
 import type { FieldKey, FieldRead } from '../types'
 import { unreadNote, unreadTanks } from '../advice/unread'
-import { TROUBLES, type Trouble } from '../live/troubles'
+import { SCALING_FIX, TROUBLES, type Trouble } from '../live/troubles'
 import type { Shown } from '../advice/useAdvice'
 import { describe, predicted } from '../advice/describe'
 import { PAUSES, type Pause } from '../advice/paused'
@@ -73,7 +73,7 @@ export function overlayAsks(pending: number, fields: Record<FieldKey, FieldRead>
   if (pending > 0) out.push('Which instrument did you take? The Solver couldn’t tell.')
   // a screen it can't read already says the numbers are off
   const tanks = unreadTanks(fields, corrections)
-  if (tanks.length && !troubles.includes('cantRead')) out.push(`${unreadNote(tanks)} Check them in the Solver.`)
+  if (tanks.length && !troubles.includes('cantRead')) out.push(`${unreadNote(tanks)} Check them in the Solver. If it keeps happening, ${SCALING_FIX}`)
   if (Object.entries(fields).some(([k, f]) => /^instrument\d$/.test(k) && !f.sure && !(k in corrections))) out.push('An instrument may be misread: check it in the Solver.')
   return out
 }

@@ -102,7 +102,7 @@ describe('the overlay card', () => {
       `${TROUBLES.logOff.card} ${TROUBLES.logOff.steps[0]}`,
       'Which Intern Shelley level do you have? Pick it in the Solver: it sets your instrument refreshes.',
       'Which instrument did you take? The Solver couldn’t tell.',
-      'Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them in the Solver.',
+      'Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them in the Solver. If it keeps happening, lower the game’s Settings → Screen Scaling to about 1/4.',
     ])
   })
 
@@ -131,7 +131,7 @@ describe('the overlay card', () => {
   })
 
   it('warns over the game when a tank’s numbers weren’t read: the advice may be off', () => {
-    expect(overlayAsk(0, { 'tank1.activity': { sure: false } }, {})).toBe('Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them in the Solver.')
+    expect(overlayAsk(0, { 'tank1.activity': { sure: false } }, {})).toBe('Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them in the Solver. If it keeps happening, lower the game’s Settings → Screen Scaling to about 1/4.')
     expect(overlayAsk(0, { 'tank1.activity': { sure: false } }, { 'tank1.activity': '300' })).toBeNull()
     // the instrument question comes first: it waits for an answer; then the tanks, which change the advice most
     expect(overlayAsk(1, { 'tank1.activity': { sure: false } }, {})).toBe('Which instrument did you take? The Solver couldn’t tell.')

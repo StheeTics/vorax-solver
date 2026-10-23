@@ -3,6 +3,7 @@ import styles from './AdvicePanel.module.css'
 import { PickHand } from './PickHand'
 import { describe, predicted } from './describe'
 import { unreadNote } from './unread'
+import { SCALING_FIX } from '../live/troubles'
 import type { Depends } from './depends'
 
 interface Props {
@@ -73,7 +74,7 @@ export function AdvicePanel({ advice, updating, state, iconsKnown, unread = [], 
       {unseen.length > 0 && <p className={styles.teach}>{unseen.join(' and ')}: icon{unseen.length === 1 ? '' : 's'} not seen yet. Picking {unseen.length === 1 ? 'it' : 'one'} teaches the Solver.</p>}
       {advice.unknown.length > 0 && <p className={styles.unknown}>Not recognised: {advice.unknown.join(', ')}</p>}
       {advice.note && <p className={styles.note}>{advice.note}</p>}
-      {unread.length > 0 && <p className={styles.unknown} role="note">{unreadNote(unread)} Check them on the board.</p>}
+      {unread.length > 0 && <p className={styles.unknown} role="note">{unreadNote(unread)} Check them on the board. If it keeps happening, {SCALING_FIX}</p>}
     </section>
   )
 }

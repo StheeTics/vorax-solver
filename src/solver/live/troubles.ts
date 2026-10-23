@@ -5,6 +5,9 @@ import type { Reading } from '../types'
 
 export type Trouble = 'logOff' | 'windowBlocked' | 'noWindow' | 'cantRead'
 
+/** What helps the reader most when it misreads: a smaller game interface (Settings → Screen Scaling), which it reads best. */
+export const SCALING_FIX = 'lower the game’s Settings → Screen Scaling to about 1/4.'
+
 export const TROUBLES: Record<Trouble, { card: string; steps: string[] }> = {
   logOff: {
     card: 'The game’s log is off, so the Solver can’t follow your game.',
@@ -26,8 +29,7 @@ export const TROUBLES: Record<Trouble, { card: string; steps: string[] }> = {
   cantRead: {
     card: 'The Solver can’t read your game screen, so its advice is off.',
     steps: [
-      'Lower the game’s Settings → Screen Scaling.',
-      'Keep the game’s interface scale at its default.',
+      SCALING_FIX[0].toUpperCase() + SCALING_FIX.slice(1),
       'If your screen isn’t 16:9 or 21:9 (16:10, 32:9…), say so with Report an issue: it isn’t supported yet.',
     ],
   },

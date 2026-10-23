@@ -67,7 +67,9 @@ describe('a screen the Solver can’t read', () => {
   })
   it('doesn’t blame a windowed game: it reads as well as a borderless one', () => {
     expect(TROUBLES.cantRead.card).toMatch(/can’t read your game screen/)
-    expect(TROUBLES.cantRead.steps[0]).toBe('Lower the game’s Settings → Screen Scaling.')
+    expect(TROUBLES.cantRead.steps[0]).toBe('Lower the game’s Settings → Screen Scaling to about 1/4.')
+    // the player's own interface scale isn't theirs to fix: only Screen Scaling is suggested
+    expect(TROUBLES.cantRead.steps.join(' ')).not.toMatch(/interface scale/)
     expect(Object.values(TROUBLES).flatMap(t => [t.card, ...t.steps]).join(' ')).not.toMatch(/not windowed|is windowed/)
   })
 })
