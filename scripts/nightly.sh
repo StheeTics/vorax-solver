@@ -1,5 +1,5 @@
 #!/bin/bash
-# The nightly jobs, on this PC. They ran on GitHub Actions until the code moved to a private repo (2026-10-22),
+# The nightly jobs, on this PC, every night at 4:00. They ran on GitHub Actions until the code moved to a private repo (2026-10-22),
 # where Actions minutes cost money; Actions keeps only the issue fixer, the deploy and the app release.
 #   1. live:    pulls the boards and named icons the Solver shared from the collector, sends the dashboard its
 #               numbers, teaches the reader the named icons, applies the odds changes the data supports (within
@@ -16,6 +16,7 @@
 # main, so the working copy and its branch are never touched. Logs: that clone's scripts/sim/results/nightly/<time>/.
 # Needs ~/.config/vorax/nightly.env with LIVE_DATA_URL and LIVE_DATA_TOKEN (the collector's EXPORT_TOKEN).
 #
+# Runs every night at 4:00 from Windows' Task Scheduler (scripts/local/schedule.ps1), output in ~/.local/share/vorax/nightly.log.
 # Usage: bash ~/repos/tli-vorax-simulator/scripts/nightly.sh (from anywhere), or bash scripts/nightly.sh
 #        [--day] [--force] [live] [check] [smarter]   (no job named: all three)
 #   --day    8 processes at once, for when the PC may be used for gaming (otherwise 16); always at nice 19
@@ -23,6 +24,10 @@
 #   NO_PUSH=1 bash scripts/nightly.sh ...: a test, on the working copy's commit: commits in the clone but pushes
 #            nothing and opens no pull request
 set -uo pipefail
+
+# started by the Task Scheduler, the shell hasn't loaded nvm's node
+command -v npx > /dev/null || { [ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh"; }
+[ -z "${VORAX_IN_CLONE:-}" ] && echo "== $(date '+%Y-%m-%d %H:%M') nightly.sh $*"
 
 CLONE=${VORAX_NIGHTLY_DIR:-$HOME/.local/share/vorax/nightly}
 ENV_FILE=$HOME/.config/vorax/nightly.env

@@ -1,5 +1,5 @@
-# A Windows notification, for the nightly jobs on this PC: their reminder (scripts/local/reminder.ps1 registers it)
-# and their result (scripts/nightly.sh, through WSL). Windows PowerShell 5.1, nothing to install.
+# A Windows notification, for the nightly jobs on this PC: how they went (scripts/nightly.sh shows it at the end,
+# through WSL). Windows PowerShell 5.1, nothing to install.
 # Usage: powershell -File toast.ps1 <title> <text>
 param([string]$Title = 'Vorax', [string]$Text = '')
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null
