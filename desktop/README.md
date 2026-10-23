@@ -22,11 +22,6 @@ Hotkeys (not Tartarus Overlay's, so both can run): Ctrl+Alt+V show/hide the over
 
 Run the game **borderless or windowed**: nothing can draw over exclusive fullscreen.
 
-On **Windows 10** the game window is captured the older way (Chromium's GDI capture), because Windows 10 draws
-a yellow border around a window captured the newer way and only Windows 11 lets an app turn it off. If the older
-way shows the game black or makes it stutter, untick "Capture the game without the yellow border" in the tray
-menu (the app restarts). The debug log's first line says which capture is in use.
-
 ## Run it from source (Windows)
 
 ```

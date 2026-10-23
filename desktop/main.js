@@ -44,6 +44,12 @@ const SUPPORT_URL = 'https://buymeacoffee.com/tidewarden';
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
+// The Solver window is hidden, and the game covers it: Chromium would count it as in the background and slow
+// it down (card names read in 1.2-2.9 s with the processor idle, against 0.25 s in sessions where it wasn't,
+// Oct 20-23). As Tartarus Overlay does, it's never treated as covered.
+app.commandLine.appendSwitch('disable-features', 'CalculateNativeWinOcclusion');
+app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
+
 const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
 const settings = Object.assign(
   { logPath: null, overlay: null, overlayOn: true, hideBehind: false, folded: false, gameFirst: true, solver: null, highlight: true },
@@ -56,32 +62,17 @@ const settings = Object.assign(
   })(),
 );
 let saveTimer = 0;
-function writeSettings() {
-  clearTimeout(saveTimer);
-  try {
-    fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
-    fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2));
-  } catch (e) {
-    note('settings not saved:', String(e));
-  }
-}
 function saveSettings() {
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(writeSettings, 300);
+  saveTimer = setTimeout(() => {
+    try {
+      fs.mkdirSync(path.dirname(SETTINGS_FILE), { recursive: true });
+      fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings, null, 2));
+    } catch (e) {
+      note('settings not saved:', String(e));
+    }
+  }, 300);
 }
-
-// Windows 10 draws a yellow border around a window while it's captured, and only Windows 11 lets an app turn
-// it off. There the window is captured the older way, with no border, unless the player chose the newer one
-// in the tray menu (if the older way shows the game black or makes it stutter).
-const WIN10 = process.platform === 'win32' && Number(os.release().split('.')[2]) < 22000;
-const OLD_CAPTURE = WIN10 && settings.oldCapture !== false;
-
-// The Solver window is hidden, and the game covers it: Chromium would count it as in the background and slow
-// it down (card names read in 1.2-2.9 s with the processor idle, against 0.25 s in sessions where it wasn't,
-// Oct 20-23). As Tartarus Overlay does, it's never treated as covered.
-// (One disable-features switch only: a second would replace the first.)
-app.commandLine.appendSwitch('disable-features', ['CalculateNativeWinOcclusion', ...(OLD_CAPTURE ? ['AllowWgcWindowCapturer'] : [])].join(','));
-app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 
 // A small debug log beside the settings, for reports.
 const LOG_FILE = path.join(app.getPath('userData'), 'logs', 'overlay.log');
@@ -834,22 +825,11 @@ function rebuildMenu() {
     { label: logPath ? `Game log: ${logPath}` : 'Game log: not found yet', enabled: false },
     { label: 'Choose the game log…', click: () => void pickLog() },
     { label: 'Let the game go first (lower priority)', type: 'checkbox', checked: settings.gameFirst, click: (i) => ((settings.gameFirst = i.checked), saveSettings(), tunePriority()) },
-    ...(WIN10 ? [{ label: 'Capture the game without the yellow border (restarts)', type: 'checkbox', checked: OLD_CAPTURE, click: (i) => setOldCapture(i.checked) }] : []),
     { type: 'separator' },
     appUpdate ? { label: appUpdate === 'ready' ? `Update to ${appVersion} now` : `Update to ${appVersion} (downloading)`, click: updateNow } : { label: `Version ${app.getVersion()}`, enabled: false },
     { label: 'Open the debug log folder', click: () => shell.openPath(path.dirname(LOG_FILE)) },
     { label: 'Quit', click: () => ((quitting = true), app.quit()) },
   ]));
-}
-
-// The capture is chosen when the app starts, so changing it restarts the app.
-function setOldCapture(on) {
-  settings.oldCapture = !!on;
-  writeSettings();
-  note(`capture changed to the ${on ? 'older one, without the border' : 'newer one, with the border'}; restarting`);
-  quitting = true;
-  app.relaunch();
-  app.quit();
 }
 
 function registerHotkeys() {
@@ -928,7 +908,7 @@ app.on('will-quit', () => globalShortcut.unregisterAll());
 
 app.whenReady().then(async () => {
   app.setAppUserModelId('io.github.tidewarden.vorax-overlay');
-  note(`Vorax Overlay ${app.getVersion()} starting; site ${SITE}; Windows ${os.release()}; window capture ${OLD_CAPTURE ? 'older (no border)' : 'newer'}`);
+  note(`Vorax Overlay ${app.getVersion()} starting; site ${SITE}; Windows ${os.release()}`);
   permissions();
   // testing against a dev server: --fresh starts its page with nothing saved (the live site's storage is kept)
   if (arg('site') && process.argv.includes('--fresh')) await session.defaultSession.clearStorageData({ origin: SITE_URL.origin, storages: ['localstorage'] });
