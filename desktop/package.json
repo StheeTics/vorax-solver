@@ -4,7 +4,7 @@
   "version": "0.1.10",
   "description": "The Vorax Solver as a Windows app, with its advice in an overlay over the game.",
   "author": "tidewarden",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "main": "main.js",
   "scripts": {

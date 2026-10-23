@@ -9,7 +9,7 @@ Fan-made tools for the Surgical Preparation minigame in Torchlight Infinite (SS1
 
 **Strategy:** see [Optimal Play](OPTIMAL_PLAY.md) for which instruments and potions to take, based on simulated games played by bots that never see the dice.
 
-Based on [Moebing/Torchlight-Infinite-SS11-Vorax-simulator](https://github.com/Moebing/Torchlight-Infinite-SS11-Vorax-simulator) (MIT).
+Inspired by [Moebing/Torchlight-Infinite-SS11-Vorax-simulator](https://github.com/Moebing/Torchlight-Infinite-SS11-Vorax-simulator). © 2026 tidewarden, all rights reserved: see [LICENSE](LICENSE).
 
 ## The Solver
 
