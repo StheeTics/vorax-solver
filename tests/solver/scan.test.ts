@@ -198,10 +198,10 @@ it('icons players taught (learnedIcons.json) are read like the built-in ones', a
 
 // issue #12: 2560x1440 with the game's interface at 125% (Windows' display scale or the game's): every panel
 // and card larger, the tanks where they were
-describe('an interface scaled to 125%', () => {
+describe('an interface scaled to 125% (the game\u2019s recommended setting, 1.257x)', () => {
   const r = scan(decodePng(readFileSync('tests/fixtures/frames/ui-125.png')), data)
   it('is found, and the round, the phase and the cards read', () => {
-    expect(r.ui).toBe(1.25)
+    expect(r.ui).toBe(1.257)
     expect(r.state.round).toBe(5)
     expect(r.fields.round.sure).toBe(true)
     expect(r.state.phase).toBe('potion')
@@ -209,5 +209,26 @@ describe('an interface scaled to 125%', () => {
   })
   it('reads the tanks clear of the panels', () => {
     expect(r.state.tanks.slice(1, 3).map(t => t && [t.activity, t.quantity])).toEqual([[66, 166], [82, 186]])
+  })
+})
+
+// Two players' reports, Oct 23: the slider at its lowest (0.64, 0.957x of the labelled frames), the empty tanks' plates
+// lit red by their glass
+describe('the interface at its lowest, empty tanks glowing red', () => {
+  const img = decodePng(readFileSync('tests/fixtures/frames/ui-lowest.png'))
+  it('is found by the header when the game hasn’t said, and the empty tanks are empty, not bosses', () => {
+    // as the site reads: the cards' names come afterwards (titles.ts), so the header says which pick it is
+    const r = scan(img, data, {}, { pictures: false })
+    expect(r.ui).toBe(0.957)
+    expect(r.state.phase).toBe('instrument')
+    expect(r.fields.phase.sure).toBe(true)
+    expect(r.state.tanks.slice(3)).toEqual([null, null, null])
+    expect(r.state.tanks.slice(0, 3).map(t => t && [t.activity, t.quantity])).toEqual([[1, 36], [1, 36], [5, 24]])
+    expect(r.problems).toEqual([])
+  })
+  it('is read at the scale the game logged, without trying others', () => {
+    const r = scan(img, data, {}, { pictures: false, ui: 0.64 / 0.66887495368719 })
+    expect(r.ui).toBeCloseTo(0.957, 3)
+    expect(r.fields.phase.sure).toBe(true)
   })
 })
