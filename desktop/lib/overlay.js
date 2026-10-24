@@ -4,7 +4,6 @@ const api = window.VoraxOverlay;
 let folded = false;
 let card = null;
 let update = { site: false, app: '', version: '', progress: 0, waiting: false };
-let support = false;
 
 function render() {
   const c = card || { move: 'Waiting for the cards…', detail: '', others: [], round: null, updating: false };
@@ -49,14 +48,12 @@ function render() {
     : `Vorax Overlay ${update.version} is out: downloading (${update.progress}%).`;
   $('update-button').textContent = app ? 'Update' : 'Reload';
   $('update-button').hidden = app && update.app === 'downloading' && update.waiting;
-  $('support').hidden = !support;
   requestAnimationFrame(() => api.height($('card').getBoundingClientRect().height + 2));
 }
 
 api.on('card', (c) => ((card = c), render()));
 api.on('update', (u) => ((update = u || update), render()));
 api.on('folded', (f) => ((folded = !!f), render()));
-api.on('support', (s) => ((support = !!s), render()));
 $('fold').addEventListener('click', () => {
   folded = !folded;
   api.fold(folded);
@@ -67,8 +64,6 @@ $('solver').addEventListener('click', () => api.openSolver());
 $('ask-button').addEventListener('click', () => api.answer());
 $('snap').addEventListener('click', () => api.snap());
 $('force-button').addEventListener('click', () => api.force());
-$('support-open').addEventListener('click', () => api.support(true));
-$('support-close').addEventListener('click', () => api.support(false));
 $('update-button').addEventListener('click', () => (update.app === 'ready' || update.app === 'downloading' ? api.restart() : api.reload()));
 
 

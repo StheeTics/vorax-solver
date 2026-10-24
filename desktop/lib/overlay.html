@@ -288,52 +288,6 @@
     color: #fff;
   }
 
-  /* Buy me a coffee, each time the app starts: a quiet line, hidden with its button */
-  .support {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    margin: 8px 0 0;
-    padding: 3px 4px 3px 10px;
-    border-radius: 6px;
-    background: var(--bg-1);
-    color: var(--text-dim);
-    font-size: 12px;
-  }
-
-  .support span { flex: 1; }
-
-  .support button {
-    padding: 3px 10px;
-    border: 1px solid var(--gold-lo);
-    border-radius: 5px;
-    background: transparent;
-    color: var(--gold);
-    font: 500 12.5px var(--font-body);
-    cursor: pointer;
-  }
-
-  .support button:hover,
-  .support button:focus-visible {
-    border-color: var(--gold);
-    color: var(--gold-hi);
-  }
-
-  .support .support-close {
-    padding: 3px 10px;
-    border: 1px solid var(--keyword);
-    background: color-mix(in srgb, var(--keyword) 22%, transparent);
-    color: #ffd6d6;
-    font: 600 12.5px var(--font-body);
-  }
-
-  .support .support-close:hover,
-  .support .support-close:focus-visible {
-    border-color: var(--keyword);
-    background: var(--keyword);
-    color: #fff;
-  }
-
   [hidden] { display: none !important; }
 </style>
 </head>
@@ -360,11 +314,6 @@
       <div class="update" id="update" hidden>
         <span id="update-text"></span>
         <button type="button" id="update-button"></button>
-      </div>
-      <div class="support" id="support" hidden>
-        <span>Enjoying the Solver?</span>
-        <button type="button" class="support-close" id="support-close" title="Hide this message">Hide this</button>
-        <button type="button" id="support-open">☕ Buy me a coffee</button>
       </div>
       <div class="foot">
         <button type="button" id="solver" title="Show or hide the Solver (Ctrl+Alt+S)">Solver</button>

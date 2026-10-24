@@ -40,7 +40,6 @@ const STEAM_APP = '1974050'; // Torchlight: Infinite on Steam
 const HOTKEYS = { overlay: 'Control+Alt+V', solver: 'Control+Alt+S', snap: 'Control+Alt+X' };
 const ICON = path.join(__dirname, 'build', 'icon.png');
 const OVERLAY_WIDTH = 360; // Tartarus Overlay's, so the two cards look alike side by side
-const SUPPORT_URL = 'https://buymeacoffee.com/tidewarden';
 
 if (!app.requestSingleInstanceLock()) app.quit();
 
@@ -498,7 +497,6 @@ function makeOverlay() {
   win.webContents.on('did-finish-load', () => {
     send('overlay', 'folded', settings.folded);
     send('overlay', 'update', updateState());
-    send('overlay', 'support', supportOffer);
     if (lastCard) send('overlay', 'card', lastCard);
   });
   win.on('moved', () => {
@@ -512,10 +510,6 @@ function makeOverlay() {
   placeOverlay();
   return win;
 }
-
-// Buy me a coffee, offered on the card each time the app starts, until the player hides it (the Solver page
-// reloading for a site update doesn't bring it back: it's kept here, not in the page).
-let supportOffer = true;
 
 // Shown while the game runs, whatever is in front. With hideBehind (tray menu, off at first), only while the
 // game itself is in front.
@@ -713,12 +707,6 @@ ipcMain.on('overlay:snap', (e) => fromOverlay(e) && game.running && send('solver
 ipcMain.on('overlay:force', (e) => fromOverlay(e) && send('solver', 'force'));
 ipcMain.on('overlay:reload', (e) => fromOverlay(e) && reloadSolver('the player asked'));
 ipcMain.on('overlay:restart', (e) => fromOverlay(e) && updateNow());
-ipcMain.on('overlay:support', (e, open) => {
-  if (!fromOverlay(e)) return;
-  supportOffer = false;
-  send('overlay', 'support', false);
-  if (open) shell.openExternal(SUPPORT_URL);
-});
 
 // ---------- Updates ----------
 

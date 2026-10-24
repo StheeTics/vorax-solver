@@ -39,12 +39,12 @@ describe('the Buy me a coffee button', () => {
     expect(coffee()?.getAttribute('target')).toBe('_blank')
   })
 
-  it('is not on the app’s Solver page: the app offers it on the card', () => {
+  it('is on the app’s Solver page too (the card over the game doesn’t offer it)', () => {
     const w = window as unknown as { VoraxDesktop?: unknown }
     w.VoraxDesktop = { logSize: async () => null, readLog: async () => new ArrayBuffer(0), onGame: () => {}, onSnap: () => {}, showAdvice: () => {} }
     try {
       render(<SolverApp />)
-      expect(coffee()).toBeNull()
+      expect(coffee()?.getAttribute('href')).toBe(SUPPORT_URL)
     } finally {
       delete w.VoraxDesktop
     }
