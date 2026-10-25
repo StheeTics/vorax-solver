@@ -109,3 +109,22 @@ describe('digits that don’t fit the total are corrected from it', () => {
     expect(reconcile(alts([['1'], ['2']]), alts([['3', '2'], ['x'], ['6', '4']]))).toBeNull()
   })
 })
+
+import { readFileSync } from 'node:fs'
+import { decodePng } from '../../scripts/scan/png'
+import { readTank } from '@/solver/scan/tanks'
+import { layout } from '@/solver/scan/layout'
+import { gray } from '@/solver/scan/pixels'
+import rawData from '@/solver/scan/data.json'
+import { unpack, type PackedScanData } from '@/solver/scan/data'
+
+it('labels a few pixels lower than measured are read again lower, not left as a 1x1 tank (issue #139)', () => {
+  const img = decodePng(readFileSync('tests/fixtures/frames/labels-low-139.png'))
+  const data = unpack(rawData as unknown as PackedScanData)
+  const l = layout(img)
+  const g = gray(img)
+  const blightsight = readTank(img, g, l, 0, data)
+  expect(blightsight.monster).toMatchObject({ activity: 804, quantity: 1307 })
+  expect(blightsight.fields['tank0.activity'].sure).toBe(true)
+  expect(readTank(img, g, l, 2, data).monster).toMatchObject({ activity: 6, quantity: 336 })
+})

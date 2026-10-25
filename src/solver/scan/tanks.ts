@@ -70,6 +70,11 @@ const MAX_COMBOS = 200_000
  *  together under the usual one, and a stricter cut parts them. */
 const RETRY_CUTS = [0.85, 1, 0.55]
 
+/** How far the lines are read again above and below where they should be when they don't fit, in reference pixels:
+ *  on some screens the labels sit a few pixels lower, and the total's line is right above Activity x Quantity, so a
+ *  taller band would take it in (issue #139: 804x1307 read as "44x" two pixels low on a 2560x1080 frame). */
+const RETRY_SHIFTS = [1.5, -1.5, 3, -3, 4.5, -4.5, 6, -6]
+
 /** Most stray glyphs dropped from one end of a line: a cursor over the label read as "21" (1x36 as 1x3621). */
 const MAX_STRAY = 2
 
@@ -159,9 +164,10 @@ export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: 
   const { archetype, sure: archetypeSure } = archetypeOf(img, l.icon[i])
   fields[`tank${i}.archetype`] = { sure: archetypeSure, guess: archetype }
 
-  const read = (cut?: number) => {
-    const total = readText(img, g, l.totalBand[i], 'label', data.digits.label, cut)
-    const aq = readText(img, g, l.aqBand[i], 'label', data.digits.label, cut)
+  const read = (cut?: number, dy = 0) => {
+    const shift = (r: Rect): Rect => ({ ...r, y: r.y + dy * l.k })
+    const total = readText(img, g, shift(l.totalBand[i]), 'label', data.digits.label, cut)
+    const aq = readText(img, g, shift(l.aqBand[i]), 'label', data.digits.label, cut)
     let st = stats(total?.text, aq?.text)
     // a digit beside the heart icon can be misread: the total decides which next-best digits are right
     const fix = !st.fits && total && aq ? reconcile(total.alts, aq.alts) : null
@@ -174,6 +180,11 @@ export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: 
   for (const cut of RETRY_CUTS) {
     if (r.st.fits) break
     const again = read(cut)
+    if (again.st.fits && !again.fix) r = again
+  }
+  for (const dy of RETRY_SHIFTS) {
+    if (r.st.fits) break
+    const again = read(undefined, dy)
     if (again.st.fits && !again.fix) r = again
   }
   const { total, aq, st, fix } = r
