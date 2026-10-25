@@ -185,7 +185,7 @@ describe('tanks whose numbers weren’t read for sure', () => {
   })
   it('the advice warns it may be off, and asks for the numbers', () => {
     render(<AdvicePanel advice={advice({ index: 0, targets: [], value: 5 })} updating={false} state={state} unread={[2]} />)
-    expect(screen.getByRole('note').textContent).toBe('Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them on the board. If it keeps happening, lower the game’s Settings → Screen Scaling to about 1/4.')
+    expect(screen.getByRole('note').textContent).toBe('Tank 2’s numbers weren’t read for sure, so this advice may be off. Check them on the board. If it keeps happening, try a different resolution or Settings → Screen Scaling: most are supported, but yours might be an outlier.')
   })
   it('no warning when every number was read', () => {
     render(<AdvicePanel advice={advice({ index: 0, targets: [], value: 5 })} updating={false} state={state} unread={[]} />)
