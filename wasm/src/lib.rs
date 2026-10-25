@@ -3,9 +3,27 @@
 pub mod bot;
 pub mod data;
 pub mod engine;
+pub mod value;
 
 use bot::*;
 use engine::*;
+use value::{Model, FEATURES, ROUNDS};
+
+/** The board value's weights, written by the page (round by round, FEATURES each), then set_model. */
+static mut WEIGHTS: [f64; FEATURES * ROUNDS] = [0.0; FEATURES * ROUNDS];
+static mut MODEL: Option<Model> = None;
+#[no_mangle]
+pub extern "C" fn weights() -> *mut f64 { core::ptr::addr_of_mut!(WEIGHTS) as *mut f64 }
+/** takes the weights written (`per` a round, ROUNDS rounds); 0 clears the board value */
+#[no_mangle]
+#[allow(static_mut_refs)]
+pub extern "C" fn set_model(per: u32) {
+  unsafe {
+    MODEL = if per == 0 { None } else { Some(Model { rounds: (0..ROUNDS).map(|r| WEIGHTS[r * FEATURES..r * FEATURES + per as usize].to_vec()).collect() }) };
+  }
+}
+#[allow(static_mut_refs)]
+fn player(samples: u32, value: u32) -> Player<'static> { Player { samples, model: if value != 0 { unsafe { MODEL.as_ref() } } else { None } } }
 
 const SIZE: usize = 8192;
 static mut BUF: [f64; SIZE] = [0.0; SIZE];
@@ -56,7 +74,7 @@ fn the_buf() -> &'static mut [f64; SIZE] { unsafe { &mut BUF } }
 
 /** options at OPTS: their count, then each one's length and (kind, argument) per action */
 #[no_mangle]
-pub extern "C" fn potion_futures(seed: u32, samples: u32, from: u32, to: u32) -> u32 {
+pub extern "C" fn potion_futures(seed: u32, samples: u32, value: u32, from: u32, to: u32) -> u32 {
   let b = the_buf();
   let s = read_state(&b[..]);
   let n = b[OPTS] as usize;
@@ -73,20 +91,19 @@ pub extern "C" fn potion_futures(seed: u32, samples: u32, from: u32, to: u32) ->
     }
     opts.push(o);
   }
-  let ts = potion_futures_of(&s, seed, samples, &opts, from, to);
+  let ts = bot::potion_futures(&s, seed, player(samples, value), &opts, from, to);
   write_tallies(b, &ts);
   n as u32
 }
-fn potion_futures_of(s: &State, seed: u32, samples: u32, opts: &[Vec<Action>], from: u32, to: u32) -> Vec<Tally> { bot::potion_futures(s, seed, samples, opts, from, to) }
 
 /** choices at OPTS: their count, then each one's hand index, or -1 for a refresh */
 #[no_mangle]
-pub extern "C" fn instrument_futures(seed: u32, samples: u32, from: u32, to: u32) -> u32 {
+pub extern "C" fn instrument_futures(seed: u32, samples: u32, value: u32, from: u32, to: u32) -> u32 {
   let b = the_buf();
   let s = read_state(&b[..]);
   let n = b[OPTS] as usize;
   let choices: Vec<Option<usize>> = (0..n).map(|i| { let c = b[OPTS + 1 + i]; if c < 0.0 { None } else { Some(c as usize) } }).collect();
-  let ts = bot::instrument_futures(&s, seed, samples, &choices, from, to);
+  let ts = bot::instrument_futures(&s, seed, player(samples, value), &choices, from, to);
   write_tallies(b, &ts);
   n as u32
 }

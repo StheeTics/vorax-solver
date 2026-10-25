@@ -4,7 +4,7 @@ import type { Action, GameState } from '@/engine/types'
 import { ARCHETYPES, RARITIES } from '@/data/archetypes'
 import type { InstrumentChoice, Tally } from './bot'
 
-interface Exports { memory: WebAssembly.Memory; buf(): number; potion_futures(seed: number, samples: number, from: number, to: number): number; instrument_futures(seed: number, samples: number, from: number, to: number): number }
+interface Exports { memory: WebAssembly.Memory; buf(): number; weights(): number; set_model(per: number): void; potion_futures(seed: number, samples: number, value: number, from: number, to: number): number; instrument_futures(seed: number, samples: number, value: number, from: number, to: number): number }
 const OPTS = 64, OUT = 4096
 const PHASES = ['instrumentSelect', 'potionSelect', 'roundEnd', 'gameOver'] as const
 
@@ -13,6 +13,14 @@ export class WasmFutures {
   static async load(bytes: BufferSource): Promise<WasmFutures> {
     const { instance } = await WebAssembly.instantiate(bytes, {})
     return new WasmFutures(instance.exports as unknown as Exports)
+  }
+  /** the board value the smarter player judges boards by (src/data/boardValue.json); null: none */
+  setModel(m: { rounds: number[][] } | null) {
+    if (!m) return this.x.set_model(0)
+    const per = Math.min(656, ...m.rounds.map(r => r.length))
+    const w = new Float64Array(this.x.memory.buffer, this.x.weights(), 656 * 13)
+    for (let r = 0; r < 13; r++) w.set(m.rounds[Math.min(r, m.rounds.length - 1)].slice(0, per), r * 656)
+    this.x.set_model(per)
   }
   private view() { return new Float64Array(this.x.memory.buffer, this.x.buf(), 8192) }
   private write(b: Float64Array, s: GameState) {
@@ -36,8 +44,8 @@ export class WasmFutures {
   private read(b: Float64Array, n: number): Tally[] {
     return Array.from({ length: n }, (_, i) => ({ goal: b[OUT + i * 3], reached: b[OUT + i * 3 + 1], n: b[OUT + i * 3 + 2] }))
   }
-  /** potionFutures with a greedy player: `samples` outcomes per move inside */
-  potion(s: GameState, seed: number, samples: number, opts: Action[][], from: number, to: number): Tally[] {
+  /** potionFutures: `samples` outcomes per move inside, boards judged by the board value with `value` (else greedy) */
+  potion(s: GameState, seed: number, samples: number, opts: Action[][], from: number, to: number, value = false): Tally[] {
     const b = this.view()
     this.write(b, s)
     let at = OPTS
@@ -50,16 +58,16 @@ export class WasmFutures {
       }
     }
     // a call can grow the memory, which leaves views made before it empty
-    const n = this.x.potion_futures(seed >>> 0, samples, from, to)
+    const n = this.x.potion_futures(seed >>> 0, samples, +value, from, to)
     return this.read(this.view(), n)
   }
-  /** instrumentFutures with a greedy player */
-  instrument(s: GameState, seed: number, samples: number, choices: InstrumentChoice[], from: number, to: number): Tally[] {
+  /** instrumentFutures, the same way */
+  instrument(s: GameState, seed: number, samples: number, choices: InstrumentChoice[], from: number, to: number, value = false): Tally[] {
     const b = this.view()
     this.write(b, s)
     b[OPTS] = choices.length
     choices.forEach((c, i) => (b[OPTS + 1 + i] = c === 'refresh' ? -1 : c))
-    const n = this.x.instrument_futures(seed >>> 0, samples, from, to)
+    const n = this.x.instrument_futures(seed >>> 0, samples, +value, from, to)
     return this.read(this.view(), n)
   }
 }

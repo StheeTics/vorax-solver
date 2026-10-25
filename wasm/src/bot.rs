@@ -2,6 +2,15 @@
 // the move whose fresh outcomes score best right away, instruments by the board they leave, a hand refreshed while
 // nothing in it beats the board. Seeded as the JavaScript seeds them, so both play the same futures.
 use crate::engine::*;
+use crate::value::{board_value, Model};
+
+/** The player inside the futures: `samples` fresh outcomes per move, and boards judged by the board value when there's
+ *  one (the smarter player), else by their score (greedy). */
+#[derive(Clone, Copy)]
+pub struct Player<'a> { pub samples: u32, pub model: Option<&'a Model> }
+impl Player<'_> {
+  fn worth(&self, s: &State) -> f64 { match self.model { Some(m) => board_value(m, s), None => s.ua() as f64 } }
+}
 
 pub const TARGET: i64 = 840_000;
 
@@ -40,60 +49,60 @@ pub fn options(s: &State) -> Vec<Opt> {
 }
 
 /** a state's worth after an open box is played the best way */
-fn settle(s: &State, samples: u32, seed: u32, depth: u32) -> f64 {
+fn settle(s: &State, p: Player, seed: u32, depth: u32) -> f64 {
   if s.phase == Phase::PotionSelect && s.open_box.is_some() && depth < 2 {
     let mut best = -1.0f64;
-    for o in options(s) { best = best.max(expected(s, &o, samples, seed, depth + 1)); }
+    for o in options(s) { best = best.max(expected(s, &o, p, seed, depth + 1)); }
     return best;
   }
-  s.ua() as f64
+  p.worth(s)
 }
 
-fn expected(s: &State, o: &[Action], samples: u32, seed: u32, depth: u32) -> f64 {
-  let n = if depth == 0 { samples } else { 2.max(samples >> 2) };
+fn expected(s: &State, o: &[Action], p: Player, seed: u32, depth: u32) -> f64 {
+  let n = if depth == 0 { p.samples } else { 2.max(p.samples >> 2) };
   let mut sum = 0.0;
   for k in 0..n {
     let sk = mix(seed, k + 1 + depth * 101);
-    sum += settle(&play(&reseed(s, sk), o), samples, sk, depth);
+    sum += settle(&play(&reseed(s, sk), o), p, sk, depth);
   }
   sum / n as f64
 }
 
-/** the best move by this round's outcome, and its value */
-fn choose(s: &State, samples: u32, seed: u32) -> (Opt, f64) {
+/** the best move by this round's outcome, its value, and what it must beat to be played rather than refreshed */
+fn choose(s: &State, p: Player, seed: u32) -> (Opt, f64, f64) {
   let mut best = Opt::new();
   let mut bv = f64::NEG_INFINITY;
   for o in options(s) {
-    let v = expected(s, &o, samples, seed, 0);
+    let v = expected(s, &o, p, seed, 0);
     if v > bv { bv = v; best = o; }
   }
-  (best, bv)
+  (best, bv, p.worth(s))
 }
 
 /** an instrument offer: the card whose board is worth most, or a refresh when none beats the board */
-fn pick_instrument(s: &State) -> Option<usize> {
+fn pick_instrument(s: &State, p: Player) -> Option<usize> {
   let mut best: Option<usize> = None;
   let mut bv = f64::NEG_INFINITY;
   for i in 0..s.hand.len() {
-    let v = play(s, &[Action::Select(i), Action::Confirm]).ua() as f64;
+    let v = p.worth(&play(s, &[Action::Select(i), Action::Confirm]));
     if v > bv { bv = v; best = Some(i); }
   }
-  if can_refresh(s) && bv < s.ua() as f64 { None } else { Some(best.unwrap_or(usize::MAX)) }
+  if can_refresh(s) && bv < p.worth(s) { None } else { Some(best.unwrap_or(usize::MAX)) }
 }
 
 /** plays the run on to its end */
-pub fn finish(mut s: State, seed: u32, samples: u32) -> State {
+pub fn finish(mut s: State, seed: u32, p: Player) -> State {
   let mut g = 0u32;
   while g < 300 && s.phase != Phase::GameOver {
     match s.phase {
       Phase::RoundEnd => dispatch(&mut s, Action::Confirm),
-      Phase::InstrumentSelect => match pick_instrument(&s) {
+      Phase::InstrumentSelect => match pick_instrument(&s, p) {
         None => dispatch(&mut s, Action::Refresh),
         Some(i) => { dispatch(&mut s, Action::Select(i)); dispatch(&mut s, Action::Confirm); }
       },
       _ => {
-        let (best, value) = choose(&s, samples, mix(seed, g));
-        if s.open_box.is_none() && value <= s.ua() as f64 && can_refresh(&s) { dispatch(&mut s, Action::Refresh); } else { for a in best { dispatch(&mut s, a); } }
+        let (best, value, stay) = choose(&s, p, mix(seed, g));
+        if s.open_box.is_none() && value <= stay && can_refresh(&s) { dispatch(&mut s, Action::Refresh); } else { for a in best { dispatch(&mut s, a); } }
       }
     }
     g += 1;
@@ -105,12 +114,12 @@ pub fn finish(mut s: State, seed: u32, samples: u32) -> State {
 pub struct Tally { pub goal: f64, pub reached: u32, pub n: u32 }
 
 /** futures `from` to `to` of each potion option */
-pub fn potion_futures(s: &State, seed: u32, samples: u32, opts: &[Vec<Action>], from: u32, to: u32) -> Vec<Tally> {
+pub fn potion_futures(s: &State, seed: u32, p: Player, opts: &[Vec<Action>], from: u32, to: u32) -> Vec<Tally> {
   opts.iter().map(|o| {
     let mut t = Tally::default();
     for k in from..to {
       let sk = mix(seed, 9000 + k);
-      let ua = finish(play(&reseed(s, sk), o), sk, samples).ua();
+      let ua = finish(play(&reseed(s, sk), o), sk, p).ua();
       t.goal += ua.min(TARGET) as f64;
       if ua >= TARGET { t.reached += 1; }
       t.n += 1;
@@ -120,14 +129,14 @@ pub fn potion_futures(s: &State, seed: u32, samples: u32, opts: &[Vec<Action>], 
 }
 
 /** futures `from` to `to` of each instrument choice (None: a refresh) */
-pub fn instrument_futures(s: &State, seed: u32, samples: u32, choices: &[Option<usize>], from: u32, to: u32) -> Vec<Tally> {
+pub fn instrument_futures(s: &State, seed: u32, p: Player, choices: &[Option<usize>], from: u32, to: u32) -> Vec<Tally> {
   choices.iter().map(|c| {
     let mut t = Tally::default();
     for k in from..to {
       let sk = mix(seed, 7000 + k);
       let x = reseed(s, sk);
       let start = match c { None => play(&x, &[Action::Refresh]), Some(i) => play(&x, &[Action::Select(*i), Action::Confirm]) };
-      let ua = finish(start, sk, samples).ua();
+      let ua = finish(start, sk, p).ua();
       t.goal += ua.min(TARGET) as f64;
       if ua >= TARGET { t.reached += 1; }
       t.n += 1;

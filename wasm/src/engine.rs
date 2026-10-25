@@ -28,7 +28,7 @@ pub enum Ev { Add, Remove, Mutate, Awaken, Fuse, Devour, AddOverflow }
 #[derive(Clone, Copy)]
 pub enum Timing { End, Every(u32), On(&'static [Ev]) }
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Clone, Copy, PartialEq, Default)]
 pub struct Monster { pub arch: u8, pub rarity: u8, pub act: i64, pub qty: i64 }
 impl Monster {
   pub fn total(&self) -> i64 { self.act * self.qty }
