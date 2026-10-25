@@ -141,6 +141,12 @@ export const DASHBOARD_HTML = `<!doctype html>
         <p class="sub" id="usage-sub"></p>
         <div id="usage"></div>
       </section>
+      <section class="card">
+        <h2>Since each release</h2>
+        <p class="sub">The average final score of the last 100 finished games, every few games: a release that breaks something shows as a drop after its line. 100 games say it within about ±60k, so small changes hide in the noise; the table below has each release's own games and margin. Read unsure and corrected count boards from Oct 25. The dashed line is 840k.</p>
+        <div id="rolling"></div>
+        <div class="scroll" id="releases"></div>
+      </section>
       <section class="card half">
         <h2>Games and players per day</h2>
         <p class="sub">Players: different devices that day.</p>
@@ -251,6 +257,36 @@ function scoreChart(days) {
     s += '<text x="' + x(i) + '" y="' + (y(d.medianFinal) - 12) + '" text-anchor="middle">' + k(d.medianFinal) + ' · ' + d.finished + '</text>'
     s += '<text x="' + x(i) + '" y="' + (h - 6) + '" text-anchor="middle">' + d.day.slice(5) + '</text>'
   })
+  return s + '</svg>'
+}
+
+// The last 100 finished games' average, a point every few games, with a line where each listed release's games start.
+function rollingChart(points, releases) {
+  if (!points || points.length < 2) return '<p class="sub">This fills in once 100 games have finished.</p>'
+  // zoomed to where the averages move, 100k steps, with 840k always in view
+  const vals = points.map(p => p.average).concat([840000])
+  const lo = Math.floor((Math.min(...vals) - 50000) / 100000) * 100000, hi = Math.ceil((Math.max(...vals) + 50000) / 100000) * 100000
+  const w = 1100, h = 240
+  const x = i => 48 + (i * (w - 60)) / (points.length - 1)
+  const y = v => h - 24 - ((v - lo) / (hi - lo)) * (h - 40)
+  let s = '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" aria-label="Average final score of the last 100 finished games">'
+  for (let v = lo; v <= hi; v += 100000) s += '<line class="grid-line" x1="40" x2="' + w + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text x="0" y="' + (y(v) + 4) + '">' + k(v) + '</text>'
+  s += '<line class="goal" x1="40" x2="' + w + '" y1="' + y(840000) + '" y2="' + y(840000) + '"/><text class="goal-text" x="' + (w - 4) + '" y="' + (y(840000) - 6) + '" text-anchor="end">840k</text>'
+  // a release's line: the first point at or after its first game, labelled for the newest few
+  // a release's line: the first point at or after its first game; named when 100 of its games have finished (hover
+  // names the others)
+  const marks = (releases || []).filter(r => r.first > points[0].start).map(r => ({ r, i: points.findIndex(p => p.start >= r.first) })).filter(m => m.i > 0)
+  let named = 0
+  marks.forEach(m => {
+    s += '<line class="grid-line" style="stroke-dasharray:2 3" x1="' + x(m.i) + '" x2="' + x(m.i) + '" y1="16" y2="' + (h - 24) + '"><title>' + esc(m.r.version) + ' from ' + m.r.first.replace('T', ' ').slice(5, 16) + ', ' + num(m.r.finished) + ' finished</title></line>'
+    if (m.r.finished >= 100) s += '<text x="' + (x(m.i) + 3) + '" y="' + (12 + 11 * (named++ % 2)) + '">' + esc(m.r.version.slice(0, 7)) + '</text>'
+  })
+  s += '<polyline class="line" points="' + points.map((p, i) => x(i) + ',' + y(p.average)).join(' ') + '"/>'
+  points.forEach((p, i) => {
+    s += '<circle class="dot" r="2.5" cx="' + x(i) + '" cy="' + y(p.average) + '"><title>' + p.start.replace('T', ' ').slice(5, 16) + ' (' + esc(p.version) + '): ' + num(p.average) + ' average, ' + pct(p.reached) + ' reached 840k, of the last 100</title></circle>'
+  })
+  const last = points[points.length - 1]
+  s += '<text x="' + (w - 4) + '" y="' + (h - 6) + '" text-anchor="end">Now: ' + k(last.average) + ' · ' + pct(last.reached) + ' reached 840k</text>'
   return s + '</svg>'
 }
 
@@ -388,6 +424,14 @@ async function load(pw) {
   usage(s.usage)
   $('days').innerHTML = bars(s.days)
   $('scores').innerHTML = scoreChart(s.days)
+  $('rolling').innerHTML = rollingChart(s.rolling, s.releases)
+  $('releases').innerHTML = s.releases && s.releases.length
+    ? table(['Release', 'First game (UTC)', 'Finished', 'Average', 'Reached 840k', 'Read unsure', 'Corrected'], s.releases.map(r => [
+        r.version, r.first.replace('T', ' ').slice(0, 16), num(r.finished),
+        r.finished ? k(r.average) + (r.finished > 1 ? ' ± ' + k(r.margin) : '') : '–', r.finished ? pct(r.reached) : '–',
+        r.boards ? pct(r.unsure / r.boards) : '–', r.boards ? pct(r.corrected / r.boards) : '–',
+      ]), [2, 3, 4, 5, 6])
+    : ''
   $('real').innerHTML = (f.games
     ? '<div class="stat"><div><span>Finished games</span><b>' + f.games + '</b></div><div><span>Reached 840k</span><b>' + f.reached + ' (' + pct(f.reached / f.games) + ')</b></div><div><span>Median</span><b>' + k(f.median) + '</b></div><div><span>Average counted to 840k</span><b>' + k(f.capped) + '</b></div><div><span>Average, every point</span><b>' + k(f.average) + '</b></div></div><p class="sub">The simulator expects about half of games to reach 840k.</p>'
     : '<p class="sub">No finished games shared yet.</p>')

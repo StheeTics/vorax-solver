@@ -60,6 +60,54 @@ export interface Stats {
   calibration: { band: string; predicted: number; games: number; reached: number }[]
   /** the free plans' use, added by the workflow (scripts/live/usage.ts); absent before its tokens are set */
   usage?: Usage
+  /** finished games in the order they started: the average final score and the share that reached 840k of the
+   *  ROLLING games up to each point (a point every few games) */
+  rolling: { start: string; version: string; average: number; reached: number }[]
+  /** each site version (release) with RELEASE_MIN finished games or more, and the newest whatever its count: first,
+   *  when its first game started; margin: the average's 95% margin; boards, unsure, corrected: its games' boards and
+   *  how many were read with something unsure or corrected (from Oct 25) */
+  releases: { version: string; first: string; finished: number; average: number; margin: number; reached: number; boards: number; unsure: number; corrected: number }[]
+}
+
+/** The finished games a point of the rolling chart averages over. */
+const ROLLING = 100
+/** The most points the rolling chart gets. */
+const ROLLING_POINTS = 200
+/** A release is listed once this many of its games have finished; fewer say little. */
+const RELEASE_MIN = 30
+/** The releases listed, newest first. */
+const RELEASES = 15
+
+/** The rolling average of the last ROLLING finished games, a point every few games, the latest always last. */
+function rolling(finished: GameRecord[]): Stats['rolling'] {
+  if (finished.length < ROLLING) return []
+  const step = Math.max(1, Math.ceil((finished.length - ROLLING + 1) / ROLLING_POINTS))
+  const out: Stats['rolling'] = []
+  for (let end = finished.length; end >= ROLLING && out.length < ROLLING_POINTS; end -= step) {
+    const games = finished.slice(end - ROLLING, end)
+    const g = games[games.length - 1]
+    out.push({ start: g.start, version: g.version, average: Math.round(games.reduce((s, x) => s + x.final!, 0) / ROLLING), reached: games.filter(x => x.final! >= TARGET).length / ROLLING })
+  }
+  return out.reverse()
+}
+
+/** Each release's games: how its finished games ended, and how well its boards were read. */
+function releases(list: GameRecord[]): Stats['releases'] {
+  const by = new Map<string, GameRecord[]>()
+  for (const g of list) (by.get(g.version) ?? by.set(g.version, []).get(g.version)!).push(g)
+  const all = [...by.entries()].map(([version, games]) => {
+    const finals = games.flatMap(g => (g.final === null ? [] : [g.final]))
+    const n = finals.length
+    const average = n ? finals.reduce((s, f) => s + f, 0) / n : 0
+    const sd = n > 1 ? Math.sqrt(finals.reduce((s, f) => s + (f - average) ** 2, 0) / (n - 1)) : 0
+    const counted = games.filter(g => g.unsure !== undefined)
+    return {
+      version, first: games.reduce((a, g) => (g.start < a ? g.start : a), games[0].start), finished: n, average: Math.round(average),
+      margin: n > 1 ? Math.round((1.96 * sd) / Math.sqrt(n)) : 0, reached: n ? finals.filter(f => f >= TARGET).length / n : 0,
+      boards: counted.reduce((s, g) => s + g.boards, 0), unsure: counted.reduce((s, g) => s + (g.unsure ?? 0), 0), corrected: counted.reduce((s, g) => s + (g.corrected ?? 0), 0),
+    }
+  }).sort((a, b) => b.first.localeCompare(a.first))
+  return all.filter((r, i) => i === 0 || r.finished >= RELEASE_MIN).slice(0, RELEASES)
 }
 
 /** The free plans' use and limits. A part is left out when its token isn't set or its API didn't answer. */
@@ -79,8 +127,10 @@ const RECENT = 25
 
 /** One game as far as the boards so far tell: a run (one Solver session) can hold several, numbered n. Kept between
  *  pulls in data/live/digest (scripts/live/collect.ts), so the boards themselves needn't be. run: its first 12
- *  characters, plenty to tell runs apart. played: past its first instrument offer (an instrument owned). */
-export interface GameRecord { run: string; n: number; start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; played: boolean; final: number | null; predictions: number[]; last: number; score: number }
+ *  characters, plenty to tell runs apart. played: past its first instrument offer (an instrument owned). unsure,
+ *  corrected: its boards read with something unsure (or not the game screen) and corrected by hand, counted for games
+ *  that started from Oct 25 (older ones never were). */
+export interface GameRecord { run: string; n: number; start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; played: boolean; final: number | null; predictions: number[]; last: number; score: number; unsure?: number; corrected?: number }
 /** One day's boards: how many, how many a player corrected or the reader was unsure of, the daily player codes and
  *  installs (their first 12 characters) seen, and the boards and problems per setup. */
 export interface DayRecord { day: string; boards: number; corrected: number; unsure: number; clients: string[]; installs: string[]; setups: Setup[] }
@@ -133,11 +183,13 @@ export function digest(rows: StatRow[], prior: Digest = emptyDigest()): Digest {
     const sure = !b.unsure?.includes('round')
     let g = current.get(run)
     if (!g || (sure && b.round < g.read)) {
-      g = { run, n: g ? g.n + 1 : 0, start: r.received, day, boards: 0, round: 0, read: 0, app: /-overlay$/.test(b.app), version: b.app.replace(/-overlay$/, ''), played: false, final: null, predictions: [], last: -1, score: 0 }
+      g = { run, n: g ? g.n + 1 : 0, start: r.received, day, boards: 0, round: 0, read: 0, app: /-overlay$/.test(b.app), version: b.app.replace(/-overlay$/, ''), played: false, final: null, predictions: [], last: -1, score: 0, unsure: 0, corrected: 0 }
       games.set(gameKey(g), g)
       current.set(run, g)
     }
     g.boards++
+    if (g.unsure !== undefined && (b.unsure?.length || b.unreadable)) g.unsure++
+    if (g.corrected !== undefined && b.corrected?.length) g.corrected++
     const seq = b.seq ?? g.boards
     if (seq >= g.last) {
       g.last = seq
@@ -230,6 +282,8 @@ export function report(dg: Digest, now = new Date()): Stats {
     problems: [...setups.values()].map(g => ({ ...g, unsure: g.unsure / g.boards, numbers: g.numbers / g.boards })).sort((a, b) => a.by.localeCompare(b.by) || b.boards - a.boards),
     versions,
     recent: [...list].sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, score: g.final ?? g.score, finished: g.final !== null })),
+    rolling: rolling([...finished].sort((a, b) => a.start.localeCompare(b.start))),
+    releases: releases(list),
   }
 }
 

@@ -304,3 +304,35 @@ describe('boards stored lean (since Oct 24): no tanks or instruments', () => {
     expect(s.recent.find(g => g.start === '2026-10-24T11:00:00Z')).toMatchObject({ score: 9, finished: false })
   })
 })
+
+describe('since each release', () => {
+  // a finished game: its boards from round 2 to the round-13 Surgical Protocol, on site version app
+  const finished = (run: string, at: string, app: string, final: number, extra: Record<string, unknown> = {}) => [
+    row(at, 'a', board(run, 2, { app, instruments: ['Incubation Sac'], ...extra })),
+    row(at.replace(/:00Z$/, ':30Z'), 'a', board(run, 13, { app, phase: 'protocol', instruments: ['Incubation Sac'], final, ...extra })),
+  ]
+  const at = (i: number) => new Date(Date.UTC(2026, 9, 25, 0, i)).toISOString().replace('.000Z', 'Z')
+
+  it('the last 100 finished games, rolling; nothing before 100 have finished', () => {
+    expect(summarize(Array.from({ length: 99 }, (_, i) => finished(`g${i}`, at(i), 'aaaaaaa', 900_000)).flat()).rolling).toEqual([])
+    const rows = Array.from({ length: 150 }, (_, i) => finished(`g${i}`, at(i), i < 100 ? 'aaaaaaa' : 'bbbbbbb', i < 100 ? 900_000 : 500_000)).flat()
+    const r = summarize(rows).rolling
+    expect(r[0]).toMatchObject({ average: 900_000, reached: 1, version: 'aaaaaaa' })
+    // the latest point: games 50–149, half from each release
+    expect(r[r.length - 1]).toMatchObject({ average: 700_000, reached: 0.5, version: 'bbbbbbb' })
+  })
+
+  it('each release with 30 finished games, and the newest whatever its count, newest first', () => {
+    const rows = [
+      ...Array.from({ length: 30 }, (_, i) => finished(`a${i}`, at(i), 'aaaaaaa', i % 2 ? 1_000_000 : 600_000)).flat(),
+      ...Array.from({ length: 5 }, (_, i) => finished(`b${i}`, at(40 + i), 'bbbbbbb', 800_000)).flat(),
+      ...Array.from({ length: 3 }, (_, i) => finished(`c${i}`, at(50 + i), 'ccccccc', 700_000, { unsure: ['hand0'] })).flat(),
+    ]
+    const r = summarize(rows).releases
+    expect(r.map(x => x.version)).toEqual(['ccccccc', 'aaaaaaa'])
+    expect(r[1]).toMatchObject({ finished: 30, average: 800_000, reached: 0.5, first: at(0) })
+    expect(r[1].margin).toBeGreaterThan(70_000)
+    // every board of the newest release's games was read with something unsure
+    expect(r[0]).toMatchObject({ finished: 3, boards: 6, unsure: 6, corrected: 0 })
+  })
+})

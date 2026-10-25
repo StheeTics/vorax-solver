@@ -20,6 +20,8 @@ export const emptyStats = (now = new Date()): Stats => ({
   finished: { games: 0, reached: 0, finals: [], average: 0, median: 0, capped: 0 },
   problems: [],
   calibration: [],
+  rolling: [],
+  releases: [],
 })
 
 /** The workflow's summary with the collector's own counts put in: players per day, today, in all. */
