@@ -58,7 +58,8 @@ export function dealPotions(rng: Rng, n: number, fromBox: boolean): Card[] {
     let pool = supreme ? SUPREME_POOL : base
     if (!left(pool)) pool = supreme ? base : SUPREME_POOL
     const firstFresh = pool.find(p => !used.has(p.id))
-    const p = supreme && firstFresh?.rarity === 'supreme' ? pickFresh(rng, pool, used, null) : pickFresh(rng, pool, used, fromBox ? LIVE_WEIGHTS.boxOffer : LIVE_WEIGHTS.potionOffer)
+    // a red card by its own odds (equal weights: uniformly, the same dice as before they were measured)
+    const p = supreme && firstFresh?.rarity === 'supreme' ? pickFresh(rng, pool, used, LIVE_WEIGHTS.supremeOffer ?? null) : pickFresh(rng, pool, used, fromBox ? LIVE_WEIGHTS.boxOffer : LIVE_WEIGHTS.potionOffer)
     if (!p) break
     used.add(p.id)
     hand.push({ kind: 'potion', id: p.id })

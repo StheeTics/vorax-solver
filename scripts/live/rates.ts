@@ -36,6 +36,8 @@ export interface Rates {
   potionOffer: Record<string, Rate>
   boxOffer: Record<string, Rate>
   supreme: Rate
+  /** among the red (Supreme) cards offered, each one's share */
+  supremeOffer?: Record<string, Rate>
   instrumentOffer: { basic: Record<string, Rate>; advanced: Record<string, Rate> }
   spawnRarity: Record<string, Rate>
   spawnArchetype: Record<string, Rate>
@@ -57,11 +59,19 @@ export function computeRates(all: Snapshot[]): Rates {
     return true
   })
   const potions = offers.filter(r => r.phase === 'potion')
+  // red cards from every read hand, sure or not: they're the cards read unsure most (a Xenopanacea's title never
+  // settles), so counting sure hands only saw 8 of 365 (Oct 25)
+  const seenAll = new Set<string>()
+  const allHands = rows.filter(r => r.phase === 'potion' && r.hand.length === 3 && r.hand.every(Boolean)).filter(r => {
+    const key = `${r.run}|${r.round}|${r.refreshes}|${r.hand.join(',')}`
+    if (seenAll.has(key)) return false
+    seenAll.add(key)
+    return true
+  }).map(r => r.hand)
   const normalHands = potions.filter(r => r.hand.length === 3).map(r => r.hand)
   // a Potion Kit opens to a hand of another size
   const boxHands = potions.filter(r => r.hand.length !== 3).map(r => r.hand)
   const supremeNames = new Set(SUPREME_POOL.map(p => p.name))
-  const allCards = normalHands.flat()
   // the engine's current chance for each card, from its weights
   const sum = (w: Record<string, number>) => Object.values(w).reduce((s, v) => s + v, 0) || 1
   const potionTotal = sum(LIVE_WEIGHTS.potionOffer)
@@ -79,7 +89,8 @@ export function computeRates(all: Snapshot[]): Rates {
     runs: new Set(rows.map(r => r.run)).size,
     potionOffer: shares(normalHands, name => (supremeNames.has(name) ? perSupreme : perNormal(name)), [...NORMAL_POOL, ...SUPREME_POOL].map(p => p.name)),
     boxOffer: shares(boxHands, share(LIVE_WEIGHTS.boxOffer), []),
-    supreme: rate(allCards.filter(c => supremeNames.has(c)).length, allCards.length, SUPREME_CHANCE),
+    supreme: rate(allHands.flat().filter(c => supremeNames.has(c)).length, allHands.flat().length, SUPREME_CHANCE),
+    supremeOffer: shares(allHands.map(h => h.filter(c => supremeNames.has(c))), share(Object.fromEntries(SUPREME_POOL.map(p => [p.name, LIVE_WEIGHTS.supremeOffer?.[p.name] ?? 1]))), SUPREME_POOL.map(p => p.name)),
     // the pool goes by what's held, as in the engine (src/engine/game.ts instrumentPool), not by the round: the
     // reward for Ultimate Activity at the end of round 1 is an advanced offer on a screen that still says round 1
     instrumentOffer: {

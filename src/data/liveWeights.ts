@@ -5,6 +5,8 @@ import type { Rarity } from '@/engine/types'
 export interface LiveWeights {
   updated: string
   supremeChance: number
+  /** which red (Supreme) card a red card is, relative weights; a card missing counts 1 */
+  supremeOffer?: Record<string, number>
   potionOffer: Record<string, number>
   boxOffer: Record<string, number>
   instrumentOffer: { basic: Record<string, number>; advanced: Record<string, number> }
@@ -12,8 +14,19 @@ export interface LiveWeights {
 }
 
 export const LIVE_WEIGHTS: LiveWeights = {
-  updated: '2026-10-23',
-  supremeChance: 0.007355399531929121,
+  updated: '2026-10-25',
+  supremeChance: 0.01009663,
+  supremeOffer: {
+    'Compound Revitalizing Pill': 0.909,
+    'Fast-Acting Heart Tonic': 0.2,
+    'Insect Attractant': 1,
+    'Plague Quarter Peat Poultice': 0.959,
+    'Purest Holy Water': 0.005,
+    'Rousing Salts': 0.267,
+    'The Holiest Water': 0.2,
+    'Xenopanacea: Brood': 0.851,
+    'Xenopanacea: Osteotrophy': 0.844
+  },
   potionOffer: {
     'Probiotic Enzyme Solution': 0.9631639666480608,
     'Slough Solution': 1.0242164567778829,

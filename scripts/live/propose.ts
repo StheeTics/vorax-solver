@@ -42,6 +42,7 @@ export function proposeWeights(current: LiveWeights, rates: Rates): { next: Live
     changes.push(`supremeChance ${fmt(current.supremeChance)} → ${fmt(s)} (${pct(rates.supreme)})`)
   }
   next.potionOffer = stepGroup('potion', current.potionOffer, rates.potionOffer, 1 - current.supremeChance, changes)
+  if (current.supremeOffer && rates.supremeOffer) next.supremeOffer = stepGroup('red card', current.supremeOffer, rates.supremeOffer, 1, changes)
   next.boxOffer = stepGroup('box', current.boxOffer, rates.boxOffer, 1, changes)
   next.instrumentOffer.basic = stepGroup('basic instrument', current.instrumentOffer.basic, rates.instrumentOffer.basic, 1, changes)
   next.instrumentOffer.advanced = stepGroup('advanced instrument', current.instrumentOffer.advanced, rates.instrumentOffer.advanced, 1, changes)
@@ -57,6 +58,8 @@ import type { Rarity } from '@/engine/types'
 export interface LiveWeights {
   updated: string
   supremeChance: number
+  /** which red (Supreme) card a red card is, relative weights; a card missing counts 1 */
+  supremeOffer?: Record<string, number>
   potionOffer: Record<string, number>
   boxOffer: Record<string, number>
   instrumentOffer: { basic: Record<string, number>; advanced: Record<string, number> }

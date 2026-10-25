@@ -23,8 +23,8 @@ const MAX_CHAIN_DEPTH: u32 = 8;
 
 /** The deal's odds: the generated ones (data.rs) until the page hands over the current ones (set_odds), as the
  *  nightly loop updates them without a rebuild. Potions and instruments by id. */
-pub struct Odds { pub supreme: f64, pub spawn: [f64; 4], pub potion: [f64; POTIONS], pub boxed: [f64; POTIONS], pub basic: [f64; INSTRUMENTS], pub advanced: [f64; INSTRUMENTS] }
-pub static mut ODDS: Odds = Odds { supreme: SUPREME_CHANCE, spawn: SPAWN, potion: POTION_OFFER, boxed: BOX_OFFER, basic: BASIC_OFFER, advanced: ADVANCED_OFFER };
+pub struct Odds { pub supreme: f64, pub spawn: [f64; 4], pub potion: [f64; POTIONS], pub boxed: [f64; POTIONS], pub basic: [f64; INSTRUMENTS], pub advanced: [f64; INSTRUMENTS], pub red: [f64; POTIONS] }
+pub static mut ODDS: Odds = Odds { supreme: SUPREME_CHANCE, spawn: SPAWN, potion: POTION_OFFER, boxed: BOX_OFFER, basic: BASIC_OFFER, advanced: ADVANCED_OFFER, red: SUPREME_OFFER };
 #[allow(static_mut_refs)]
 pub fn odds() -> &'static Odds { unsafe { &ODDS } }
 
@@ -749,8 +749,11 @@ fn deal_potions(rng: &mut Rng, n: usize, from_box: bool) -> Hand {
     let fresh = |pool: &[u8], used: &Small<u8, 5>| -> Small<u8, 48> { pool.iter().copied().filter(|p| !used.contains(p)).collect() };
     let mut pool = fresh(if supreme { SUPREME_POOL } else { base }, &used);
     if pool.is_empty() { pool = fresh(if supreme { base } else { SUPREME_POOL }, &used); }
+    // a red card by its own odds (all equal: uniformly, as before they were measured)
     let p = if supreme && pool.first().map_or(false, |&p| IS_SUPREME[p as usize]) {
-      rng.pick(&pool)
+      let red = &odds().red;
+      let w0 = red[pool[0] as usize];
+      if pool.iter().all(|&p| red[p as usize] == w0) { rng.pick(&pool) } else { Some(rng.weighted(&pool, |p| red[p as usize])) }
     } else if pool.is_empty() {
       None
     } else {
