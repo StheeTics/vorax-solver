@@ -36,7 +36,8 @@ export interface Store extends TrainingStore {
 }
 
 export interface Env {
-  EXPORT_TOKEN: string
+  /** the nightly jobs' token for the exports (wrangler secret put EXPORT_TOKEN): unset, they refuse everyone */
+  EXPORT_TOKEN?: string
   /** the analytics page's password (wrangler secret put DASHBOARD_TOKEN) */
   DASHBOARD_TOKEN?: string
   /** starts the repo's workflows on schedule, and reads the private repo for the dashboard (src/schedule.ts) */
@@ -174,21 +175,21 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
   }
 
   if (url.pathname === '/v1/cards/export' && req.method === 'GET') {
-    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    if (!env.EXPORT_TOKEN || req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const after = Math.max(0, Number(url.searchParams.get('after')) || 0)
     const rows = await store.exportCards(after, EXPORT_MAX)
     return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
   }
 
   if (url.pathname === '/v1/icons/export' && req.method === 'GET') {
-    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    if (!env.EXPORT_TOKEN || req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const after = Math.max(0, Number(url.searchParams.get('after')) || 0)
     const rows = await store.exportIcons(after, EXPORT_MAX)
     return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
   }
 
   if (url.pathname === '/v1/export' && req.method === 'GET') {
-    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    if (!env.EXPORT_TOKEN || req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const after = Math.max(0, Number(url.searchParams.get('after')) || 0)
     const rows = await store.export(after, EXPORT_MAX)
     return json({ rows, last: rows.length ? rows[rows.length - 1].id : after })
@@ -196,7 +197,7 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
 
   // after the nightly jobs pulled: empties the uploads table up to what they pulled (Store rotate)
   if (url.pathname === '/v1/export/rotate' && req.method === 'POST') {
-    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    if (!env.EXPORT_TOKEN || req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const upto = Number(url.searchParams.get('upto'))
     if (!Number.isInteger(upto) || upto <= BATCHES) return json({ error: 'upto: an export id' }, 400)
     const done = await store.rotate(upto)
@@ -205,7 +206,7 @@ export async function handle(req: Request, env: Env, store: Store): Promise<Resp
 
   // The dashboard's numbers from the nightly jobs (scripts/live/summary.ts), with the export token
   if (url.pathname === '/v1/summary' && req.method === 'PUT') {
-    if (req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
+    if (!env.EXPORT_TOKEN || req.headers.get('authorization') !== `Bearer ${env.EXPORT_TOKEN}`) return json({ error: 'token' }, 401)
     const text = await req.text()
     if (text.length > MAX_SUMMARY) return json({ error: 'too large' }, 413)
     let body: unknown

@@ -154,6 +154,16 @@ it('export needs the token', async () => {
   expect(body.last).toBe(2)
 })
 
+it('exports refuse everyone when the token is unset, "Bearer undefined" too', async () => {
+  const unset = { ...env, EXPORT_TOKEN: undefined }
+  const store = memory()
+  await handle(post([snap(uid(1))]), unset, store)
+  const as = (path: string, method = 'GET') => handle(new Request(`https://w.dev${path}`, { method, headers: { authorization: 'Bearer undefined' } }), unset, store)
+  for (const path of ['/v1/export?after=0', '/v1/icons/export?after=0', '/v1/cards/export?after=0']) expect((await as(path)).status).toBe(401)
+  expect((await as('/v1/export/rotate?upto=1000000002', 'POST')).status).toBe(401)
+  expect((await as('/v1/summary', 'PUT')).status).toBe(401)
+})
+
 it('CORS also allows the local test server, for games played through a test copy of Vorax Overlay', async () => {
   const res = await handle(new Request('https://w.dev/v1/snapshots', { method: 'OPTIONS', headers: { origin: 'http://localhost:5173' } }), env, memory())
   expect(res.headers.get('access-control-allow-origin')).toBe('http://localhost:5173')
