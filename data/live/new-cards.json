@@ -2,38 +2,29 @@
  {
   "name": "i",
   "phase": "potion",
-  "seen": 5,
+  "seen": 6,
   "first": "2026-10-21T05:40:29.299Z",
-  "last": "2026-10-21T10:21:40.995Z",
+  "last": "2026-10-25T07:20:49.295Z",
   "text": "i\noe A\nSolution\nSelect 1 group(s) 9 S\nmonctere and +R 1 nA",
   "picture": "data/live/new-cards/potion-i.jpg"
  },
  {
   "name": "a",
   "phase": "potion",
-  "seen": 4,
+  "seen": 5,
   "first": "2026-10-21T04:47:45.832Z",
-  "last": "2026-10-21T09:25:11.246Z",
+  "last": "2026-10-25T07:03:14.081Z",
   "text": "a\nii E\nSelect 1group(s) of +2\nmonsters to awake ra",
   "picture": "data/live/new-cards/potion-a.jpg"
  },
  {
-  "name": "The Holiest Wate",
+  "name": "NE",
   "phase": "potion",
   "seen": 3,
-  "first": "2026-10-21T06:48:58.250Z",
-  "last": "2026-10-21T10:54:24.040Z",
-  "text": "The Holiest Wate}\n\nAll 7 Agitoes awakg\ninto monsters that \n\nI tiorlc) Sar",
-  "picture": "data/live/new-cards/potion-the-holiest-wate.jpg"
- },
- {
-  "name": "2",
-  "phase": "potion",
-  "seen": 3,
-  "first": "2026-10-21T07:12:05.777Z",
-  "last": "2026-10-21T10:29:13.072Z",
-  "text": "2 [\n\n senoarmone H\n: Select 1-2 groups  S\n monecterc and remo [a8",
-  "picture": "data/live/new-cards/potion-2.jpg"
+  "first": "2026-10-21T13:04:41.384Z",
+  "last": "2026-10-25T07:19:03.456Z",
+  "text": "Ne\n\\% 3\n\nbat of\nSentry S\nSelect 1 group(s) i me\nmonsters mutateti the",
+  "picture": "data/live/new-cards/potion-ne.jpg"
  },
  {
   "name": "4",
@@ -81,6 +72,15 @@
   "picture": "data/live/new-cards/potion-aay.jpg"
  },
  {
+  "name": "2",
+  "phase": "potion",
+  "seen": 2,
+  "first": "2026-10-21T07:12:05.777Z",
+  "last": "2026-10-21T07:36:35.287Z",
+  "text": "2 [\n\n senoarmone H\n: Select 1-2 groups  S\n monecterc and remo [a8",
+  "picture": "data/live/new-cards/potion-2.jpg"
+ },
+ {
   "name": "Solution",
   "phase": "potion",
   "seen": 2,
@@ -90,40 +90,13 @@
   "picture": "data/live/new-cards/potion-solution.jpg"
  },
  {
-  "name": "Shas",
+  "name": "Eggshell",
   "phase": "potion",
   "seen": 2,
-  "first": "2026-10-21T09:45:58.770Z",
-  "last": "2026-10-21T11:22:47.185Z",
-  "text": "Shas {\nG\nThe Holiest Wate\nAll *+ Agitoes awakd +",
-  "picture": "data/live/new-cards/potion-shas.jpg"
- },
- {
-  "name": "The Holiest Water",
-  "phase": "potion",
-  "seen": 2,
-  "first": "2026-10-21T09:52:01.055Z",
-  "last": "2026-10-21T11:22:31.241Z",
-  "text": "The Holiest Water\nAll “+ Agitoes awaken\n.\ninto monsters that are\nTY t1iorlcl hichorin rarity",
-  "picture": "data/live/new-cards/potion-the-holiest-water.jpg"
- },
- {
-  "name": "NER",
-  "phase": "potion",
-  "seen": 2,
-  "first": "2026-10-21T10:30:28.554Z",
-  "last": "2026-10-21T10:40:08.867Z",
-  "text": "NER\nThe Holiest Water, Vi\nAll 7% Agitoes aera] /",
-  "picture": "data/live/new-cards/potion-ner.jpg"
- },
- {
-  "name": "NE",
-  "phase": "potion",
-  "seen": 2,
-  "first": "2026-10-21T11:07:14.712Z",
-  "last": "2026-10-21T13:04:41.384Z",
-  "text": "NE\nThe Holiest Wate id\nAll *# Agitoes awakd  +11 7",
-  "picture": "data/live/new-cards/potion-ne.jpg"
+  "first": "2026-10-21T08:38:16.331Z",
+  "last": "2026-10-25T06:38:33.383Z",
+  "text": "Eggshell \n\n[\n+25 “& Quantity to]  S\nrandom group(s) r",
+  "picture": "data/live/new-cards/potion-eggshell.jpg"
  },
  {
   "name": "Gray ing P",
@@ -774,15 +747,6 @@
   "picture": "data/live/new-cards/potion-targeted-a-v.jpg"
  },
  {
-  "name": "2  The Holiest Water",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T07:26:50.908Z",
-  "last": "2026-10-21T07:26:50.908Z",
-  "text": "2  The Holiest Water\n5a All “+ Agitoes awaken\n0 into monsters that are",
-  "picture": "data/live/new-cards/potion-2-the-holiest-water.jpg"
- },
- {
   "name": "BC SUP",
   "phase": "potion",
   "seen": 1,
@@ -799,15 +763,6 @@
   "last": "2026-10-21T07:30:12.874Z",
   "text": "hy\nUE\nRh ANY\n“I\nSAN\nWhen adding amons{ Whe",
   "picture": "data/live/new-cards/instrument-hy.jpg"
- },
- {
-  "name": "inves Gal",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T07:36:49.751Z",
-  "last": "2026-10-21T07:36:49.751Z",
-  "text": "inves Gal\n The Holiest Wate \n All # Agitoes awak (\n{ nto Mmnonctorc that",
-  "picture": "data/live/new-cards/potion-inves-gal.jpg"
  },
  {
   "name": "LE",
@@ -846,15 +801,6 @@
   "picture": "data/live/new-cards/potion-noll-select-1-group-s.jpg"
  },
  {
-  "name": "Eggshell",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T08:38:16.331Z",
-  "last": "2026-10-21T08:38:16.331Z",
-  "text": "Eggshell \n\n[\n+25 “& Quantity to]  S\nrandom group(s) r",
-  "picture": "data/live/new-cards/potion-eggshell.jpg"
- },
- {
   "name": "Potent ce Sli",
   "phase": "potion",
   "seen": 1,
@@ -862,15 +808,6 @@
   "last": "2026-10-21T08:44:07.685Z",
   "text": "Potent ce Sli\nPowder\n\nSelect 1 group(s) d /\n\n monctore and +154 -",
   "picture": "data/live/new-cards/potion-potent-ce-sli.jpg"
- },
- {
-  "name": "Prim oy",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T08:44:36.528Z",
-  "last": "2026-10-21T08:44:36.528Z",
-  "text": "Prim oy\nThe Holiest Water\nAll * Agitoes awaken\nHPP SRE TT PR SE",
-  "picture": "data/live/new-cards/potion-prim-oy.jpg"
  },
  {
   "name": "Potent oo Sl",
@@ -943,15 +880,6 @@
   "last": "2026-10-21T10:21:44.929Z",
   "text": "5\nn Floosenic Powd ne\n10 “FQuantityto{ Se",
   "picture": "data/live/new-cards/potion-5.jpg"
- },
- {
-  "name": "NEA",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T10:30:31.697Z",
-  "last": "2026-10-21T10:30:31.697Z",
-  "text": "NEA\nThe Holiest Watery Vi\nAll “+ Agitoes awakd /",
-  "picture": "data/live/new-cards/potion-nea.jpg"
  },
  {
   "name": "Eggshell ii X",
@@ -1062,33 +990,6 @@
   "picture": "data/live/new-cards/potion-sti.jpg"
  },
  {
-  "name": "87",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T11:37:53.174Z",
-  "last": "2026-10-21T11:37:53.174Z",
-  "text": "87\nThe Holiest Water\nAll *% Agitoes awaken",
-  "picture": "data/live/new-cards/potion-87.jpg"
- },
- {
-  "name": "inven iii",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T11:42:30.374Z",
-  "last": "2026-10-21T11:42:30.374Z",
-  "text": "inven iii]\n1\nThe Holiest Water\n1 All * Agitoes awaken\nA nto mMmnonctoarec that ara",
-  "picture": "data/live/new-cards/potion-inven-iii.jpg"
- },
- {
-  "name": "bernie",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T11:45:29.511Z",
-  "last": "2026-10-21T11:45:29.511Z",
-  "text": "bernie\n The Holiest Water\nl All  Agitoes awaken\nA nto maonctore that aren",
-  "picture": "data/live/new-cards/potion-bernie.jpg"
- },
- {
   "name": "Potent ev B",
   "phase": "potion",
   "seen": 1,
@@ -1170,15 +1071,6 @@
   "picture": "data/live/new-cards/potion-ee.jpg"
  },
  {
-  "name": "pad",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T12:18:15.698Z",
-  "last": "2026-10-21T12:18:15.698Z",
-  "text": "pad\nEon)\nThe Holiest Water\nAll 7 Agitoes awaken",
-  "picture": "data/live/new-cards/potion-pad.jpg"
- },
- {
   "name": "Ban",
   "phase": "potion",
   "seen": 1,
@@ -1186,15 +1078,6 @@
   "last": "2026-10-21T12:25:03.722Z",
   "text": "Ban\nPotent u\nPowder Xi\n Selectleroun(s)a Sele",
   "picture": "data/live/new-cards/potion-ban.jpg"
- },
- {
-  "name": "aot",
-  "phase": "potion",
-  "seen": 1,
-  "first": "2026-10-21T12:51:26.460Z",
-  "last": "2026-10-21T12:51:26.460Z",
-  "text": "aot\nenw\nEY\nThe Holiest Water\nAll * Agitoes awaken",
-  "picture": "data/live/new-cards/potion-aot.jpg"
  },
  {
   "name": "Sloughed",
@@ -1258,5 +1141,167 @@
   "last": "2026-10-21T16:12:18.674Z",
   "text": "fey,\nDissectiondnfusio L\nMorbid Corpse\n The bloated skin pau Se",
   "picture": "data/live/new-cards/potion-fey.jpg"
+ },
+ {
+  "name": "Sler",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:03:10.301Z",
+  "last": "2026-10-25T07:03:10.301Z",
+  "text": "Sler\nAddi ligroupisjar S\n ed ry ee alt  os",
+  "picture": "data/live/new-cards/potion-sler.jpg"
+ },
+ {
+  "name": "Sler I",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:03:14.055Z",
+  "last": "2026-10-25T07:03:14.055Z",
+  "text": "Sler I\nAdd}Lgroup(sjiaf\n Agdigousisr",
+  "picture": "data/live/new-cards/potion-sler-i.jpg"
+ },
+ {
+  "name": "7z",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:17:14.640Z",
+  "last": "2026-10-25T07:17:14.640Z",
+  "text": "7z",
+  "picture": "data/live/new-cards/potion-7z.jpg"
+ },
+ {
+  "name": "EL Ui)",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:17:14.658Z",
+  "last": "2026-10-25T07:17:14.658Z",
+  "text": "EL Ui)\nRAN\n. NO\nNG Ne /\nCAN INAS",
+  "picture": "data/live/new-cards/potion-el-ui.jpg"
+ },
+ {
+  "name": "AN",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:17:14.659Z",
+  "last": "2026-10-25T07:17:14.659Z",
+  "text": "AN\n57K\nPASTA",
+  "picture": "data/live/new-cards/potion-an.jpg"
+ },
+ {
+  "name": "f il I 3",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:35:36.506Z",
+  "last": "2026-10-25T07:35:36.506Z",
+  "text": "f il I 3\n155",
+  "picture": "data/live/new-cards/potion-f-il-i-3.jpg"
+ },
+ {
+  "name": "T&L",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:35:36.502Z",
+  "last": "2026-10-25T07:35:36.502Z",
+  "text": "T&L\n) AN 1\nONAN TL",
+  "picture": "data/live/new-cards/potion-t-l.jpg"
+ },
+ {
+  "name": "Nr  - AS",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:35:36.507Z",
+  "last": "2026-10-25T07:35:36.507Z",
+  "text": "Nr  - AS _\n\n\\ ? ) p\n\nfy J . )\np \\\n\n A\n\n74  AN \\ 1 SR : A",
+  "picture": "data/live/new-cards/potion-nr-as.jpg"
+ },
+ {
+  "name": "Ca)",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:36:51.764Z",
+  "last": "2026-10-25T07:36:51.764Z",
+  "text": "Ca)\nNH\nFast-Actihg Cardiac\nStimulant\n9 Select the 1 group(s)\nEB} IEP i oI Lr AR",
+  "picture": "data/live/new-cards/potion-ca.jpg"
+ },
+ {
+  "name": "WIEN Th",
+  "phase": "instrument",
+  "seen": 1,
+  "first": "2026-10-25T07:37:20.694Z",
+  "last": "2026-10-25T07:37:20.694Z",
+  "text": "WIEN Th\nSRE 7 oF\nRHONA SEEN\nCANN fe . Pee\nTREN\nLAY ee\nRE od\n07 TN AN YE",
+  "picture": "data/live/new-cards/instrument-wien-th.jpg"
+ },
+ {
+  "name": "oar Pasa. - ’ AZ I Ad ( y",
+  "phase": "instrument",
+  "seen": 1,
+  "first": "2026-10-25T07:37:20.690Z",
+  "last": "2026-10-25T07:37:20.690Z",
+  "text": "oar Pasa. - ’ AZ I Ad ( y\nTat NEO IES\n(aa ——r TORT a) BURY\n- » 4 Ann  Tis ly\n\nRNG TEN “NOON ETN\nNb iN \\ Tosh A\nEE AE]\nCaN RN SN\nCm rae ONE Nes\nA Se «  YT wiz, Y",
+  "picture": "data/live/new-cards/instrument-oar-pasa-az-i-ad-y.jpg"
+ },
+ {
+  "name": "786",
+  "phase": "instrument",
+  "seen": 1,
+  "first": "2026-10-25T07:37:20.697Z",
+  "last": "2026-10-25T07:37:20.697Z",
+  "text": "- 786 \nSoa  68  7\nSoa 168) 7",
+  "picture": "data/live/new-cards/instrument-786.jpg"
+ },
+ {
+  "name": "RES 1",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:38:37.382Z",
+  "last": "2026-10-25T07:38:37.382Z",
+  "text": "RES 1\n57\noat \nMorbid Corpse\nThe bloated skin] §\n Puhr TORE Digit Bl HN",
+  "picture": "data/live/new-cards/potion-res-1.jpg"
+ },
+ {
+  "name": "i f pai",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:38:44.372Z",
+  "last": "2026-10-25T07:38:44.372Z",
+  "text": "i f pai\nUs\nDissection-Mnfusion: \nMorbid Corpse\nThe bloated skin\nPar. NC",
+  "picture": "data/live/new-cards/potion-i-f-pai.jpg"
+ },
+ {
+  "name": "Lo",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:39:08.965Z",
+  "last": "2026-10-25T07:39:08.965Z",
+  "text": "Lo\na)\nSH\nPE\nIncubationrFtizir: Hollow\nCocoon\n Itpromisesform to\nMEER",
+  "picture": "data/live/new-cards/potion-lo.jpg"
+ },
+ {
+  "name": "Wied",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:51:51.579Z",
+  "last": "2026-10-25T07:51:51.579Z",
+  "text": "Wied\n5\nFourth Rife Holy Watf Sle\nEucharist\nInthis feast, you ar\nPOTS  IB",
+  "picture": "data/live/new-cards/potion-wied.jpg"
+ },
+ {
+  "name": "Ws",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:51:52.644Z",
+  "last": "2026-10-25T07:51:52.644Z",
+  "text": "Ws\n5%\n\nFourth Rite Holy Water:\nEucharist\nInthis feast, you are\nCRG, vate",
+  "picture": "data/live/new-cards/potion-ws.jpg"
+ },
+ {
+  "name": "9 GE",
+  "phase": "potion",
+  "seen": 1,
+  "first": "2026-10-25T07:58:31.583Z",
+  "last": "2026-10-25T07:58:31.583Z",
+  "text": "9 GE\n] Select 1group(s) of R",
+  "picture": "data/live/new-cards/potion-9-ge.jpg"
  }
 ]
