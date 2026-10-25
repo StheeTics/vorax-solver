@@ -69,3 +69,7 @@ it('the advice shown, every option best first with its predicted end', () => {
   expect(r).toContain('  - Refresh: 870,000 · 50% rainbow')
   expect(buildReport(reading, ctx)).not.toContain('Advice')
 })
+
+it('the report is filed in the code repo, on the solver-reading form', () => {
+  expect(issueLink('Solver: board report', 'x').url).toMatch(/^https:\/\/github\.com\/tidewarden\/vorax-solver\/issues\/new\?template=solver-reading\.yml&/)
+})

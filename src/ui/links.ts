@@ -8,6 +8,8 @@ export const GUIDE_URL = `${import.meta.env.BASE_URL}optimal-play.html`
 export const HOME_URL = import.meta.env.BASE_URL
 export const SIMULATOR_URL = `${import.meta.env.BASE_URL}simulator.html`
 export const SOLVER_URL = `${import.meta.env.BASE_URL}solver.html`
-export const SOLVER_ISSUE_URL = `${REPO_URL}/issues/new`
+/** The code's repo, where the Solver's Report this board files its issues (with the solver-reading form). */
+export const CODE_REPO_URL = 'https://github.com/tidewarden/vorax-solver'
+export const SOLVER_ISSUE_URL = `${CODE_REPO_URL}/issues/new`
 /** Tips for the maintainer, linked quietly from the Solver's corner. */
 export const SUPPORT_URL = 'https://buymeacoffee.com/tidewarden'
