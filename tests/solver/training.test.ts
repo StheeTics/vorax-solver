@@ -10,8 +10,8 @@ const reading = (o: { phase?: 'potion' | 'instrument'; hand: string[]; steps: nu
 
 describe('which cards a screenshot is wanted for', () => {
   it('a card the reader has fewer than 3 pictures of, however it was read', () => {
-    const r = reading({ hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], steps: [0, 0, 1] })
-    expect(trainingWanted(r)).toEqual([{ phase: 'instrument', slot: 0, name: 'Egg-Burdened Butterfly', why: 'rare' }])
+    const r = reading({ phase: 'potion', hand: ['Purest Holy Water', 'Slough Solution', 'Green Bile Solution'], steps: [0, 0, 1] })
+    expect(trainingWanted(r)).toEqual([{ phase: 'potion', slot: 0, name: 'Purest Holy Water', why: 'rare' }])
   })
   it('a card neither its picture nor its title settled quickly', () => {
     const r = reading({ phase: 'potion', hand: ['Green Bile Solution', 'Anesthetic Tincture - Agito', 'Slough Solution'], steps: [1, 2, 0] })
@@ -31,7 +31,7 @@ describe('which cards a screenshot is wanted for', () => {
 })
 
 describe('sending', () => {
-  const r = reading({ hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], steps: [0, 0, 1] })
+  const r = reading({ phase: 'potion', hand: ['Purest Holy Water', 'Slough Solution', 'Green Bile Solution'], steps: [0, 0, 1] })
   const img = { width: 4, height: 4 } as ImageData
   beforeEach(() => localStorage.clear())
   const deps = (want: boolean, posts: { url: string; body: Record<string, unknown> }[], on = true) => ({
@@ -50,8 +50,8 @@ describe('sending', () => {
     const posts: { url: string; body: Record<string, unknown> }[] = []
     await sendTraining(img, r, trainingWanted(r), deps(true, posts))
     expect(posts.map(p => p.url)).toEqual(['https://collector/v1/training/ask', 'https://collector/v1/training'])
-    expect(posts[0].body).toEqual({ phase: 'instrument', name: 'Egg-Burdened Butterfly' })
-    expect(posts[1].body).toMatchObject({ phase: 'instrument', name: 'Egg-Burdened Butterfly', slot: 0, hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], why: 'rare', round: 4, ui: 1, build: 'abc1234', picture: '/9j/AAAA' })
+    expect(posts[0].body).toEqual({ phase: 'potion', name: 'Purest Holy Water' })
+    expect(posts[1].body).toMatchObject({ phase: 'potion', name: 'Purest Holy Water', slot: 0, hand: ['Purest Holy Water', 'Slough Solution', 'Green Bile Solution'], why: 'rare', round: 4, ui: 1, build: 'abc1234', picture: '/9j/AAAA' })
   })
   it('sends nothing the collector doesn’t want, and asks about a card once per install', async () => {
     const posts: { url: string; body: Record<string, unknown> }[] = []

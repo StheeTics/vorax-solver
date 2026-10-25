@@ -2359,5 +2359,6380 @@
    "Rawhide Restraint",
    "Nettle Toggle"
   ]
+ },
+ "td/2026-10-25T08-34-17-500Z-9d2c7617.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Xenopanacea: Brood",
+   "Green Bile Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-59-12-000Z-cbbb6b9a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Brood",
+   "Hollow Spinal Solution",
+   "Eggshell Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-38-04-898Z-3abeb3df.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Xenopanacea: Brood",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T10-26-29-629Z-471e248d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Brain Fog Tincture",
+   "Xenopanacea: Brood",
+   "Digestive Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-31-57-222Z-a954e620.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Xenopanacea: Brood",
+   "Viviparous Hormone"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T10-39-12-473Z-e34ca687.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Slough Solution",
+   "Xenopanacea: Brood"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-40-32-121Z-8d19b08a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Xenopanacea: Brood",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-47-38-563Z-107f95a1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Xenopanacea: Brood",
+   "Viscous Bile Solution"
+  ],
+  "ui": 1.1206
+ },
+ "td/2026-10-25T10-57-20-877Z-e48963e8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Anesthetic Tincture - Aemberon",
+   "Xenopanacea: Brood"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T11-33-22-034Z-95afd514.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Xenopanacea: Brood",
+   "Potion Kit (Large)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-28-24-476Z-9a125263.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Two-Inch Skull Nail",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-34-05-544Z-d79eb288.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Black Goat Gut Suture",
+   "Canine Teeth File"
+  ],
+  "ui": 1.0514
+ },
+ "td/2026-10-25T08-58-21-264Z-98dbfb0c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Sinew Garrote",
+   "Canine Teeth File"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-29-58-553Z-77037573.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Lady of the Plague Quarter",
+   "Sinew Garrote",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-54-11-410Z-4bf40ed9.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-54-50-084Z-9e6e983d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Sinew Garrote",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-59-03-468Z-71750fc7.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Nettle Toggle",
+   "Sinew Garrote"
+  ],
+  "ui": 1.0573
+ },
+ "td/2026-10-25T10-32-12-246Z-b5787a8b.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Fouled Scraper",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-01-24-809Z-5d83e985.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Sinew Garrote",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-08-41-455Z-dbba160a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Sinew Garrote",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-19-59-461Z-437c54b3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "The Holiest Water",
+   "Osteolytic Ointment"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T08-23-19-556Z-a477b18a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Eggshell Powder",
+   "The Holiest Water"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-23-26-240Z-717762aa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "The Holiest Water",
+   "Viviparous Hormone",
+   "Bewitching Tincture"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-44-04-412Z-13c37162.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Osteogenic Powder",
+   "The Holiest Water"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-58-00-346Z-f80b59e3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "The Holiest Water",
+   "Viscous Bile Solution",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-09-16-620Z-15bf8ff8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "The Holiest Water",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 1.0231
+ },
+ "td/2026-10-25T09-12-10-362Z-6d52e633.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "The Holiest Water",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-16-22-603Z-928b1cfd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "The Holiest Water",
+   "Compound Leech Solution",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-17-06-020Z-ae49c26e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "The Holiest Water",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 1.0573
+ },
+ "td/2026-10-25T09-19-09-200Z-0cccc8f5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "The Holiest Water",
+   "Leptomeningeal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-12-52-351Z-67beea2c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Osteolytic Ointment",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-38-26-559Z-4d40c0f3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Fresh Spinal Powder",
+   "Osteolytic Ointment",
+   "Slough Solution",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-30-889Z-f6e4ba21.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Slough Solution",
+   "Osteolytic Ointment"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-40-20-998Z-131bbf50.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Slough Solution",
+   "Osteolytic Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-50-57-998Z-bce333b9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Osteolytic Ointment",
+   "Xeno-Hormone"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-57-24-551Z-da4a6f43.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Spinal Solution - Aemberon",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-58-01-156Z-46e34148.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Osteolytic Ointment",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-01-52-727Z-38231283.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Xenopurge Powder",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-08-52-385Z-efa15ff6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Osteolytic Ointment",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-08-38-006Z-b0e3acb8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Insect Attractant",
+   "Slender-Limb Powder - Pest",
+   "Compound Leech Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-39-58-863Z-3d31e011.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Insect Attractant",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-44-45-888Z-6a1f8626.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Osteogenic Powder",
+   "Insect Attractant"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-05-21-967Z-54e3f92d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Potent Xenopurge Powder",
+   "Insect Attractant"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-23-02-849Z-825296c6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Xeno-Hormone",
+   "Insect Attractant"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-33-07-127Z-f90d1316.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Insect Attractant",
+   "Pure Leech Solution",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T09-43-20-240Z-5cefcc75.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Hollow Spinal Solution",
+   "Insect Attractant"
+  ],
+  "ui": 0.9645
+ },
+ "td/2026-10-25T09-49-55-845Z-37b14eac.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Insect Attractant",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-50-33-408Z-b43d6267.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Insect Attractant",
+   "Cleansing Ointment",
+   "Mutagenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-50-41-185Z-4117994c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Insect Attractant",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-58-33-168Z-f54e3ffd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Spinal Solution - Agito",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-50-492Z-0d380e41.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Plague Quarter Peat Poultice",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-40-03-062Z-dc6d0038.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Slough Solution",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T09-02-19-164Z-d9f84eb4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Plague Quarter Peat Poultice",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T09-34-50-013Z-c3cdc17c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Xeno-Hormone",
+   "Pure Leech Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T10-16-36-514Z-c30acfe4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Green Bile Solution",
+   "Vivigenic Powder"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T10-21-44-727Z-af4657aa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Plague Quarter Peat Poultice",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T10-59-01-345Z-47c78d10.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Slender-Limb Powder - Pest",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-59-24-178Z-68323373.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Twin Hormone - Bone Sentry",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T12-10-59-827Z-37ae1d09.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Plague Quarter Peat Poultice",
+   "Spinal Solution - Agito",
+   "Potion Kit (Large)"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T07-57-18-588Z-69d168bb.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Rawhide Restraint",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-16-54-202Z-27233f04.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-30-09-599Z-434b4ca0.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-56-54-190Z-0b866682.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Sloughed Cortex",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-02-17-205Z-d19ae21d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Rawhide Restraint",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 1.0277
+ },
+ "td/2026-10-25T09-04-10-813Z-81454ae6.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Rawhide Restraint",
+   "Sinew Garrote"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-20-38-595Z-5d2d3fc6.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Rawhide Restraint",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-38-19-754Z-2d2a92f8.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Egg-Burdened Butterfly",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-43-42-777Z-c4c85e00.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Rawhide Restraint",
+   "Fouled Scraper"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-54-12-785Z-79c0b3bc.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Sinew Garrote",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-57-08-610Z-d3a9ca2a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Hollow Spinal Solution",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-57-28-739Z-1efed3bd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Twin Hormone - Pest",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-01-11-362Z-d8eda170.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Hollow Spinal Solution",
+   "Cleansing Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-22-683Z-f124297e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Gray Matter Spinal Solution",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-01-158Z-88cb3058.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Spinal Solution - Agito",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-36-19-366Z-a6226112.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Hollow Spinal Solution",
+   "Spinal Solution - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-36-29-143Z-5c1eb885.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Spinal Solution - Aemberon",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-45-860Z-a4510332.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Hollow Spinal Solution",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-41-50-619Z-bca0d40b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Hollow Spinal Solution",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-43-50-373Z-2925e6e6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Targeted Xeno-Hormone",
+   "Brain Fog Tincture"
+  ],
+  "ui": 1.2399
+ },
+ "td/2026-10-25T07-53-03-946Z-23949d9c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ],
+  "ui": 1.0202
+ },
+ "td/2026-10-25T07-59-04-342Z-698e6c46.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Eyelid Speculum",
+   "Tanned Leather Restraint",
+   "Canine Teeth File"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-06-09-912Z-fdc7623f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Eyelid Speculum",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-06-12-561Z-06ef597f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Eyelid Speculum",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-16-58-124Z-35645570.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Eyelid Speculum",
+   "Clustered Eggs"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-27-32-900Z-0369d4b0.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Eyelid Speculum",
+   "Fouled Scraper"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-27-41-523Z-d1f6861e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Canine Teeth File",
+   "Eyelid Speculum"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-38-34-396Z-ef86f4a5.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Vermicular Spinal Cord",
+   "Eyelid Speculum"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-51-04-994Z-067bf8f0.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Eyelid Speculum",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-54-01-952Z-188953d5.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Two-Inch Skull Nail",
+   "Eyelid Speculum"
+  ],
+  "ui": 1.0489
+ },
+ "td/2026-10-25T07-53-01-012Z-68436ac1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Bewitching Tincture",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-44-139Z-581ef027.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Osteogenic Powder",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-57-03-157Z-c0a189c5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Anesthetic Tincture - Agito",
+   "Twin Hormone - Pest"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-00-27-771Z-19a59625.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Petrified Spinal Solution",
+   "Osteogenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-17-13-667Z-6153f183.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Osteogenic Powder",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-21-10-121Z-712cddb3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Viviparous Hormone",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-28-13-248Z-31eea545.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Osteogenic Powder",
+   "Bewitching Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-28-15-618Z-1c6823fc.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Osteogenic Powder",
+   "Bewitching Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-31-098Z-3508a6a2.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Osteogenic Powder",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-53-777Z-7dc2ba9f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Compound Leech Solution",
+   "Osteogenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-23-586Z-ff488ccb.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Compound Leech Solution",
+   "Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-22-46-655Z-2abdba04.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-22-59-163Z-258172a7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Compound Leech Solution",
+   "Potion Kit (Small)"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-36-40-202Z-4862a23b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Pure Leech Solution",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-40-12-846Z-0e818b52.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Cleansing Ointment",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-42-00-602Z-5fb6607e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Potion Kit (Small)",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-44-34-615Z-8e7b5849.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Xenopurge Powder",
+   "Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-46-42-293Z-2118b9e0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Twin Hormone - Bone Sentry",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-52-00-358Z-11ba48d5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Osteogenic Powder",
+   "Osteolytic Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-56-35-097Z-aa07dc55.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Targeted Xeno-Hormone",
+   "Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-20-360Z-ff4a5abf.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Fouled Scraper",
+   "Lady of the Plague Quarter"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-03-41-725Z-214a11e5.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Lady of the Plague Quarter",
+   "Two-Inch Skull Nail",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-55-911Z-cbe2f7ce.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Lady of the Plague Quarter",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-14-44-703Z-392f4420.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Tanned Leather Restraint",
+   "Lady of the Plague Quarter"
+  ],
+  "ui": 1.0453
+ },
+ "td/2026-10-25T08-22-33-993Z-59c3c63b.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Lady of the Plague Quarter",
+   "Sinew Garrote"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-29-54-609Z-35207611.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Lady of the Plague Quarter",
+   "Rawhide Restraint",
+   "Clustered Eggs"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T08-47-59-823Z-6e38fe04.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Lady of the Plague Quarter",
+   "Clustered Eggs",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-54-59-002Z-c3598acb.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Black Goat Gut Suture",
+   "Lady of the Plague Quarter"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-56-48-959Z-4fc8f685.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Lady of the Plague Quarter",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-01-18-169Z-aebdb3bc.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Lady of the Plague Quarter",
+   "Sinew Garrote"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-59-32-279Z-e5c3959e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Xenopanacea: Brood",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-37-54-895Z-9b94b9ba.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Eggshell Powder",
+   "Xenopanacea: Osteotrophy"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T10-30-07-875Z-48ce88dd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Twin Hormone - Pest",
+   "Green Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-32-03-898Z-4b0c7ef0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Xenopanacea: Brood",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T10-40-20-834Z-b13eb706.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Twin Hormone - Pest",
+   "Xenopanacea: Osteotrophy"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-40-28-295Z-d5cfe87e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Xenopanacea: Brood",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-47-29-586Z-6e3a3159.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Xenopanacea: Osteotrophy",
+   "Bewitching Tincture"
+  ],
+  "ui": 1.1206
+ },
+ "td/2026-10-25T10-53-45-885Z-12d1a447.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Xenopanacea: Osteotrophy",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T10-57-45-007Z-17209a38.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopanacea: Osteotrophy",
+   "Xenopanacea: Brood",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T07-51-45-711Z-deb04094.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Twin Hormone - Pest",
+   "Osteogenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-47-602Z-9faa584c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Gray Matter Spinal Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 1.0514
+ },
+ "td/2026-10-25T09-09-24-577Z-836e84ac.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Green Bile Solution",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-31-07-159Z-15ce8ad1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Targeted Xeno-Hormone",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-46-47-268Z-6aa99bae.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Anesthetic Tincture - Aemberon",
+   "Eggshell Powder"
+  ],
+  "ui": 1.0415
+ },
+ "td/2026-10-25T11-54-21-045Z-c9ec0b44.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Slender-Limb Powder - Pest",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T13-27-06-962Z-c125982f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Cleansing Ointment",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T13-48-10-521Z-70dafe97.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Potion Kit (Large)",
+   "Potion Kit (Small)"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T14-15-42-378Z-1b518706.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Ritual Holy Water: Flagellation",
+   "Anesthetic Tincture - Agito",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-43-218Z-0f8692d9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "First Rite Holy Water: Confession",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-32-626Z-8aef14bf.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "First Rite Holy Water: Confession",
+   "Twin Hormone - Pest"
+  ],
+  "ui": 1.0514
+ },
+ "td/2026-10-25T09-09-21-547Z-eba9825c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "First Rite Holy Water: Confession",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-25-44-579Z-6df27bc1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Fresh Spinal Powder",
+   "First Rite Holy Water: Confession"
+  ],
+  "ui": 1.0915
+ },
+ "td/2026-10-25T11-30-49-203Z-cbee4162.jpg": {
+  "phase": "potion",
+  "hand": [
+   "First Rite Holy Water: Confession",
+   "Viviparous Hormone",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-46-38-054Z-accf1dd7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "First Rite Holy Water: Confession",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 1.0415
+ },
+ "td/2026-10-25T11-54-15-048Z-68e35629.jpg": {
+  "phase": "potion",
+  "hand": [
+   "First Rite Holy Water: Confession",
+   "Spinal Solution - Agito",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T13-27-03-486Z-c64a4950.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Twin Hormone - Bone Sentry",
+   "First Rite Holy Water: Confession"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T13-48-06-580Z-797ef609.jpg": {
+  "phase": "potion",
+  "hand": [
+   "First Rite Holy Water: Confession",
+   "Eggshell Powder",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-50-15-281Z-3a8dae6b.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Nettle Toggle",
+   "Sinew Garrote"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-30-509Z-3294ca87.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Sinew Garrote",
+   "Lady of the Plague Quarter"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-23-04-202Z-ddb9a164.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Canine Teeth File",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-39-19-211Z-2cdce767.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Canine Teeth File",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-40-42-511Z-99118160.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Black Goat Gut Suture",
+   "Canine Teeth File"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-40-43-469Z-51e3736e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Black Goat Gut Suture",
+   "Canine Teeth File"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-58-24-473Z-92e9c47e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Sinew Garrote",
+   "Canine Teeth File"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-58-57-195Z-985ac664.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Canine Teeth File",
+   "Rawhide Restraint"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-11-29-066Z-284ff2bb.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Canine Teeth File",
+   "Fouled Scraper"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-15-59-015Z-d83c8ab4.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-49-09-296Z-561c7a0c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-54-42-991Z-a61ba1ad.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Fresh Spinal Powder",
+   "Potion Kit (Large)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-02-21-352Z-e39c8ad7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Osteogenic Powder",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-06-55-810Z-e92fe7bb.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Eggshell Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-12-40-371Z-2ecf07aa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Slough Solution",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T08-27-10-913Z-c01b19d8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Spinal Solution - Aemberon",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-31-02-841Z-4c1331dd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Targeted Xeno-Hormone",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-32-57-042Z-5b3d6f24.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Viviparous Hormone",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-51-35-850Z-e08ac796.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Spinal Solution - Aemberon",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-56-07-999Z-65691261.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Spinal Solution - Aemberon",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-49-09-229Z-86cb6170.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Petrified Spinal Solution",
+   "Cleansing Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-06-296Z-0abe8683.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Pure Leech Solution",
+   "Cleansing Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-30-172Z-cb13ec36.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Digestive Enzyme Solution",
+   "Pure Leech Solution"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-00-39-292Z-8f06202b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Mutagenic Powder",
+   "Green Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-14-27-759Z-2b83649f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Brain Fog Tincture",
+   "Fresh Spinal Powder",
+   "Pure Leech Solution",
+   "Petrified Spinal Solution",
+   "Eggshell Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-25-18-730Z-b465fa51.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Gray Matter Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-26-45-805Z-d0fb4c50.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Gray Matter Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-25-953Z-69b28e2e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Anesthetic Tincture - Aemberon",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-21-697Z-c1e05bd7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Pure Leech Solution",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-43-944Z-86cdb805.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Leptomeningeal Solution",
+   "Pure Leech Solution"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T07-48-56-414Z-d2c8edf3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Xeno-Hormone",
+   "Mutagenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-28-456Z-795b6a1a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Xeno-Hormone",
+   "Mutagenic Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-42-795Z-602f2c82.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Mutagenic Powder",
+   "Green Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-08-13-327Z-41af3aec.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Mutagenic Powder",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-15-15-736Z-6b1244ce.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Potent Xenopurge Powder",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0453
+ },
+ "td/2026-10-25T08-17-48-552Z-cf7b2fc4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Slender-Limb Powder - Bone Sentry",
+   "Eggshell Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-23-31-247Z-8c6e8585.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Mutagenic Powder",
+   "Spinal Solution - Agito"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-33-54-210Z-03520557.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Bone Sentry",
+   "Mutagenic Powder"
+  ],
+  "ui": 0.9645
+ },
+ "td/2026-10-25T08-38-11-183Z-15781430.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Viscous Bile Solution",
+   "Mutagenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-40-55-619Z-2b41c749.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Viviparous Hormone",
+   "Mutagenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-14-721Z-d9a9b270.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Cleansing Ointment",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-34-074Z-1e74ee1b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Cleansing Ointment",
+   "Plague Quarter Peat Poultice"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-44-915Z-0fe9a78b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Cleansing Ointment",
+   "Brain Fog Tincture"
+  ],
+  "ui": 1.0768
+ },
+ "td/2026-10-25T07-57-51-311Z-712a0cfa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Eggshell Powder",
+   "Cleansing Ointment"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-12-48-658Z-f46e6047.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Osteolytic Ointment",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-33-25-124Z-9f9a0d6c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Xeno-Hormone",
+   "Cleansing Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-36-992Z-53ee0f6c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Viscous Bile Solution",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-37-00-129Z-9928ff15.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Pure Leech Solution",
+   "Cleansing Ointment"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T08-44-54-080Z-0aa54568.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Brain Fog Tincture",
+   "Cleansing Ointment"
+  ],
+  "ui": 1.2399
+ },
+ "td/2026-10-25T07-45-19-723Z-6a6166c8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Green Bile Solution",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-54-18-651Z-6603f765.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Petrified Spinal Solution",
+   "Leptomeningeal Solution",
+   "Anesthetic Tincture - Agito",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-12-56-571Z-705e6f1a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Viscous Bile Solution",
+   "Viviparous Hormone"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-17-22-484Z-115eaa62.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Viviparous Hormone",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-21-14-231Z-1ffb8dc1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Viviparous Hormone",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-27-23-448Z-0a29d999.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Viviparous Hormone",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-31-28-846Z-d83c4b89.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Agito",
+   "Viviparous Hormone"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-34-33-942Z-3b963750.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Fresh Spinal Powder",
+   "Spinal Solution - Agito",
+   "Leptomeningeal Solution",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9645
+ },
+ "td/2026-10-25T08-46-44-830Z-7d7d6a96.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Viviparous Hormone",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-46-45-795Z-68c1df96.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Twin Hormone - Bone Sentry",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-44-10-460Z-77dbdf95.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Sinew Garrote",
+   "Sloughed Cortex"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-13-36-817Z-7d5e3c27.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Fouled Scraper",
+   "Sloughed Cortex"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-39-23-872Z-9fce0249.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Sloughed Cortex",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-44-24-525Z-4f41b549.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Fouled Scraper",
+   "Sloughed Cortex"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-44-26-782Z-c8632b14.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Fouled Scraper",
+   "Sloughed Cortex"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-02-08-820Z-9e9fccc1.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Black Goat Gut Suture",
+   "Sloughed Cortex"
+  ],
+  "ui": 1.0277
+ },
+ "td/2026-10-25T09-53-12-453Z-14b22d58.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Sloughed Cortex",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-21-31-472Z-1f93c055.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Clustered Eggs",
+   "Sloughed Cortex"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-23-50-326Z-0174f399.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Vermicular Spinal Cord",
+   "Sloughed Cortex"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T10-30-04-862Z-e1c1666c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Lady of the Plague Quarter",
+   "Sloughed Cortex"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-44-10-458Z-a61f519f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Rawhide Restraint",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-49-20-382Z-60d7dd9c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Sinew Garrote",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-40-053Z-0a47db42.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Clustered Eggs",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T08-17-32-297Z-ce775dae.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Fouled Scraper",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-30-39-247Z-4d1de35c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Black Goat Gut Suture",
+   "Rawhide Restraint"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-30-48-403Z-1606d200.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Clustered Eggs",
+   "Fouled Scraper"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-36-15-129Z-9a9b8d02.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Fouled Scraper",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-44-23-617Z-5a57a056.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Fouled Scraper",
+   "Sloughed Cortex"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-04-40-928Z-7d5bb959.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Two-Inch Skull Nail",
+   "Fouled Scraper"
+  ],
+  "ui": 1.0231
+ },
+ "td/2026-10-25T09-09-40-772Z-08058dbe.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Fouled Scraper",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-43-02-428Z-04c1d7cd.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Chrysalis Specimen",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-20-917Z-2197ca71.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Hypertrophic Pituitary",
+   "Adherent Metatarsals"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-27-892Z-f4866e30.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Hypertrophic Pituitary",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-05-15-878Z-02abd6b2.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Adherent Metatarsals",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-16-07-134Z-c242be02.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Prismatic Liver",
+   "Adherent Metatarsals"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-21-52-769Z-56ed8646.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hyperplastic Frontal Lobe",
+   "Adherent Metatarsals"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-36-44-272Z-7405efc4.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Chrysalis Specimen",
+   "Adherent Metatarsals"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-37-59-080Z-7f317f90.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Hyperplastic Frontal Lobe",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-41-118Z-13cb594d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Adherent Metatarsals",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-40-53-577Z-13d28db3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Adherent Metatarsals",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-42-20-827Z-42f6ca11.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Bewitching Tincture",
+   "Compound Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-45-13-700Z-cc1eccb9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Spinal Solution - Aemberon",
+   "Bewitching Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-47-874Z-c0bde92a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Bewitching Tincture",
+   "Osteolytic Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-05-388Z-96ac4d60.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Bewitching Tincture",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-47-452Z-08c02546.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Vivigenic Powder",
+   "Bewitching Tincture"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-07-43-349Z-5601bd83.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Twin Hormone - Pest",
+   "Bewitching Tincture"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-23-29-928Z-05bf420f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "The Holiest Water",
+   "Viviparous Hormone",
+   "Bewitching Tincture"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-28-16-471Z-38a3220e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Osteogenic Powder",
+   "Bewitching Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-28-18-843Z-9683a4db.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Osteogenic Powder",
+   "Bewitching Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-30-31-455Z-105571de.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Digestive Enzyme Solution",
+   "Bewitching Tincture"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T07-41-28-229Z-edb48fca.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Aberrant Stinger",
+   "Canine Teeth File"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-48-35-438Z-bb3f65d9.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Fouled Scraper",
+   "Aberrant Stinger"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-06-177Z-684f9b27.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Nettle Toggle",
+   "Aberrant Stinger"
+  ],
+  "ui": 1.0768
+ },
+ "td/2026-10-25T07-56-41-690Z-15e6a228.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Aberrant Stinger",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-24-52-490Z-4d606fe9.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Stinger",
+   "Tanned Leather Restraint",
+   "Sinew Garrote"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T08-35-39-156Z-4de38b45.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Aberrant Stinger",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-48-30-879Z-0bf79686.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Aberrant Stinger",
+   "Sinew Garrote"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-56-36-042Z-22a3cad1.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Stinger",
+   "Tanned Leather Restraint",
+   "Vermicular Spinal Cord"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-06-19-100Z-c56ba1b2.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Canine Teeth File",
+   "Aberrant Stinger"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-14-07-334Z-18d6e692.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Stinger",
+   "Sinew Garrote",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-40-54-189Z-5314aec6.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-41-49-993Z-006c8100.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Chrysalis Specimen",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-47-36-045Z-38dd6b46.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hypertrophic Pituitary",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-49-32-472Z-9a1da821.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Hypertrophic Pituitary",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-05-19-848Z-80f585a3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Adherent Metatarsals",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-06-43-772Z-56db4b60.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Hyperplastic Frontal Lobe",
+   "Aberrant Sprout"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-11-00-666Z-64eb45fe.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Sloughed Cortex",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-17-12-127Z-048c274c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Prismatic Liver",
+   "Contracted Claws",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-19-36-353Z-cd5e9c49.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hyperplastic Frontal Lobe",
+   "Prismatic Liver"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T08-21-49-283Z-ab237cda.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hyperplastic Frontal Lobe",
+   "Adherent Metatarsals"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-40-33-552Z-3b58ed3a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Two-Inch Skull Nail",
+   "Egg-Burdened Butterfly"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-12-05-664Z-bafeebec.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Egg-Burdened Butterfly",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T08-22-17-292Z-bf168a0e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Egg-Burdened Butterfly",
+   "Rawhide Restraint",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-35-29-954Z-14921127.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Egg-Burdened Butterfly",
+   "Sinew Garrote",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-38-055Z-96f5cf16.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Fouled Scraper",
+   "Egg-Burdened Butterfly"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-51-06-918Z-d4699f82.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Egg-Burdened Butterfly",
+   "Vermicular Spinal Cord"
+  ],
+  "ui": 1.0026
+ },
+ "td/2026-10-25T09-00-11-739Z-59cdd0e8.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Black Goat Gut Suture",
+   "Egg-Burdened Butterfly"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-00-42-946Z-504e999e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Sinew Garrote",
+   "Egg-Burdened Butterfly"
+  ],
+  "ui": 1.0689
+ },
+ "td/2026-10-25T09-08-46-747Z-290b0a17.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Sinew Garrote",
+   "Egg-Burdened Butterfly"
+  ],
+  "ui": 1.0231
+ },
+ "td/2026-10-25T09-48-00-540Z-ff4a8658.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Two-Inch Skull Nail",
+   "Egg-Burdened Butterfly"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T07-40-12-529Z-7a6ca6c0.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Sloughed Cortex",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-44-803Z-2c42b715.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Two-Inch Skull Nail",
+   "Sinew Garrote"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-58-935Z-dabbe2d3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Pig Iron Bone Saw",
+   "Vermicular Spinal Cord"
+  ],
+  "ui": 1.0202
+ },
+ "td/2026-10-25T07-56-34-276Z-cfad932a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Two-Inch Skull Nail",
+   "Vermicular Spinal Cord"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T07-57-13-817Z-9c5e99dc.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Rawhide Restraint",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-50-436Z-84e9afd3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Vermicular Spinal Cord",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-06-09-052Z-9ff121be.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Eyelid Speculum",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-11-54-635Z-62644a25.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Vermicular Spinal Cord",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T08-22-05-576Z-652203db.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Vermicular Spinal Cord",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-27-28-037Z-00aaa0c4.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Eyelid Speculum",
+   "Fouled Scraper"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-39-57-096Z-66d025cc.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Spinal Solution - Aemberon",
+   "Slender-Limb Powder - Pest",
+   "Xeno-Hormone",
+   "Viscous Bile Solution"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-56-51-560Z-703fccc0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Twin Hormone - Bone Sentry",
+   "Digestive Enzyme Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-56-59-135Z-64d6eee9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Digestive Enzyme Solution",
+   "Mutagenic Powder"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T07-57-44-000Z-8b723188.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Digestive Enzyme Solution",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-02-13-181Z-b56dee70.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Osteogenic Powder",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-08-55-115Z-8aa18786.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Digestive Enzyme Solution",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-28-12-272Z-a4016070.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Osteogenic Powder",
+   "Bewitching Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-05-339Z-4a002172.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Viviparous Hormone",
+   "Digestive Enzyme Solution"
+  ],
+  "ui": 0.9645
+ },
+ "td/2026-10-25T08-35-24-707Z-2e4fd8ef.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Digestive Enzyme Solution",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-53-518Z-0032490b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Spinal Solution - Aemberon",
+   "Eggshell Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-39-34-491Z-6840db3a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Anesthetic Tincture - Agito",
+   "Potion Kit (Large)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-42-00-910Z-74960f01.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Targeted Xeno-Hormone",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-54-15-777Z-b8e0d554.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Targeted Xeno-Hormone",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-54-31-728Z-bf01ceab.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Targeted Xeno-Hormone",
+   "Osteogenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-24-228Z-dcd60a14.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Slender-Limb Powder - Pest",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-56-54-599Z-57d64b60.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Viviparous Hormone",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-02-24-740Z-5f8ff886.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Osteogenic Powder",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-13-651Z-aef507d3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Viscous Bile Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-08-59-714Z-0c3b62fa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Probiotic Enzyme Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9988
+ },
+ "td/2026-10-25T08-18-10-482Z-de21ecda.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Targeted Xeno-Hormone",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-39-15-769Z-2ecfab9f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Green Bile Solution",
+   "Spinal Solution - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-52-112Z-9cf2ff4a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Potent Xenopurge Powder",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-23-528Z-b1a2ad31.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Slender-Limb Powder - Bone Sentry",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-57-39-439Z-5c856e7c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Gray Matter Spinal Solution",
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Agito",
+   "Viscous Bile Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-29-488Z-c8119c97.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Spinal Solution - Agito",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-08-641Z-c7031b69.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Agito",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-02-16-201Z-77d07c6c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Slender-Limb Powder - Bone Sentry",
+   "Vivigenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-04-609Z-a8314bd9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Spinal Solution - Agito",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-12-12-200Z-85a617ee.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Xeno-Hormone",
+   "Twin Hormone - Bone Sentry",
+   "Cleansing Ointment",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T08-17-15-201Z-7fc0fc14.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Spinal Solution - Agito",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-55-146Z-1089243a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Eggshell Powder",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-06-59-477Z-62b2d9c6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Eggshell Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-18-04-444Z-dc1d1d47.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Eggshell Powder",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-33-45-433Z-f1fe3a47.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Spinal Solution - Aemberon",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-43-181Z-200a03e9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Eggshell Powder",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-13-529Z-e63484fe.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Eggshell Powder",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 1.0514
+ },
+ "td/2026-10-25T08-48-17-410Z-70397185.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Eggshell Powder",
+   "Bewitching Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-52-18-654Z-fe92ef32.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Spinal Solution - Agito",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-17-44-724Z-99d7381e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Digestive Enzyme Solution",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-38-53-289Z-c33954de.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slough Solution",
+   "Vivigenic Powder",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T07-45-30-147Z-bd3994c4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Green Bile Solution",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-53-675Z-b3b0b188.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Brain Fog Tincture",
+   "Slough Solution",
+   "Green Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-12-36-615Z-d7ea19c4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Petrified Spinal Solution",
+   "Slough Solution"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-27-55-577Z-c20797cc.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slough Solution",
+   "Viscous Bile Solution",
+   "Fast-Acting Heart Tonic"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-29-41-411Z-2affec05.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Compound Leech Solution",
+   "Slough Solution"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T08-40-25-012Z-528cca0f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Slender-Limb Powder - Pest",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-50-28-180Z-c9afbdb0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Slough Solution",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-01-46-316Z-9cf8724c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Mutagenic Powder",
+   "Slough Solution"
+  ],
+  "ui": 1.0277
+ },
+ "td/2026-10-25T09-17-59-889Z-eb55954f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Slough Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-38-49-204Z-4a4e1a13.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Green Bile Solution",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T07-57-53-696Z-6d01a0bf.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Petrified Spinal Solution",
+   "Green Bile Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-01-34-359Z-4e2d00b9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Spinal Solution - Agito",
+   "Green Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-05-50-834Z-a2e6845b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Green Bile Solution",
+   "Compound Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-13-53-913Z-9521a877.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Mutagenic Powder",
+   "Spinal Solution - Aemberon",
+   "Potent Xenopurge Powder",
+   "Green Bile Solution"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-35-01-915Z-251a7b37.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Anesthetic Tincture - Aemberon",
+   "Green Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-27-944Z-030aac46.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Osteogenic Powder",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-51-20-337Z-418a8184.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Green Bile Solution",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-59-09-121Z-fb94c4c9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Targeted Xeno-Hormone",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-04-28-055Z-b65fb225.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Green Bile Solution",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 1.0231
+ },
+ "td/2026-10-25T07-38-37-981Z-93033938.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Fresh Spinal Powder",
+   "Vivigenic Powder"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-43-44-180Z-9c7e6c05.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Slender-Limb Powder - Bone Sentry",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-52-17-149Z-f44f10ec.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Spinal Solution - Aemberon",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 1.0768
+ },
+ "td/2026-10-25T07-54-23-740Z-48b8b222.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Potent Xenopurge Powder",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-44-250Z-3c858de9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Petrified Spinal Solution",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-02-21-479Z-ecca8461.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Slender-Limb Powder - Bone Sentry",
+   "Vivigenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-05-48-222Z-345e722b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-14-41-779Z-eff99ebc.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Pure Leech Solution",
+   "Eggshell Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-21-18-239Z-b11a504d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Slender-Limb Powder - Bone Sentry",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-21-57-776Z-432cdb42.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Slender-Limb Powder - Bone Sentry",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-38-32-913Z-a08a1401.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Viscous Bile Solution",
+   "Petrified Spinal Solution",
+   "Brain Fog Tincture",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T08-00-54-386Z-8c2f60f8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Probiotic Enzyme Solution",
+   "Mutagenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-33-101Z-d6ae564c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Osteogenic Powder",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-24-53-038Z-51f6d3fa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Xenopurge Powder",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-28-25-563Z-b086224e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Osteolytic Ointment",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-31-21-529Z-102d7291.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Viscous Bile Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-36-20-559Z-d04b413a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Petrified Spinal Solution",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T08-39-00-413Z-27950dfd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Probiotic Enzyme Solution",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-27-170Z-fc2a466a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Probiotic Enzyme Solution",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-42-004Z-8843e234.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Probiotic Enzyme Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-38-29-473Z-1ed1f318.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Viscous Bile Solution",
+   "Petrified Spinal Solution",
+   "Brain Fog Tincture",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-44-09-867Z-682099a9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Pure Leech Solution",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-02-941Z-71549203.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Brain Fog Tincture",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-56-006Z-bd564fa6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Pest",
+   "Brain Fog Tincture",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-02-595Z-2177a126.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Brain Fog Tincture",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-46-929Z-4aed5cbb.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Probiotic Enzyme Solution",
+   "Cleansing Ointment",
+   "Brain Fog Tincture",
+   "Leptomeningeal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-08-29-994Z-9b6df277.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Anesthetic Tincture - Aemberon",
+   "Green Bile Solution",
+   "Brain Fog Tincture",
+   "Mutagenic Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-35-34-118Z-ceddca01.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Brain Fog Tincture",
+   "Leptomeningeal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-39-02-609Z-1a2af3b5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Brain Fog Tincture",
+   "Vivigenic Powder",
+   "Pure Leech Solution",
+   "Anesthetic Tincture - Aemberon",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-43-54-345Z-b5d16f95.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Targeted Xeno-Hormone",
+   "Brain Fog Tincture"
+  ],
+  "ui": 1.2399
+ },
+ "td/2026-10-25T07-38-23-654Z-2d11292f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Vivigenic Powder",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-45-08-960Z-f05c339c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Spinal Solution - Agito",
+   "Digestive Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-58-27-828Z-90c7bef4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Twin Hormone - Pest",
+   "Potion Kit (Large)"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-07-06-621Z-20bc5510.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Viscous Bile Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-23-38-297Z-8f585fe7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Fresh Spinal Powder",
+   "Potion Kit (Large)"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-37-03-116Z-e20edd51.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Viviparous Hormone",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T08-38-22-578Z-e97832cf.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Brain Fog Tincture",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-50-07-704Z-a2f0a9d3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Osteogenic Powder",
+   "Eggshell Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-56-21-947Z-e1fc666f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Petrified Spinal Solution",
+   "Twin Hormone - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-56-38-748Z-4876673f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Xeno-Hormone",
+   "Potion Kit (Large)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-38-15-197Z-982710f7.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Tanned Leather Restraint",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T07-53-12-794Z-8815c664.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Clustered Eggs",
+   "Sloughed Cortex"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-16-58-330Z-4e427145.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Clustered Eggs",
+   "Canine Teeth File"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-50-15-355Z-ff3fb901.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Tanned Leather Restraint",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-55-32-658Z-81e73122.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Clustered Eggs",
+   "Canine Teeth File"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-02-14-605Z-f946ab91.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Rawhide Restraint",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 1.0277
+ },
+ "td/2026-10-25T09-09-37-486Z-0124d4f6.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Clustered Eggs",
+   "Sinew Garrote"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-19-37-761Z-b94c52a8.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Sloughed Cortex",
+   "Eyelid Speculum"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-37-39-261Z-b4063f52.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Fouled Scraper",
+   "Sloughed Cortex"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-39-07-798Z-1cbd851d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Sloughed Cortex",
+   "Clustered Eggs"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-38-11-043Z-a27c5b9a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-40-51-579Z-fc97fbb1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Digestive Enzyme Solution",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-54-37-508Z-97f697a5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Spinal Solution - Agito",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-57-33-999Z-080017af.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Digestive Enzyme Solution",
+   "Osteolytic Ointment"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-16-397Z-398e4c12.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Gray Matter Spinal Solution",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-08-24-239Z-e12d5ff8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Gray Matter Spinal Solution",
+   "Potion Kit (Large)"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-25-22-120Z-10d2e0b3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Gray Matter Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-26-49-435Z-0203c704.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Gray Matter Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-33-37-026Z-0e29aee9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Anesthetic Tincture - Agito",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 1.0514
+ },
+ "td/2026-10-25T08-35-34-646Z-a594ddf5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Osteogenic Powder",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-37-44-921Z-9cb68f9f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Slender-Limb Powder - Pest",
+   "Fast-Acting Heart Tonic"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-14-320Z-23ecac52.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Twin Hormone - Pest",
+   "Fast-Acting Heart Tonic"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-27-58-685Z-18a47058.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slough Solution",
+   "Viscous Bile Solution",
+   "Fast-Acting Heart Tonic"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-37-34-654Z-a2756ae4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Fast-Acting Heart Tonic",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T08-44-05-844Z-b4fb20d5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fast-Acting Heart Tonic",
+   "Potent Xenopurge Powder",
+   "Digestive Enzyme Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T10-07-57-279Z-3ade5a66.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Fast-Acting Heart Tonic",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T10-27-28-074Z-47da9d92.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Digestive Enzyme Solution",
+   "Fast-Acting Heart Tonic"
+  ],
+  "ui": 1.0915
+ },
+ "td/2026-10-25T10-40-34-718Z-d0c6301d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Fast-Acting Heart Tonic",
+   "Petrified Spinal Solution",
+   "Bewitching Tincture",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-19-08-699Z-635a1984.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fast-Acting Heart Tonic",
+   "Vivigenic Powder",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T11-33-46-062Z-554abb26.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteolytic Ointment",
+   "Anesthetic Tincture - Agito",
+   "Fast-Acting Heart Tonic"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-37-43-171Z-4356e003.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Anesthetic Tincture - Aemberon",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-43-14-693Z-2ce4bd3b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Potent Xenopurge Powder",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-43-38-847Z-0ff047ca.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Xenopurge Powder",
+   "Potion Kit (Large)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-14-310Z-8d8b8b4a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Mutagenic Powder",
+   "Spinal Solution - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-16-202Z-74709256.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Viviparous Hormone",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-57-58-216Z-970c591f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Spinal Solution - Aemberon",
+   "Digestive Enzyme Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-09-16-026Z-a253e83f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Leptomeningeal Solution",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-14-13-848Z-cbf8c788.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Viviparous Hormone",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0453
+ },
+ "td/2026-10-25T08-21-39-677Z-84d30885.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Xenopurge Powder",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-34-09-474Z-bcbd1e64.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Xenopurge Powder",
+   "Mutagenic Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-37-39-587Z-6c976c50.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Rare Potion Kit (Small)",
+   "Xeno-Hormone",
+   "Leptomeningeal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-41-07-647Z-270cabd9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Digestive Enzyme Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-50-38-360Z-d0d93281.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Slender-Limb Powder - Pest",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-08-47-998Z-2aaef58c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Rare Potion Kit (Small)",
+   "Slender-Limb Powder - Bone Sentry",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-15-03-763Z-49451551.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Potent Xenopurge Powder",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 1.0453
+ },
+ "td/2026-10-25T08-21-50-144Z-863db6db.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Eggshell Powder",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-25-21-049Z-ab72ca49.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Gray Matter Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-25-25-617Z-efd862b7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Gray Matter Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-26-52-758Z-ba107e13.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Gray Matter Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-29-44-215Z-436eb9e4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Xeno-Hormone",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T07-37-18-987Z-840c94e9.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Pig Iron Bone Saw",
+   "Sinew Garrote"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-37-59-692Z-c06d8824.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Fouled Scraper",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T07-42-36-775Z-f00816b7.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Pig Iron Bone Saw",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-33-101Z-5bc92aa2.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Nettle Toggle",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-45-720Z-a4ba6a6b.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Aberrant Stinger",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 1.143
+ },
+ "td/2026-10-25T07-57-57-955Z-314ecf06.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Tanned Leather Restraint",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-16-552Z-6c92900d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Canine Teeth File",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-20-977Z-80dfe5d3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Pig Iron Bone Saw",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-03-37-448Z-2fe2780b.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Two-Inch Skull Nail",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-17-02-752Z-cbb2467f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Pig Iron Bone Saw",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T07-37-06-710Z-027e4775.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Sloughed Cortex",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-52-14-627Z-69108fad.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Two-Inch Skull Nail",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-17-06-542Z-cbeaf507.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Pig Iron Bone Saw",
+   "Nettle Toggle"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-34-27-815Z-27ff062e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Black Goat Gut Suture",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-36-47-040Z-6e6a1305.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Two-Inch Skull Nail",
+   "Nettle Toggle"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-41-26-602Z-a95fe756.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Rawhide Restraint",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-59-41-412Z-1eee847b.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Fouled Scraper",
+   "Nettle Toggle",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-40-18-081Z-c3ca4d6d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Nettle Toggle",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-45-55-759Z-3fe63099.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Nettle Toggle",
+   "Clustered Eggs"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-01-27-781Z-eb15443c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Vermicular Spinal Cord",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-37-01-584Z-05cbef1e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Vivigenic Powder",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-53-07-973Z-ff2e2575.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Petrified Spinal Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-02-06-558Z-8dc217c3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Twin Hormone - Pest",
+   "Vivigenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-16-23-971Z-d0586b3e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Twin Hormone - Pest",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-35-17-681Z-85fc93b4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Viscous Bile Solution",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-36-55-057Z-4e12252e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Gray Matter Spinal Solution",
+   "Vivigenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-43-655Z-b9513196.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Vivigenic Powder",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-59-07-249Z-677a8ae9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Vivigenic Powder",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-02-11-586Z-3fe728ae.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Xeno-Hormone",
+   "Vivigenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-16-28-498Z-0462773c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Vivigenic Powder",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-36-55-510Z-38249596.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Beak of the Twice-Born",
+   "Vermicular Spinal Cord"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-20-644Z-b8ade669.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Fouled Scraper",
+   "Aberrant Stinger"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-16-30-152Z-bff7f2cf.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Tanned Leather Restraint",
+   "Fouled Scraper"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T09-06-59-638Z-97cd7e6d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Tanned Leather Restraint",
+   "Sinew Garrote"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-11-47-319Z-2b1272d5.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Black Goat Gut Suture",
+   "Pig Iron Bone Saw"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-16-03-609Z-645f290d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-17-29-206Z-9df3fca3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Rawhide Restraint",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 1.0573
+ },
+ "td/2026-10-25T09-19-28-562Z-e35d4896.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Tanned Leather Restraint",
+   "Sloughed Cortex"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-29-00-461Z-14b2d720.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-42-01-480Z-d8b4f632.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Pig Iron Bone Saw",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T07-36-43-514Z-d10f91c3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Petrified Spinal Solution",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-11-115Z-96d90bd6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Probiotic Enzyme Solution",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-57-36-306Z-257b0b76.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Gray Matter Spinal Solution",
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Agito",
+   "Viscous Bile Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-01-05-179Z-82bd75ff.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Agito",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-03-21-121Z-704728dd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Eggshell Powder",
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-16-16-349Z-7c9ef7f0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Mutagenic Powder",
+   "Cleansing Ointment"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-22-51-729Z-5e5472bb.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Small)",
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-26-55-095Z-3fb3985c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slough Solution",
+   "Vivigenic Powder",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-34-39-139Z-be1c52c3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Slender-Limb Powder - Pest",
+   "Potion Kit (Small)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-36-02-552Z-4e05ca40.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hyperplastic Frontal Lobe",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T07-39-01-848Z-cd72edde.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-40-57-955Z-9deda5cc.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-44-15-519Z-b71313a2.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Adherent Metatarsals",
+   "Chrysalis Specimen"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-44-28-398Z-664dccad.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Chrysalis Specimen",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-03-740Z-e995880a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Chrysalis Specimen",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-00-370Z-a49a57c9.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Aberrant Sprout",
+   "Incubation Sac"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-57-13-260Z-b2df4ae6.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hypertrophic Pituitary",
+   "Incubation Sac"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-49-896Z-9a7827ed.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Prismatic Liver",
+   "Chrysalis Specimen",
+   "Aberrant Sprout"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-19-31-519Z-0422062f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hyperplastic Frontal Lobe",
+   "Prismatic Liver"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T07-35-44-977Z-24ee7c4c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Aberrant Sprout",
+   "Incubation Sac"
+  ],
+  "ui": 1.0836
+ },
+ "td/2026-10-25T08-00-44-358Z-6467264d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Contracted Claws",
+   "Chrysalis Specimen"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-00-56-635Z-7f7f9308.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Chrysalis Specimen",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-26-11-953Z-95e39f07.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Prismatic Liver",
+   "Chrysalis Specimen",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-29-35-731Z-abb42cf3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Contracted Claws",
+   "Aberrant Sprout"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T08-35-09-478Z-2d49d510.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hyperplastic Frontal Lobe",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-12-786Z-c6c9527a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Hypertrophic Pituitary",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-37-36-161Z-f0d6adea.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Hypertrophic Pituitary",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9645
+ },
+ "td/2026-10-25T08-38-03-386Z-813ae1ca.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Aberrant Sprout",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-37-593Z-f931b024.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Adherent Metatarsals",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-34-56-711Z-ffc58adf.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Hypertrophic Pituitary",
+   "Adherent Metatarsals"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-36-37-580Z-7be3599d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Hypertrophic Pituitary",
+   "Adherent Metatarsals"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T07-42-12-776Z-c13f0836.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Prismatic Liver",
+   "Incubation Sac"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-12-30-695Z-a6587096.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Hypertrophic Pituitary",
+   "Incubation Sac"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-32-39-966Z-0c2a3156.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Adherent Metatarsals",
+   "Incubation Sac",
+   "Contracted Claws"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-32-50-639Z-08df2b25.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Contracted Claws",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 1.0514
+ },
+ "td/2026-10-25T08-54-38-211Z-a4932915.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Contracted Claws",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-56-26-188Z-385d4e7e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Prismatic Liver",
+   "Incubation Sac",
+   "Chrysalis Specimen"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-59-38-770Z-70f4e8d5.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Incubation Sac",
+   "Contracted Claws"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-07-07-181Z-d35e649e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Aberrant Sprout",
+   "Incubation Sac"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T07-34-47-575Z-3e83fa92.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Tanned Leather Restraint",
+   "Two-Inch Skull Nail",
+   "Sinew Garrote"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T08-01-17-264Z-0fcd2f24.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Pig Iron Bone Saw",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-02-12-437Z-6762f408.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Black Goat Gut Suture",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-13-02-336Z-33d7b337.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Two-Inch Skull Nail",
+   "Lady of the Plague Quarter"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-28-23-487Z-f13cf174.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Two-Inch Skull Nail",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-34-02-003Z-4a708f52.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Two-Inch Skull Nail",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 0.9645
+ },
+ "td/2026-10-25T08-39-03-594Z-3bab6a96.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Two-Inch Skull Nail",
+   "Canine Teeth File"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-48-22-771Z-3994f299.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Vermicular Spinal Cord",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-58-51-989Z-ba06bcff.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Two-Inch Skull Nail",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-00-40-086Z-2a49d48b.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Eyelid Speculum",
+   "Two-Inch Skull Nail"
+  ],
+  "ui": 1.0689
+ },
+ "td/2026-10-25T07-34-43-169Z-8fb57212.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Prismatic Liver",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-16-03-574Z-d2934772.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Prismatic Liver",
+   "Adherent Metatarsals"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-17-08-743Z-c48ea454.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Prismatic Liver",
+   "Contracted Claws",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-19-40-823Z-ec60dfd3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hyperplastic Frontal Lobe",
+   "Prismatic Liver"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T08-26-07-754Z-48e64e86.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Prismatic Liver",
+   "Chrysalis Specimen",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-38-19-116Z-a6cfa91d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-46-39-029Z-115402af.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Prismatic Liver",
+   "Adherent Metatarsals"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-54-26-764Z-d59f4509.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Adherent Metatarsals",
+   "Prismatic Liver"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-55-57-855Z-f084bd9d.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Prismatic Liver",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-01-42-157Z-c608cebb.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Contracted Claws",
+   "Prismatic Liver"
+  ],
+  "ui": 1.0277
+ },
+ "td/2026-10-25T07-34-04-549Z-c0dd3583.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Incubation Sac",
+   "Chrysalis Specimen"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-48-42-086Z-3f86983a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Aberrant Sprout",
+   "Chrysalis Specimen"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-49-38-108Z-e482b5bb.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Chrysalis Specimen",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-51-28-892Z-5e8ce8ae.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hypertrophic Pituitary",
+   "Chrysalis Specimen"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-56-638Z-54f8a5f3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Aberrant Sprout",
+   "Incubation Sac"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-17-658Z-c9e7aee3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Hyperplastic Frontal Lobe",
+   "Aberrant Sprout"
+  ],
+  "ui": 0.9988
+ },
+ "td/2026-10-25T07-56-04-500Z-6c8804e4.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Chrysalis Specimen",
+   "Adherent Metatarsals"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-52-094Z-a0bc4f07.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Chrysalis Specimen",
+   "Contracted Claws"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-01-46-454Z-4aaef55c.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Prismatic Liver",
+   "Chrysalis Specimen",
+   "Aberrant Sprout"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-06-34-393Z-c039e06a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Hypertrophic Pituitary",
+   "Aberrant Sprout"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-32-47-862Z-ad1b8b7e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Spinal Solution - Agito",
+   "Slender-Limb Powder - Bone Sentry",
+   "Anesthetic Tincture - Aemberon",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 1.0625
+ },
+ "td/2026-10-25T07-34-40-619Z-9070e91d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Xeno-Hormone",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-42-26-765Z-8109807d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Anesthetic Tincture - Aemberon",
+   "Twin Hormone - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-49-36-725Z-19642d83.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Mutagenic Powder",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-14-257Z-8b5ea15a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Pure Leech Solution",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-54-09-090Z-4ab58df1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Compound Revitalizing Pill",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0026
+ },
+ "td/2026-10-25T07-54-44-052Z-3726111d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Probiotic Enzyme Solution",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9988
+ },
+ "td/2026-10-25T07-59-03-257Z-cfa8ae1c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Bewitching Tincture",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-01-48-881Z-d827636b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Anesthetic Tincture - Agito",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-03-32-978Z-a5e2c892.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Plague Quarter Peat Poultice",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-32-18-013Z-ed1dd937.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Twin Hormone - Bone Sentry",
+   "Brain Fog Tincture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-34-20-582Z-33bd15fb.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Potent Xenopurge Powder",
+   "Potion Kit (Large)"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-36-18-008Z-356f67a3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Targeted Xeno-Hormone",
+   "Twin Hormone - Pest"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-38-56-744Z-fe26cf99.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slough Solution",
+   "Vivigenic Powder",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 0.9872
+ },
+ "td/2026-10-25T07-48-51-524Z-9580c452.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Twin Hormone - Bone Sentry",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-43-323Z-4a7daa7b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Digestive Enzyme Solution",
+   "Osteolytic Ointment"
+  ],
+  "ui": 1.0202
+ },
+ "td/2026-10-25T07-53-05-965Z-6603781d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Petrified Spinal Solution",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-00-24-125Z-ca8889e6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Bone Sentry",
+   "Petrified Spinal Solution",
+   "Osteogenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-03-46-230Z-517602c7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Twin Hormone - Bone Sentry",
+   "Slender-Limb Powder - Pest"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-05-28-048Z-e6934a59.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Targeted Xeno-Hormone",
+   "Twin Hormone - Bone Sentry",
+   "Potion Kit (Large)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-32-15-026Z-4ba58402.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Compound Leech Solution",
+   "Cleansing Ointment"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-54-46-630Z-ea776738.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Fresh Spinal Powder",
+   "Potion Kit (Large)"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-40-446Z-39f6f6e6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Osteogenic Powder",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-01-06-643Z-7681e475.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Fresh Spinal Powder",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-14-20-700Z-63cd8f7a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Eggshell Powder",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-28-28-732Z-62447397.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Potent Xenopurge Powder",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-34-48-153Z-bf093130.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Petrified Spinal Solution",
+   "Mutagenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-44-12-007Z-36579f54.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Twin Hormone - Pest",
+   "Digestive Enzyme Solution"
+  ],
+  "ui": 1.2399
+ },
+ "td/2026-10-25T08-52-07-546Z-6ea14212.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Fresh Spinal Powder",
+   "Potent Xenopurge Powder",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-54-10-020Z-5aa5b21b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Targeted Xeno-Hormone",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-50-275Z-7d58d750.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Eggshell Powder",
+   "Xeno-Hormone"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-49-39-982Z-65d767c8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Bewitching Tincture",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-54-23-222Z-69d13159.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Targeted Xeno-Hormone",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-12-218Z-dda19991.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Viviparous Hormone",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-06-52-155Z-7ba59250.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Spinal Solution - Aemberon",
+   "Eggshell Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-31-24-540Z-e106150a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Viscous Bile Solution",
+   "Xeno-Hormone"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-33-22-040Z-c1443d2e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Xeno-Hormone",
+   "Cleansing Ointment"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-35-40-971Z-fe3eb609.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Xeno-Hormone",
+   "Spinal Solution - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-42-29-675Z-f1ae66b6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Eggshell Powder",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-44-36-478Z-d590de9a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Xeno-Hormone",
+   "Spinal Solution - Agito"
+  ],
+  "ui": 1.2399
+ },
+ "td/2026-10-25T07-31-48-345Z-538728d5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Eggshell Powder",
+   "Xeno-Hormone"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-32-03-753Z-72b8661f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Viviparous Hormone",
+   "Viscous Bile Solution"
+  ],
+  "ui": 1.0625
+ },
+ "td/2026-10-25T07-35-59-062Z-80f4ae78.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Twin Hormone - Pest",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-37-52-603Z-4fca64be.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Xeno-Hormone",
+   "Viviparous Hormone"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-43-05-805Z-7820c2a5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Targeted Xeno-Hormone",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-52-642Z-b6608505.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Twin Hormone - Pest",
+   "Slender-Limb Powder - Pest",
+   "Brain Fog Tincture",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-57-05-569Z-7558a91a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Hollow Spinal Solution",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-12-721Z-debe14a2.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Gray Matter Spinal Solution",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-00-59-251Z-d1d33b58.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Brain Fog Tincture",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-25-43-064Z-f3f6d2c9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Spinal Solution - Agito",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-44-839Z-03b3d0c9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Gray Matter Spinal Solution",
+   "Compound Leech Solution"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-35-51-488Z-e1d58f27.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Compound Leech Solution",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-37-00-620Z-54e250d3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Vivigenic Powder",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-39-45-529Z-c9ffb722.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Osteolytic Ointment",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-50-29-268Z-e0666298.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Compound Leech Solution",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-50-809Z-80de10a8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Xenopurge Powder",
+   "Pure Leech Solution"
+  ],
+  "ui": 0.9988
+ },
+ "td/2026-10-25T08-05-54-424Z-fad59ccd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Green Bile Solution",
+   "Compound Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-08-18-050Z-64a743a2.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Leech Solution",
+   "Probiotic Enzyme Solution",
+   "Xeno-Hormone"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-22-21-929Z-516718ff.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Compound Leech Solution",
+   "Rare Potion Kit (Small)"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-24-36-515Z-885d1cc9.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Compound Leech Solution",
+   "Osteogenic Powder"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T07-31-41-343Z-50047fc0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viscous Bile Solution",
+   "Gray Matter Spinal Solution",
+   "Compound Leech Solution"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-32-09-824Z-4f0afabb.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Viviparous Hormone",
+   "Viscous Bile Solution"
+  ],
+  "ui": 1.0625
+ },
+ "td/2026-10-25T07-38-13-432Z-e3f12d43.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Brain Fog Tincture",
+   "Viscous Bile Solution",
+   "Vivigenic Powder"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-47-44-337Z-e2acc571.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Mutagenic Powder",
+   "Viscous Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-57-42-425Z-35a8bec6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Gray Matter Spinal Solution",
+   "Slender-Limb Powder - Pest",
+   "Spinal Solution - Agito",
+   "Viscous Bile Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-58-08-340Z-b2f1b6cf.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Green Bile Solution",
+   "Viscous Bile Solution",
+   "Compound Leech Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-10-172Z-3a1e3f1c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potion Kit (Large)",
+   "Viscous Bile Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-22-11-677Z-661e995c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Viscous Bile Solution",
+   "Slough Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-23-18-209Z-84d33c3f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Viscous Bile Solution",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-35-21-124Z-0025638c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Viscous Bile Solution",
+   "Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-33-876Z-21bff779.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Adherent Metatarsals",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-34-46-935Z-e72903e7.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Incubation Sac",
+   "Prismatic Liver",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-41-56-810Z-4904d2e3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Chrysalis Specimen",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-42-06-533Z-5c54b6d4.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hyperplastic Frontal Lobe",
+   "Chrysalis Specimen",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-47-32-356Z-79be8256.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Aberrant Sprout",
+   "Hypertrophic Pituitary",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-39-767Z-1ed500c2.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Incubation Sac",
+   "Prismatic Liver"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-49-28-720Z-2071f149.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Hypertrophic Pituitary",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-56-37-828Z-9db486d7.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Chrysalis Specimen",
+   "Contracted Claws",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-00-311Z-7c1692b3.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Contracted Claws",
+   "Prismatic Liver",
+   "Hypertrophic Pituitary"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-05-12-212Z-8f07506f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Hypertrophic Pituitary",
+   "Adherent Metatarsals",
+   "Hyperplastic Frontal Lobe"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-31-288Z-6383b034.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Fouled Scraper",
+   "Sinew Garrote"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-53-29-530Z-2994dc8e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sinew Garrote",
+   "Clustered Eggs",
+   "Beak of the Twice-Born"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-26-42-530Z-df6d9c1f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Two-Inch Skull Nail",
+   "Fouled Scraper"
+  ],
+  "ui": 1.1277
+ },
+ "td/2026-10-25T08-36-25-892Z-d98e5162.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Pig Iron Bone Saw",
+   "Fouled Scraper"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-38-51-815Z-7641e19f.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Canine Teeth File",
+   "Tanned Leather Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-45-33-315Z-28c6bbf7.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Pig Iron Bone Saw",
+   "Sloughed Cortex",
+   "Beak of the Twice-Born"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-53-58-508Z-acd70389.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Two-Inch Skull Nail",
+   "Eyelid Speculum"
+  ],
+  "ui": 1.0489
+ },
+ "td/2026-10-25T09-05-16-262Z-89e38c82.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Vermicular Spinal Cord",
+   "Rawhide Restraint"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-05-20-335Z-fb8ced2a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Sloughed Cortex",
+   "Beak of the Twice-Born"
+  ],
+  "ui": 1.0689
+ },
+ "td/2026-10-25T09-06-42-307Z-8ec09e6e.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Beak of the Twice-Born",
+   "Fouled Scraper",
+   "Lady of the Plague Quarter"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-28-700Z-f9f8f245.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Rousing Salts",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 1.0625
+ },
+ "td/2026-10-25T08-21-10-430Z-1231790c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Targeted Xeno-Hormone",
+   "Rousing Salts"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T09-48-49-863Z-9a13e690.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xenopurge Powder",
+   "Rousing Salts",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0489
+ },
+ "td/2026-10-25T09-48-51-555Z-bd375a42.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slough Solution",
+   "Viscous Bile Solution",
+   "Rousing Salts"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T09-48-58-425Z-1bcc5ca2.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Rousing Salts",
+   "Brain Fog Tincture"
+  ],
+  "ui": 1.2558
+ },
+ "td/2026-10-25T10-45-15-218Z-96d72cfd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Osteogenic Powder",
+   "Rousing Salts"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T10-57-39-593Z-f983e7c1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Twin Hormone - Pest",
+   "Rousing Salts"
+  ],
+  "ui": 1.0768
+ },
+ "td/2026-10-25T11-17-40-045Z-5bad20d8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Gray Matter Spinal Solution",
+   "Twin Hormone - Bone Sentry",
+   "Rousing Salts",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-30-41-217Z-b90944d3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Bewitching Tincture",
+   "Rousing Salts"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T11-31-11-360Z-3480a02a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Rousing Salts",
+   "Slough Solution",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-25-256Z-1576b5b1.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Compound Revitalizing Pill",
+   "Cleansing Ointment",
+   "Targeted Xeno-Hormone",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-44-21-983Z-5ef48544.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Bewitching Tincture",
+   "Compound Revitalizing Pill"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-19-598Z-bafb8056.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Compound Revitalizing Pill",
+   "Vivigenic Powder"
+  ],
+  "ui": 1.0204
+ },
+ "td/2026-10-25T07-54-05-421Z-be538993.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Compound Revitalizing Pill",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 1.0026
+ },
+ "td/2026-10-25T07-58-19-987Z-b64362d2.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Digestive Enzyme Solution",
+   "Anesthetic Tincture - Agito",
+   "Compound Revitalizing Pill"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-31-41-502Z-e181b4bd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Spinal Solution - Agito",
+   "Compound Revitalizing Pill"
+  ],
+  "ui": 1.1505
+ },
+ "td/2026-10-25T08-57-17-039Z-6ca24584.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Revitalizing Pill",
+   "Twin Hormone - Bone Sentry",
+   "Gray Matter Spinal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T09-09-07-419Z-d7ff9cba.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Compound Revitalizing Pill",
+   "Compound Leech Solution",
+   "Green Bile Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-11-17-588Z-3ba5ae1e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Bewitching Tincture",
+   "Compound Revitalizing Pill",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T09-21-17-196Z-5c856dd7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Compound Revitalizing Pill",
+   "Vivigenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-15-274Z-05536011.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Black Goat Gut Suture",
+   "Vermicular Spinal Cord"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-31-35-718Z-4944359a.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Sinew Garrote",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 1.0625
+ },
+ "td/2026-10-25T07-40-41-557Z-49d50025.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Black Goat Gut Suture",
+   "Nettle Toggle"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-44-20-195Z-9e40eab1.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Canine Teeth File",
+   "Black Goat Gut Suture",
+   "Eyelid Speculum"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-45-811Z-0cda7839.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Vermicular Spinal Cord",
+   "Nettle Toggle",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-50-20-278Z-564adfb5.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Clustered Eggs",
+   "Black Goat Gut Suture",
+   "Sinew Garrote"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-52-28-165Z-7e5ea666.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Sloughed Cortex",
+   "Nettle Toggle",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 1.0768
+ },
+ "td/2026-10-25T08-08-07-597Z-36e58661.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Black Goat Gut Suture",
+   "Pig Iron Bone Saw",
+   "Fouled Scraper"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-22-25-025Z-c1ccb7dd.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Rawhide Restraint",
+   "Clustered Eggs",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-23-07-419Z-6baf4d26.jpg": {
+  "phase": "instrument",
+  "hand": [
+   "Nettle Toggle",
+   "Canine Teeth File",
+   "Black Goat Gut Suture"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-31-10-224Z-53460a33.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Slough Solution",
+   "Xenopurge Powder"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-31-51-352Z-bf41936e.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Digestive Enzyme Solution",
+   "Fresh Spinal Powder"
+  ],
+  "ui": 1.0625
+ },
+ "td/2026-10-25T07-34-49-395Z-5f5dd7b3.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Leptomeningeal Solution",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-37-32-563Z-72cea029.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Gray Matter Spinal Solution",
+   "Anesthetic Tincture - Agito",
+   "Vivigenic Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-49-43-683Z-7d3d5286.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Bewitching Tincture",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-49-49-494Z-85aed426.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Slough Solution",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-58-31-543Z-efd3c7ff.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Xenopurge Powder",
+   "Xeno-Hormone",
+   "Compound Leech Solution",
+   "Osteogenic Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-01-45-293Z-4a4b59de.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Mutagenic Powder",
+   "Anesthetic Tincture - Agito",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-06-02-993Z-33863ea4.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Anesthetic Tincture - Agito",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-06-55-577Z-962e9fcd.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Aemberon",
+   "Hollow Spinal Solution",
+   "Anesthetic Tincture - Agito"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-30-59-319Z-ec994e71.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Spinal Solution - Agito",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-48-53-159Z-feca665b.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Potent Xenopurge Powder",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-55-501Z-636e8b4d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Potent Xenopurge Powder",
+   "Viviparous Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-58-23-432Z-294c28af.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Potent Xenopurge Powder",
+   "Twin Hormone - Pest",
+   "Potion Kit (Large)"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-02-30-725Z-531bb964.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Fresh Spinal Powder",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-06-46-420Z-088fb987.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Potent Xenopurge Powder",
+   "Eggshell Powder"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-08-58-748Z-d279ca6c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Digestive Enzyme Solution",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-14-20-660Z-8b410034.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Vivigenic Powder",
+   "Hollow Spinal Solution",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0453
+ },
+ "td/2026-10-25T08-18-28-804Z-60da4624.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Potent Xenopurge Powder",
+   "Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-22-29-972Z-07a58dcf.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Osteogenic Powder",
+   "Potent Xenopurge Powder",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-29-19-557Z-5e4714d5.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Slender-Limb Powder - Bone Sentry",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-38-25-926Z-305bc449.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Probiotic Enzyme Solution",
+   "Viscous Bile Solution",
+   "Petrified Spinal Solution",
+   "Brain Fog Tincture",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-43-26-820Z-ee0dde7c.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Cleansing Ointment",
+   "Petrified Spinal Solution",
+   "Probiotic Enzyme Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-50-47-631Z-806610e0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Anesthetic Tincture - Agito",
+   "Vivigenic Powder",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-53-36-997Z-f4acd1b6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Agito",
+   "Xeno-Hormone",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 1.0202
+ },
+ "td/2026-10-25T07-56-47-585Z-66f45628.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Bone Sentry",
+   "Petrified Spinal Solution",
+   "Spinal Solution - Aemberon"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-00-19-913Z-a61ab143.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Gray Matter Spinal Solution",
+   "Petrified Spinal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-02-05-438Z-990e94d7.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Pure Leech Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T08-03-28-611Z-b1c7046f.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Plague Quarter Peat Poultice",
+   "Anesthetic Tincture - Aemberon"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-07-14-866Z-6fab66b8.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Petrified Spinal Solution",
+   "Spinal Solution - Aemberon",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 1.0675
+ },
+ "td/2026-10-25T07-29-14-652Z-1b1929f6.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Hollow Spinal Solution",
+   "Targeted Xeno-Hormone",
+   "Leptomeningeal Solution"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-31-04-249Z-1d5f27fa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Pure Leech Solution",
+   "Leptomeningeal Solution",
+   "Hollow Spinal Solution"
+  ],
+  "ui": 1.0804
+ },
+ "td/2026-10-25T07-41-20-662Z-7a9a8b68.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Spinal Solution - Aemberon",
+   "Leptomeningeal Solution",
+   "Targeted Xeno-Hormone"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T07-48-48-840Z-4a143f4d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Twin Hormone - Pest",
+   "Viviparous Hormone",
+   "Leptomeningeal Solution"
+  ],
+  "ui": 1.0973
+ },
+ "td/2026-10-25T07-51-30-884Z-342d0c62.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Cleansing Ointment",
+   "Plague Quarter Peat Poultice"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-02-31-522Z-f2400b8d.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Anesthetic Tincture - Aemberon",
+   "Potent Xenopurge Powder"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-08-41-413Z-b11f23c0.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Slender-Limb Powder - Pest",
+   "Leptomeningeal Solution",
+   "Twin Hormone - Pest"
+  ],
+  "ui": 1.0289
+ },
+ "td/2026-10-25T08-11-58-117Z-524bbefa.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Xeno-Hormone",
+   "Leptomeningeal Solution",
+   "Mutagenic Powder"
+  ],
+  "ui": 1.0887
+ },
+ "td/2026-10-25T08-17-37-231Z-fb1bc02a.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Leptomeningeal Solution",
+   "Anesthetic Tincture - Agito",
+   "Twin Hormone - Bone Sentry"
+  ],
+  "ui": 0.9568
+ },
+ "td/2026-10-25T08-34-37-406Z-706ef686.jpg": {
+  "phase": "potion",
+  "hand": [
+   "Viviparous Hormone",
+   "Fresh Spinal Powder",
+   "Spinal Solution - Agito",
+   "Leptomeningeal Solution",
+   "Slender-Limb Powder - Bone Sentry"
+  ],
+  "ui": 0.9645
  }
 }

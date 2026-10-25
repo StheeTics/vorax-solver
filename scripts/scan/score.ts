@@ -17,21 +17,31 @@ const quick = process.argv.includes('--quick')
 const byGame = process.argv.includes('--by-game')
 const ocr = process.argv.includes('--text') ? await nodeTextReader() : null
 // as the site reads: the board's pixels, the cards' printed names, their pictures only where a name can't be read
-const read = async (img: Img, data: ReturnType<typeof buildData>) =>
+// at the scale the frame was taken at, as the Solver reads at the scale the game logged: a guessed scale is
+// remembered between reads (scan.ts), so one frame's guess would carry into the next
+const read = async (img: Img, data: ReturnType<typeof buildData>, ui = 1) =>
   ocr
-    ? readTitles(img, scan(img, data, {}, { pictures: false }), ocr.readText, async (phase, size, slots, among) => {
-        const { fields, problems, ranks } = readSlots(img, layout(img), size, phase, slots, data, {}, among)
+    ? readTitles(img, scan(img, data, {}, { pictures: false, ui }), ocr.readText, async (phase, size, slots, among) => {
+        const { fields, problems, ranks } = readSlots(img, layout(img, ui), size, phase, slots, data, {}, among)
         return Object.fromEntries(slots.map(j => [j, { ranks: ranks[j], field: fields[`hand${j}`], unknown: problems.some(p => p.kind === 'unknownArt' && p.field === `hand${j}`) }]))
       })
-    : scan(img, data)
+    : scan(img, data, {}, { ui })
 /** --cards: also print every card's best match and score (name, read, score, runner-up), for tuning */
 const dumpCards = process.argv.includes('--cards')
 const truth = JSON.parse(readFileSync('scripts/scan/truth.json', 'utf8')) as Record<string, Label>
-const frames = Object.entries(truth).filter(([, l]) => l.state).map(([file, label]) => ({ file, label, img: decodePng(readFileSync(`training/${file}`)) }))
+// every frame is measured once (buildData keeps what it measured by picture) and its pixels then let go: all of them
+// at once are gigabytes. A frame is decoded again only to be read.
+const load = (file: string) => decodePng(readFileSync(`training/${file}`))
+const measured = (file: string, label: Label): Img => {
+  const img = load(file)
+  buildData([{ img, label }])
+  return Object.assign(img, { data: new Uint8ClampedArray(0) })
+}
+const frames = Object.entries(truth).filter(([, l]) => l.state).map(([file, label]) => ({ file, label, img: measured(file, label) }))
 // tick frames labelled for their hand only; the ones without a hovered card also teach the reader
-const handOnly = Object.entries(JSON.parse(readFileSync('scripts/scan/cards.json', 'utf8')) as Record<string, NonNullable<Label['cards']>>)
-  .map(([file, cards]) => ({ file, label: { kind: 'cards', cards } as Label, img: decodePng(readFileSync(`training/${file}`)) }))
-const teaching = handOnly.filter(t => t.label.cards!.hover === undefined && !t.label.cards!.blurred)
+const teaching = Object.entries(JSON.parse(readFileSync(process.env.CARDS ?? 'scripts/scan/cards.json', 'utf8')) as Record<string, NonNullable<Label['cards']>>)
+  .filter(([, cards]) => cards.hover === undefined && !cards.blurred)
+  .map(([file, cards]) => ({ file, label: { kind: 'cards', cards } as Label })).map(t => ({ ...t, img: measured(t.file, t.label) }))
 // the same hand in the same game is the same moment: held out together, so no frame helps read its twin
 const game = (file: string) => /^([a-z]\d+)-/.exec(file)?.[1] ?? 'g1'
 const moment = (file: string, hand: string[]) => `${game(file)}|${[...hand].sort().join('|')}`
@@ -50,8 +60,9 @@ const f2 = (f: { guess?: string; score?: number; second?: number } | undefined, 
 for (const f of frames) {
   const data = buildData(others(f.file, f.label.state!.hand))
   for (const s of scales) {
-    const img: Img = s === 1 ? f.img : resize(f.img, Math.round(f.img.width * s), Math.round(f.img.height * s))
-    const reading = await read(img, data)
+    const full = load(f.file)
+    const img: Img = s === 1 ? full : resize(full, Math.round(full.width * s), Math.round(full.height * s))
+    const reading = await read(img, data, f.label.ui ?? 1)
     const got = reading.state
     const want = f.label.state!
     const t = tally.get(s)!
@@ -87,9 +98,11 @@ for (const f of frames) {
 
 // hands in tick frames: what Live sees, often with the mouse raising one card
 const ticks = { still: [0, 0], hovered: [0, 0] }
-for (const t of handOnly) {
-  const want = t.label.cards!
-  const r = await read(t.img, buildData(others(t.file, want.hand)))
+// players' screenshots (td/) are scored apart, by holding a share of them out of the build
+const handOnly = Object.entries(JSON.parse(readFileSync(process.env.CARDS ?? 'scripts/scan/cards.json', 'utf8')) as Record<string, NonNullable<Label['cards']>>).filter(([file]) => !file.startsWith('td/'))
+for (const [file, want] of handOnly) {
+  const t = { file }
+  const r = await read(load(file), buildData(others(t.file, want.hand)), want.ui ?? 1)
   const tally = ticks[want.hover === undefined ? 'still' : 'hovered']
   want.hand.forEach((n, j) => {
     const unknown = r.problems.some(p => p.kind === 'unknownArt' && p.field === `hand${j}`)

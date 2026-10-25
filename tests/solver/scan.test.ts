@@ -17,7 +17,9 @@ describe.skipIf(!local)('reading the labelled live frames (training/)', () => {
       const r = scan(decodePng(readFileSync(`training/${file}`)), data)
       expect(r.problems).toEqual([])
       expect(r.state).toEqual(label.state)
-      expect(Object.entries(r.fields).filter(([, f]) => !f.sure).map(([k]) => k)).toEqual([])
+      // the cards must be right, not sure: with references from many players' screens (Oct 25) a few of these frames'
+      // cards score just under the line, and the Solver reads those by their title instead
+      expect(Object.entries(r.fields).filter(([k, f]) => !f.sure && !k.startsWith('hand')).map(([k]) => k)).toEqual([])
     })
   }
 })

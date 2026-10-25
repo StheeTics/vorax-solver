@@ -15,7 +15,10 @@ export interface Label {
   state?: ScreenState & { phase: HandPhase }
   /** a tick frame labelled for its hand only (scripts/scan/cards.json); hover marks a raised card, blurred
    *  a frame caught in a flash of light: neither teaches the cards' pictures */
-  cards?: { phase: HandPhase; hand: string[]; hover?: number; blurred?: true; instruments?: string[] }
+  cards?: { phase: HandPhase; hand: string[]; hover?: number; blurred?: true; instruments?: string[]; ui?: number }
+  /** the game's interface scale in this frame (the reader's 1x is the slider at 0.669): its cards are cut where they are
+   *  at that scale. A players' screenshot carries the scale the reader found it at. */
+  ui?: number
   note?: string
 }
 
@@ -30,7 +33,7 @@ function push<T>(map: Record<string, T[]>, key: string, v: T) {
 }
 
 type Op = { to: 'digit'; kind: TextKind; key: string; v: number[]; size: number } | { to: 'rarity'; key: Rarity; v: [number, number, number] } | { to: 'header'; key: HandPhase; v: number[]; size: number } | { to: 'icon'; key: string; v: number[]; size: number }
-interface Extracted { board: boolean; ops: Op[]; cards: { key: string; art: ArtFeature; text: number[] }[] }
+interface Extracted { board: boolean; ops: Op[]; cards: { key: string; art: ArtFeature; text: number[]; setup: string }[] }
 
 // What one labelled frame contributes, worked out once per picture: scoring rebuilds the data for every
 // frame it holds out, from the same pictures.
@@ -40,11 +43,14 @@ function extract(img: Img, label: Label): Extracted {
   const hit = extracted.get(img)
   if (hit) return hit
   const out: Extracted = { board: false, ops: [], cards: [] }
-  const l = layout(img)
+  const ui = label.ui ?? label.cards?.ui ?? 1
+  const l = layout(img, ui)
+  // the screen and scale it was seen at: each card's examples are spread over these
+  const setup = `${img.width}x${img.height}@${ui}`
   const hand = label.cards ?? label.state
   hand?.hand.forEach((name, j) => {
     const pos = handAt(l, hand.hand.length)[j]
-    out.cards.push({ key: `${hand.phase}:${name}`, art: roundFeature(cardArt(img, pos, l.k)), text: cardText(img, pos, l.k).map(round3) })
+    out.cards.push({ key: `${hand.phase}:${name}`, art: roundFeature(cardArt(img, pos, l.k)), text: cardText(img, pos, l.k).map(round3), setup })
   })
   // a hand-only label can carry the equipped instruments too (worked out by the instrument tracker)
   const equipped = label.cards?.instruments
@@ -108,11 +114,23 @@ export function buildData(frames: { img: Img; label: Label }[]): ScanData {
         digitCount.set(key, n + 1)
       }
     }
-  // boards' cards first, so the hand-only tick frames only top up cards with few examples
+  // each card's KEEP examples taken in turns from every screen and scale it was seen at, so players' setups have a
+  // place beside the frames labelled by hand (which came first and, kept in order, filled every card: Oct 25); within
+  // a setup, boards' cards first
+  const seen: Record<string, Map<string, { art: ArtFeature; text: number[] }[]>> = {}
   for (const e of [...all.filter(e => e.board), ...all.filter(e => !e.board)])
     for (const c of e.cards) {
-      push(cards, c.key, c.art)
-      push(texts, c.key, c.text)
+      const bySetup = (seen[c.key] ??= new Map())
+      if (!bySetup.has(c.setup)) bySetup.set(c.setup, [])
+      bySetup.get(c.setup)!.push(c)
     }
+  for (const [key, bySetup] of Object.entries(seen)) {
+    const lists = [...bySetup.values()]
+    for (let i = 0; cards[key]?.length !== KEEP && lists.some(l => i < l.length); i++)
+      for (const l of lists) if (i < l.length) {
+        push(cards, key, l[i].art)
+        push(texts, key, l[i].text)
+      }
+  }
   return { generated: new Date().toISOString().slice(0, 10), frames: all.filter(e => e.board).length, digits, rarityRgb, cards, texts, headers, instrumentIcons }
 }

@@ -214,11 +214,12 @@ export type Pictures = (phase: HandPhase, size: number, slots: number[], among?:
 
 const PHASES: HandPhase[] = ['potion', 'instrument', 'protocol']
 
-/** A picture match taken without reading the name: its score and its lead over the next card. On 2,206 labelled
- *  still cards matched with references from other games only (Oct 23), 89% cleared these and none was wrong; of the
- *  cards whose title alone didn't settle them, 87% did. */
-const PICTURE_SURE = 0.95
-const PICTURE_LEAD = 0.04
+/** A picture match taken without reading the name: its score and its lead over the next card. With references from
+ *  many players' screens, a right card scores about 0.94 rather than 0.95+ (Oct 25): on 548 cards of players'
+ *  screenshots held out of the references, 88% cleared 0.93 and 0.03 and 1 was wrong (Potion Kit (Small) as Rare
+ *  Potion Kit (Small)); 0.95 and 0.04 cleared 76%, and a lead of 0.02 let 3 wrong through. */
+const PICTURE_SURE = 0.93
+const PICTURE_LEAD = 0.03
 export const pictureSure = (p: PictureRead | undefined): string | null => {
   const [top, next] = p?.ranks ?? []
   return p && !p.unknown && top && top[1] >= PICTURE_SURE && top[1] - (next?.[1] ?? 0) >= PICTURE_LEAD ? top[0] : null
