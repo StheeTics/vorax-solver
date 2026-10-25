@@ -33,14 +33,12 @@ export interface Shot extends Card { uid: string; slot: number; hand: string[]; 
 const isPhase = (v: unknown): v is Phase => v === 'potion' || v === 'instrument' || v === 'protocol'
 const str = (v: unknown, max: number) => (typeof v === 'string' && v.length > 0 && v.length <= max ? v : undefined)
 
-/** A card named the collector knows, or a title as read (an unrecognised card), and nothing else. */
+/** A card named the collector knows, and nothing else: a title as read is a misread, not a new card. */
 export function validateCard(raw: unknown): Card | null {
   if (!raw || typeof raw !== 'object') return null
   const o = raw as Record<string, unknown>
   if (!isPhase(o.phase)) return null
-  if (o.name !== undefined) return typeof o.name === 'string' && NAMES[o.phase].includes(o.name) ? { phase: o.phase, name: o.name } : null
-  const text = str(o.text, 120)
-  return text ? { phase: o.phase, text } : null
+  return typeof o.name === 'string' && NAMES[o.phase].includes(o.name) ? { phase: o.phase, name: o.name } : null
 }
 
 export function validateShot(raw: unknown): Shot | null {

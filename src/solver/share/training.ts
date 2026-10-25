@@ -21,18 +21,15 @@ export interface Wanted {
   why: 'rare' | 'slow'
 }
 
-/** The cards of a reading worth a screenshot. unknown: hand fields (hand0…) unrecognised on two looks in a row
- *  (confirmUnknown in card.ts), so a card caught sliding in isn't sent as a new one. */
-export function trainingWanted(r: Reading, unknown: Set<string> = new Set()): Wanted[] {
+/** The cards of a reading worth a screenshot: only cards the reader named. */
+export function trainingWanted(r: Reading): Wanted[] {
   const phase = r.state.phase
   if (r.problems.some(p => p.kind === 'notFound' || p.kind === 'animating')) return []
   return (r.timing?.steps ?? []).flatMap((step, j): Wanted[] => {
     const field = `hand${j}`
     const missed = r.problems.find(p => p.kind === 'unknownArt' && p.field === field)
-    if (missed) {
-      const text = missed.kind === 'unknownArt' ? missed.text?.trim() : undefined
-      return unknown.has(field) && text ? [{ phase, slot: j, text: text.slice(0, 120), why: 'slow' }] : []
-    }
+    // a card we have no name for isn't a card of the game: the reader was looking at something else
+    if (missed) return []
     const name = r.fields[field]?.guess
     if (!name) return []
     if ((rare as Record<string, string[]>)[phase]?.includes(name)) return [{ phase, slot: j, name, why: 'rare' }]

@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { BRANCH, fileShot, SHOTS, titleOf, validateCard, validateShot, wanted, type Shot } from '../../worker/src/training'
+import { BRANCH, fileShot, SHOTS, validateCard, validateShot, wanted, type Shot } from '../../worker/src/training'
 import { memoryTraining } from './trainingStore'
 
 const JPEG = '/9j/4AAQSkZJRgABAQ=='
@@ -29,12 +29,11 @@ function github(o: { branch?: boolean; fail?: string } = {}) {
 }
 
 describe('what the collector accepts', () => {
-  it('a card it knows by name, or an unrecognised card by its title as read', () => {
+  it('a card it knows by name, and nothing else', () => {
     expect(validateCard({ phase: 'instrument', name: 'Egg-Burdened Butterfly' })).toEqual({ phase: 'instrument', name: 'Egg-Burdened Butterfly' })
-    expect(validateCard({ phase: 'potion', text: 'The Holiest Wa' })).toEqual({ phase: 'potion', text: 'The Holiest Wa' })
+    expect(validateCard({ phase: 'potion', text: 'The Holiest Wa' })).toBeNull()
     expect(validateCard({ phase: 'potion', name: 'Not A Card' })).toBeNull()
     expect(validateCard({ phase: 'boss', name: 'Egg-Burdened Butterfly' })).toBeNull()
-    expect(validateCard({ phase: 'potion', text: 'x'.repeat(121) })).toBeNull()
   })
   it('a screenshot only as a JPEG, with a sane slot and hand', () => {
     expect(validateShot(shot())).toMatchObject({ name: 'Egg-Burdened Butterfly', slot: 0 })
@@ -72,15 +71,6 @@ describe('one issue per card, three screenshots each', () => {
     expect(gh.calls.filter(c => c.path === '/issues/41/comments')).toHaveLength(SHOTS - 1)
     expect(await wanted(store, { phase: 'instrument', name: 'Egg-Burdened Butterfly' })).toBe(false)
     expect((await fileShot(store, shot({ uid: 'u-late' }), 'token', gh.fetcher)).filed).toBe(false)
-  })
-  it('an unrecognised card is filed by its title as read, the same title read again its same issue', async () => {
-    const store = memoryTraining()
-    const gh = github()
-    const holiest = { phase: 'potion' as const, name: undefined, text: 'The Holiest Water\nAll Agitoes awaken' }
-    expect(titleOf(holiest)).toBe('Training Data: unknown potion "The Holiest Water All Agitoes awaken"')
-    await fileShot(store, shot(holiest), 'token', gh.fetcher)
-    await fileShot(store, shot({ ...holiest, uid: 'u-2', text: 'The Holiest Water | All Agitoes' }), 'token', gh.fetcher)
-    expect(gh.calls.filter(c => c.path === '/issues')).toHaveLength(1)
   })
   it('no daily limit on new cards: every card that reads badly may open its issue', async () => {
     const store = memoryTraining()

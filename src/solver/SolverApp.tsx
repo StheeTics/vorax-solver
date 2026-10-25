@@ -239,7 +239,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
         // a screenshot for the cards the reader is short of pictures of, or couldn't settle quickly (live reads only);
         // not behind SHARE_NEW_CARDS, which kept it from ever being sent (Oct 23–25). Only at the interface scale the
         // game logged: a guessed scale cuts the cards wrong (Oct 25), and so would teach the reader wrong examples
-        if (trigger && loggedUi.current !== undefined) void sendTraining(img, r, trainingWanted(r, new Set(u.share.map(p => p.field))))
+        if (trigger && loggedUi.current !== undefined) void sendTraining(img, r, trainingWanted(r))
       }
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null

@@ -17,10 +17,9 @@ describe('which cards a screenshot is wanted for', () => {
     const r = reading({ phase: 'potion', hand: ['Green Bile Solution', 'Anesthetic Tincture - Agito', 'Slough Solution'], steps: [1, 2, 0] })
     expect(trainingWanted(r)).toEqual([{ phase: 'potion', slot: 1, name: 'Anesthetic Tincture - Agito', why: 'slow' }])
   })
-  it('an unrecognised card by its title, once two looks agree it is unrecognised', () => {
+  it('nothing for a card the reader has no name for, however it was read', () => {
     const r = reading({ phase: 'potion', hand: ['Brain Fog Tincture', '', 'Targeted Xeno-Hormone'], steps: [1, 4, 1], unknown: [{ slot: 1, text: 'The Holiest Water' }] })
     expect(trainingWanted(r)).toEqual([])
-    expect(trainingWanted(r, new Set(['hand1']))).toEqual([{ phase: 'potion', slot: 1, text: 'The Holiest Water', why: 'slow' }])
   })
   it('nothing from a picture caught mid-animation or without the board', () => {
     const r = reading({ hand: ['Egg-Burdened Butterfly'], steps: [0] })
