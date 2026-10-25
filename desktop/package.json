@@ -1,7 +1,7 @@
 {
   "name": "vorax-overlay",
   "productName": "Vorax Overlay",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "The Vorax Solver as a Windows app, with its advice in an overlay over the game.",
   "author": "tidewarden",
   "license": "UNLICENSED",
@@ -50,7 +50,7 @@
       {
         "provider": "github",
         "owner": "tidewarden",
-        "repo": "tli-vorax-simulator",
+        "repo": "vorax-solver",
         "releaseType": "release"
       }
     ]

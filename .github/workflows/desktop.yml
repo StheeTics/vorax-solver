@@ -1,9 +1,10 @@
-# Builds Vorax Overlay (desktop/) for Windows and publishes it as a GitHub Release, when a v* tag is pushed
-# (plain vX.Y.Z: electron-builder and electron-updater both expect that naming; the site uses no tags). Installed copies update themselves from these releases (electron-updater reads latest.yml).
-# The releases are on the public repo, tidewarden/tli-vorax-simulator (desktop/package.json "publish"), not this
-# private one: every installed copy checks there, and a private repo's releases can't be read without a token.
-# RELEASE_TOKEN is a fine-grained token for that public repo only (Contents: read and write). Its tag points at
-# the public repo's main (no code there), so the release's "Source code" downloads hold none either.
+# Builds Vorax Overlay (desktop/) for Windows and publishes it as a GitHub Release of this repo, when a v* tag is
+# pushed (plain vX.Y.Z: electron-builder and electron-updater both expect that naming; the site uses no tags).
+# Installed copies update themselves from these releases (electron-updater reads latest.yml from the repo in
+# desktop/package.json "publish", which each copy carries from when it was built).
+# Copies from before 0.1.18 look in the old public repo, tidewarden/tli-vorax-simulator: while RELEASE_TOKEN (a
+# fine-grained token for that repo only, Contents: read and write) is set, each release is put there too, so they
+# update to one that looks here. Once installs have moved over, delete the token and that step is skipped.
 # To release: bump "version" in desktop/package.json, commit, then
 #   git tag -a v0.1.0 -m "Vorax Overlay 0.1.0" && git push origin v0.1.0
 name: Desktop app
@@ -14,7 +15,8 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  # the release and its files, in this repo
+  contents: write
 
 jobs:
   build:
@@ -42,15 +44,27 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         shell: bash
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          GH_REPO: tidewarden/tli-vorax-simulator
+          GH_TOKEN: ${{ github.token }}
+          NOTES: Download **Vorax-Overlay-Setup.exe** below and run it. Windows may say "Windows protected your PC" the first time (the app isn't code-signed). Click More info, then Run anyway. Installed copies update themselves.
         run: |
-          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --target main --title "Vorax Overlay ${GITHUB_REF_NAME#v}" --notes "Download **Vorax-Overlay-Setup.exe** below and run it. Windows may say \"Windows protected your PC\" the first time (the app isn't code-signed): click More info, then Run anyway. Installed copies update themselves."
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --verify-tag --title "Vorax Overlay ${GITHUB_REF_NAME#v}" --notes "$NOTES"
 
       - name: Build and upload the installer
         env:
-          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
         run: npm run ${{ startsWith(github.ref, 'refs/tags/') && 'release' || 'dist' }}
+
+      - name: The same release in the old repo, for copies from before 0.1.18
+        if: startsWith(github.ref, 'refs/tags/')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          GH_REPO: tidewarden/tli-vorax-simulator
+          NOTES: This app now updates from tidewarden/vorax-solver. Download **Vorax-Overlay-Setup.exe** below and run it, or let an installed copy update itself.
+        run: |
+          [ -n "$GH_TOKEN" ] || { echo "No RELEASE_TOKEN: the old repo isn't updated"; exit 0; }
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 || gh release create "$GITHUB_REF_NAME" --target main --title "Vorax Overlay ${GITHUB_REF_NAME#v}" --notes "$NOTES"
+          gh release upload "$GITHUB_REF_NAME" dist/Vorax-Overlay-Setup.exe dist/Vorax-Overlay-Setup.exe.blockmap dist/latest.yml --clobber
 
       - name: Keep the installer (manual runs)
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
