@@ -29,8 +29,8 @@ export const TROUBLES: Record<Trouble, { card: string; steps: string[] }> = {
   cantRead: {
     card: 'The Solver can’t read your game screen, so its advice is off.',
     steps: [
-      SCALING_FIX[0].toUpperCase() + SCALING_FIX.slice(1),
-      'If your screen isn’t 16:9 or 21:9 (16:10, 32:9…), say so with Report an issue: it isn’t supported yet.',
+      'Try a different resolution: most are supported, but yours might be an outlier.',
+      'Try a different Settings → Screen Scaling: most are supported, but yours might be an outlier.',
     ],
   },
   noWindow: {
