@@ -15,9 +15,10 @@ site reaches the app the next time the page loads, and the app's advice is exact
 | `preload.js` | `window.VoraxDesktop` for the Solver page only (`solver.html`, or `/solver` on Cloudflare Pages). The other side is `src/solver/desktop/bridge.ts`, which the site's tests cover. |
 | `lib/overlay.*` | The card over the game: the move, its predicted end, the next choices, and Reload / Restart when there's an update. |
 
-The log never leaves the PC. Boards are shared only by the page's own sharing switch, and with it on, a few
-pictures of the game window: of a card the Solver can't recognise or has almost no pictures of, so it learns it. Nothing
-touches the game: no clicks, no keys.
+The log never leaves the PC. Boards are shared only by the page's own sharing switch (on until the player turns it
+off), and with it on, a few pictures: of a card the Solver can't recognise, or of the game window for a card it has
+almost no pictures of, so it learns it. Those pictures are published with the project on GitHub (see "What it sees and
+what it sends" in the main README). Nothing touches the game: no clicks, no keys.
 
 Hotkeys (not Tartarus Overlay's, so both can run): Ctrl+Alt+V show/hide the overlay · Ctrl+Alt+S the Solver · Ctrl+Alt+X take a picture now.
 

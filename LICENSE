@@ -1,19 +1,24 @@
 Copyright (c) 2026 tidewarden. All rights reserved.
 
 This software, including its source code, compiled code, website, desktop app
-(Vorax Overlay), data, models and documentation (the "Software"), is
-proprietary and confidential.
+(Vorax Overlay), data, models and documentation (the "Software"), is published
+so that it can be read. It is source-available, not open source: no license to
+use, copy or change it is granted beyond what is written here.
 
-No license is granted. You may not copy, modify, fork, mirror, distribute,
-publish, sublicense, sell, rent, host, decompile, reverse engineer, or create
-derivative works of the Software, in whole or in part, or use it to build or
-train another product, without prior written permission from the copyright
-holder.
+You may view the source code and, while the repository is public on GitHub, use
+GitHub's own features on it as GitHub's Terms of Service allow (viewing and
+forking it on GitHub). You may open issues and send suggestions.
 
-The only permission given is to use the official website and the official
-Vorax Overlay app, as provided by the copyright holder, for your own personal,
-non-commercial use. That permission ends automatically if you break these
-terms, and may be withdrawn at any time.
+You may not modify, copy, mirror, distribute, publish, sublicense, sell, rent,
+host or run your own copy of the Software, create derivative works of it, in
+whole or in part, or use it to build or train another product, without prior
+written permission from the copyright holder. A fork on GitHub gives no right
+to change, use or redistribute what is in it.
+
+The only permission to run the Software is to use the official website and the
+official Vorax Overlay app, as provided by the copyright holder, for your own
+personal, non-commercial use. That permission ends automatically if you break
+these terms, and may be withdrawn at any time.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -21,3 +26,46 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
 IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+-------------------------------------------------------------------------------
+Not affiliated with the game
+
+This is a fan-made project. It is not affiliated with, endorsed by or
+connected to Torchlight Infinite, its developer or its publisher. Game names,
+card names and the game's art in screenshots belong to their owners; the
+screenshots here are used only to test and teach the screen reader.
+
+-------------------------------------------------------------------------------
+Third-party notices
+
+The game engine was first built from Moebing's Torchlight Infinite SS11 Vorax
+simulator (https://github.com/Moebing/Torchlight-Infinite-SS11-Vorax-simulator),
+used under the MIT License:
+
+  MIT License
+
+  Copyright (c) 2026 Moebing
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+The Solver's approach (following the game's log and reading the shared game
+window in the browser) comes from CoffeeBns's Tartarus Simulator
+(https://github.com/blahdot3h/tartarus-simulator), used with permission; the
+code here is our own. Packages installed through npm and Cargo come under
+their own licenses.

@@ -2,7 +2,7 @@
 // card is matched by its picture (art and text shape, as readSlots does) with reference data from the other games
 // only, and its best score and lead over the next card are kept. Prints, for a range of score/lead bars, how many
 // cards clear the bar and how many of those are wrong; still and raised (hovered) cards apart.
-// Usage: npx vite-node scripts/scan/pictureFirst.ts [--scales 1,0.75,1.5]
+// Usage: npx vite-node scripts/scan/pictureFirst.ts [--scales 1,0.75,1.5]  (writes training/pictureFirst.json)
 import { readFileSync, writeFileSync } from 'node:fs'
 import { decodePng } from './png'
 import { buildData, type Label } from './buildData'
@@ -42,7 +42,8 @@ for (const g of [...new Set(items.map(it => game(it.file)))]) {
     }
   console.error(`${g}: ${samples.length} cards so far`)
 }
-writeFileSync('/tmp/claude-1000/-home-eric-repos-tli-vorax-simulator/1be3b527-8c6c-498d-96c6-7845b39c57af/scratchpad/pictureFirst.json', JSON.stringify(samples))
+// every card's best score and lead, for a closer look (git-ignored)
+writeFileSync('training/pictureFirst.json', JSON.stringify(samples))
 
 const ok = (s: Sample) => s.got === s.want
 for (const [name, set] of [['still', samples.filter(s => !s.hover && !s.blurred)], ['raised', samples.filter(s => s.hover)], ['blurred', samples.filter(s => s.blurred)]] as const) {

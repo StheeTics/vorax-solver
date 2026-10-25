@@ -15,7 +15,10 @@ it('the Solver shows the switch on the Board state heading, and says what is sha
   render(<SolverApp />)
   const heading = screen.getByRole('heading', { name: 'Board state' })
   expect(heading.parentElement!.contains(screen.getByRole('switch', { name: 'Share boards to improve the odds' }))).toBe(true)
-  expect(screen.getByText(/Shares the boards it reads \(tanks, cards offered, instruments, round\), with no picture, no account and nothing about you: only a random install number, to count players/)).toBeTruthy()
+  // that sharing starts on, and what a board carries
+  expect(screen.getByText(/Shares, unless you turn it off with the switch beside Board state \(it starts on\): the boards it reads \(tanks, cards offered, instruments, round, the advice shown\), with no picture, no account and nothing about you but a random install number/)).toBeTruthy()
   // the setup details shared with each board are said plainly too
-  expect(screen.getByText(/the picture’s size, your screen’s scaling, whether it’s HDR, your browser and its version, how the numbers read, and in the app whether the game is windowed/)).toBeTruthy()
+  expect(screen.getByText(/the picture’s size, your screen’s scaling, whether it’s HDR, your browser and its version, how the numbers read, how long reading took, and in the app the game window’s size/)).toBeTruthy()
+  // and that the card pictures it sends are published
+  expect(screen.getByText(/These pictures are published with the project on GitHub/)).toBeTruthy()
 })

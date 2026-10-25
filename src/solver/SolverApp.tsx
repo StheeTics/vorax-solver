@@ -322,10 +322,10 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
             <li>Sees only the one window you share, and only when the log shows a move or you press Snap now.</li>
             <li>Pictures stay in this browser and are gone when you close the tab, but for the few below.</li>
             <li>Never clicks or types for you.</li>
-            <li>Shares the boards it reads (tanks, cards offered, instruments, round), with no picture, no account and nothing about you: only a random install number, to count players. Turn it off with the switch beside Board state.</li>
-            <li>With each board, to find out why some setups misread: the picture’s size, your screen’s scaling, whether it’s HDR, your browser and its version, how the numbers read, and in the app whether the game is windowed. No picture, no name, nothing that lasts from one day to the next.</li>
+            <li>Shares, unless you turn it off with the switch beside Board state (it starts on): the boards it reads (tanks, cards offered, instruments, round, the advice shown), with no picture, no account and nothing about you but a random install number kept in this browser or app, to count players and tell games apart.</li>
+            <li>With each board, to find out why some setups misread: the picture’s size, your screen’s scaling, whether it’s HDR, your browser and its version, how the numbers read, how long reading took, and in the app the game window’s size. No picture and no name.</li>
             <li>When you say which instrument you picked, shares that name and the icon's small grey pattern, never a screenshot.</li>
-            <li>With the switch on, so it learns the cards it reads badly: for a card it doesn’t recognise, a small picture of that card alone; and for a card it has almost no pictures of, or couldn’t read quickly, sometimes one picture of the game window (never the rest of your screen). Each card is wanted only a few times from all players, and at most once from you.</li>
+            <li>With the switch on, so it learns the cards it reads badly: for a card it doesn’t recognise, a small picture of that card alone with the text it read; and for a card it has almost no pictures of, or couldn’t read quickly, sometimes one picture of the game window (never the rest of your screen). Each card is wanted only a few times from all players, and at most once from you. These pictures are published with the project on GitHub.</li>
           </ul>
         </details>
       </header>
