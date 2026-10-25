@@ -8,7 +8,7 @@ free plan: nothing is billed, and if a daily limit is hit, uploads simply fail u
 - `POST /v1/cards`: a card the Solver didn't recognise: the text it read and a small picture of that card alone. Exported
   nightly into `data/live/new-cards/`.
 - `POST /v1/training/ask`, `POST /v1/training`: a screenshot of the game window for a card the reader has fewer than 3
-  pictures of, or read slowly (`src/training.ts`): committed to the repo's `training-data` branch and shown in one
+  pictures of, or read slowly (`src/training.ts`): committed to the `training-data` branch of the private tidewarden/vorax-training-data and shown in one
   `Training Data: <card>` issue per card, at most 3 screenshots a card and 10 new cards a day. The app asks first, so
   a card no longer wanted is never sent.
 - `GET /v1/icons/export?after=ID`: the same as the boards export, for icons.

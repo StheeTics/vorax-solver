@@ -11,7 +11,7 @@ function github(o: { branch?: boolean; fail?: string } = {}) {
   let branch = o.branch ?? true
   let issues = 40
   const fetcher = async (url: string, init: RequestInit = {}) => {
-    const path = url.replace('https://api.github.com/repos/tidewarden/vorax-solver', '')
+    const path = url.replace('https://api.github.com/repos/tidewarden/vorax-training-data', '')
     const method = init.method ?? 'GET'
     const body = init.body ? (JSON.parse(init.body as string) as Record<string, unknown>) : undefined
     calls.push({ method, path, body })
