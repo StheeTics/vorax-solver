@@ -10,6 +10,7 @@ import { runGame, shortlist, stats, type Chooser, type InstrumentPicker } from '
 import type { GameState } from '@/engine/types'
 import { potion } from '@/data/potions'
 import { WasmFutures } from '@/strategy/wasmFutures'
+import { LIVE_WEIGHTS } from '@/data/liveWeights'
 
 const model = process.env.VALUE_MODEL ? JSON.parse(readFileSync(process.env.VALUE_MODEL, 'utf8')) : null
 setBoardValue(model)
@@ -17,7 +18,9 @@ const smart = !!model
 const N = Number(process.argv[2]), futures = Number(process.argv[3])
 const samples = Number(process.argv[4] ?? (smart ? 2 : 1)), instrumentSamples = smart ? 4 : samples
 const SEED0 = Number(process.env.SEED0 ?? 1_000_000)
-const w = await WasmFutures.load(readFileSync('wasm/target/wasm32-unknown-unknown/release/vorax_futures.wasm'))
+// the file the Solver ships (npm run wasm), with today's odds: the nightly updates them without a rebuild
+const w = await WasmFutures.load(readFileSync('src/strategy/futures.wasm'))
+w.setOdds(LIVE_WEIGHTS)
 w.setModel(model)
 const la = { top: 4, playouts: futures, steer: smart ? 0.3 : 0, value: smart }
 

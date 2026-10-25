@@ -34,6 +34,8 @@ set -uo pipefail
 
 CLONE=${VORAX_NIGHTLY_DIR:-$HOME/.local/share/vorax/nightly}
 ENV_FILE=$HOME/.config/vorax/nightly.env
+# futures a choice in the check's and the gate's games: the Solver's on 8 threads and up (src/solver/advice/adviseOn.ts)
+LIVE_FUTURES=500
 JOBS=16
 FORCE=
 WANT=()
@@ -140,7 +142,8 @@ job_check() {
     NOTE="the odds didn't change"; return 3
   fi
   rm -rf "$LOG/check"
-  KEEP="$LOG/check" VALUE_MODEL=src/data/boardValue.json KIT_RULE=1 GOAL=target bash scripts/sim/shard.sh "$JOBS" $((240 / JOBS)) plan:4:32:0.3 board 16 > "$LOG/check.txt" || return 1
+  # the advice as the Solver plays it: its futures in WebAssembly, LIVE_FUTURES a choice
+  KEEP="$LOG/check" VALUE_MODEL=src/data/boardValue.json KIT_RULE=1 bash scripts/sim/wasmShard.sh "$JOBS" $((240 / JOBS)) "$LIVE_FUTURES" > "$LOG/check.txt" || return 1
   python3 scripts/sim/history.py "$LOG/check" "$(date -u +%Y-%m-%d)" "Daily check: the advice under the odds of $(grep -oP "updated: '\K[^']+" src/data/liveWeights.ts)" || return 1
   NOTE=$(tail -1 data/live/history.jsonl | python3 -c "import json,sys; e=json.load(sys.stdin); print(f\"{round(100*e['reached'])}% of 240 simulated games reached 840k\")")
   git add data/live/history.jsonl
@@ -169,8 +172,8 @@ job_smarter() {
   # the gate: shipped and challenger, the advice as shipped, on the same games
   for i in $(seq 0 15); do
     for base in $((1000000 + i * 15)) $((2000000 + (day % 1000) * 240 + i * 15)); do
-      echo "RAW=1 SEED0=$base VALUE_MODEL=src/data/boardValue.json KIT_RULE=1 GOAL=target nice -n 19 npx vite-node --root . scripts/sim/run.ts 15 plan:4:64:0.3 board 64 > $dir/champion/$base.jsonl 2>> $dir/gate.err"
-      echo "RAW=1 SEED0=$base VALUE_MODEL=$dir/challenger.json KIT_RULE=1 GOAL=target nice -n 19 npx vite-node --root . scripts/sim/run.ts 15 plan:4:64:0.3 board 64 > $dir/challenger/$base.jsonl 2>> $dir/gate.err"
+      echo "RAW=1 SEED0=$base VALUE_MODEL=src/data/boardValue.json KIT_RULE=1 nice -n 19 npx vite-node --root . scripts/sim/wasmRun.ts 15 $LIVE_FUTURES > $dir/champion/$base.jsonl 2>> $dir/gate.err"
+      echo "RAW=1 SEED0=$base VALUE_MODEL=$dir/challenger.json KIT_RULE=1 nice -n 19 npx vite-node --root . scripts/sim/wasmRun.ts 15 $LIVE_FUTURES > $dir/challenger/$base.jsonl 2>> $dir/gate.err"
     done
   done | pool || { tail -20 "$dir/gate.err"; return 1; }
 

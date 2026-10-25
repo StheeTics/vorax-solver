@@ -6,10 +6,10 @@ import { wasmFutures } from './wasm'
  *  took ~570 ms at 4 against ~900 at 1, and 3.9 s on one core). */
 const SLICES_PER_WORKER = 4
 
-/** Futures per option for a PC with this many CPU threads: played in JavaScript, 64 from 8 threads up and 32 below, so
- *  a slow PC isn't kept waiting; in WebAssembly, ~12x faster, 500 and 256. `?futures=<n>` on the page's address (or
- *  localStorage vorax.futures) sets it, for trying other numbers. */
-export const futuresFor = (threads: number, wasm = false) => futuresSet() ?? (wasm ? (threads >= 8 ? 500 : 256) : threads >= 8 ? 64 : 32)
+/** Futures per option for a PC with this many CPU threads: played in WebAssembly (~12x faster), 500 from 8 threads up and
+ *  250 below, so a slow PC isn't kept waiting; in JavaScript, where WebAssembly can't load, 64 and 32. `?futures=<n>` on
+ *  the page's address (or localStorage vorax.futures) sets it, for trying other numbers. */
+export const futuresFor = (threads: number, wasm = false) => futuresSet() ?? (wasm ? (threads >= 8 ? 500 : 250) : threads >= 8 ? 64 : 32)
 function futuresSet(): number | null {
   try {
     const v = Number(new URLSearchParams(globalThis.location?.search ?? '').get('futures') ?? globalThis.localStorage?.getItem('vorax.futures'))
