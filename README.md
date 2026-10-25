@@ -6,7 +6,7 @@ Fan-made tools for the Surgical Preparation minigame in Torchlight Infinite (SS1
 - **Solver:** advice for your real game. It reads your screen as you play and shows the best move.
 - **Vorax Overlay:** the Solver as a Windows app, its advice in a small card over the game.
 
-**Use them:** https://voraxlab.pages.dev/tli-vorax-simulator/ · **Download the Overlay:** [releases](https://github.com/tidewarden/tli-vorax-simulator/releases)
+**Use them:** https://voraxlab.pages.dev/tli-vorax-simulator/ · **Download the Overlay:** [releases](https://github.com/tidewarden/vorax-solver/releases/latest)
 
 ## Does it touch the game?
 

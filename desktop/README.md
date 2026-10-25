@@ -54,4 +54,5 @@ npm run local      # against the dev server (npm run dev in the repo root)
 2. `git tag -a vX.Y.Z -m "Vorax Overlay X.Y.Z" && git push origin vX.Y.Z` (plain `v` tags: electron-builder and
    electron-updater expect them).
 3. `.github/workflows/desktop.yml` builds `Vorax-Overlay-Setup.exe` on Windows and publishes it, with
-   `latest.yml` (what installed copies read), as release `vX.Y.Z`.
+   `latest.yml` (what installed copies read), as release `vX.Y.Z` of this repo. Copies from before 0.1.18 read the
+   old repo, `tidewarden/tli-vorax-simulator`: while the `RELEASE_TOKEN` secret is set, the release goes there too.
