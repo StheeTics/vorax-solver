@@ -120,7 +120,7 @@ export const LOOK_AHEAD: LookAhead = { top: 4, playouts: 64, steer: 0.3, value: 
 export const INSTRUMENT_FUTURES = 64
 
 /** How the rounds inside an instrument choice's futures are played: by the smarter player (the board value). */
-const INSTRUMENT_ROLLOUT = { samples: 4, horizon: 0, value: true }
+export const INSTRUMENT_ROLLOUT = { samples: 4, horizon: 0, value: true }
 
 /** A few rounds of look-ahead, only to order options that score the same this round. */
 const TIE_BREAK = { samples: 32, horizon: 4 }

@@ -100,6 +100,8 @@ let model: ValueModel | null = SHIPPED as ValueModel
 export const setBoardValue = (m: ValueModel | null) => void (model = m)
 export const useShippedBoardValue = () => setBoardValue(SHIPPED as ValueModel)
 export const hasBoardValue = () => !!model
+/** the model the board value uses now, to hand to the WebAssembly futures */
+export const currentBoardValue = () => model
 
 /** Predicted final score counted up to 840,000; once the game is over, the score itself (up to 840,000). */
 export function boardValue(s: GameState): number {

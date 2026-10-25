@@ -22,6 +22,19 @@ pub extern "C" fn set_model(per: u32) {
     MODEL = if per == 0 { None } else { Some(Model { rounds: (0..ROUNDS).map(|r| WEIGHTS[r * FEATURES..r * FEATURES + per as usize].to_vec()).collect() }) };
   }
 }
+/** the odds at BUF: supreme chance, spawn rarities (4), potion offers (42), box offers (42), basic (26) and advanced (26) instrument offers */
+#[no_mangle]
+#[allow(static_mut_refs)]
+pub extern "C" fn set_odds() {
+  let b = the_buf();
+  let o = unsafe { &mut ODDS };
+  o.supreme = b[0];
+  o.spawn.copy_from_slice(&b[1..5]);
+  o.potion.copy_from_slice(&b[5..47]);
+  o.boxed.copy_from_slice(&b[47..89]);
+  o.basic.copy_from_slice(&b[89..115]);
+  o.advanced.copy_from_slice(&b[115..141]);
+}
 #[allow(static_mut_refs)]
 fn player(samples: u32, value: u32) -> Player<'static> { Player { samples, model: if value != 0 { unsafe { MODEL.as_ref() } } else { None } } }
 

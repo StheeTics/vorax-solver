@@ -21,6 +21,13 @@ const BASE: [(i64, i64); 4] = [(1, 36), (5, 24), (15, 12), (300, 1)];
 const AWAKEN_BONUS: [i64; 4] = [0, 60, 120, 120];
 const MAX_CHAIN_DEPTH: u32 = 8;
 
+/** The deal's odds: the generated ones (data.rs) until the page hands over the current ones (set_odds), as the
+ *  nightly loop updates them without a rebuild. Potions and instruments by id. */
+pub struct Odds { pub supreme: f64, pub spawn: [f64; 4], pub potion: [f64; 42], pub boxed: [f64; 42], pub basic: [f64; 26], pub advanced: [f64; 26] }
+pub static mut ODDS: Odds = Odds { supreme: SUPREME_CHANCE, spawn: SPAWN, potion: POTION_OFFER, boxed: BOX_OFFER, basic: BASIC_OFFER, advanced: ADVANCED_OFFER };
+#[allow(static_mut_refs)]
+pub fn odds() -> &'static Odds { unsafe { &ODDS } }
+
 #[derive(Clone, Copy, PartialEq)]
 pub enum T { Auto, One, OneOrTwo, Box(usize) }
 #[derive(Clone, Copy, PartialEq)]
@@ -138,11 +145,12 @@ impl Rng {
     a[a.len() - 1]
   }
   pub fn rarity(&mut self) -> u8 {
-    let total = SPAWN.iter().fold(0.0, |s, w| s + w);
+    let spawn = &odds().spawn;
+    let total = spawn.iter().fold(0.0, |s, w| s + w);
     let roll = self.next() * total;
     let mut acc = 0.0;
     for r in 0..4 {
-      acc += SPAWN[r];
+      acc += spawn[r];
       if roll < acc { return r as u8; }
     }
     BOSS
@@ -719,11 +727,11 @@ impl<'a> Ctx<'a> {
 
 fn deal_potions(rng: &mut Rng, n: usize, from_box: bool) -> Hand {
   let base = if from_box { BOX_POOL } else { NORMAL_POOL };
-  let weights: &[f64] = if from_box { &BOX_OFFER } else { &POTION_OFFER };
+  let weights: &[f64] = if from_box { &odds().boxed } else { &odds().potion };
   let mut used: Small<u8, 5> = Small::new();
   let mut hand = Hand::new();
   for _ in 0..n {
-    let supreme = rng.chance(SUPREME_CHANCE);
+    let supreme = rng.chance(odds().supreme);
     let fresh = |pool: &[u8], used: &Small<u8, 5>| -> Small<u8, 48> { pool.iter().copied().filter(|p| !used.contains(p)).collect() };
     let mut pool = fresh(if supreme { SUPREME_POOL } else { base }, &used);
     if pool.is_empty() { pool = fresh(if supreme { base } else { SUPREME_POOL }, &used); }
@@ -745,7 +753,7 @@ fn deal_potions(rng: &mut Rng, n: usize, from_box: bool) -> Hand {
 fn deal_instruments(rng: &mut Rng, s: &State) -> Hand {
   let basic = s.instruments.is_empty();
   let pool = if basic { BASIC_POOL } else { ADVANCED_POOL };
-  let weights: &[f64] = if basic { &BASIC_OFFER } else { &ADVANCED_OFFER };
+  let weights: &[f64] = if basic { &odds().basic } else { &odds().advanced };
   let available: Small<u8, 24> = pool.iter().copied().filter(|&d| !s.instruments.iter().any(|i| i.0 == d)).collect();
   if available.is_empty() { return Hand::new(); }
   let w0 = weights[available[0] as usize];

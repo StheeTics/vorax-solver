@@ -53,8 +53,11 @@ describe('the worker pool', () => {
 })
 
 describe('futures scaled to the CPU', () => {
-  it('64 from 8 threads up, 32 below', () => {
-    expect([2, 4, 7, 8, 12, 16, 32].map(futuresFor)).toEqual([32, 32, 32, 64, 64, 64, 64])
+  it('in JavaScript, 64 from 8 threads up, 32 below', () => {
+    expect([2, 4, 7, 8, 12, 16, 32].map(t => futuresFor(t))).toEqual([32, 32, 32, 64, 64, 64, 64])
+  })
+  it('in WebAssembly, 500 from 8 threads up, 256 below', () => {
+    expect([2, 4, 7, 8, 12, 16, 32].map(t => futuresFor(t, true))).toEqual([256, 256, 256, 500, 500, 500, 500])
   })
   it('a PC with fewer threads plays fewer futures per option, so the wait stays about the same', async () => {
     const played = { potion: 0, instrument: 0 }

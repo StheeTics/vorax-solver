@@ -3,8 +3,13 @@
 import type { Action, GameState } from '@/engine/types'
 import { ARCHETYPES, RARITIES } from '@/data/archetypes'
 import type { InstrumentChoice, Tally } from './bot'
+import { POTIONS } from '@/data/potions'
+import { INSTRUMENTS } from '@/data/instruments'
+import type { LiveWeights } from '@/data/liveWeights'
+import type { Work } from './advisor'
+import { INSTRUMENT_ROLLOUT } from './advisor'
 
-interface Exports { memory: WebAssembly.Memory; buf(): number; weights(): number; set_model(per: number): void; potion_futures(seed: number, samples: number, value: number, from: number, to: number): number; instrument_futures(seed: number, samples: number, value: number, from: number, to: number): number }
+interface Exports { memory: WebAssembly.Memory; buf(): number; weights(): number; set_model(per: number): void; set_odds(): void; potion_futures(seed: number, samples: number, value: number, from: number, to: number): number; instrument_futures(seed: number, samples: number, value: number, from: number, to: number): number }
 const OPTS = 64, OUT = 4096
 const PHASES = ['instrumentSelect', 'potionSelect', 'roundEnd', 'gameOver'] as const
 
@@ -21,6 +26,15 @@ export class WasmFutures {
     const w = new Float64Array(this.x.memory.buffer, this.x.weights(), 656 * 13)
     for (let r = 0; r < 13; r++) w.set(m.rounds[Math.min(r, m.rounds.length - 1)].slice(0, per), r * 656)
     this.x.set_model(per)
+  }
+  /** the deal's odds (src/data/liveWeights.ts), which the nightly loop updates without a rebuild */
+  setOdds(o: LiveWeights) {
+    const b = this.view()
+    const byId = <T extends { id: number; name: string }>(list: T[], n: number, table: Record<string, number>) =>
+      Array.from({ length: n }, (_, id) => { const d = list.find(x => x.id === id); return d ? table[d.name] ?? 1 : 1 })
+    b.set([o.supremeChance, ...RARITIES.map(r => o.spawnRarity[r]), ...byId(POTIONS, 42, o.potionOffer), ...byId(POTIONS, 42, o.boxOffer),
+      ...byId(INSTRUMENTS, 26, o.instrumentOffer.basic), ...byId(INSTRUMENTS, 26, o.instrumentOffer.advanced)], 0)
+    this.x.set_odds()
   }
   private view() { return new Float64Array(this.x.memory.buffer, this.x.buf(), 8192) }
   private write(b: Float64Array, s: GameState) {
@@ -70,4 +84,11 @@ export class WasmFutures {
     const n = this.x.instrument_futures(seed >>> 0, samples, +value, from, to)
     return this.read(this.view(), n)
   }
+}
+
+/** playWork (src/strategy/advisor.ts) played by WebAssembly: the same futures, the same totals. */
+export function playWorkWasm(f: WasmFutures, w: Work, from: number, to: number): Tally[] {
+  return w.kind === 'potion'
+    ? f.potion(w.s, w.seed, w.la.innerSamples ?? 2, w.opts.map(c => c.o), from, to, !!w.la.value)
+    : f.instrument(w.s, w.seed, INSTRUMENT_ROLLOUT.samples, w.choices, from, to, INSTRUMENT_ROLLOUT.value)
 }
