@@ -12,6 +12,15 @@ import { brightest } from './text'
 /** How bright a name must be to be there at all: on the labelled frames names measure 120 or more, and still
  *  97 or more blurred by a 50% render scale; empty tanks (dark glass) 90 or less, blurred or not. */
 const NAME_MIN = 94
+/** An empty tank's plate lit by its red glass, at the lowest interface scale (Oct 23, two players: 112-113 red, 35-48
+ *  green): dim and deep red. Boss names, the reddest, measure 191 red and 89 green at the least (407 labelled names). */
+const GLOW_RED = 150
+const GLOW_GREEN = 70
+/** At the highest interface scale the name's place reaches the tank stand's rim, which an empty tank's glass lights a
+ *  dim pink (Oct 25, 3440x1440: 130 red, 83 green, 98 blue): red the strongest, blue over green, well tinted, and too dim
+ *  for a Boss. No name is that colour: Normal is grey (tint under 0.18), Magic blue, Rare gold (green over blue). */
+const RIM_TINT = 0.25
+const emptyGlow = ([r, g, b]: [number, number, number]) => r < GLOW_RED && ((g < GLOW_GREEN) || (r >= b && b > g && (r - g) / r >= RIM_TINT))
 const DIGIT_MIN = 0.75
 
 /** The engine's cap on Activity and Quantity (src/ui/sandboxValidate.ts). */
@@ -142,7 +151,7 @@ export function rarityOf(rgb: [number, number, number]): { rarity: Rarity; sure:
 export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: ScanData): TankRead {
   const fields: Record<string, FieldRead> = {}
   const rgb = brightest(img, l.nameBand[i])
-  if (Math.max(...rgb) < NAME_MIN) return { monster: null, fields: { [`tank${i}.empty`]: { sure: true } }, debug: null }
+  if (Math.max(...rgb) < NAME_MIN || emptyGlow(rgb)) return { monster: null, fields: { [`tank${i}.empty`]: { sure: true } }, debug: null }
 
   const { rarity, sure } = rarityOf(rgb)
   fields[`tank${i}.rarity`] = { sure, guess: rarity }

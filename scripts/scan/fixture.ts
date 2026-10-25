@@ -1,7 +1,7 @@
 // Makes small test fixtures from labelled frames: only the parts the reader looks at are kept, the rest
 // is black, so a 3440x1440 frame compresses to a few hundred KB. --blank-card N also blacks out card N's
-// art and title, for testing an unrecognised card.
-// Usage: npx vite-node scripts/scan/fixture.ts training/012-board.png tests/fixtures/frames/board.png [--blank-card 1]
+// art and title, for testing an unrecognised card. --ui X keeps the parts where they sit at interface scale X.
+// Usage: npx vite-node scripts/scan/fixture.ts training/012-board.png tests/fixtures/frames/board.png [--blank-card 1] [--ui 1.257]
 import { readFileSync, writeFileSync } from 'node:fs'
 import { decodePng, encodePng } from './png'
 import { layout } from '../../src/solver/scan/layout'
@@ -9,8 +9,9 @@ import type { Rect } from '../../src/solver/types'
 
 const [src, out] = process.argv.slice(2)
 const blank = process.argv.includes('--blank-card') ? Number(process.argv[process.argv.indexOf('--blank-card') + 1]) : -1
+const ui = process.argv.includes('--ui') ? Number(process.argv[process.argv.indexOf('--ui') + 1]) : 1
 const img = decodePng(readFileSync(src))
-const l = layout(img)
+const l = layout(img, ui)
 const keep: Rect[] = [...l.icon, ...l.nameBand, ...l.totalBand, ...l.aqBand, ...l.cardFace, l.header, l.refresh, l.round, ...l.instrumentIcon]
 const mask = new Uint8Array(img.width * img.height)
 const mark = (r: Rect, v: number) => {

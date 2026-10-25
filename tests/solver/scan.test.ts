@@ -198,10 +198,10 @@ it('icons players taught (learnedIcons.json) are read like the built-in ones', a
 
 // issue #12: 2560x1440 with the game's interface at 125% (Windows' display scale or the game's): every panel
 // and card larger, the tanks where they were
-describe('an interface scaled to 125%', () => {
+describe('an interface scaled to 125% (the game\u2019s recommended setting, 1.257x)', () => {
   const r = scan(decodePng(readFileSync('tests/fixtures/frames/ui-125.png')), data)
   it('is found, and the round, the phase and the cards read', () => {
-    expect(r.ui).toBe(1.25)
+    expect(r.ui).toBe(1.257)
     expect(r.state.round).toBe(5)
     expect(r.fields.round.sure).toBe(true)
     expect(r.state.phase).toBe('potion')
@@ -210,4 +210,58 @@ describe('an interface scaled to 125%', () => {
   it('reads the tanks clear of the panels', () => {
     expect(r.state.tanks.slice(1, 3).map(t => t && [t.activity, t.quantity])).toEqual([[66, 166], [82, 186]])
   })
+})
+
+// Two players' reports, Oct 23: the slider at its lowest (0.64, 0.957x of the labelled frames), the empty tanks' plates
+// lit red by their glass
+describe('the interface at its lowest, empty tanks glowing red', () => {
+  const img = decodePng(readFileSync('tests/fixtures/frames/ui-lowest.png'))
+  it('is found by the header when the game hasn’t said, and the empty tanks are empty, not bosses', () => {
+    // as the site reads: the cards' names come afterwards (titles.ts), so the header says which pick it is
+    const r = scan(img, data, {}, { pictures: false })
+    expect(r.ui).toBe(0.957)
+    expect(r.state.phase).toBe('instrument')
+    expect(r.fields.phase.sure).toBe(true)
+    expect(r.state.tanks.slice(3)).toEqual([null, null, null])
+    expect(r.state.tanks.slice(0, 3).map(t => t && [t.activity, t.quantity])).toEqual([[1, 36], [1, 36], [5, 24]])
+    expect(r.problems).toEqual([])
+  })
+  it('is read at the scale the game logged, without trying others', () => {
+    const r = scan(img, data, {}, { pictures: false, ui: 0.64 / 0.66887495368719 })
+    expect(r.ui).toBeCloseTo(0.957, 3)
+    expect(r.fields.phase.sure).toBe(true)
+  })
+})
+
+// One board on a 3440x1440 screen with the slider at four places (Oct 25): the labels sit lower than on 16:9 and grow
+// about their own total's row, so read about 16:9's they came out a few pixels off (cut digits, 1 x 36 as 1 x 46), and
+// at the highest the empty tanks' rim lit pink passed for a name
+describe('an ultrawide screen at every interface scale', () => {
+  for (const [name, page] of [['lowest', 0.64], ['quarter', 0.73211278676987], ['recommended', 0.84067144155502], ['highest', 1]] as const) {
+    it(`reads every tank at the ${name} setting (PageScale ${page.toFixed(3)})`, () => {
+      const img = decodePng(readFileSync(`tests/fixtures/frames/ultrawide-ui-${name}.png`))
+      const r = scan(img, data, {}, { pictures: false, ui: page / 0.66887495368719 })
+      expect(r.state.round).toBe(1)
+      expect(r.state.phase).toBe('instrument')
+      expect(r.state.tanks.map(t => t && [t.activity, t.quantity])).toEqual([[1, 36], [300, 1], [5, 24], null, null, null])
+      expect(r.problems).toEqual([])
+    })
+  }
+})
+
+// Two boards played on one screen at five window shapes (Oct 25): narrower than 16:9 the UI fits the width and the
+// tanks sit closer together, so 16:10 and 4:3 weren't found at all
+describe('every screen shape', () => {
+  const round7 = [[81, 165], [560, 234], [266, 36], [325, 195], [385, 1], [146, 36]]
+  const round8 = [[161, 165], [700, 234], [286, 36], [536, 195], [405, 1], [166, 36]]
+  for (const [name, page, round, tanks] of [['32-9', 0.674, 7, round7], ['21-9', 0.674, 7, round7], ['16-9-window', 0.674, 7, round7], ['16-10', 0.674, 8, round8], ['4-3', 0.6914453268, 8, round8]] as const) {
+    it(`reads the board on ${name.replace(/-/, ':')}`, () => {
+      const img = decodePng(readFileSync(`tests/fixtures/frames/shape-${name}.png`))
+      const r = scan(img, data, {}, { pictures: false, ui: page / 0.66887495368719 })
+      expect(r.state.round).toBe(round)
+      expect(r.fields.phase.sure).toBe(true)
+      expect(r.state.tanks.map(t => t && [t.activity, t.quantity])).toEqual(tanks)
+      expect(r.problems).toEqual([])
+    })
+  }
 })

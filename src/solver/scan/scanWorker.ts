@@ -5,7 +5,7 @@ import { layout } from './layout'
 import { readSlots } from './cards'
 
 type Ask =
-  | { id: number; kind?: 'frame'; img: ImageData; trigger?: string; local: LocalRefs; pictures?: boolean }
+  | { id: number; kind?: 'frame'; img: ImageData; trigger?: string; local: LocalRefs; pictures?: boolean; ui?: number }
   | { id: number; kind: 'slots'; img: ImageData; phase: HandPhase; size: number; slots: number[]; local: LocalRefs; ui?: number; among?: Record<number, string[]> }
 
 const DATA = unpack(data as unknown as PackedScanData)
@@ -18,7 +18,7 @@ self.onmessage = (e: MessageEvent<Ask>) => {
     self.postMessage({ id: ask.id, read })
     return
   }
-  const reading = scan(ask.img, DATA, ask.local, { pictures: ask.pictures ?? true })
+  const reading = scan(ask.img, DATA, ask.local, { pictures: ask.pictures ?? true, ui: ask.ui })
   if (reading.frame) reading.frame.trigger = ask.trigger
   self.postMessage({ id: ask.id, reading })
 }

@@ -17,20 +17,28 @@ export type LocalRefs = Record<string, ArtFeature[]>
 
 /** pictures: false leaves the cards to their printed names, read afterwards (titles.ts): their pictures are
  *  most of the work, and needed only for a name that can't be read. */
-export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, options: { pictures?: boolean } = {}): Reading {
-  // the interface scale that read last is tried first; when the round can't be read, the others are
-  const first = scanAt(captured, data, local, options, lastUi)
+/** ui: the interface scale the game logged (uiScaleOf in triggers.ts), read at; without it, the one that read last
+ *  is tried first, and when the round or the pick's header can't be read, the others are. */
+export function scan(captured: Img, data: ScanData, local: LocalRefs = {}, options: { pictures?: boolean; ui?: number } = {}): Reading {
+  const known = options.ui
+  const first = scanAt(captured, data, local, options, known ?? lastUi)
   // a picture that isn't the board, or a card mid-flight, isn't read better at another scale
-  if (first.fields.round?.sure || first.problems.some(p => p.kind === 'animating' || p.kind === 'notFound')) return first
-  for (const ui of UI_SCALES.filter(u => u !== lastUi)) {
+  if (fits(first) || first.problems.some(p => p.kind === 'animating' || p.kind === 'notFound')) return first
+  // the logged scale stands unless even the round can't be read at it
+  if (known && first.fields.round?.sure) return first
+  for (const ui of UI_SCALES.filter(u => u !== (known ?? lastUi))) {
     const r = scanAt(captured, data, local, options, ui)
-    if (r.fields.round?.sure) {
-      lastUi = ui
+    if (fits(r)) {
+      if (!known) lastUi = ui
       return r
     }
   }
   return first
 }
+
+/** Read at the right scale: its round, and with cards on offer, the header that says which pick it is. A header
+ *  missed at the right scale (a raised card over it) only costs the other scales' tries. */
+const fits = (r: Reading) => !!r.fields.round?.sure && (r.state.hand.length === 0 && !r.handPending ? true : !!r.fields.phase?.sure)
 
 let lastUi = 1
 
