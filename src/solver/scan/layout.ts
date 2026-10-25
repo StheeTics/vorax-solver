@@ -1,12 +1,16 @@
 // Where each part of the Surgical Preparation screen sits. Measured on 3440x1440 frames (21:9) from a live
 // game, in pixels of that frame, and placed on other frames by scaling with the height from the anchor the
-// game's UI uses: the left or right edge, or the centre. The tanks are part of the 3D scene, which is
-// framed differently on each screen shape: on 16:9 they sit closer together and higher (measured on a live
-// 1920x1080 frame). Between those two shapes the tank positions are blended; outside them they stay at
-// the nearest measured one, so 16:10, 4:3 and 32:9 screens still need frames of their own.
+// game's UI uses: the left or right edge, or the centre. On a screen narrower than 16:9 the UI fits the width
+// instead (a 1680x1050 window: everything at 1680/2560 of its 1440p size, not 1050/1440). The tanks are part of
+// the 3D scene, which is framed differently on each screen shape: on 16:9 they sit closer together and higher
+// (measured on a live 1920x1080 frame), on 16:10 closer still (a live 1680x1050 window, Oct 25). Between
+// measured shapes the tank positions are blended; outside them they stay at the nearest one, which reads 32:9
+// (Oct 25) on 21:9's. 4:3 measured on a live 1440x1080 window (Oct 25).
 import type { Rect } from '../types'
 
 const REF_H = 1440
+/** The width of a 16:9 frame at REF_H: narrower screens scale their UI by width */
+const REF_W = 2560
 
 /** Reference rects, x relative to the frame centre unless noted. */
 /** The tanks' labels, by screen shape: centres under the six tanks (perspective pushes the right-hand ones
@@ -15,7 +19,12 @@ const REF_H = 1440
  *  label's (the camera looks at the row from a little to the right), its width and its top and bottom. */
 interface TankScene { x: number[]; name: [number, number]; total: [number, number]; aq: [number, number]; icon: number; iconSize: number; jar: { dx: number[]; w: number; y: [number, number] } }
 const ULTRAWIDE: TankScene = { x: [-858, -421, 16, 454, 913, 1386], name: [556, 577], total: [578, 600], aq: [599, 619], icon: 533, iconSize: 26, jar: { dx: [57, 46, 32, 19, 0, -27], w: 290, y: [62, 630] } }
+/** jar measured roughly on these two (it only places the highlight): 16:9's narrowed to the closer tanks */
+const SQUARE_4_3: TankScene = { x: [-445, -201, 40, 284, 535, 795], name: [590, 610], total: [611, 631], aq: [633, 653], icon: 575, iconSize: 22, jar: { dx: [24, 18, 6, 5, -2, -16], w: 160, y: [313, 664] } }
+const WIDE_16_10: TankScene = { x: [-610, -309, -10, 287, 597, 912], name: [555, 575], total: [576, 596], aq: [598, 618], icon: 540, iconSize: 22, jar: { dx: [30, 23, 7, 6, -3, -20], w: 195, y: [206, 629] } }
 const WIDE_16_9: TankScene = { x: [-756, -400, -48, 304, 667, 1037], name: [511, 531], total: [532, 552], aq: [554, 574], icon: 496, iconSize: 22, jar: { dx: [35, 27, 8, 7, -3, -23], w: 230, y: [90, 585] } }
+const ASPECT_4_3 = 4 / 3
+const ASPECT_16_10 = 1680 / 1050
 const ASPECT_16_9 = 16 / 9
 const ASPECT_ULTRAWIDE = 3440 / 1440
 const LABEL_HALF_W = 200
@@ -25,18 +34,20 @@ const mixPair = (a: [number, number], b: [number, number], t: number): [number, 
 
 /** The tanks' labels for a screen of this shape. */
 export function tankScene(aspect: number): TankScene {
-  const t = Math.min(1, Math.max(0, (aspect - ASPECT_16_9) / (ASPECT_ULTRAWIDE - ASPECT_16_9)))
+  const [lo, hi, a, b] = aspect < ASPECT_16_10 ? [SQUARE_4_3, WIDE_16_10, ASPECT_4_3, ASPECT_16_10]
+    : aspect < ASPECT_16_9 ? [WIDE_16_10, WIDE_16_9, ASPECT_16_10, ASPECT_16_9] : [WIDE_16_9, ULTRAWIDE, ASPECT_16_9, ASPECT_ULTRAWIDE]
+  const t = Math.min(1, Math.max(0, (aspect - a) / (b - a)))
   return {
-    x: ULTRAWIDE.x.map((x, i) => mix(WIDE_16_9.x[i], x, t)),
-    name: mixPair(WIDE_16_9.name, ULTRAWIDE.name, t),
-    total: mixPair(WIDE_16_9.total, ULTRAWIDE.total, t),
-    aq: mixPair(WIDE_16_9.aq, ULTRAWIDE.aq, t),
-    icon: mix(WIDE_16_9.icon, ULTRAWIDE.icon, t),
-    iconSize: mix(WIDE_16_9.iconSize, ULTRAWIDE.iconSize, t),
+    x: hi.x.map((x, i) => mix(lo.x[i], x, t)),
+    name: mixPair(lo.name, hi.name, t),
+    total: mixPair(lo.total, hi.total, t),
+    aq: mixPair(lo.aq, hi.aq, t),
+    icon: mix(lo.icon, hi.icon, t),
+    iconSize: mix(lo.iconSize, hi.iconSize, t),
     jar: {
-      dx: ULTRAWIDE.jar.dx.map((x, i) => mix(WIDE_16_9.jar.dx[i], x, t)),
-      w: mix(WIDE_16_9.jar.w, ULTRAWIDE.jar.w, t),
-      y: mixPair(WIDE_16_9.jar.y, ULTRAWIDE.jar.y, t),
+      dx: hi.jar.dx.map((x, i) => mix(lo.jar.dx[i], x, t)),
+      w: mix(lo.jar.w, hi.jar.w, t),
+      y: mixPair(lo.jar.y, hi.jar.y, t),
     },
   }
 }
@@ -101,21 +112,21 @@ export interface Layout {
  *  card and label from where it's anchored, while the 3D tanks stay put. The scales tried when the game hasn't said
  *  (uiScaleOf in triggers.ts): the slider runs 0.957x-1.495x of the labelled frames, 1.257x recommended (Oct 23). */
 export const UI_SCALES = [1, 1.257, 0.957, 1.495, 1.128, 1.376]
-/** The tanks' labels grow about their total's row. */
-const LABEL_MID = 542
-
 export function layout(frame: { width: number; height: number }, ui = 1): Layout {
   const { width, height } = frame
+  // s places the 3D scene, k sizes the UI (and places it from its anchors)
   const s = height / REF_H
-  const k = s * ui
+  const k = Math.min(s, width / REF_W) * ui
   const cx = width / 2
   /** a y from the bottom edge, from the middle, and in a tank's label */
-  const bottom = (y: number) => (REF_H - (REF_H - y) * ui) * s
-  const middle = (y: number) => (REF_H / 2 + (y - REF_H / 2) * ui) * s
-  const label = (y: number) => (LABEL_MID + (y - LABEL_MID) * ui) * s
+  const bottom = (y: number) => height - (REF_H - y) * k
+  const middle = (y: number) => height / 2 + (y - REF_H / 2) * k
+  const scene = tankScene(width / height)
+  // the tanks' labels grow about their total's row, which sits lower on a wider screen (16:9: 542; 21:9: 589)
+  const labelMid = (scene.total[0] + scene.total[1]) / 2
+  const label = (y: number) => labelMid * s + (y - labelMid) * k
   // the labels' text grows, but not the space between tanks: a wider band would take in the next label
   const band = (x: number, y: [number, number] | number[]) => ({ x: x - LABEL_HALF_W * s, y: label(y[0]), w: 2 * LABEL_HALF_W * s, h: (y[1] - y[0]) * k })
-  const scene = tankScene(width / height)
   const tankCx = scene.x.map(x => cx + x * s)
   const cardCx = [0, 1, 2].map(j => cx + (CARD_X0 + CARD_PITCH * j) * k)
   const instrumentCx = [0, 1, 2, 3].map(j => width - (INSTRUMENT.right + INSTRUMENT.pitch * j) * k)

@@ -232,3 +232,36 @@ describe('the interface at its lowest, empty tanks glowing red', () => {
     expect(r.fields.phase.sure).toBe(true)
   })
 })
+
+// One board on a 3440x1440 screen with the slider at four places (Oct 25): the labels sit lower than on 16:9 and grow
+// about their own total's row, so read about 16:9's they came out a few pixels off (cut digits, 1 x 36 as 1 x 46), and
+// at the highest the empty tanks' rim lit pink passed for a name
+describe('an ultrawide screen at every interface scale', () => {
+  for (const [name, page] of [['lowest', 0.64], ['quarter', 0.73211278676987], ['recommended', 0.84067144155502], ['highest', 1]] as const) {
+    it(`reads every tank at the ${name} setting (PageScale ${page.toFixed(3)})`, () => {
+      const img = decodePng(readFileSync(`tests/fixtures/frames/ultrawide-ui-${name}.png`))
+      const r = scan(img, data, {}, { pictures: false, ui: page / 0.66887495368719 })
+      expect(r.state.round).toBe(1)
+      expect(r.state.phase).toBe('instrument')
+      expect(r.state.tanks.map(t => t && [t.activity, t.quantity])).toEqual([[1, 36], [300, 1], [5, 24], null, null, null])
+      expect(r.problems).toEqual([])
+    })
+  }
+})
+
+// Two boards played on one screen at five window shapes (Oct 25): narrower than 16:9 the UI fits the width and the
+// tanks sit closer together, so 16:10 and 4:3 weren't found at all
+describe('every screen shape', () => {
+  const round7 = [[81, 165], [560, 234], [266, 36], [325, 195], [385, 1], [146, 36]]
+  const round8 = [[161, 165], [700, 234], [286, 36], [536, 195], [405, 1], [166, 36]]
+  for (const [name, page, round, tanks] of [['32-9', 0.674, 7, round7], ['21-9', 0.674, 7, round7], ['16-9-window', 0.674, 7, round7], ['16-10', 0.674, 8, round8], ['4-3', 0.6914453268, 8, round8]] as const) {
+    it(`reads the board on ${name.replace(/-/, ':')}`, () => {
+      const img = decodePng(readFileSync(`tests/fixtures/frames/shape-${name}.png`))
+      const r = scan(img, data, {}, { pictures: false, ui: page / 0.66887495368719 })
+      expect(r.state.round).toBe(round)
+      expect(r.fields.phase.sure).toBe(true)
+      expect(r.state.tanks.map(t => t && [t.activity, t.quantity])).toEqual(tanks)
+      expect(r.problems).toEqual([])
+    })
+  }
+})
