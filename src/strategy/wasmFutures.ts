@@ -1,5 +1,6 @@
-// The advice's futures with a greedy player, played by WebAssembly (wasm/: the engine ported to Rust, rolling the same
-// dice in the same order, so it plays the same futures as potionFutures/instrumentFutures with no board value).
+// The advice's futures played by WebAssembly (wasm/: the engine and the smarter player ported to Rust, rolling the same
+// dice in the same order), so it plays the same futures as potionFutures/instrumentFutures, ~12x faster. With no board
+// value the player inside is greedy, as the JavaScript's is.
 import type { Action, GameState } from '@/engine/types'
 import { ARCHETYPES, RARITIES } from '@/data/archetypes'
 import type { InstrumentChoice, Tally } from './bot'

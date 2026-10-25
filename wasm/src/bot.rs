@@ -1,6 +1,6 @@
-// The advice's futures with a greedy player inside (src/strategy/bot.ts with no board value and no steer): each round
-// the move whose fresh outcomes score best right away, instruments by the board they leave, a hand refreshed while
-// nothing in it beats the board. Seeded as the JavaScript seeds them, so both play the same futures.
+// The advice's futures (src/strategy/bot.ts): each round the move whose fresh outcomes leave the best board (by the board
+// value: the smarter player; without one, by the score now: greedy), instruments by the board they leave, a hand
+// refreshed while nothing in it beats the board. Seeded as the JavaScript seeds them, so both play the same futures.
 use crate::engine::*;
 use crate::value::{board_value, Model};
 

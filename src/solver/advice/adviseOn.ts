@@ -7,17 +7,8 @@ import { wasmFutures } from './wasm'
 const SLICES_PER_WORKER = 4
 
 /** Futures per option for a PC with this many CPU threads: played in WebAssembly (~12x faster), 500 from 8 threads up and
- *  250 below, so a slow PC isn't kept waiting; in JavaScript, where WebAssembly can't load, 64 and 32. `?futures=<n>` on
- *  the page's address (or localStorage vorax.futures) sets it, for trying other numbers. */
-export const futuresFor = (threads: number, wasm = false) => futuresSet() ?? (wasm ? (threads >= 8 ? 500 : 250) : threads >= 8 ? 64 : 32)
-function futuresSet(): number | null {
-  try {
-    const v = Number(new URLSearchParams(globalThis.location?.search ?? '').get('futures') ?? globalThis.localStorage?.getItem('vorax.futures'))
-    return Number.isInteger(v) && v > 0 ? Math.min(v, 20000) : null
-  } catch {
-    return null
-  }
-}
+ *  250 below, so a slow PC isn't kept waiting; in JavaScript, where WebAssembly can't load, 64 and 32. */
+export const futuresFor = (threads: number, wasm = false) => (wasm ? (threads >= 8 ? 500 : 250) : threads >= 8 ? 64 : 32)
 
 /**
  * A board's advice with its futures played over the pool's workers, in small slices: the same advice as
