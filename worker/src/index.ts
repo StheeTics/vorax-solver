@@ -262,8 +262,9 @@ export function d1Store(db: D1Like): Store {
       await db.prepare('INSERT OR IGNORE INTO players (day, client) VALUES (?, ?)').bind(day, client).run()
     },
     async export(after, limit) {
-      // an upload is up to 10 boards
-      const { results } = await db.prepare('SELECT id + ? AS id, received, body FROM batches WHERE id > ? ORDER BY id LIMIT ?')
+      // an upload is up to 10 boards. Ordered by the table's id, not the shifted id it's returned as: sorting by that
+      // read every later row for each page (4.3M rows a day, Oct 25)
+      const { results } = await db.prepare('SELECT id + ? AS id, received, body FROM batches WHERE id > ? ORDER BY batches.id LIMIT ?')
         .bind(BATCHES, Math.max(0, after - BATCHES), Math.ceil(limit / MAX_BATCH)).all<{ id: number; received: string; body: string }>()
       return results
     },
