@@ -5,3 +5,6 @@
 {"job": "live-data", "started": "2026-10-24T08:00:09Z", "minutes": 1, "result": "success", "note": "223 new named icons in data/live/icons.jsonl"}
 {"job": "daily-check", "started": "2026-10-24T08:00:56Z", "minutes": 4, "result": "success", "note": "57% of 240 simulated games reached 840k"}
 {"job": "smarter-player", "started": "2026-10-24T08:04:32Z", "minutes": 39, "result": "success", "note": "the challenger passed: a pull request is open"}
+{"job": "live-data", "started": "2026-10-25T08:00:02Z", "minutes": 1, "result": "success", "note": "157 new named icons in data/live/icons.jsonl"}
+{"job": "daily-check", "started": "2026-10-25T08:00:57Z", "minutes": 4, "result": "success", "note": "80% of 240 simulated games reached 840k"}
+{"job": "smarter-player", "started": "2026-10-25T08:04:30Z", "minutes": 15, "result": "success", "note": "the challenger didn't pass the gate"}
