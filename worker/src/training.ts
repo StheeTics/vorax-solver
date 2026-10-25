@@ -28,7 +28,7 @@ export interface TrainingStore {
 }
 
 export interface Card { phase: Phase; name?: string; text?: string }
-export interface Shot extends Card { uid: string; slot: number; hand: string[]; why: 'rare' | 'slow'; round?: number; build?: string; picture: string }
+export interface Shot extends Card { uid: string; slot: number; hand: string[]; why: 'rare' | 'slow'; round?: number; build?: string; picture: string; ui: number }
 
 const isPhase = (v: unknown): v is Phase => v === 'potion' || v === 'instrument' || v === 'protocol'
 const str = (v: unknown, max: number) => (typeof v === 'string' && v.length > 0 && v.length <= max ? v : undefined)
@@ -54,8 +54,11 @@ export function validateShot(raw: unknown): Shot | null {
   if (!Number.isInteger(o.slot) || (o.slot as number) < 0 || (o.slot as number) > 4) return null
   if (!Array.isArray(o.hand) || o.hand.length > 5 || !o.hand.every(h => typeof h === 'string' && h.length <= 60)) return null
   if (o.why !== 'rare' && o.why !== 'slow') return null
+  // the interface scale it was read at, which the game logged: without it the cards can't be cut right (a Solver from
+  // before Oct 25 doesn't send it)
+  if (typeof o.ui !== 'number' || !(o.ui >= 0.5 && o.ui <= 2.5)) return null
   const round = Number.isInteger(o.round) && (o.round as number) >= 1 && (o.round as number) <= 13 ? (o.round as number) : undefined
-  return { ...card, uid, picture, slot: o.slot as number, hand: o.hand as string[], why: o.why, ...(round ? { round } : {}), ...(str(o.build, 40) ? { build: o.build as string } : {}) }
+  return { ...card, uid, picture, slot: o.slot as number, hand: o.hand as string[], why: o.why, ui: Math.round((o.ui as number) * 10000) / 10000, ...(round ? { round } : {}), ...(str(o.build, 40) ? { build: o.build as string } : {}) }
 }
 
 /** The same card however its title was read: its name, or the first letters of its text (the app's trainingKey). */
@@ -83,7 +86,7 @@ const slug = (c: Card) => (c.name ?? `unknown-${c.text}`).toLowerCase().replace(
 
 /** The label block a screenshot is added to the reader's training data by (scripts/scan/pullTraining.ts). */
 const label = (s: Shot, file: string, received: string) =>
-  '```json\n' + JSON.stringify({ file, phase: s.phase, slot: s.slot, hand: s.hand, ...(s.name ? { name: s.name } : { text: s.text }), why: s.why, round: s.round, build: s.build, received }, null, 1) + '\n```'
+  '```json\n' + JSON.stringify({ file, phase: s.phase, slot: s.slot, hand: s.hand, ...(s.name ? { name: s.name } : { text: s.text }), why: s.why, round: s.round, ui: s.ui, build: s.build, received }, null, 1) + '\n```'
 
 /** Files a screenshot: commits it to the training-data branch, and opens the card's issue or comments on it. */
 export async function fileShot(store: TrainingStore, s: Shot, token: string, fetcher: Fetcher, now = new Date()): Promise<{ filed: boolean; issue?: number; why?: string }> {

@@ -94,7 +94,8 @@ export async function sendTraining(img: ImageData, r: Reading, wanted: Wanted[],
       const ask = await deps.post(`${deps.endpoint}/v1/training/ask`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(card) })
       if (!ask.ok || !((await ask.json()) as { want?: boolean }).want) continue
       picture ??= deps.jpeg(img)
-      const body = JSON.stringify({ uid: crypto.randomUUID(), ...card, slot: w.slot, hand, why: w.why, round: r.state.round, build: deps.build, picture: await picture })
+      // the interface scale it was read at (the game logs it): the reader's examples are cut at it
+      const body = JSON.stringify({ uid: crypto.randomUUID(), ...card, slot: w.slot, hand, why: w.why, round: r.state.round, ui: r.ui ?? 1, build: deps.build, picture: await picture })
       await deps.post(`${deps.endpoint}/v1/training`, { method: 'POST', headers: { 'content-type': 'application/json' }, body })
     } catch {
       // not sent: another player's screenshot will do

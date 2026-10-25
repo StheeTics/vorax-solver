@@ -52,7 +52,7 @@ describe('sending', () => {
     await sendTraining(img, r, trainingWanted(r), deps(true, posts))
     expect(posts.map(p => p.url)).toEqual(['https://collector/v1/training/ask', 'https://collector/v1/training'])
     expect(posts[0].body).toEqual({ phase: 'instrument', name: 'Egg-Burdened Butterfly' })
-    expect(posts[1].body).toMatchObject({ phase: 'instrument', name: 'Egg-Burdened Butterfly', slot: 0, hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], why: 'rare', round: 4, build: 'abc1234', picture: '/9j/AAAA' })
+    expect(posts[1].body).toMatchObject({ phase: 'instrument', name: 'Egg-Burdened Butterfly', slot: 0, hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], why: 'rare', round: 4, ui: 1, build: 'abc1234', picture: '/9j/AAAA' })
   })
   it('sends nothing the collector doesn’t want, and asks about a card once per install', async () => {
     const posts: { url: string; body: Record<string, unknown> }[] = []

@@ -19,7 +19,7 @@ const gh = async (path: string, accept = 'application/vnd.github+json') => {
   return res
 }
 
-interface Label { file: string; phase: HandPhase; slot: number; hand: string[]; name?: string; text?: string; why: string; round?: number }
+interface Label { file: string; phase: HandPhase; slot: number; hand: string[]; name?: string; text?: string; why: string; round?: number; ui?: number }
 const labels = (body: string): Label[] => [...body.matchAll(/```json\n([\s\S]*?)\n```/g)].flatMap(m => {
   try {
     return [JSON.parse(m[1]) as Label]
@@ -31,7 +31,7 @@ const labels = (body: string): Label[] => [...body.matchAll(/```json\n([\s\S]*?)
 const issues = ((await (await gh('/issues?state=open&per_page=100')).json()) as { number: number; title: string; body: string; comments: number }[])
   .filter(i => i.title.startsWith('Training Data:'))
 const known = (phase: HandPhase, n: string) => ranked(phase, 'x').some(([k]) => k === n)
-const pending: Record<string, { phase: HandPhase; hand: string[] }> = {}
+const pending: Record<string, { phase: HandPhase; hand: string[]; ui: number }> = {}
 const toName: string[] = []
 mkdirSync('training/td', { recursive: true })
 
@@ -40,7 +40,9 @@ for (const issue of issues) {
   for (const l of [issue.body, ...comments.map(c => c.body)].flatMap(labels)) {
     const local = `td/${l.file.split('/').pop()}`
     if (!existsSync(`training/${local}`)) writeFileSync(`training/${local}`, Buffer.from(await (await gh(`/contents/${l.file}?ref=${BRANCH}`, 'application/vnd.github.raw')).arrayBuffer()))
-    if (l.hand.every(n => known(l.phase, n))) pending[local] = { phase: l.phase, hand: l.hand }
+    // the scale the game logged, which the cards are cut at: a screenshot without it (before Oct 25) teaches nothing
+    if (l.ui === undefined) toName.push(`#${issue.number} ${local}: no interface scale, skipped`)
+    else if (l.hand.every(n => known(l.phase, n))) pending[local] = { phase: l.phase, hand: l.hand, ui: l.ui }
     else toName.push(`#${issue.number} ${local}: ${l.phase}, slot ${l.slot + 1} read as "${l.name ?? l.text}", hand ${JSON.stringify(l.hand)}`)
   }
 }

@@ -3,7 +3,7 @@ import { BRANCH, fileShot, SHOTS, titleOf, validateCard, validateShot, wanted, t
 import { memoryTraining } from './trainingStore'
 
 const JPEG = '/9j/4AAQSkZJRgABAQ=='
-const shot = (o: Partial<Shot> = {}): Shot => ({ uid: 'u-1234567890', phase: 'instrument', name: 'Egg-Burdened Butterfly', slot: 0, hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], why: 'rare', round: 4, picture: JPEG, ...o })
+const shot = (o: Partial<Shot> = {}): Shot => ({ uid: 'u-1234567890', phase: 'instrument', name: 'Egg-Burdened Butterfly', slot: 0, hand: ['Egg-Burdened Butterfly', 'Rawhide Restraint', 'Nettle Toggle'], why: 'rare', round: 4, ui: 0.957, picture: JPEG, ...o })
 
 /** GitHub as far as fileShot uses it, recording each call. */
 function github(o: { branch?: boolean; fail?: string } = {}) {
@@ -42,6 +42,10 @@ describe('what the collector accepts', () => {
     expect(validateShot({ ...shot(), picture: '/9j/<script>' })).toBeNull()
     expect(validateShot({ ...shot(), slot: 7 })).toBeNull()
     expect(validateShot({ ...shot(), hand: ['a', 'b', 'c', 'd', 'e', 'f'] })).toBeNull()
+    // the interface scale the game logged: a screenshot without it can't be cut right, so it's refused
+    expect(validateShot({ ...shot(), ui: undefined })).toBeNull()
+    expect(validateShot({ ...shot(), ui: 9 })).toBeNull()
+    expect(validateShot(shot({ ui: 1.0945 }))).toMatchObject({ ui: 1.0945 })
     expect(validateShot({ ...shot(), why: 'because' })).toBeNull()
   })
 })
