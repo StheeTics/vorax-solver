@@ -40,15 +40,18 @@ export function stats(total: string | undefined, aq: string | undefined): { acti
 /**
  * Archetype from the little icon above a tank's name, by colour: yellow helmet Bone Sentry, purple swirl
  * Pest, pale blue swirl Aemberon, red sun Agito. The red glass behind every icon is ignored, so "no other
- * colour" means the Agito. Right on all 138 labelled tanks.
+ * colour" means the Agito. Right on all 138 labelled tanks. A small icon (under 16 pixels, a window about 900
+ * pixels high or less) blurs into the dark glass, so its colours count from a lower brightness (issue #287: a
+ * 1306x737 window's Pest icons had 0-5 pixels at the usual 0.45, 6-14 from 0.3).
  */
 export function archetypeOf(img: Img, r: Rect): { archetype: Archetype; sure: boolean } {
   const n = { boneSentry: 0, pest: 0, aemberon: 0 }
+  const bright = r.h < 16 ? 0.3 : 0.45
   for (let y = Math.max(0, Math.floor(r.y)); y < Math.min(img.height, r.y + r.h); y++) {
     for (let x = Math.max(0, Math.floor(r.x)); x < Math.min(img.width, r.x + r.w); x++) {
       const i = (y * img.width + x) * 4
       const [h, s, v] = hsv(img.data[i], img.data[i + 1], img.data[i + 2])
-      if (v < 0.45) continue
+      if (v < bright) continue
       if (h >= 35 && h <= 65 && s >= 0.5) n.boneSentry++
       else if (h >= 255 && h <= 305 && s >= 0.5) n.pest++
       else if (h >= 190 && h <= 240 && s >= 0.25) n.aemberon++

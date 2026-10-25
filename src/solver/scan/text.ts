@@ -42,9 +42,14 @@ function otsu(img: Img, r: Rect, use: (r: number, g: number, b: number) => boole
 function testFor(img: Img, r: Rect, kind: TextKind, cut: number): (r: number, g: number, b: number) => boolean {
   if (kind === 'round') return (R, G, B) => { const [, s, v] = hsv(R, G, B); return s > 0.2 && v > 0.45 && R >= G && G >= B }
   if (kind === 'refresh') return (R, G, B) => { const [, s, v] = hsv(R, G, B); return s < 0.35 && v > 0.6 }
-  const t = Math.max(60, cut * otsu(img, r, (R, G, B) => !isRed(R, G, B)))
+  const t = Math.max(labelFloor(r.h), cut * otsu(img, r, (R, G, B) => !isRed(R, G, B)))
   return (R, G, B) => !isRed(R, G, B) && lum(R, G, B) > t
 }
+
+/** The least luminance a label's text can have: 60, but on a very small screen (a band under 14 pixels, about a
+ *  1000-pixel-high window) the digits blur into the dark and the faint totals (dull olive) fall below that, down
+ *  to 40 for a band of 10 (a 737-pixel window, issue #287). */
+export const labelFloor = (bandH: number) => Math.min(60, Math.max(40, 40 + (bandH - 10) * 5))
 
 /** How bright a label's text pixels must be, as a share of its Otsu threshold. */
 export const LABEL_CUT = 0.7

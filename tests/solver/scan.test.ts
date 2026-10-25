@@ -66,6 +66,13 @@ describe('committed fixtures (masked live frames)', () => {
     expect(r.problems).toEqual([])
     expect(r.state.tanks.map(t => t && [t.activity, t.quantity])).toEqual([[5, 139], [66, 319], [1, 306], [42, 306], [5, 329], [5, 149]])
   })
+
+  it('reads the tanks of a small window: faint 7-pixel digits and dim Pest icons (issue #287, 1306x737)', () => {
+    const r = read('small-737.png')
+    const pest = { archetype: 'pest', rarity: 'normal', activity: 1, quantity: 36 }
+    expect(r.state.tanks).toEqual([pest, pest, pest, pest, null, null])
+    expect(Object.entries(r.fields).filter(([k, f]) => k.startsWith('tank') && !f.sure).map(([k]) => k)).toEqual([])
+  })
 })
 
 
