@@ -7,17 +7,20 @@ use, copy or change it is granted beyond what is written here.
 
 You may view the source code and, while the repository is public on GitHub, use
 GitHub's own features on it as GitHub's Terms of Service allow (viewing and
-forking it on GitHub). You may open issues and send suggestions.
+forking it on GitHub). You may open issues and send suggestions. You may build
+the website and the Vorax Overlay app from this source, unmodified, and run that
+build for your own personal, non-commercial use, for example to check that it
+matches the official one.
 
-You may not modify, copy, mirror, distribute, publish, sublicense, sell, rent,
-host or run your own copy of the Software, create derivative works of it, in
-whole or in part, or use it to build or train another product, without prior
+Beyond that, you may not modify, copy, mirror, distribute, publish, sublicense,
+sell, rent or host the Software or a build of it, create derivative works of it,
+in whole or in part, or use it to build or train another product, without prior
 written permission from the copyright holder. A fork on GitHub gives no right
 to change, use or redistribute what is in it.
 
-The only permission to run the Software is to use the official website and the
-official Vorax Overlay app, as provided by the copyright holder, for your own
-personal, non-commercial use. That permission ends automatically if you break
+The only permissions to run the Software are to use the official website and the
+official Vorax Overlay app, as provided by the copyright holder, and a build of
+your own as above, for your own personal, non-commercial use. That permission ends automatically if you break
 these terms, and may be withdrawn at any time.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
