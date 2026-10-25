@@ -27,7 +27,7 @@ The futures run in WebAssembly (`wasm/`, the game engine written in Rust), about
 Sharing is on by default and has a switch in the Solver ("Share boards to improve the odds"). With it on:
 
 - **The boards it reads:** tanks, cards offered, instruments, round and the advice shown, with a random install number (to count players) and your setup (screen size and scaling, browser version) to fix misreads. No account, no name, no address.
-- **Pictures of cards it reads badly:** a small picture of a card it doesn't recognise, and sometimes one picture of the game window for a card it has almost no pictures of. These are published with the project on GitHub.
+- **Pictures, only when a card isn't read properly:** if the Solver doesn't recognise a card, or has too few examples of it to read it reliably, it sends a small picture of that card or one picture of the game window, so it can learn the card. Only the game window is ever pictured, never anything else on your screen or your computer. Each card is asked for only a few times across all players, and at most once from you. These pictures are published with the project on GitHub.
 
 The game's log never leaves your PC. Nothing is sent with sharing off. The Solver's "What can this see?" lists every detail.
 
