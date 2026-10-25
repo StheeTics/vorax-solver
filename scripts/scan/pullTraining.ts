@@ -1,5 +1,5 @@
 // Pulls the training data players' Solvers filed (worker/src/training.ts): every open "Training Data: …" issue's
-// screenshots, from the training-data branch into training/td/, with the label each carries. Labels whose hand is
+// screenshots, from the training-data branch of tidewarden/vorax-training-data into training/td/, with the label each carries. Labels whose hand is
 // all named are written to scripts/scan/training-pending.json for checking against their pictures; with --add they
 // go into scripts/scan/cards.json, ready for scripts/scan/build.ts. Unrecognised cards are listed to be named by hand.
 // Usage: GH_TOKEN=$(gh auth token --user tidewarden) npx vite-node scripts/scan/pullTraining.ts [--add]
@@ -7,7 +7,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { ranked } from '../../src/solver/scan/titles'
 import type { HandPhase } from '../../src/solver/scan/data'
 
-const REPO = 'tidewarden/vorax-solver'
+const REPO = 'tidewarden/vorax-training-data'
 const BRANCH = 'training-data'
 const token = process.env.GH_TOKEN
 if (!token) throw new Error('GH_TOKEN is needed: GH_TOKEN=$(gh auth token --user tidewarden)')

@@ -1,12 +1,13 @@
 // Training data for the Solver's reader: screenshots of cards it's short of pictures of, or couldn't settle quickly
-// (src/solver/share/training.ts). One GitHub issue per card in the private repo, "Training Data: <name>", its
-// screenshots committed to the training-data branch and shown in the issue: the first opens it, the next ones are
-// comments, and once it has SHOTS the card is no longer wanted. Any card may open an issue, with no daily limit (a
-// cap of 10 new cards a day, Oct 23–25, was used up by common cards within minutes). TRAINING_TOKEN: a fine-grained
-// token for the repo alone, Contents and Issues read and write.
+// (src/solver/share/training.ts). One GitHub issue per card, "Training Data: <name>", its screenshots committed to the
+// training-data branch and shown in the issue: the first opens it, the next ones are comments, and once it has SHOTS
+// the card is no longer wanted. Any card may open an issue, with no daily limit (a cap of 10 new cards a day, Oct
+// 23–25, was used up by common cards within minutes). All in a private repo of their own, never the code's (since
+// Oct 25): a player's screenshot can show more than the minigame. TRAINING_TOKEN: a fine-grained token for that repo
+// alone, Contents and Issues read and write.
 import names from './names.json'
 
-export const REPO = 'tidewarden/vorax-solver'
+export const REPO = 'tidewarden/vorax-training-data'
 export const BRANCH = 'training-data'
 /** screenshots per card: from several players' setups (resolutions, interface scales) */
 export const SHOTS = 10
