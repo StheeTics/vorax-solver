@@ -229,13 +229,16 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       }
       // a card the Solver couldn't name: shared (with sharing on) so it can be added for everyone, once a second look
       // after it landed still can't name it
-      if (SHARE_NEW_CARDS && !linked && r.state.phase !== 'protocol') {
+      if (!linked && r.state.phase !== 'protocol') {
         const u = confirmUnknown(unknownSeen.current, r.state.phase, r.state.round, r.problems)
         unknownSeen.current = u.seen
-        for (const p of u.share) void shareCard({ phase: r.state.phase, text: p.text ?? '', picture: cardPicture(img, p.crop) })
-        // a screenshot for the cards the reader is short of pictures of, or couldn't settle quickly (live reads only)
+        if (SHARE_NEW_CARDS) {
+          for (const p of u.share) void shareCard({ phase: r.state.phase, text: p.text ?? '', picture: cardPicture(img, p.crop) })
+          if (u.relook) setTimeout(() => snapAgain.current?.(), RELOOK_MS)
+        }
+        // a screenshot for the cards the reader is short of pictures of, or couldn't settle quickly (live reads only);
+        // not behind SHARE_NEW_CARDS, which kept it from ever being sent (Oct 23–25)
         if (trigger) void sendTraining(img, r, trainingWanted(r, new Set(u.share.map(p => p.field))))
-        if (u.relook) setTimeout(() => snapAgain.current?.(), RELOOK_MS)
       }
       keep?.(r, 'reading')
       keepAdvice.current = keep ?? null

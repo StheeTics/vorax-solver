@@ -57,8 +57,8 @@ export const SUPREME_POTIONS: PotionDef[] = [
     },
   },
   {
-    // From the user (Oct 25, 2026): every Agito awakens two tiers up, a Boss stays a Boss. The Activity an awakening
-    // gives is assumed the usual (awaken's default): not confirmed in game.
+    // Confirmed by the user (Oct 25, 2026): every Agito awakens two tiers up with the usual awakening Activity (awaken's
+    // default); a Boss stays a Boss and gains nothing, as any awakening of a Boss.
     id: 42, name: 'The Holiest Water', rarity: 'supreme', targeting: 'auto', item: 'pill',
     text: 'All {Agito}s {awaken} into monsters two tiers higher in rarity; a Boss stays a Boss',
     effect(c) {
@@ -82,8 +82,8 @@ export const SUPREME_POTIONS: PotionDef[] = [
     },
   },
   {
-    // As Osteotrophy with +333 Quantity instead: from one play only (Oct 25, 2026; Magic Pest → Magic Aemberon,
-    // 174 → 507 Quantity). To confirm in game.
+    // As Osteotrophy with +333 Quantity instead (Oct 25, 2026: Magic Pest → Magic Aemberon, 174 → 507 Quantity),
+    // confirmed by the user.
     id: 44, name: 'Xenopanacea: Brood', rarity: 'supreme', targeting: 'auto', item: 'pill',
     text: 'A random group of monsters {mutate}s into {Aemberon}s and +333 to their {qty}Quantity',
     effect(c) {
