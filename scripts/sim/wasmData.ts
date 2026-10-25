@@ -39,6 +39,7 @@ pub const TARGETING: [T; ${maxId + 1}] = [${byId(targeting, 'T::Auto').join(', '
 pub const IS_SUPREME: [bool; ${maxId + 1}] = [${byId(p => String(p.rarity === 'supreme'), 'false').join(', ')}];
 pub const POTION_OFFER: [f64; ${maxId + 1}] = [${byId(w(LIVE_WEIGHTS.potionOffer), '1.0').join(', ')}];
 pub const BOX_OFFER: [f64; ${maxId + 1}] = [${byId(w(LIVE_WEIGHTS.boxOffer), '1.0').join(', ')}];
+pub const SUPREME_OFFER: [f64; ${maxId + 1}] = [${byId(w(LIVE_WEIGHTS.supremeOffer ?? {}), '1.0').join(', ')}];
 pub const BASIC_POOL: &[u8] = &[${BASIC_POOL.map(d => d.id).join(', ')}];
 pub const ADVANCED_POOL: &[u8] = &[${ADVANCED_POOL.map(d => d.id).join(', ')}];
 /** by instrument id */

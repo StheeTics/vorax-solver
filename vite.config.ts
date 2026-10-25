@@ -19,8 +19,8 @@ const build = (() => {
 /** version.json beside the pages: open pages compare it with their own build to offer a refresh (src/ui/updateToast.ts). */
 const versionFile = { name: 'version-file', generateBundle(this: { emitFile: (f: { type: 'asset'; fileName: string; source: string }) => void }) { this.emitFile({ type: 'asset', fileName: 'version.json', source: JSON.stringify({ build }) }) } }
 
-/** Dev server only: the Solver sends its slow reads (a card's name taking 3 tries or more) here, saved to
- *  training/slow/ with what it read, so they can be studied (src/solver/live/slowReads.ts). */
+/** Dev server only: the Solver sends every board it reads here, saved to training/reads/ with what it read (slow
+ *  ones marked), so the slow cards can be studied (src/solver/live/slowReads.ts). */
 const slowReads: Plugin = {
   name: 'slow-reads',
   apply: 'serve',
@@ -31,8 +31,8 @@ const slowReads: Plugin = {
       const parts: Buffer[] = []
       req.on('data', (c: Buffer) => parts.push(c))
       req.on('end', () => {
-        mkdirSync('training/slow', { recursive: true })
-        writeFileSync(`training/slow/${m[1]}`, Buffer.concat(parts))
+        mkdirSync('training/reads', { recursive: true })
+        writeFileSync(`training/reads/${m[1]}`, Buffer.concat(parts))
         res.end('ok')
       })
     })
