@@ -1,149 +1,119 @@
 # Optimal Play
 
-How to score as high as possible in Surgical Preparation: which instruments to take, which potions to play, and why.
+How to build a run in Surgical Preparation that reaches 840,000 (the end-of-run battle bonus turns that into the rainbow reward): which instruments to take, which potions to play, and why.
 
-**Contents:** [Quick answer](#quick-answer) · [Rules that apply to every run](#rules-that-apply-to-every-run) · [Pest](#pest) · [Bone Sentry](#bone-sentry) · [Aemberon](#aemberon) · [Agito](#agito) · [How these numbers were made](#how-these-numbers-were-made)
+**Contents:** [Quick answer](#quick-answer) · [Your first instrument](#your-first-instrument) · [Your next two instruments](#your-next-two-instruments) · [The strongest builds](#the-strongest-builds) · [Potions](#potions) · [How to play the rounds](#how-to-play-the-rounds) · [How these numbers were made](#how-these-numbers-were-made)
 
 ## Quick answer
 
-**Take Incubation Sac if you can, and Lady of the Plague Quarter whenever it's offered.** When the Sac isn't offered, pick the basic that fits what's in your tanks. Every basic below is paired with the Lady of the Plague Quarter, since that's the best partner for all of them:
+- **First instrument:** Incubation Sac or Chrysalis Specimen, else Contracted Claws. Refresh the first offer if none of the three is there.
+- **Next instruments:** Black Goat Gut Suture first, then Beak of the Twice-Born, Pig Iron Bone Saw, Canine Teeth File or Fouled Scraper. Skip Nettle Toggle, Sloughed Cortex and Two-Inch Skull Nail.
+- **Potions:** play the ones that add and fuse monsters (Insect Attractant, Slough Solution, Xeno-Hormone), open Potion Kits instead of refreshing, and take a Xenopanacea most of the time.
+- **Score is Activity × Quantity, added up over all six tanks.** Every pick is about growing both on the tanks that matter.
 
-| # | Basic instrument | Archetype | Average score | Typical run (median) | Rainbow vial |
-|---|---|---|---|---|---|
-| 1 | **Incubation Sac** | Pest | **1.22M** ± 66k | 1.06M | 45% of runs |
-| 2 | **Contracted Claws** | Bone Sentry | **1.09M** ± 56k | 1.03M | 43% of runs |
-| 3 | **Chrysalis Specimen** | Pest | **1.06M** ± 54k | 959k | 38% of runs |
-| 4 | **Aberrant Sprout** | Aemberon | **855k** ± 49k | 807k | 22% of runs |
-| 5 | **Hypertrophic Pituitary** | Agito | **806k** ± 48k | 740k | 18% of runs |
+Played this way (the Solver's own advice), 79% of simulated runs reach 840,000.
 
-- **"Average score":** the expected final score with both instruments from round 1 (a third instrument is picked when you reach 28,000). The ± is the 95% margin, so builds whose ranges overlap, like Claws and Chrysalis, are close to even.
-- **Incubation Sac is the strongest basic.** Contracted Claws and Chrysalis Specimen follow, close together.
-- **Chrysalis Specimen only gets there if you plan ahead** (see [Pest](#pest)). Played one round at a time, it averages about 920k instead.
+## Your first instrument
 
-## Rules that apply to every run
+The first instrument comes in round 1, from three basic instruments. How runs went with each:
 
-- **Score = Activity × Quantity, added up over all tanks.** You need both. Activity on its own stalls, and so does Quantity.
-- **Usually, play the card that gains the most this round.** For every basic except Chrysalis Specimen, that simple rule scored better than trying to plan further ahead.
-- **With Chrysalis Specimen, plan ahead:** building up Pest groups early beats the biggest gain this round.
-- **Lady of the Plague Quarter is the best advanced instrument for every basic.** Take it whenever it's offered.
-- **Beak of the Twice-Born is the next best for most builds,** and as good as the Lady of the Plague Quarter with Incubation Sac.
-- **Pick instruments from your board, not from a fixed plan.** Choosing the instrument that fits what's in your tanks beat always forcing the same build by about 10% on average, and by more in the worst games.
-- **If none of your wanted advanced instruments are offered, refresh.**
-- **Refresh a potion hand only when nothing in it raises your score.** Otherwise play the best card.
-- **Potion Boxes and Rare Potion Kits are almost always worth taking.** They give you more cards to choose from.
-- **Weak advanced instruments:** Two-Inch Skull Nail, Aberrant Stinger, Nettle Toggle and Clustered Eggs rarely help any build.
+| First instrument | Taken in | Reached 840k | Typical final score |
+|---|---|---|---|
+| **Incubation Sac** | 37% of runs | **82%** | 1.07M |
+| **Chrysalis Specimen** | 21% | **82%** | 1.05M |
+| **Contracted Claws** | 31% | 75% | 985k |
+| Adherent Metatarsals | 5% | 80% | 1.03M |
+| Hyperplastic Frontal Lobe | 4% | 76% | 985k |
+| Aberrant Sprout | 2% | 64% | 943k |
+| Hypertrophic Pituitary | 1% | 84% (25 runs) | 945k |
+| Prismatic Liver | rarely | (5 runs) | |
 
----
+- **Incubation Sac** (+45 Quantity to every monster each time one is added, once you have 2 Pest groups) pays off every time you add a monster, all game.
+- **Chrysalis Specimen** (+8 Quantity to random groups, as many times as you have Pest groups, each round) grows with every Pest group you keep. It needs planning: build Pests early, even when another card gives more right now.
+- **Contracted Claws** (+150 Quantity to a random monster each time a non-Bone Sentry is removed) is a removal engine: it doesn't need Bone Sentries.
+- **None of the three on offer?** Refresh. The Solver refreshes the first offer in about a quarter of runs.
 
-## Pest
+## Your next two instruments
 
-Two basics. **Incubation Sac is the stronger one** (1.22M vs 1.06M with the Lady of the Plague Quarter); take Chrysalis Specimen when the Sac isn't offered.
+The second and third instruments come as rewards for reaching 8,000 and 28,000, usually by rounds 2 to 5. They come from the advanced pool. How runs went with each in the final build:
 
-- **Incubation Sac:** +45 Quantity to every monster each time a monster is added, once you have 2 or more Pest groups. Pays off immediately, every time you add.
-  - **Best partners:** Lady of the Plague Quarter or Beak of the Twice-Born (equal), then Black Goat Gut Suture, Tanned Leather Restraint, Rawhide Restraint.
-  - **Beak** adds a monster every round, which triggers the Sac every round.
-- **Chrysalis Specimen:** at the end of each round, +8 Quantity to X random groups, repeated X times, where X is your number of Pest groups. With 5 Pest groups that's 25 boosts every round, for the rest of the game.
-  - **Best partners:** Lady of the Plague Quarter, well ahead of Rawhide Restraint and Beak.
-  - **It needs planning.** It's weak until you have several Pest groups, so early rounds should go into making Pests even when another card gives more right now. Played that way it averages about 16% more than playing for each round's biggest gain.
+| Advanced instrument | In builds | Reached 840k | Typical final score |
+|---|---|---|---|
+| **Black Goat Gut Suture** | 34% | 81% | 1.07M |
+| **Pig Iron Bone Saw** | 29% | 82% | 1.01M |
+| **Fouled Scraper** | 28% | 78% | 994k |
+| **Canine Teeth File** | 21% | 83% | 1.04M |
+| Tanned Leather Restraint | 19% | 78% | 1.01M |
+| Rawhide Restraint | 15% | 79% | 978k |
+| **Beak of the Twice-Born** | 14% | **86%** | 1.12M |
+| Sinew Garrote | 9% | 77% | 1.01M |
+| Lady of the Plague Quarter | 8% | 78% | 1.04M |
+| Nettle Toggle | 6% | 64% | 903k |
+| Sloughed Cortex | 5% | 60% | 908k |
+| Vermicular Spinal Cord | 5% | 74% | 1.02M |
+| Clustered Eggs | 4% | 73% | 1.04M |
+| Egg-Burdened Butterfly, Eyelid Speculum, Two-Inch Skull Nail, Aberrant Stinger | rarely | | |
 
-**Potions**
-- **Always take:**
-  - **Insect Attractant:** adds 4 Pest groups.
-  - **Slough Solution:** fuses 1–2 groups into a Pest, which counts as an add.
-  - **Xeno-Hormone:** removes 1–2 groups and adds 4. With Incubation Sac that's 4 triggers.
-  - **Potion Boxes and Rare Potion Kits**
-- **Good:** Bewitching Tincture, Mutagenic Powder, and cards that add Pests (Targeted Xeno-Hormone, Slender-Limb Powder - Pest, Twin Hormone - Pest).
-- **Skip:** Anesthetic Tincture - Aemberon, Probiotic Enzyme Solution, Brain Fog Tincture.
+- **Black Goat Gut Suture** fuses any three monsters of the same rarity into one of the next rarity at the end of a round. With an engine that keeps adding monsters, it turns them into ever bigger ones. It's the most common partner of every strong basic.
+- **Beak of the Twice-Born** adds a monster every round (and, with all six tanks full, has the biggest eat the smallest). Every add triggers Incubation Sac: together they reach 840k in 95% of runs.
+- **Pig Iron Bone Saw, Fouled Scraper, Canine Teeth File** reward big monsters: they keep growing groups that are already large.
+- **Skip** Nettle Toggle, Sloughed Cortex and Two-Inch Skull Nail when anything better is offered.
+- **Pick from your board, not a plan.** The best instrument is the one that fits what's in your tanks now.
 
-**How to play the rounds**
-- **Get to 2 Pest groups as early as possible** with Incubation Sac, and to as many as you can with Chrysalis.
-- **Keep an empty tank or two with Incubation Sac.** An add with all 6 tanks full fails, and a failed add doesn't trigger the Sac.
-- **Use Xeno-Hormone and Slough Solution to clear tanks,** then refill them with adds.
+## The strongest builds
 
----
+The builds the Solver ends up with most often, and how they did (builds with 20 runs or more):
 
-## Bone Sentry
+| Build | Runs | Reached 840k | Typical final score |
+|---|---|---|---|
+| Black Goat Gut Suture + Canine Teeth File + Incubation Sac | 35 | **97%** | 1.22M |
+| Beak of the Twice-Born + Fouled Scraper + Incubation Sac | 23 | **96%** | 1.23M |
+| Chrysalis Specimen + Fouled Scraper + Pig Iron Bone Saw | 32 | **94%** | 1.09M |
+| Beak of the Twice-Born + Black Goat Gut Suture + Incubation Sac | 28 | **93%** | 1.21M |
+| Incubation Sac + Pig Iron Bone Saw + Tanned Leather Restraint | 23 | 91% | 975k |
+| Canine Teeth File + Chrysalis Specimen + Pig Iron Bone Saw | 22 | 91% | 1.13M |
+| Canine Teeth File + Contracted Claws + Pig Iron Bone Saw | 30 | 90% | 1.01M |
+| Black Goat Gut Suture + Incubation Sac + Tanned Leather Restraint | 53 | 89% | 1.13M |
+| Contracted Claws + Fouled Scraper + Rawhide Restraint | 26 | 88% | 980k |
+| Black Goat Gut Suture + Incubation Sac + Pig Iron Bone Saw | 82 | 87% | 1.16M |
+| Black Goat Gut Suture + Canine Teeth File + Contracted Claws | 31 | 87% | 1.18M |
+| Chrysalis Specimen + Pig Iron Bone Saw + Tanned Leather Restraint | 37 | 86% | 1.10M |
+| Black Goat Gut Suture + Contracted Claws + Pig Iron Bone Saw | 58 | 84% | 1.08M |
+| Black Goat Gut Suture + Fouled Scraper + Incubation Sac | 75 | 83% | 1.20M |
+| Black Goat Gut Suture + Contracted Claws + Fouled Scraper | 55 | 76% | 950k |
+| Contracted Claws + Fouled Scraper + Sinew Garrote | 30 | 73% | 1.04M |
+| Contracted Claws + Pig Iron Bone Saw + Sinew Garrote | 25 | 64% | 955k |
+| Chrysalis Specimen + Fouled Scraper + Nettle Toggle | 26 | 65% | 939k |
 
-**Engine:** Contracted Claws gives **+150 Quantity to a random monster each time a non-Bone Sentry monster is removed.** It doesn't need any Bone Sentries; it's a removal engine.
+No single build dominates: the most common is in only 4% of runs. The pattern is an engine (Incubation Sac, Chrysalis Specimen or Contracted Claws) plus one or two instruments that grow big monsters.
 
-**Instruments**
-- **Basic:** **Contracted Claws.**
-- **Advanced, in order:** **Lady of the Plague Quarter** (clearly first), Beak of the Twice-Born, then Pig Iron Bone Saw, Fouled Scraper, Sloughed Cortex, Canine Teeth File.
+## Potions
 
-**Potions**
-- **Always take:**
-  - **Slough Solution:** fusing removes the source groups.
-  - **Xeno-Hormone:** removes 1–2, then adds 4 more to remove later.
-  - **Potent Xenopurge Powder, Xenopurge Powder:** big Quantity plus removals.
-  - **Potion Boxes and Rare Potion Kits**
-- **Good:** Bewitching Tincture, Digestive Enzyme Solution, Targeted Xeno-Hormone.
-- **Skip:** Probiotic Enzyme Solution, Anesthetic Tincture - Aemberon, Eggshell Powder.
+How often the Solver plays each potion when it's offered (16% of hands it refreshes instead):
 
-**How to play the rounds**
-- **Think "feed and remove":** add cheap monsters, then remove them. Every non-Bone Sentry removed is +150 Quantity.
-- **Remove non-Bone Sentries.** Removing a Bone Sentry doesn't trigger Contracted Claws.
-- **Pile the Quantity you gain onto your highest-Activity group.** Xenopurge powders let you choose the target.
+- **Almost always:** Insect Attractant (69%), Xenopanacea: Osteotrophy (65%), Slough Solution (57%), Potion Kit (Large) (56%), Bewitching Tincture (53%), the other Potion Kits (48–49%), Xeno-Hormone (48%).
+- **Often:** Xenopanacea: Brood (44%), Viscous Bile Solution (43%), Twin Hormone - Pest (41%), Green Bile Solution (39%), Slender-Limb Powder - Pest (38%), Viviparous Hormone (36%).
+- **Rarely:** Anesthetic Tincture - Aemberon (5%), Osteogenic Powder (9%), Plague Quarter Peat Poultice (10%), Gray Matter Spinal Solution (10%), Osteolytic Ointment (13%), Compound Revitalizing Pill (14%).
 
----
+By engine:
 
-## Aemberon
+- **Incubation Sac:** anything that adds monsters. Insect Attractant (76%), Slough Solution, Xeno-Hormone, Potion Kits.
+- **Contracted Claws:** anything that removes monsters. Slough Solution, Xeno-Hormone (removes 1–2, then adds 4 to remove later), Potion Kits.
+- **Chrysalis Specimen:** Pests and upgrades. Twin Hormone - Pest (65%), Bewitching Tincture, Viscous Bile Solution.
 
-**Engine:** Aberrant Sprout gives **+35 Activity to every monster each time a monster mutates into an Aemberon.**
+**Xenopanacea** cards change a random monster into an Aemberon and give it +333 Activity (Osteotrophy) or +333 Quantity (Brood). On your biggest monster that's huge; on a small one it's minor, and it can break a build that needs Pests or a rarity triple. Take one most of the time, not always.
 
-**Instruments**
-- **Basic:** **Aberrant Sprout.** It beats Prismatic Liver.
-- **Advanced, in order:** Lady of the Plague Quarter and Beak of the Twice-Born (close), then Rawhide Restraint, Vermicular Spinal Cord, Canine Teeth File.
+## How to play the rounds
 
-**Potions**
-- **Always take:**
-  - **Fresh Spinal Powder:** up to 3 mutations into Aemberon, so up to 3 Sprout triggers.
-  - **Compound Revitalizing Pill:** mutates everything into Aemberons.
-  - **Potent Xenopurge Powder, Xenopurge Powder, Mutagenic Powder:** Quantity.
-  - **Potion Boxes**
-- **Good:** Slough Solution, Rare Potion Kits, Bewitching Tincture, Anesthetic Tincture - Aemberon.
-- **Skip:** cards that add random monsters (Spinal Solutions, Viviparous Hormone, Xeno-Hormones), Twin Hormone - Pest, Probiotic Enzyme Solution.
-
-**How to play the rounds**
-- **Early on, play mutation cards** to trigger Sprout. Its +35 Activity hits every monster.
-- **Then funnel Quantity** (Xenopurge, Mutagenic) into the group with the highest Activity.
-
----
-
-## Agito
-
-**Engine:** Hypertrophic Pituitary gives **+80 Activity to a random monster every round**, as long as you have a Rare or Boss Agito.
-
-**Instruments**
-- **Basic:** **Hypertrophic Pituitary.** It beats Hyperplastic Frontal Lobe.
-- **Advanced, in order:** **Lady of the Plague Quarter** (clearly first; it also raises your Agito's rarity), then Rawhide Restraint, Canine Teeth File, Beak of the Twice-Born.
-
-**Potions**
-- **Always take:**
-  - **Bewitching Tincture:** awakens one tier, the fastest way to a Rare Agito.
-  - **Potent Xenopurge Powder, Xenopurge Powder, Mutagenic Powder:** Quantity.
-  - **Potion Boxes**
-- **Good:** Anesthetic Tincture - Agito (makes a Magic Agito), Slough Solution, Rare Potion Kits, Fresh Spinal Powder.
-- **Skip:** Targeted Xeno-Hormone, Twin Hormone - Pest, Anesthetic Tincture - Aemberon, Probiotic Enzyme Solution, Viviparous Hormone, Spinal Solutions.
-
-**How to play the rounds**
-- **Your first goal is a Rare or Boss Agito.** Until you have one, Hypertrophic Pituitary does nothing.
-  - **Fastest:** Anesthetic Tincture - Agito (Magic Agito), then Bewitching Tincture (Magic → Rare).
-- **Then build Quantity:** Xenopurge, Mutagenic and Canine Teeth File.
-
----
+- **Add and fuse.** The strongest runs keep adding monsters (each add triggers Incubation Sac, each fusion feeds Black Goat Gut Suture) and turn them into a few very large groups.
+- **Reach 8,000 and 28,000 early.** Those bring your second and third instruments; most runs have all three by round 5.
+- **Keep a tank free with Incubation Sac.** An add with all six tanks full fails, and a failed add doesn't trigger the Sac.
+- **Grow the groups that are already big.** Quantity and Activity on your largest group are worth far more than on a small one.
+- **Refresh a potion hand only when nothing in it helps.** Open a Potion Kit instead of refreshing: it gives you a fresh choice and keeps your refresh.
 
 ## How these numbers were made
 
-- **Simulated games, played by this repo's own game engine,** by bots that never see the dice: they don't know which cards come next or where a random effect will land. They judge each card by its average result over many possible outcomes.
-- **Two play styles were tested on the same games:**
-  - **Round by round:** play the card with the best expected score at the end of this round.
-  - **Planning:** play out the rest of the game many times for each card, and take the best average final score.
-  - **Round by round won for every basic except Chrysalis Specimen,** where planning scored 16% more. Each build in the table uses its better style, and so does the [Vorax Helper](https://github.com/tidewarden/tli-vorax-helper) overlay.
-- **What was run:**
-  - **Basic ranking (the table above):** 208–400 games per build and play style.
-  - **Advanced-instrument order:** every basic with every advanced instrument, 1,000 games each (128,000 games), round by round.
-  - **Board-aware picking vs fixed plans:** 800 games each, same starting boards.
-- **Caveats:**
-  - **Scores follow this simulator's rules.** Card odds, spawn weights and some rule details are best guesses (see the README). If the real game differs, so do the numbers.
-  - **The potion lists come from how the cards work and from an earlier version of these simulations.** They haven't been re-checked with the current bots.
-  - **A better player could score more.** Neither play style is perfect; the planning bot's look-ahead is noisy, which is why it loses outside Chrysalis.
+- **2,000 simulated runs,** played by the Solver's own advice: every option played out to the end of the run 500 times, at the live game's measured odds (October 25, 2026). The engine is this project's simulator; its rules and odds are checked against boards from real games.
+- **Runs, not causes.** A build's numbers include the boards it was chosen on: the Solver takes Black Goat Gut Suture when the board suits it, so its runs started from boards that suited it. Read them as "how runs with this build went when the advice chose it".
+- **Real games agree on the leaders:** in 3,841 games played with the Solver (October 19–23), Black Goat Gut Suture was the most common advanced instrument and the best-scoring of the common ones, and Incubation Sac and Contracted Claws the most common first picks.
+- **The rules can differ from the game.** If a card works differently in the game than in the simulator, the numbers for it are off; please [report it](https://github.com/tidewarden/tli-vorax-simulator/issues/new/choose).

@@ -22,7 +22,7 @@ it('links card names, preferring the longest name and skipping generic plurals',
 
 it('links the cards named in the guide', () => {
   const names = refs(page(renderGuide(guideMd)))
-  for (const n of ['Incubation Sac', 'Contracted Claws', 'Beak of the Twice-Born', 'Insect Attractant', 'Anesthetic Tincture - Agito']) {
+  for (const n of ['Incubation Sac', 'Contracted Claws', 'Beak of the Twice-Born', 'Insect Attractant', 'Anesthetic Tincture - Aemberon']) {
     expect(names).toContain(n)
   }
 })
