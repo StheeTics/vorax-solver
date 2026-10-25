@@ -60,9 +60,14 @@ export function ReportBox({ reading, corrections, source, frame, advice }: Props
   }
   // the picture goes on the clipboard (to paste into the issue) in the same click that opens it: a link opened
   // after waiting for the picture would be blocked as a popup
+  // (and the issue opens whatever happens to the picture)
   const report = () => {
-    if (frame && typeof ClipboardItem !== 'undefined')
-      navigator.clipboard.write([new ClipboardItem({ 'image/png': toPng(frame) })]).then(() => setShot('copied'), () => setShot('failed'))
+    try {
+      if (frame && typeof ClipboardItem !== 'undefined')
+        navigator.clipboard.write([new ClipboardItem({ 'image/png': toPng(frame) })]).then(() => setShot('copied'), () => setShot('failed'))
+    } catch {
+      setShot('failed')
+    }
     window.open(url, '_blank', 'noopener,noreferrer')
   }
   const save = async () => {

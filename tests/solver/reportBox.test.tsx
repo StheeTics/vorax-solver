@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { ReportBox } from '@/solver/report/ReportBox'
 import { emptyState, type Reading } from '@/solver/types'
 
+// no canvas here to make the PNG
+vi.mock('@/solver/live/windowCapture', () => ({ toPng: () => Promise.resolve(new Blob()) }))
+
 const base: Reading = { state: emptyState(), fields: {}, problems: [], frame: { width: 10, height: 10 } }
 
 it('open by itself for an unknown card: Copy report and the GitHub issue', () => {
@@ -44,4 +47,17 @@ it('with a screenshot: copies it to paste into the issue, in the same click that
 it('nothing before a board is read', () => {
   const { container } = render(<ReportBox reading={null} corrections={{}} source="live" frame={null} />)
   expect(container.textContent).toBe('')
+})
+
+it('the issue opens even when the screenshot can\'t be copied', () => {
+  const open = vi.spyOn(window, 'open').mockReturnValue(null)
+  Object.assign(navigator, { clipboard: { write: () => { throw new Error('no clipboard') } } })
+  vi.stubGlobal('ClipboardItem', class { constructor(public items: Record<string, unknown>) {} })
+  render(<ReportBox reading={base} corrections={{}} source="live" frame={{ width: 1, height: 1, data: new Uint8ClampedArray(4) } as ImageData} />)
+  fireEvent.click(screen.getByRole('button', { name: 'Report this board' }))
+  fireEvent.click(screen.getByRole('button', { name: 'Copy screenshot and open an issue' }))
+  expect(open).toHaveBeenCalledTimes(1)
+  expect(screen.getByText(/couldn’t be copied/)).toBeTruthy()
+  open.mockRestore()
+  vi.unstubAllGlobals()
 })
