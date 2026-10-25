@@ -12,7 +12,7 @@ const reading: Reading = {
 
 it('report lists every problem', () => {
   const r = buildReport(reading, ctx)
-  expect(r.startsWith('### Solver reading report')).toBe(true)
+  expect(r.startsWith('### Solver board report')).toBe(true)
   expect(r).toContain('card 2 not recognised; tank 4 Activity unreadable')
   expect(r).toContain('Solver: vabc1234 · Chrome 141 · Windows')
   expect(r).toContain('Frame: 2560×1440, source: live (trigger: board)')
@@ -53,4 +53,19 @@ it('issueLink falls back past 7500 characters', () => {
 it('the issue template has the report fields', () => {
   const t = readFileSync('.github/ISSUE_TEMPLATE/solver-reading.yml', 'utf8')
   for (const line of ['id: report', 'id: actual', 'id: screenshots', 'labels: [solver-reading]']) expect(t).toContain(line)
+})
+
+it('the advice shown, every option best first with its predicted end', () => {
+  const board = { ...emptyState(), phase: 'potion' as const, round: 4, hand: ['Xeno-Hormone', 'Slough Solution'] }
+  const advice = {
+    best: { index: 1, targets: [0], value: 900000, end: { activity: 912345, reached: 0.62 } },
+    ranking: [{ index: 1, targets: [0], value: 900000, end: { activity: 912345, reached: 0.62 } }, { index: 0, targets: [], value: 850000, end: { activity: 850000, reached: 0.48 } }],
+    board: 12000, refreshEnd: { activity: 870000, reached: 0.5 }, plan: true, final: true, ms: 84.4, unknown: [],
+  }
+  const r = buildReport(reading, { ...ctx, advice: { board, advice } })
+  expect(r).toContain('- Advice (final, 84 ms): Play Slough Solution (card 2) → tank 1')
+  expect(r).toContain('  - Play Slough Solution (card 2) → tank 1: 912,345 · 62% rainbow')
+  expect(r).toContain('  - Play Xeno-Hormone (card 1): 850,000 · 48% rainbow')
+  expect(r).toContain('  - Refresh: 870,000 · 50% rainbow')
+  expect(buildReport(reading, ctx)).not.toContain('Advice')
 })

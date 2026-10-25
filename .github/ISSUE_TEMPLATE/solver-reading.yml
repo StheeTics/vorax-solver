@@ -1,21 +1,21 @@
 name: Solver misread my screen
-description: The Solver read a card, number or tank differently from your game.
+description: The Solver read a card, number or tank differently from your game, or its advice looks wrong.
 labels: [solver-reading]
 body:
   - type: textarea
     id: report
     attributes:
-      label: What the Solver read
-      description: Paste the report from the Solver.
+      label: What the Solver read and advised
+      description: Filled in by the Solver's Report this board, or paste its report here.
     validations:
       required: true
   - type: textarea
     id: actual
     attributes:
       label: What the game shows
-      description: The card names, numbers or tanks as your game shows them.
+      description: The card names, numbers or tanks as your game shows them, or why the advice looks wrong.
   - type: textarea
     id: screenshots
     attributes:
       label: Screenshots
-      description: Drag the PNGs you saved from the Solver here.
+      description: Paste the screenshot the Solver copied (Ctrl+V), or drag in the PNGs you saved from it.

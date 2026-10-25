@@ -399,7 +399,7 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       <p className={styles.note}>If something here doesn’t match the game, correct it and the advice above follows.</p>
       <BoardPanel state={state} fields={fields} onChange={edit} shelley={shelley} onShelley={changeShelley} />
       <div id="report">
-        <ReportBox reading={reading} corrections={corrections} source={source} frame={frame} />
+        <ReportBox reading={reading} corrections={corrections} source={source} frame={frame} advice={advice ? { board, advice } : null} />
       </div>
     </main>
   )

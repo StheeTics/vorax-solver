@@ -1,9 +1,12 @@
-// The text a player pastes into a GitHub issue when the Solver misreads their screen, and the link that
-// opens the issue form with it filled in. It holds what was read and nothing from the log or the picture.
+// The text a player pastes into a GitHub issue when the Solver misreads their screen or advises oddly, and the link
+// that opens the issue form with it filled in. It holds what was read and the advice shown, nothing from the log;
+// the screenshot goes on the clipboard, for the player to paste into the issue.
 import { SOLVER_ISSUE_URL } from '@/ui/links'
+import type { Advice, ScreenState } from '@/strategy/advisor'
+import { describe as move, predicted } from '../advice/describe'
 import type { FieldKey, Problem, Reading, Source } from '../types'
 
-export interface ReportContext { build: string; userAgent: string; source: Source; corrections: Record<FieldKey, string> }
+export interface ReportContext { build: string; userAgent: string; source: Source; corrections: Record<FieldKey, string>; advice?: { board: ScreenState; advice: Advice } | null }
 
 const MAX_URL = 7500
 
@@ -29,7 +32,7 @@ export function buildReport(r: Reading, ctx: ReportContext): string {
       .map(([k, f]) => [k, `${f.guess ?? '?'}${f.score !== undefined ? ` (score ${f.score.toFixed(2)} vs ${(f.second ?? 0).toFixed(2)})` : ''}`]),
   )
   const lines = [
-    '### Solver reading report',
+    '### Solver board report',
     `- Problem: ${r.problems.map(describe).join('; ') || 'none flagged'}`,
     `- Solver: v${ctx.build} · ${browser(ctx.userAgent)}`,
     `- Frame: ${r.frame ? `${r.frame.width}×${r.frame.height}` : 'unknown'}, source: ${ctx.source}${r.frame?.trigger ? ` (trigger: ${r.frame.trigger})` : ''}`,
@@ -41,10 +44,21 @@ export function buildReport(r: Reading, ctx: ReportContext): string {
   ]
   const fixes = Object.entries(ctx.corrections)
   if (fixes.length) lines.push(`- Your corrections: ${fixes.map(([k, v]) => `${k} ${v}`).join(', ')}`)
+  if (ctx.advice) lines.push(...adviceLines(ctx.advice.board, ctx.advice.advice))
   return lines.join('\n')
 }
 
-export const reportTitle = (r: Reading) => `Solver: ${r.problems.length ? describe(r.problems[0]) : 'reading was wrong'}`
+/** The advice as the panel showed it: every option, best first, with what it's predicted to end at. */
+function adviceLines(board: ScreenState, a: Advice): string[] {
+  const value = (r: Advice['ranking'][number]) => (r.end ? predicted(r.end) : `${Math.round(r.value).toLocaleString()}${a.plan ? '' : ' this round'}`)
+  return [
+    `- Advice (${a.final ? 'final' : 'still working'}, ${Math.round(a.ms)} ms): ${a.best === 'refresh' ? 'Refresh' : a.best ? move(a.best, board, true) : a.note ?? 'any choice'}`,
+    ...a.ranking.map(r => `  - ${move(r, board, true)}: ${value(r)}`),
+    ...(a.refreshEnd ? [`  - Refresh: ${predicted(a.refreshEnd)}`] : []),
+  ]
+}
+
+export const reportTitle = (r: Reading) => `Solver: ${r.problems.length ? describe(r.problems[0]) : 'board report'}`
 
 export function issueLink(title: string, report: string): { url: string; prefilled: boolean } {
   const full = `${SOLVER_ISSUE_URL}?${new URLSearchParams({ template: 'solver-reading.yml', title, report })}`
