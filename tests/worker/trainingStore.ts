@@ -22,8 +22,5 @@ export function memoryTraining(): TrainingStore & { rows: Map<string, TrainingRo
     async dropTraining(key) {
       rows.delete(key)
     },
-    async trainingSince(day) {
-      return [...rows.values()].filter(r => r.created >= day).length
-    },
   }
 }

@@ -312,10 +312,6 @@ export function d1Store(db: D1Like): Store {
     async dropTraining(key) {
       await db.prepare('DELETE FROM training WHERE key = ?').bind(key).run()
     },
-    async trainingSince(day) {
-      const row = await db.prepare('SELECT COUNT(*) AS n FROM training WHERE created >= ?').bind(day).first<{ n: number }>()
-      return row?.n ?? 0
-    },
     async dayCounts() {
       // a row per player per day, in key order: thousands of rows, not every board
       const { results } = await db.prepare('SELECT day, COUNT(*) AS players FROM players GROUP BY day ORDER BY day').bind().all<DayCount>()

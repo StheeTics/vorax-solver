@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { BRANCH, fileShot, NEW_A_DAY, SHOTS, titleOf, validateCard, validateShot, wanted, type Shot } from '../../worker/src/training'
+import { BRANCH, fileShot, SHOTS, titleOf, validateCard, validateShot, wanted, type Shot } from '../../worker/src/training'
 import { memoryTraining } from './trainingStore'
 
 const JPEG = '/9j/4AAQSkZJRgABAQ=='
@@ -78,16 +78,12 @@ describe('one issue per card, three screenshots each', () => {
     await fileShot(store, shot({ ...holiest, uid: 'u-2', text: 'The Holiest Water | All Agitoes' }), 'token', gh.fetcher)
     expect(gh.calls.filter(c => c.path === '/issues')).toHaveLength(1)
   })
-  it(`at most ${NEW_A_DAY} new issues a day`, async () => {
+  it('no daily limit on new cards: every card that reads badly may open its issue', async () => {
     const store = memoryTraining()
     const gh = github()
-    const day = new Date('2026-10-23T12:00:00Z')
-    const instruments = ['Aberrant Stinger', 'Chrysalis Specimen', 'Egg-Burdened Butterfly', 'Eyelid Speculum', 'Lady of the Plague Quarter', 'Canine Teeth File', 'Rawhide Restraint', 'Nettle Toggle', 'Sinew Garrote', 'Fouled Scraper', 'Contracted Claws']
-    for (const name of instruments.slice(0, NEW_A_DAY)) await fileShot(store, shot({ name, uid: name }), 'token', gh.fetcher, day)
-    expect(await wanted(store, { phase: 'instrument', name: instruments[NEW_A_DAY] }, day)).toBe(false)
-    expect(await fileShot(store, shot({ name: instruments[NEW_A_DAY], uid: 'x' }), 'token', gh.fetcher, day)).toEqual({ filed: false, why: 'enough new cards today' })
-    // the next day there's room again
-    expect(await wanted(store, { phase: 'instrument', name: instruments[NEW_A_DAY] }, new Date('2026-10-24T12:00:00Z'))).toBe(true)
+    const instruments = ['Aberrant Stinger', 'Chrysalis Specimen', 'Egg-Burdened Butterfly', 'Eyelid Speculum', 'Lady of the Plague Quarter', 'Canine Teeth File', 'Rawhide Restraint', 'Nettle Toggle', 'Sinew Garrote', 'Fouled Scraper', 'Contracted Claws', 'Incubation Sac']
+    for (const name of instruments) expect(await fileShot(store, shot({ name, uid: name }), 'token', gh.fetcher)).toMatchObject({ filed: true })
+    expect(gh.calls.filter(c => c.path === '/issues')).toHaveLength(instruments.length)
   })
   it('a card whose issue failed to open is wanted again, not stuck', async () => {
     const store = memoryTraining()

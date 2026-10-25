@@ -1,15 +1,15 @@
 // Training data for the Solver's reader: screenshots of cards it's short of pictures of, or couldn't settle quickly
 // (src/solver/share/training.ts). One GitHub issue per card in the private repo, "Training Data: <name>", its
-// screenshots committed to the training-data branch and shown in the issue: the first opens it, the next two are
-// comments, then the card is no longer wanted. New issues are capped a day. TRAINING_TOKEN: a fine-grained token
-// for the repo alone, Contents and Issues read and write.
+// screenshots committed to the training-data branch and shown in the issue: the first opens it, the next ones are
+// comments, and once it has SHOTS the card is no longer wanted. Any card may open an issue, with no daily limit (a
+// cap of 10 new cards a day, Oct 23–25, was used up by common cards within minutes). TRAINING_TOKEN: a fine-grained
+// token for the repo alone, Contents and Issues read and write.
 import names from './names.json'
 
 export const REPO = 'tidewarden/vorax-solver'
 export const BRANCH = 'training-data'
-/** screenshots per card */
-export const SHOTS = 3
-export const NEW_A_DAY = 10
+/** screenshots per card: from several players' setups (resolutions, interface scales) */
+export const SHOTS = 10
 /** a JPEG of the game window, base64: about 1-2 MB at 3440x1440 */
 export const MAX_PICTURE = 3_000_000
 export const MAX_ASK = 2_000
@@ -25,8 +25,6 @@ export interface TrainingStore {
   setTrainingIssue(key: string, issue: number): Promise<void>
   addTrainingShot(key: string): Promise<void>
   dropTraining(key: string): Promise<void>
-  /** issues opened since this ISO day */
-  trainingSince(day: string): Promise<number>
 }
 
 export interface Card { phase: Phase; name?: string; text?: string }
@@ -65,12 +63,10 @@ export const keyOf = (c: Card) => `${c.phase}:${c.name ?? `?${(c.text ?? '').toL
 export const titleOf = (c: Card) =>
   c.name ? `Training Data: ${c.name}` : `Training Data: unknown ${c.phase} "${(c.text ?? '').replace(/\s+/g, ' ').trim().slice(0, 40)}"`
 
-/** Whether a screenshot of this card is still wanted: fewer than SHOTS on its issue, or no issue and the day's
- *  new ones not used up. */
-export async function wanted(store: TrainingStore, card: Card, now = new Date()): Promise<boolean> {
+/** Whether a screenshot of this card is still wanted: fewer than SHOTS on its issue, or no issue yet. */
+export async function wanted(store: TrainingStore, card: Card): Promise<boolean> {
   const row = await store.training(keyOf(card))
-  if (row) return row.issue !== null && row.shots < SHOTS
-  return (await store.trainingSince(now.toISOString().slice(0, 10))) < NEW_A_DAY
+  return row ? row.issue !== null && row.shots < SHOTS : true
 }
 
 type Fetcher = (url: string, init?: RequestInit) => Promise<Response>
@@ -96,7 +92,6 @@ export async function fileShot(store: TrainingStore, s: Shot, token: string, fet
   let row = await store.training(key)
   let fresh = false
   if (!row) {
-    if ((await store.trainingSince(received.slice(0, 10))) >= NEW_A_DAY) return { filed: false, why: 'enough new cards today' }
     fresh = await store.claimTraining(key, titleOf(s), received)
     row = await store.training(key)
   }
