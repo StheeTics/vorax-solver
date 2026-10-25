@@ -55,8 +55,8 @@ let askId = 0
 /** How long after a pick the Solver looks at the panel again: long enough for the new icon to land at the
  *  game's normal speed (the first picture is taken 0.4 s after the log goes quiet, measured at x4). */
 const RELOOK_MS = 1500
-/** Off while cards cut off mid-slide or under a hover are still shared as new ones (Oct 21). */
-const SHARE_NEW_CARDS = false
+/** An unrecognised card is shared as a new one (off Oct 21–25: cards cut off mid-slide or under a hover were shared too). */
+const SHARE_NEW_CARDS = true
 
 
 export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
