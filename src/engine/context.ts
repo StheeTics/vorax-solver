@@ -48,11 +48,19 @@ export function createContext(init: ContextInit): EffectContext {
   let depth = 0
   let cutoffLogged = false
 
-  const reactive = () =>
-    [...init.instruments]
-      .sort((a, b) => a.id - b.id)
-      .map(i => init.registry(i.id))
-      .filter((d): d is InstrumentDef => !!d && d.timing.kind === 'reactive' && !!d.onEvent)
+  // worked out again only when an instrument is added: every event asks for it
+  let reacting: InstrumentDef[] = []
+  let reactingFor = -1
+  const reactive = () => {
+    if (reactingFor !== init.instruments.length) {
+      reactingFor = init.instruments.length
+      reacting = [...init.instruments]
+        .sort((a, b) => a.id - b.id)
+        .map(i => init.registry(i.id))
+        .filter((d): d is InstrumentDef => !!d && d.timing.kind === 'reactive' && !!d.onEvent)
+    }
+    return reacting
+  }
 
   const emit = (e: GameEvent) => {
     init.onEvent?.(e)
