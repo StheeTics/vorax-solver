@@ -28,8 +28,7 @@ against a salted hash that changes daily. An upload is one row in `batches`, and
 
 ## Setup (once, about 10 minutes)
 
-Use the Cloudflare account for the tidewarden identity. Its `*.workers.dev` subdomain is public, so pick
-a neutral one. From this folder, with Node 20+:
+From this folder, with Node 20+:
 
 ```
 npx wrangler login

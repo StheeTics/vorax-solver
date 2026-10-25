@@ -71,7 +71,7 @@ cd "$CLONE"
 [ -f "$ENV_FILE" ] && { set -a; . "$ENV_FILE"; set +a; }
 case "$(git config user.email)" in
   *tidewarden*) ;;
-  *) echo "The clone's git identity isn't tidewarden's: $(git config user.email)" >&2; exit 1 ;;
+  *) echo "The clone's git identity isn't the project's: $(git config user.email)" >&2; exit 1 ;;
 esac
 
 stamp=$(date +%Y-%m-%d-%H%M)
