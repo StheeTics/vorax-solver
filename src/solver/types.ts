@@ -68,8 +68,10 @@ export interface ReadTiming {
   /** reading the board's pixels, then the cards' names */
   pixels?: number
   names?: number
-  /** per card, the step that read its name (titles.ts): 1 the title alone, 2 half size, 3 as before, 4 none */
+  /** per card, the step that read its name (titles.ts): 0 its picture, 1 the title alone, 2 half size, 3 as before, 4 none */
   steps?: number[]
+  /** per card, how long its name took */
+  cardMs?: number[]
 }
 
 export const emptyState = (): ScreenState => ({ tanks: [null, null, null, null, null, null], hand: [], instruments: [], phase: 'potion', round: 1, potionRefreshes: POTION_REFRESHES })

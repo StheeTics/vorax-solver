@@ -22,18 +22,19 @@ pub extern "C" fn set_model(per: u32) {
     MODEL = if per == 0 { None } else { Some(Model { rounds: (0..ROUNDS).map(|r| WEIGHTS[r * FEATURES..r * FEATURES + per as usize].to_vec()).collect() }) };
   }
 }
-/** the odds at BUF: supreme chance, spawn rarities (4), potion offers (42), box offers (42), basic (26) and advanced (26) instrument offers */
+/** the odds at BUF: supreme chance, spawn rarities (4), potion and box offers (by potion id), basic and advanced instrument offers (by instrument id) */
 #[no_mangle]
 #[allow(static_mut_refs)]
 pub extern "C" fn set_odds() {
   let b = the_buf();
   let o = unsafe { &mut ODDS };
+  use data::{INSTRUMENTS as I, POTIONS as P};
   o.supreme = b[0];
   o.spawn.copy_from_slice(&b[1..5]);
-  o.potion.copy_from_slice(&b[5..47]);
-  o.boxed.copy_from_slice(&b[47..89]);
-  o.basic.copy_from_slice(&b[89..115]);
-  o.advanced.copy_from_slice(&b[115..141]);
+  o.potion.copy_from_slice(&b[5..5 + P]);
+  o.boxed.copy_from_slice(&b[5 + P..5 + 2 * P]);
+  o.basic.copy_from_slice(&b[5 + 2 * P..5 + 2 * P + I]);
+  o.advanced.copy_from_slice(&b[5 + 2 * P + I..5 + 2 * P + 2 * I]);
 }
 #[allow(static_mut_refs)]
 fn player(samples: u32, value: u32) -> Player<'static> { Player { samples, model: if value != 0 { unsafe { MODEL.as_ref() } } else { None } } }

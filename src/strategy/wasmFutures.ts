@@ -32,8 +32,9 @@ export class WasmFutures {
     const b = this.view()
     const byId = <T extends { id: number; name: string }>(list: T[], n: number, table: Record<string, number>) =>
       Array.from({ length: n }, (_, id) => { const d = list.find(x => x.id === id); return d ? table[d.name] ?? 1 : 1 })
-    b.set([o.supremeChance, ...RARITIES.map(r => o.spawnRarity[r]), ...byId(POTIONS, 42, o.potionOffer), ...byId(POTIONS, 42, o.boxOffer),
-      ...byId(INSTRUMENTS, 26, o.instrumentOffer.basic), ...byId(INSTRUMENTS, 26, o.instrumentOffer.advanced)], 0)
+    const P = Math.max(...POTIONS.map(p => p.id)) + 1, I = Math.max(...INSTRUMENTS.map(d => d.id)) + 1
+    b.set([o.supremeChance, ...RARITIES.map(r => o.spawnRarity[r]), ...byId(POTIONS, P, o.potionOffer), ...byId(POTIONS, P, o.boxOffer),
+      ...byId(INSTRUMENTS, I, o.instrumentOffer.basic), ...byId(INSTRUMENTS, I, o.instrumentOffer.advanced)], 0)
     this.x.set_odds()
   }
   private view() { return new Float64Array(this.x.memory.buffer, this.x.buf(), 8192) }

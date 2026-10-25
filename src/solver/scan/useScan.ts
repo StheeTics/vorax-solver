@@ -81,7 +81,9 @@ export function useScan(textReader: () => Promise<ReadText | null> = browserText
       const t1 = Date.now()
       const reading = await readTitles(img, board, readText, slots(img, local, board.ui))
       const names = Date.now() - t1
-      console.info(`[timing] board pixels ${t1 - t0} ms, card names ${names} ms (${img.width}x${img.height})${reading.timing?.steps?.length ? `, name steps ${reading.timing.steps.join(',')} (${reading.state.hand.join(', ')})` : ''}`)
+      // each card: its name, the step that read it (0 its picture, 1 the title alone, 2-3 the whole title, 4 none) and its time
+      const cards = reading.state.hand.map((n, j) => `${n || '?'} [step ${reading.timing?.steps?.[j] ?? '-'}, ${reading.timing?.cardMs?.[j] ?? '-'} ms]`)
+      console.info(`[timing] board pixels ${t1 - t0} ms, card names ${names} ms (${img.width}x${img.height})${cards.length ? `: ${cards.join(', ')}` : ''}`)
       return { ...reading, timing: { ...reading.timing, pixels: t1 - t0, names } }
     },
     [pixels, slots, textReader],

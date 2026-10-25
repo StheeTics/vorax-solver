@@ -188,8 +188,9 @@ export function SolverApp({ scanner }: { scanner?: Scanner } = {}) {
       const read$ = await read(img, trigger, refs ?? local, trigger ? loggedUi.current : undefined)
       const ms = Date.now() - readFrom
       console.info(`[timing] read the screen in ${ms} ms`)
-      if (slowReadsOn() && isSlow(read$))
-        void sendSlow(img, { ...read$, timing: { ...read$.timing, ...snap } }).then(f => console.info(`[timing] slow read saved: ${f}`), () => {})
+      // on the dev server, every board is saved with its read (slow ones marked), to study which cards read slowly
+      if (slowReadsOn() && read$.state.hand.length)
+        void sendSlow(img, { ...read$, timing: { ...read$.timing, ...snap } }).then(f => console.info(`[timing] ${isSlow(read$) ? 'slow ' : ''}read saved: ${f}`), () => {})
       // a slow read (a card's name taking every try) finishing after a later picture's: that board is gone
       if (seq < applied.current) return console.info(`[timing] dropped the read of an older picture`)
       applied.current = seq

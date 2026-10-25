@@ -57,6 +57,43 @@ export const SUPREME_POTIONS: PotionDef[] = [
     },
   },
   {
+    // From the user (Oct 25, 2026): every Agito awakens two tiers up, a Boss stays a Boss. The Activity an awakening
+    // gives is assumed the usual (awaken's default): not confirmed in game.
+    id: 42, name: 'The Holiest Water', rarity: 'supreme', targeting: 'auto', item: 'pill',
+    text: 'All {Agito}s {awaken} into monsters two tiers higher in rarity; a Boss stays a Boss',
+    effect(c) {
+      for (const t of c.byArchetype('agito')) {
+        const r = c.tanks[t]!.rarity
+        c.awaken(t, RARITIES[Math.min(RARITIES.indexOf(r) + 2, RARITIES.length - 1)])
+      }
+    },
+  },
+  {
+    // Worked out from a live game (Oct 25, 2026: four plays, the user's board read before and after): a random group
+    // (the player doesn't choose) turns into an Aemberon of a rolled rarity (Normal→Magic, Rare→Magic, Normal→Normal,
+    // Magic→Normal) and gains 333 Activity. The card itself prints only flavour text.
+    id: 43, name: 'Xenopanacea: Osteotrophy', rarity: 'supreme', targeting: 'auto', item: 'pill',
+    text: 'A random group of monsters {mutate}s into {Aemberon}s and +333 to their {act}Activity',
+    effect(c) {
+      const t = c.rng.pick(c.nonEmpty())
+      if (t === undefined) return
+      c.mutate(t, 'aemberon', 'random')
+      c.boost(t, 333, 0)
+    },
+  },
+  {
+    // As Osteotrophy with +333 Quantity instead: from one play only (Oct 25, 2026; Magic Pest → Magic Aemberon,
+    // 174 → 507 Quantity). To confirm in game.
+    id: 44, name: 'Xenopanacea: Brood', rarity: 'supreme', targeting: 'auto', item: 'pill',
+    text: 'A random group of monsters {mutate}s into {Aemberon}s and +333 to their {qty}Quantity',
+    effect(c) {
+      const t = c.rng.pick(c.nonEmpty())
+      if (t === undefined) return
+      c.mutate(t, 'aemberon', 'random')
+      c.boost(t, 0, 333)
+    },
+  },
+  {
     id: 41, name: 'Rousing Salts', rarity: 'supreme', targeting: 'auto', item: 'pill',
     text: 'Select 1 random group(s) of monsters, +111 {act}Activity and +111 to their {qty}Quantity',
     effect(c) {

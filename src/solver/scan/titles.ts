@@ -178,7 +178,13 @@ export function wholeName(phase: HandPhase, text: string): string | null {
 /** One card's title text, read in steps (above): the first that settles it, else the best that was read; step:
  *  which one read it (4: none settled it). pictured: the card's name from its picture, when that match is sure,
  *  found while the first step reads; it settles the card (step 0) unless that step settled it sooner. */
-export async function readTitle(crop: Img, phases: HandPhase[], readText: ReadText, pictured?: Promise<string | null>): Promise<{ text: string; step: number; name?: string }> {
+export async function readTitle(crop: Img, phases: HandPhase[], readText: ReadText, pictured?: Promise<string | null>): Promise<{ text: string; step: number; name?: string; ms: number }> {
+  const t0 = Date.now()
+  const r = await readTitleSteps(crop, phases, readText, pictured)
+  return { ...r, ms: Date.now() - t0 }
+}
+
+async function readTitleSteps(crop: Img, phases: HandPhase[], readText: ReadText, pictured?: Promise<string | null>): Promise<{ text: string; step: number; name?: string }> {
   const read = (img: Img) => readText(img).catch(() => '')
   const window = titleWindow(crop)
   const first = window ? read(window) : Promise.resolve('')
@@ -232,11 +238,13 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
   const byPicture: Promise<PictureRead | undefined>[] =
     phases.length === 1 && pictures && !read ? handAt(l, size0).map((_, j) => pictures(header, size0, [j]).then(r => r[j], () => undefined)) : []
   let steps: number[] = []
+  let cardMs: number[] = []
   let pictured: (string | undefined)[] = []
   const titles = async (size: number) => {
     const reads = await Promise.all(handAt(l, size).map((c, j) => readTitle(titleCrop(img, c, l.k), phases, readText, byPicture[j]?.then(pictureSure))))
     const texts = reads.map(r => r.text)
     steps = reads.map(r => r.step)
+    cardMs = reads.map(r => r.ms)
     pictured = reads.map(r => r.name)
     // A card raised by the mouse can cover the header: then the names say which pick it is.
     return phases
@@ -307,7 +315,7 @@ export async function readTitles(img: Img, reading: Reading, readText: ReadText,
     if (phase === 'potion') state.potionRefreshes = left
     else state.instrumentRefreshes = left
   }
-  const out: Reading = { ...reading, state, fields, problems, handRanks: pos.map((_, j) => pics[j]?.ranks ?? []), timing: { ...reading.timing, steps } }
+  const out: Reading = { ...reading, state, fields, problems, handRanks: pos.map((_, j) => pics[j]?.ranks ?? []), timing: { ...reading.timing, steps, cardMs } }
   delete out.handPending
   return out
 }

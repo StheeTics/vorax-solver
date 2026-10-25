@@ -23,7 +23,7 @@ const MAX_CHAIN_DEPTH: u32 = 8;
 
 /** The deal's odds: the generated ones (data.rs) until the page hands over the current ones (set_odds), as the
  *  nightly loop updates them without a rebuild. Potions and instruments by id. */
-pub struct Odds { pub supreme: f64, pub spawn: [f64; 4], pub potion: [f64; 42], pub boxed: [f64; 42], pub basic: [f64; 26], pub advanced: [f64; 26] }
+pub struct Odds { pub supreme: f64, pub spawn: [f64; 4], pub potion: [f64; POTIONS], pub boxed: [f64; POTIONS], pub basic: [f64; INSTRUMENTS], pub advanced: [f64; INSTRUMENTS] }
 pub static mut ODDS: Odds = Odds { supreme: SUPREME_CHANCE, spawn: SPAWN, potion: POTION_OFFER, boxed: BOX_OFFER, basic: BASIC_OFFER, advanced: ADVANCED_OFFER };
 #[allow(static_mut_refs)]
 pub fn odds() -> &'static Odds { unsafe { &ODDS } }
@@ -712,6 +712,20 @@ impl<'a> Ctx<'a> {
           let r = self.t[t].unwrap().rarity;
           if r == BOSS { self.boost(t as i32, 120, 0); } else { self.awaken(t, Some((r + 2).min(BOSS)), Some(120)); }
         }
+      }
+      // The Holiest Water
+      42 => {
+        for t in self.by_arch(AGITO) {
+          let r = self.t[t].unwrap().rarity;
+          self.awaken(t, Some((r + 2).min(BOSS)), None);
+        }
+      }
+      // Xenopanacea: Osteotrophy, Xenopanacea: Brood
+      43 | 44 => {
+        let ne = self.non_empty();
+        let Some(t) = self.rng.pick(&ne) else { return };
+        self.mutate(t, Pick::Is(AEMBERON), Pick::Random);
+        if id == 43 { self.boost(t as i32, 333, 0); } else { self.boost(t as i32, 0, 333); }
       }
       // Rousing Salts
       41 => {

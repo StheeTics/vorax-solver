@@ -34,12 +34,13 @@ it('a Surgical Protocol pick gets no ranking: it does not change Ultimate Activi
 })
 
 describe('a Xenopanacea on offer', () => {
-  it('is always the advice, whatever else is offered', () => {
+  it('one the simulator knows (Osteotrophy, Brood) is played out like any potion, not always taken', () => {
     const a = advise({ ...board, phase: 'potion', hand: ['Mutagenic Powder', 'Xenopanacea: Brood', 'Bewitching Tincture'] }, 2)
-    expect(a.best).toEqual(expect.objectContaining({ index: 1 }))
+    expect(a.note).toBeUndefined()
     expect(a.unknown).toEqual([])
+    expect(a.ranking.some(r => r.index === 1)).toBe(true)
   })
-  it('counts an unseen variant too', () => {
+  it('an unseen variant is always the advice', () => {
     const a = advise({ ...board, phase: 'potion', hand: ['Xenopanacea', 'Mutagenic Powder'] }, 2)
     expect(a.best).toEqual(expect.objectContaining({ index: 0 }))
   })

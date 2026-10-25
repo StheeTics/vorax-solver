@@ -225,16 +225,16 @@ describe('supreme potions', () => {
 })
 
 describe('pools', () => {
-  it('has 42 potions (ids 0–41); boxes have no effect, others do', () => {
-    expect(POTIONS).toHaveLength(42)
+  it('has 45 potions (ids 0–44); boxes have no effect, others do', () => {
+    expect(POTIONS).toHaveLength(45)
     for (const p of POTIONS) {
       const isBox = typeof p.targeting === 'object'
       expect(!!p.effect).toBe(!isBox)
     }
   })
-  it('BOX_POOL excludes boxes and supremes; SUPREME_POOL is 35–39 and 41; NORMAL_POOL has boxes, no supremes', () => {
+  it('BOX_POOL excludes boxes and supremes; SUPREME_POOL is 35–39 and 41–44; NORMAL_POOL has boxes, no supremes', () => {
     expect(BOX_POOL.some(p => typeof p.targeting === 'object' || p.rarity === 'supreme')).toBe(false)
-    expect(SUPREME_POOL.map(p => p.id)).toEqual([35, 36, 37, 38, 39, 41])
+    expect(SUPREME_POOL.map(p => p.id).sort((a, b) => a - b)).toEqual([35, 36, 37, 38, 39, 41, 42, 43, 44])
     expect(NORMAL_POOL.some(p => p.rarity === 'supreme')).toBe(false)
     expect(NORMAL_POOL.filter(p => typeof p.targeting === 'object').map(p => p.id).sort()).toEqual([33, 34, 40])
   })

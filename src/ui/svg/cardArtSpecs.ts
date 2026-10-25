@@ -75,6 +75,9 @@ export const POTION_ART: Record<number, PotionArt> = {
   38: { vessel: 'holedPot', color: '#6f7a3e', mark: 'fly' }, // Insect Attractant
   39: { vessel: 'teardrop', color: '#f6e7a8', mark: 'glow' }, // Purest Holy Water
   41: { vessel: 'pillBottle', color: '#eceae4', mark: 'glow' }, // Rousing Salts
+  42: { vessel: 'teardrop', color: '#ffd36b', mark: 'cross' }, // The Holiest Water
+  43: { vessel: 'flask', color: '#b24bd1', mark: 'bone' }, // Xenopanacea: Osteotrophy
+  44: { vessel: 'flask', color: '#d14b8f', mark: 'shells' }, // Xenopanacea: Brood
   // Boxes / kits
   33: { vessel: 'chest', color: '#9a6a3a', mark: 'none' }, // Potion Kit (Large)
   34: { vessel: 'case', color: '#7a1f24', mark: 'none' }, // Potion Kit (Small)

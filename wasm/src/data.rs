@@ -2,17 +2,19 @@
 #![allow(dead_code)]
 use crate::engine::{T, Timing, Ev};
 
+pub const POTIONS: usize = 45;
+pub const INSTRUMENTS: usize = 26;
 pub const SUPREME_CHANCE: f64 = 0.007355399531929121;
 /** normal, magic, rare, boss */
 pub const SPAWN: [f64; 4] = [46.18111156888711, 28.425974506855187, 18.59911442235504, 16.95629455830123];
 pub const NORMAL_POOL: &[u8] = &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 40];
 pub const BOX_POOL: &[u8] = &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32];
-pub const SUPREME_POOL: &[u8] = &[35, 36, 37, 38, 39, 41];
+pub const SUPREME_POOL: &[u8] = &[35, 36, 37, 38, 39, 42, 43, 44, 41];
 /** by potion id */
-pub const TARGETING: [T; 42] = [T::Auto, T::OneOrTwo, T::One, T::Auto, T::One, T::Auto, T::One, T::Auto, T::Auto, T::Auto, T::Auto, T::Auto, T::One, T::OneOrTwo, T::One, T::One, T::Auto, T::One, T::One, T::One, T::One, T::OneOrTwo, T::One, T::Auto, T::One, T::Auto, T::One, T::Auto, T::One, T::One, T::Auto, T::OneOrTwo, T::One, T::Box(5), T::Box(3), T::Auto, T::Auto, T::Auto, T::Auto, T::Auto, T::Box(3), T::Auto];
-pub const IS_SUPREME: [bool; 42] = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, false, true];
-pub const POTION_OFFER: [f64; 42] = [0.9631639666480608, 1.0242164567778829, 0.878, 0.878, 0.878, 0.878, 0.9227298472841119, 1.0, 1.0, 1.23364685160186, 1.2635789440579461, 1.2078328141730366, 1.3606602068520224, 1.2635789440579461, 1.1643723929685408, 1.1212474895252613, 1.2383536714046495, 1.0548938682335904, 1.1144862567413816, 1.1772004036809631, 1.2759669729212593, 1.174336906813309, 1.2689303052664929, 1.7178086538239583, 1.674683750380679, 1.8687458158754358, 1.8156538218377043, 1.9015624305185754, 1.8328083963393698, 1.7609335572672373, 1.7467120697271608, 1.8682814688474927, 1.6817148624013758, 0.5570300028090241, 0.5574612988490939, 1.0, 1.0, 1.0, 1.0, 1.0, 0.6268209941677856, 1.0];
-pub const BOX_OFFER: [f64; 42] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 1.9516483516483516, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
+pub const TARGETING: [T; 45] = [T::Auto, T::OneOrTwo, T::One, T::Auto, T::One, T::Auto, T::One, T::Auto, T::Auto, T::Auto, T::Auto, T::Auto, T::One, T::OneOrTwo, T::One, T::One, T::Auto, T::One, T::One, T::One, T::One, T::OneOrTwo, T::One, T::Auto, T::One, T::Auto, T::One, T::Auto, T::One, T::One, T::Auto, T::OneOrTwo, T::One, T::Box(5), T::Box(3), T::Auto, T::Auto, T::Auto, T::Auto, T::Auto, T::Box(3), T::Auto, T::Auto, T::Auto, T::Auto];
+pub const IS_SUPREME: [bool; 45] = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, false, true, true, true, true];
+pub const POTION_OFFER: [f64; 45] = [0.9631639666480608, 1.0242164567778829, 0.878, 0.878, 0.878, 0.878, 0.9227298472841119, 1.0, 1.0, 1.23364685160186, 1.2635789440579461, 1.2078328141730366, 1.3606602068520224, 1.2635789440579461, 1.1643723929685408, 1.1212474895252613, 1.2383536714046495, 1.0548938682335904, 1.1144862567413816, 1.1772004036809631, 1.2759669729212593, 1.174336906813309, 1.2689303052664929, 1.7178086538239583, 1.674683750380679, 1.8687458158754358, 1.8156538218377043, 1.9015624305185754, 1.8328083963393698, 1.7609335572672373, 1.7467120697271608, 1.8682814688474927, 1.6817148624013758, 0.5570300028090241, 0.5574612988490939, 1.0, 1.0, 1.0, 1.0, 1.0, 0.6268209941677856, 1.0, 1.0, 1.0, 1.0];
+pub const BOX_OFFER: [f64; 45] = [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 1.0, 2.0, 1.0, 2.0, 1.0, 1.9516483516483516, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0];
 pub const BASIC_POOL: &[u8] = &[1, 2, 3, 4, 5, 6, 7, 8];
 pub const ADVANCED_POOL: &[u8] = &[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25];
 /** by instrument id */
