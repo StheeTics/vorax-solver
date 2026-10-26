@@ -8,6 +8,7 @@ import type { Layout } from './layout'
 import { hsv, type Img } from './pixels'
 import { readText } from './digits'
 import { brightest } from './text'
+import { fitLine } from './fitline'
 
 /** How bright a name must be to be there at all: on the labelled frames names measure 120 or more, and still
  *  97 or more blurred by a 50% render scale; empty tanks (dark glass) 90 or less, blurred or not. */
@@ -21,7 +22,15 @@ const GLOW_GREEN = 70
  *  for a Boss. No name is that colour: Normal is grey (tint under 0.18), Magic blue, Rare gold (green over blue). */
 const RIM_TINT = 0.25
 const emptyGlow = ([r, g, b]: [number, number, number]) => r < GLOW_RED && ((g < GLOW_GREEN) || (r >= b && b > g && (r - g) / r >= RIM_TINT))
-const DIGIT_MIN = 0.75
+/** How well both lines' glyphs must match to be sure; 7-pixel digits (a band under 14 pixels) match a little worse. */
+const digitMin = (bandH: number) => Math.min(0.75, Math.max(0.65, 0.65 + (bandH - 10) * 0.025))
+/** When a pair is laid over a small A x Q line: only when the total read sharply and the line didn't, with a
+ *  fit at least FIT_MIN, sure at FIT_SURE and FIT_MARGIN clear of the next pair (lower bars made misreads sure). */
+const FIT_TOTAL = 0.85
+const FIT_AQ = 0.85
+const FIT_MIN = 0.5
+const FIT_SURE = 0.7
+const FIT_MARGIN = 0.1
 
 /** The engine's cap on Activity and Quantity (src/ui/sandboxValidate.ts). */
 const MAX_STAT = 1_000_000
@@ -132,8 +141,12 @@ export function reconcile(total: Alts, aq: Alts): { total: string; aq: string } 
   const total$ = Number(totalText)
   if (!a || !q || !Number.isInteger(total$)) return null
   const oneOff = (read: string, want: number) => String(want).length === read.length && [...read].filter((c, i) => c !== String(want)[i]).length === 1
-  const fromQ = Number(q) > 0 && total$ % Number(q) === 0 && oneOff(a, total$ / Number(q)) ? `${total$ / Number(q)}x${q}` : null
-  const fromA = Number(a) > 0 && total$ % Number(a) === 0 && oneOff(q, total$ / Number(a)) ? `${a}x${total$ / Number(a)}` : null
+  // on a very small screen two digits can merge into one glyph, or a thin 1 vanish: a number a digit longer or
+  // shorter than read is taken too, but only divided out of a number of two digits or more (a 1 or a 5 divides
+  // almost anything)
+  const near = (read: string, want: number, by: string) => oneOff(read, want) || (by.length >= 2 && Math.abs(String(want).length - read.length) === 1)
+  const fromQ = Number(q) > 0 && total$ % Number(q) === 0 && near(a, total$ / Number(q), q) ? `${total$ / Number(q)}x${q}` : null
+  const fromA = Number(a) > 0 && total$ % Number(a) === 0 && near(q, total$ / Number(a), a) ? `${a}x${total$ / Number(a)}` : null
   const fixed = fromQ && fromA ? null : fromQ ?? fromA
   return fixed && stats(totalText, fixed).fits ? { total: totalText, aq: fixed } : null
 }
@@ -190,9 +203,18 @@ export function readTank(img: Img, g: Float32Array, l: Layout, i: number, data: 
     const again = read(undefined, dy)
     if (again.st.fits && !again.fix) r = again
   }
+  // small text: digits touch and can't be told apart one by one, but a sharp total's factor pairs can be laid over the line
+  let fitted: { sure: boolean } | null = null
+  if (!r.st.fits && r.total && r.total.score >= FIT_TOTAL && (r.aq?.score ?? 0) < FIT_AQ && /^\d+$/.test(r.total.text)) {
+    const [first, second] = fitLine(img, g, l.aqBand[i], data.digits.label, Number(r.total.text))
+    if (first && first.score >= FIT_MIN) {
+      r = { ...r, st: stats(r.total.text, first.text) }
+      fitted = { sure: first.score >= FIT_SURE && first.score - (second?.score ?? 0) >= FIT_MARGIN }
+    }
+  }
   const { total, aq, st, fix } = r
   // numbers that multiply to the total are right whatever the glyph scores: the check is too strict to pass by chance
-  const fits = st.fits && !!total && !!aq && (!!fix || (total.score >= DIGIT_MIN && aq.score >= DIGIT_MIN))
+  const fits = st.fits && !!total && !!aq && (fitted ? fitted.sure : !!fix || (total.score >= digitMin(l.aqBand[i].h) && aq.score >= digitMin(l.aqBand[i].h)))
   fields[`tank${i}.activity`] = { sure: fits, guess: String(st.activity), score: aq?.score, second: aq?.second }
   fields[`tank${i}.quantity`] = { sure: fits, guess: String(st.quantity), score: aq?.score, second: aq?.second }
   const debug = { rgb: rgb.map(Math.round) as [number, number, number], total: total?.text ?? '', aq: aq?.text ?? '' }

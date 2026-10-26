@@ -73,6 +73,11 @@ describe('committed fixtures (masked live frames)', () => {
     expect(r.state.tanks).toEqual([pest, pest, pest, pest, null, null])
     expect(Object.entries(r.fields).filter(([k, f]) => k.startsWith('tank') && !f.sure).map(([k]) => k)).toEqual([])
   })
+
+  it('reads touching 7-pixel digits by laying the total\'s factor pairs over them (issue #287, 1360x768)', () => {
+    const r = read('small-768.png')
+    expect(r.state.tanks.map(t => t && [t.activity, t.quantity])).toEqual([[15, 92], [32, 124], [32, 148], [1, 221], [5, 104], [5, 112]])
+  })
 })
 
 
