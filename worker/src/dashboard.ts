@@ -147,6 +147,11 @@ export const DASHBOARD_HTML = `<!doctype html>
         <div id="rolling"></div>
         <div class="scroll" id="releases"></div>
       </section>
+      <section class="card">
+        <h2>Cards read unsure</h2>
+        <p class="sub">Each card on the boards shared from Oct 26: how many it was offered on, how many the reader wasn't sure of it on, and how many a player corrected a slot to it (it was misread as something else). The most unsure and corrected first: the cards to get more pictures of. A board is shared again on a reroll or a recheck, so a hand can count more than once.</p>
+        <div class="scroll" id="cards"></div>
+      </section>
       <section class="card half">
         <h2>Games and players per day</h2>
         <p class="sub">Players: different devices that day.</p>
@@ -432,6 +437,8 @@ async function load(pw) {
         r.boards ? pct(r.unsure / r.boards) : '–', r.boards ? pct(r.corrected / r.boards) : '–',
       ]), [2, 3, 4, 5, 6])
     : ''
+  if (s.cards && s.cards.length) paged('cards', ['Card', 'Offered', 'Unsure', 'Share unsure', 'Corrected to it'], s.cards.map(c => [c.name, num(c.shown), num(c.unsure), c.shown ? pct(c.unsure / c.shown) : '–', num(c.corrected)]), [1, 2, 3, 4])
+  else $('cards').innerHTML = '<p class="sub">No boards with their cards yet.</p>'
   $('real').innerHTML = (f.games
     ? '<div class="stat"><div><span>Finished games</span><b>' + f.games + '</b></div><div><span>Reached 840k</span><b>' + f.reached + ' (' + pct(f.reached / f.games) + ')</b></div><div><span>Median</span><b>' + k(f.median) + '</b></div><div><span>Average counted to 840k</span><b>' + k(f.capped) + '</b></div><div><span>Average, every point</span><b>' + k(f.average) + '</b></div></div><p class="sub">The simulator expects about half of games to reach 840k.</p>'
     : '<p class="sub">No finished games shared yet.</p>')

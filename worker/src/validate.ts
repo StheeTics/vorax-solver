@@ -57,16 +57,22 @@ export function validate(raw: unknown, names: Names) {
 type Board = NonNullable<ReturnType<typeof validate>>
 
 /** What's stored of a board since Oct 24: its game, how it was read (debug included) and the advice's predicted end,
- *  but not its cards or tanks: score, its total; picks, how many instruments it showed; final, on the round-13 board,
+ *  but not its tanks, and of its cards (since Oct 26) only their names, which were unsure and which corrected: score, its total; picks, how many instruments it showed; final, on the round-13 board,
  *  the final score (the Solver's own, or worked out here with each instrument taken as picked in round 1, from a
  *  Solver from before it sent one). */
 export function lean(b: Board) {
-  const { tanks, hand: _hand, instruments, advice, final, ...rest } = b
+  const { tanks, hand, instruments, advice, final, ...rest } = b
+  // the cards of the slots read unsure or corrected by hand, to find the cards the reader struggles with
+  const named = (fields: string[]) => fields.flatMap(f => (/^hand\d$/.test(f) && hand[Number(f.slice(4))] ? [hand[Number(f.slice(4))]] : []))
   const end = b.round === 13 && b.phase === 'protocol' ? (final ?? finalScore(tanks as Parameters<typeof finalScore>[0], instruments)) : undefined
   return {
     ...rest,
     score: tanks.reduce((s, t) => s + (t ? (t.activity as number) * (t.quantity as number) : 0), 0),
     picks: instruments.length,
+    // the hand's names only: how often each card is offered, against how often it was read unsure
+    cards: hand,
+    unsureCards: named(b.unsure ?? []),
+    correctedCards: named(b.corrected),
     ...(end !== undefined ? { final: end } : {}),
     // the predicted end without the move, which names cards
     ...(advice ? { advice: { activity: advice.activity, reached: advice.reached, ...(advice.ms !== undefined ? { ms: advice.ms } : {}) } } : {}),

@@ -128,11 +128,19 @@ it('keeps the random install number players are counted by; a malformed one is d
   expect(validate({ ...good, install: 'me@example.com' }, names)).toEqual(good)
 })
 
-describe('what’s stored of a board (lean): no cards or tanks', () => {
+describe('what’s stored of a board (lean): no tanks, and only its cards’ names', () => {
   it('its total in place of its tanks, and how many instruments in place of their names', () => {
     const b = lean(validate({ ...good, debug: undefined }, names)!)
-    expect(b).toEqual({ ...good, tanks: undefined, hand: undefined, instruments: undefined, score: 120, picks: 1 })
+    expect(b).toEqual({ ...good, tanks: undefined, hand: undefined, instruments: undefined, score: 120, picks: 1, cards: good.hand, unsureCards: [], correctedCards: ['Xeno-Hormone'] })
     expect(Object.keys(b)).not.toContain('tanks')
+  })
+  it('the names of the cards read unsure or corrected by hand, from their slots', () => {
+    const b = lean(validate({ ...good, unsure: ['hand1', 'tank0.activity', 'instrument0'], corrected: ['hand0', 'round'] }, names)!)
+    expect(b.cards).toEqual(['Xeno-Hormone', 'Mutagenic Powder'])
+    expect(b.unsureCards).toEqual(['Mutagenic Powder'])
+    expect(b.correctedCards).toEqual(['Xeno-Hormone'])
+    // a slot past the hand names nothing
+    expect(lean(validate({ ...good, unsure: ['hand4'] }, names)!).unsureCards).toEqual([])
   })
   it('a final score only on the round-13 board', () => {
     expect(validate({ ...good, final: 5 }, names)).not.toHaveProperty('final')

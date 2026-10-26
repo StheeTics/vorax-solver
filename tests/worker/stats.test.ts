@@ -336,3 +336,22 @@ describe('since each release', () => {
     expect(r[0]).toMatchObject({ finished: 3, boards: 6, unsure: 6, corrected: 0 })
   })
 })
+
+describe('cards read unsure', () => {
+  const rows = [
+    row('2026-10-26T10:00:00Z', 'a', board('r1', 2, { cards: ['Xeno-Hormone', 'Mutagenic Powder'], unsureCards: ['Mutagenic Powder'], correctedCards: [] })),
+    row('2026-10-26T10:01:00Z', 'a', board('r1', 3, { cards: ['Mutagenic Powder', 'Mutagenic Powder'], unsureCards: [], correctedCards: ['Mutagenic Powder'] })),
+    row('2026-10-27T10:00:00Z', 'b', board('r2', 2, { cards: ['Xeno-Hormone'], unsureCards: [], correctedCards: [] })),
+    // a board from before Oct 26 has no names
+    row('2026-10-25T10:00:00Z', 'c', board('r3', 2, { unsure: ['hand0'] })),
+  ]
+  it('counts each card’s boards offered, unsure and corrected to it, the most trouble first', () => {
+    expect(summarize(rows).cards).toEqual([
+      { name: 'Mutagenic Powder', shown: 2, unsure: 1, corrected: 1 },
+      { name: 'Xeno-Hormone', shown: 2, unsure: 0, corrected: 0 },
+    ])
+  })
+  it('adds up across pulls', () => {
+    expect(report(digest(rows.slice(2), digest(rows.slice(0, 2)))).cards).toEqual(summarize(rows).cards)
+  })
+})

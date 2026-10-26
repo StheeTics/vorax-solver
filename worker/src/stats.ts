@@ -8,7 +8,7 @@ export interface StatRow { received: string; client: string; body: string }
 interface Tank { archetype: string; rarity: string; activity: number; quantity: number }
 /** A board as stored: since Oct 24 without its cards and tanks (worker/src/validate.ts lean): score, its total; final,
  *  the round-13 board's final score; picks, how many instruments it showed. Boards from before have tanks and instruments. */
-interface Board { run: string; install?: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null }; score?: number; final?: number; picks?: number }
+interface Board { run: string; install?: string; seq?: number; round: number; phase?: string; app: string; corrected?: string[]; unsure?: string[]; unreadable?: boolean; debug?: Debug; instruments?: string[]; tanks?: (Tank | null)[]; advice?: { reached: number | null }; score?: number; final?: number; picks?: number; cards?: string[]; unsureCards?: string[]; correctedCards?: string[] }
 
 interface Debug { frame: [number, number]; hdr: boolean; browser: string; window?: { outer: [number, number]; client: [number, number] } }
 
@@ -67,6 +67,9 @@ export interface Stats {
    *  when its first game started; margin: the average's 95% margin; boards, unsure, corrected: its games' boards and
    *  how many were read with something unsure or corrected (from Oct 25) */
   releases: { version: string; first: string; finished: number; average: number; margin: number; reached: number; boards: number; unsure: number; corrected: number }[]
+  /** each card on boards from Oct 26: the boards it was offered on, read unsure on and corrected to by hand (the
+   *  card it really was), the most unsure first */
+  cards: CardCount[]
 }
 
 /** The finished games a point of the rolling chart averages over. */
@@ -133,8 +136,9 @@ const RECENT = 25
 export interface GameRecord { run: string; n: number; start: string; day: string; boards: number; round: number; read: number; app: boolean; version: string; played: boolean; final: number | null; predictions: number[]; last: number; score: number; unsure?: number; corrected?: number }
 /** One day's boards: how many, how many a player corrected or the reader was unsure of, the daily player codes and
  *  installs (their first 12 characters) seen, and the boards and problems per setup. */
-export interface DayRecord { day: string; boards: number; corrected: number; unsure: number; clients: string[]; installs: string[]; setups: Setup[] }
+export interface DayRecord { day: string; boards: number; corrected: number; unsure: number; clients: string[]; installs: string[]; setups: Setup[]; cards?: CardCount[] }
 type Setup = { by: string; group: string; boards: number; unsure: number; numbers: number }
+export type CardCount = { name: string; shown: number; unsure: number; corrected: number }
 /** Everything the dashboard's numbers are worked out from; upto: the newest board in it (when it came). */
 export interface Digest { upto: string; games: GameRecord[]; days: DayRecord[] }
 
@@ -149,7 +153,7 @@ export function digest(rows: StatRow[], prior: Digest = emptyDigest()): Digest {
   // a run's latest game: a new one starts when a round read for sure goes back
   const current = new Map<string, GameRecord>()
   for (const g of games.values()) if ((current.get(g.run)?.n ?? -1) < g.n) current.set(g.run, g)
-  const days = new Map(prior.days.map(d => [d.day, { ...d, clients: new Set(d.clients), installs: new Set(d.installs), setups: new Map(d.setups.map(x => [`${x.by}|${x.group}`, { ...x }])) }]))
+  const days = new Map(prior.days.map(d => [d.day, { ...d, clients: new Set(d.clients), installs: new Set(d.installs), setups: new Map(d.setups.map(x => [`${x.by}|${x.group}`, { ...x }])), cards: new Map((d.cards ?? []).map(c => [c.name, { ...c }])) }]))
   // boards from before Oct 24 had their tanks and instruments: the round each instrument was first seen, for the
   // ones that fire every few rounds
   const picked = new Map<GameRecord, Map<string, number>>()
@@ -163,7 +167,7 @@ export function digest(rows: StatRow[], prior: Digest = emptyDigest()): Digest {
     }
     if (r.received > upto) upto = r.received
     const day = r.received.slice(0, 10)
-    const d = days.get(day) ?? { day, boards: 0, corrected: 0, unsure: 0, clients: new Set<string>(), installs: new Set<string>(), setups: new Map<string, Setup>() }
+    const d = days.get(day) ?? { day, boards: 0, corrected: 0, unsure: 0, clients: new Set<string>(), installs: new Set<string>(), setups: new Map<string, Setup>(), cards: new Map<string, CardCount>() }
     d.boards++
     d.clients.add(r.client)
     if (b.install) d.installs.add(b.install.slice(0, RUN))
@@ -178,6 +182,10 @@ export function digest(rows: StatRow[], prior: Digest = emptyDigest()): Digest {
       if (b.unreadable || b.unsure?.some(f => /\.(activity|quantity)$/.test(f))) g.numbers++
       d.setups.set(k, g)
     }
+    const card = (name: string) => d.cards.get(name) ?? d.cards.set(name, { name, shown: 0, unsure: 0, corrected: 0 }).get(name)!
+    for (const n of new Set(b.cards ?? [])) card(n).shown++
+    for (const n of new Set(b.unsureCards ?? [])) card(n).unsure++
+    for (const n of new Set(b.correctedCards ?? [])) card(n).corrected++
     days.set(day, d)
     const run = b.run.slice(0, RUN)
     const sure = !b.unsure?.includes('round')
@@ -215,6 +223,7 @@ export function digest(rows: StatRow[], prior: Digest = emptyDigest()): Digest {
     days: [...days.values()].sort((a, b) => a.day.localeCompare(b.day)).map(d => ({
       day: d.day, boards: d.boards, corrected: d.corrected, unsure: d.unsure, clients: [...d.clients].sort(), installs: [...d.installs].sort(),
       setups: [...d.setups.values()].sort((a, b) => a.by.localeCompare(b.by) || a.group.localeCompare(b.group)),
+      ...(d.cards.size ? { cards: [...d.cards.values()].sort((a, b) => a.name.localeCompare(b.name)) } : {}),
     })),
   }
 }
@@ -255,6 +264,13 @@ export function report(dg: Digest, now = new Date()): Stats {
     g.numbers += x.numbers
     setups.set(k, g)
   }
+  const cards = new Map<string, CardCount>()
+  for (const c of dg.days.flatMap(d => d.cards ?? [])) {
+    const t = cards.get(c.name) ?? cards.set(c.name, { name: c.name, shown: 0, unsure: 0, corrected: 0 }).get(c.name)!
+    t.shown += c.shown
+    t.unsure += c.unsure
+    t.corrected += c.corrected
+  }
   return {
     generated: now.toISOString(),
     finished: {
@@ -284,6 +300,7 @@ export function report(dg: Digest, now = new Date()): Stats {
     recent: [...list].sort((a, b) => b.start.localeCompare(a.start)).slice(0, RECENT).map(g => ({ start: g.start, boards: g.boards, round: g.round, app: g.app, score: g.final ?? g.score, finished: g.final !== null })),
     rolling: rolling([...finished].sort((a, b) => a.start.localeCompare(b.start))),
     releases: releases(list),
+    cards: [...cards.values()].sort((a, b) => b.unsure + b.corrected - (a.unsure + a.corrected) || b.shown - a.shown),
   }
 }
 

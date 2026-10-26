@@ -22,6 +22,7 @@ export const emptyStats = (now = new Date()): Stats => ({
   calibration: [],
   rolling: [],
   releases: [],
+  cards: [],
 })
 
 /** The workflow's summary with the collector's own counts put in: players per day, today, in all. */

@@ -76,7 +76,7 @@ it('stores the valid snapshots of an upload together, in one row, each once; dro
   expect(JSON.parse(store.batches[0].body).map((s: { uid: string }) => s.uid)).toEqual([uid(1), uid(2)])
 })
 
-it('stores each board without its cards and tanks: its total, how many instruments, and the advice’s predicted end', async () => {
+it('stores each board without its tanks: its total, how many instruments, its cards’ names only, and the advice’s predicted end', async () => {
   const store = memory()
   const tank = { archetype: 'pest', rarity: 'magic', activity: 50, quantity: 200 }
   const advice = { move: 'Play Xeno-Hormone (card 1) → tank 1', activity: 812000, reached: 0.4 }
@@ -87,7 +87,9 @@ it('stores each board without its cards and tanks: its total, how many instrumen
   expect(b).not.toHaveProperty('hand')
   expect(b).not.toHaveProperty('instruments')
   expect(b).not.toHaveProperty('final')
-  expect(store.batches[0].body).not.toMatch(/Xeno-Hormone|Incubation Sac/)
+  expect(b.cards).toEqual(['Xeno-Hormone'])
+  // the advice's move and the instruments' names aren't kept
+  expect(store.batches[0].body).not.toMatch(/Play |Incubation Sac/)
 })
 
 it('the round-13 board keeps its final score: the Solver’s own, or worked out from its tanks for a Solver from before', async () => {
