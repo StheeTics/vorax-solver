@@ -4,7 +4,7 @@
 import type { FieldRead, Problem } from '../types'
 import type { HandPhase, ScanData } from './data'
 import { CARD_LOCAL, cardFace, type CardPos, type Layout } from './layout'
-import { artFeature, gray, patch, signature, similarity, type ArtFeature, type Img } from './pixels'
+import { artFeature, gray, hsv, patch, signature, similarity, type ArtFeature, type Img } from './pixels'
 
 const HEADER_MIN = 0.6
 const ART_MIN = 0.95
@@ -112,7 +112,7 @@ export function fitOffset(img: Img, c: CardPos, k: number, key: string, data: Sc
 }
 
 /** Every known card ranked for one card position, best first; among: only these names. */
-function rank(img: Img, c: CardPos, k: number, prefix: string, data: ScanData, local: Record<string, ArtFeature[]>, among?: string[]): (readonly [string, number])[] {
+function rank(img: Img, c: CardPos, k: number, prefix: string, data: ScanData, local: Record<string, ArtFeature[]>, among?: string[]): (readonly [string, number])[] & { at: readonly [number, number] } {
   const arts = new Map<string, ArtFeature>()
   const txts = new Map<string, number[]>()
   const art = (dx: number, dy: number) => arts.get(`${dx},${dy}`) ?? arts.set(`${dx},${dy}`, cardArt(img, c, k, dx, dy)).get(`${dx},${dy}`)!
@@ -138,7 +138,52 @@ function rank(img: Img, c: CardPos, k: number, prefix: string, data: ScanData, l
   // the art barely changes over a pixel or two, so only the text is re-read around the best offset
   for (const s of scored.slice(0, REFINE))
     if (s.texts) for (const [fx, fy] of FINE) s.best = Math.max(s.best, s.both(s.a0, s.at[0] + fx, s.at[1] + fy))
-  return scored.map(s => [s.name, s.best] as const).sort((a, b) => b[1] - a[1])
+  const out = scored.map(s => [s.name, s.best] as const).sort((a, b) => b[1] - a[1])
+  // where the best match found the card: a card can sit a little off its slot
+  return Object.assign(out, { at: scored.reduce((a, b) => (b.best > a.best ? b : a), scored[0])?.at ?? [0, 0] })
+}
+
+/** Look-alike cards share their picture and differ only by the creature in their name, shown by its icon in their
+ *  text: purple Pest, yellow Bone Sentry, blue Aemberon (Agito's red can't be told from the hearts and "mutate"). */
+const ICON_AREA = { x: -140, y: -40, w: 175, h: 190 }
+const CREATURE = / - (Pest|Bone Sentry|Agito|Aemberon)$/
+/** On 463 labelled look-alikes: Aemberon 88-288 blue pixels, Agito 0-75; Pest 14+ purple, Bone Sentry none
+ *  and 94+ yellow. Between the bars the icon decides nothing. */
+const BLUE_AEMBERON = 100
+const BLUE_AGITO = 15
+const PURPLE_PEST = 10
+const YELLOW_SENTRY = 60
+/** How far a look-alike its icon rules out drops below the one it shows: enough for the picture to be sure. */
+const ICON_DROP = 0.05
+
+/** The creature a look-alike card's icon shows, or null when it's unclear. */
+export function iconCreature(img: Img, c: CardPos, k: number, pair: 'Pest' | 'Agito', [dx, dy]: readonly [number, number] = [0, 0]): string | null {
+  const p = patch(img, c.cx + dx * k, c.cy + dy * k, c.angle, ICON_AREA, k)
+  let purple = 0, yellow = 0, blue = 0
+  for (let i = 0; i < p.data.length; i += 4) {
+    const [h, s, v] = hsv(p.data[i], p.data[i + 1], p.data[i + 2])
+    if (h >= 210 && h < 230 && s >= 0.25 && v >= 0.2) blue++
+    if (s < 0.45 || v < 0.35) continue
+    if (h >= 255 && h < 300) purple++
+    else if (h >= 38 && h < 62) yellow++
+  }
+  if (pair === 'Agito') return blue >= BLUE_AEMBERON ? 'Aemberon' : blue <= BLUE_AGITO ? 'Agito' : null
+  return purple >= PURPLE_PEST ? 'Pest' : purple === 0 && yellow >= YELLOW_SENTRY ? 'Bone Sentry' : null
+}
+
+/** A ranking with a look-alike its icon rules out moved below the one it shows. */
+function byIcon(img: Img, c: CardPos, k: number, ranked: (readonly [string, number])[] & { at: readonly [number, number] }): (readonly [string, number])[] {
+  const top = ranked[0]?.[0]
+  const m = top && CREATURE.exec(top)
+  if (!m) return ranked
+  const base = top.slice(0, m.index)
+  const twins = ranked.filter(([n]) => n.startsWith(base) && CREATURE.test(n) && n.slice(0, CREATURE.exec(n)!.index) === base)
+  if (twins.length < 2) return ranked
+  const shown = iconCreature(img, c, k, /Pest|Bone Sentry/.test(m[1]) ? 'Pest' : 'Agito', ranked.at)
+  const pick = shown && twins.find(([n]) => n.endsWith(` - ${shown}`))
+  if (!pick) return ranked
+  const best = twins[0][1]
+  return ranked.map(([n, v]) => (n === pick[0] ? [n, best] as const : twins.some(([t]) => t === n) ? [n, Math.min(v, best - ICON_DROP)] as const : [n, v] as const)).sort((a, b) => b[1] - a[1])
 }
 
 function readAt(img: Img, l: Layout, size: number, phase: HandPhase, data: ScanData, local: Record<string, ArtFeature[]>, slots?: number[], among: Record<number, string[]> = {}) {
@@ -149,7 +194,7 @@ function readAt(img: Img, l: Layout, size: number, phase: HandPhase, data: ScanD
   let total = 0
   handAt(l, size).forEach((c, j) => {
     if (slots && !slots.includes(j)) return ranks.push([])
-    const ranked = rank(img, c, l.k, `${phase}:`, data, local, among[j])
+    const ranked = byIcon(img, c, l.k, rank(img, c, l.k, `${phase}:`, data, local, among[j]))
     ranks.push(ranked.slice(0, KEEP_RANKS).map(([n, v]) => [n, v]))
     total += ranked[0]?.[1] ?? 0
     if (!ranked.length || ranked[0][1] < ART_UNKNOWN) {

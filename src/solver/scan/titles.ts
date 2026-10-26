@@ -97,6 +97,10 @@ export const settled = (r: (readonly [string, number])[]) => r[0][1] >= MIN_Q &&
 //   3. the whole title area as before.
 
 /** Where the effect text starts in a title area: the first band of text at least half as dark as the card's darkest. */
+/** Where the effect text starts on most cards (on 564 of players' and our cards, 359 at 215-230): the window's
+ *  bottom when its text isn't darker than the title's, as on small JPEG screenshots (60 of 624 cards). */
+const EFFECT_USUAL = 220
+
 function effectStart(img: Img): number | null {
   const { width: W, height: H, data } = img
   const dark = new Array<number>(H).fill(0)
@@ -117,11 +121,11 @@ function effectStart(img: Img): number | null {
   const big = bands.filter(b => b.y1 - b.y0 >= 8 && b.y0 > 60)
   if (!big.length) return null
   const top = Math.max(...big.map(b => b.dark / b.ink))
-  return big.find(b => b.dark / b.ink >= 0.5 * top && b.dark / b.ink > 0.12)?.y0 ?? null
+  return big.find(b => b.dark / b.ink >= 0.5 * top && b.dark / b.ink > 0.12)?.y0 ?? EFFECT_USUAL
 }
 
 /** The rows above the effect text, tall enough for a title on two lines with the art touching it, without the
- *  next card's edge; null when no effect text is found. */
+ *  next card's edge; null when the card shows no text. */
 export function titleWindow(img: Img): Img | null {
   const e = effectStart(img)
   if (e === null) return null
